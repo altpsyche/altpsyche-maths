@@ -6,7 +6,7 @@
  * version of the picture and no coordinates rewritten.
  */
 import { mat3, type Mat3 } from '../values/mat3.js';
-import { vec2 } from '../values/vec2.js';
+import { vec2, type Vec2 } from '../values/vec2.js';
 
 export interface Extent {
   width: number;
@@ -41,6 +41,30 @@ export function byAspect(shapes: { wide: Extent; square: Extent; tall: Extent })
     if (aspect < 0.87) return shapes.tall;
     return shapes.square;
   };
+}
+
+/**
+ * An extent that follows the shape of whatever it is drawn on.
+ *
+ * This is what a figure drawn over something else uses. The height is fixed and
+ * the width follows the surface, so `contain` fits it exactly and there are no
+ * margins at any shape: a figure over a shader covers the shader, at sixteen by
+ * nine and at nine by sixteen alike.
+ */
+export function matchingAspect(height = 2): (aspect: number) => Extent {
+  return (aspect) => ({ width: height * aspect, height });
+}
+
+/**
+ * A point given as a fraction of the frame rather than in figure units, with
+ * nothing at the bottom left and one at the top right.
+ *
+ * A mark placed this way is in screen space. That is the only placement that is
+ * safe over a shader, because putting a mark at a place inside the scene a shader
+ * is drawing would need the shader's camera, and nothing can read one.
+ */
+export function fractionOf(extent: Extent, across: number, up: number): Vec2 {
+  return vec2((across - 0.5) * extent.width, (up - 0.5) * extent.height);
 }
 
 /**
