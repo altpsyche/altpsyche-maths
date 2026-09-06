@@ -1,0 +1,21 @@
+{
+  // Everything in the repository, which is wider than what publishes. The build
+  // config names the library alone, so the tests would otherwise be checked by
+  // nothing: vitest strips types without reading them.
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "lib": ["ES2022"],
+    "noEmit": true,
+    "strict": true,
+    "skipLibCheck": true,
+    "types": ["node"],
+    // The door by its published name, which is how the tests reach it, matching
+    // the alias vitest resolves them through.
+    "paths": { "@altpsyche/maths": ["./index.ts"] },
+    "baseUrl": "."
+  },
+  "include": ["index.ts", "values/**/*.ts", "timing/**/*.ts", "tests/**/*.ts"],
+  "exclude": ["dist", "node_modules"]
+}

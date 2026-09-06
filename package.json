@@ -1,0 +1,50 @@
+{
+  "name": "@altpsyche/maths",
+  "version": "0.1.0",
+  "description": "The mathematics AltPsyche's figures are drawn from: vectors, matrices, curves, and a value walked over time.",
+  "license": "MIT",
+  "author": "Siva",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/altpsyche/altpsyche-maths.git"
+  },
+  "homepage": "https://github.com/altpsyche/altpsyche-maths",
+  "bugs": "https://github.com/altpsyche/altpsyche-maths/issues",
+  "keywords": [
+    "maths",
+    "animation",
+    "easing",
+    "keyframes",
+    "vector",
+    "matrix"
+  ],
+  "type": "module",
+  "sideEffects": false,
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist",
+    "LICENSE",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json",
+    "test": "vitest run",
+    "type-check": "tsc --noEmit -p tsconfig.json",
+    "prepack": "npm run build"
+  },
+  "devDependencies": {
+    "@types/node": "^20.19.43",
+    "typescript": "^5.9.3",
+    "vitest": "^4.0.17"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}
