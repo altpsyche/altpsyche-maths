@@ -26,7 +26,7 @@ export type { Colour, Fill, Mark, PathMark, Stroke, TextMark } from './figure/ma
 export { byAspect, resolveExtent, viewMatrix } from './figure/extent.js';
 export type { Extent, ExtentChoice, Fit } from './figure/extent.js';
 export { flatten, group, shape, text } from './figure/node.js';
-export type { GroupNode, Node, ShapeNode, Style, TextNode } from './figure/node.js';
+export type { GroupNode, Node, ShapeNode, Style, TextNode, TextOptions } from './figure/node.js';
 export { fadeIn, fadeOut, fadeTo, draw, morph, moveBy } from './figure/animation.js';
 export type { Animation } from './figure/animation.js';
 export { Timeline } from './figure/timeline.js';
@@ -35,3 +35,7 @@ export { trimPath } from './figure/trim.js';
 export { alignPaths, lerpPath } from './figure/morph.js';
 export { at, durationOf, loops, sameMarks } from './figure/figure.js';
 export type { Figure, Values } from './figure/figure.js';
+export { pathData, paintSvg, svgElements, svgMarkup } from './paint/svg.js';
+export type { ElementMaker, PaintNode, PaintTarget, SvgElement } from './paint/svg.js';
+export { paintCanvas } from './paint/canvas.js';
+export type { CanvasLike } from './paint/canvas.js';

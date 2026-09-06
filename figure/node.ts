@@ -54,8 +54,12 @@ export function shape(name: string, path: Path, style: Style = {}): ShapeNode {
   return { kind: 'shape', name, path, ...style };
 }
 
-export function text(name: string, at: Vec2, content: string, size: number, style: Style = {}): TextNode {
-  return { kind: 'text', name, at, text: content, size, ...style };
+/** What a text node takes beyond a shared style, which is where it sits against
+ * its own anchor point rather than anything a group can hand down. */
+export type TextOptions = Style & Pick<TextNode, 'align' | 'baseline'>;
+
+export function text(name: string, at: Vec2, content: string, size: number, options: TextOptions = {}): TextNode {
+  return { kind: 'text', name, at, text: content, size, ...options };
 }
 
 export function group(name: string, children: readonly Node[], options: { transform?: Mat3; style?: Style } = {}): GroupNode {

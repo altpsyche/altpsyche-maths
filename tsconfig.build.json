@@ -18,6 +18,6 @@
   },
   // What gets published, named rather than swept up, so a directory arriving
   // beside the sources is published because somebody said so.
-  "include": ["index.ts", "values/**/*.ts", "timing/**/*.ts", "figure/**/*.ts"],
+  "include": ["index.ts", "values/**/*.ts", "timing/**/*.ts", "figure/**/*.ts", "paint/**/*.ts"],
   "exclude": ["dist", "node_modules"]
 }
