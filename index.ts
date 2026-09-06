@@ -19,3 +19,11 @@ export { mat3 } from './values/mat3.js';
 export type { Mat3 } from './values/mat3.js';
 export { SAME_TIME, keyAt, sampleTrack, sampleTracks, withKey, withoutKey } from './timing/track.js';
 export type { Key, Track, TrackValue, Tracks } from './timing/track.js';
+
+export { arc, circle, line, polygon, polyline, pointCount, pointOn, rect, straight, transformPath } from './figure/path.js';
+export type { Cubic, Path, Subpath } from './figure/path.js';
+export type { Colour, Fill, Mark, PathMark, Stroke, TextMark } from './figure/mark.js';
+export { byAspect, resolveExtent, viewMatrix } from './figure/extent.js';
+export type { Extent, ExtentChoice, Fit } from './figure/extent.js';
+export { flatten, group, shape, text } from './figure/node.js';
+export type { GroupNode, Node, ShapeNode, Style, TextNode } from './figure/node.js';

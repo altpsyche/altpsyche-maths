@@ -16,6 +16,6 @@
     "paths": { "@altpsyche/maths": ["./index.ts"] },
     "baseUrl": "."
   },
-  "include": ["index.ts", "values/**/*.ts", "timing/**/*.ts", "tests/**/*.ts"],
+  "include": ["index.ts", "values/**/*.ts", "timing/**/*.ts", "figure/**/*.ts", "tests/**/*.ts"],
   "exclude": ["dist", "node_modules"]
 }
