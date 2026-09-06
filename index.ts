@@ -17,3 +17,5 @@ export { vec3 } from './values/vec3.js';
 export type { Vec3 } from './values/vec3.js';
 export { mat3 } from './values/mat3.js';
 export type { Mat3 } from './values/mat3.js';
+export { SAME_TIME, keyAt, sampleTrack, sampleTracks, withKey, withoutKey } from './timing/track.js';
+export type { Key, Track, TrackValue, Tracks } from './timing/track.js';
