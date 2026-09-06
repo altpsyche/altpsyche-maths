@@ -157,6 +157,36 @@ describe('svg', () => {
     expect(made[2].text).toBe('here & there');
     expect(made[0].attributes['data-mark']).toBe('fig/axis');
   });
+
+  it('takes an element from a document, whose own call accepts more than a painter can make', () => {
+    // Shaped the way a document is rather than the way the painter is. An element
+    // there holds other elements and text, and text is not a thing an attribute
+    // can be set on, so the two calls each accept something the other refuses and
+    // neither signature is assignable to the other. This compiling is the test:
+    // the element a maker makes travels through to the target, and a caller with
+    // a real document does not have to cast its own element to hand it over.
+    interface DocumentElement {
+      setAttribute(name: string, value: string): void;
+      textContent: string | null;
+      replaceChildren(...nodes: (DocumentElement | string)[]): void;
+    }
+
+    const make = (): DocumentElement => {
+      let children: (DocumentElement | string)[] = [];
+      return {
+        setAttribute: () => {},
+        textContent: null,
+        replaceChildren: (...nodes) => { children = nodes; },
+        get count() { return children.length; },
+      } as DocumentElement & { count: number };
+    };
+
+    const into = make() as DocumentElement & { count: number };
+    const maker = { createElementNS: (_namespace: string, _tag: string): DocumentElement => make() };
+
+    paintSvg(into, marks, view, maker);
+    expect(into.count).toBe(3);
+  });
 });
 
 describe('canvas', () => {

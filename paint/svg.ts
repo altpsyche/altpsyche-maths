@@ -114,23 +114,28 @@ const SVG_NAMESPACE = 'http://www.w3.org/2000/svg';
 
 /**
  * Only what a painter needs from a document, named here rather than taken from
- * the DOM types.
+ * the DOM types, so this package declares no browser library at all: it can be
+ * checked and tested without one, and a caller can hand in a stand-in.
  *
- * A real `SVGElement` and a real `Document` both satisfy these already, and
- * writing them out means this package declares no browser library at all: it can
- * be checked and tested without one, and a caller can hand in a stand-in.
+ * The element a maker makes is the element the target is handed, and that type
+ * travels through rather than being flattened to the two members named below. An
+ * element in a real document takes whole nodes and text where the painter's own
+ * type takes neither, so a target written in terms of the painter's type is a
+ * target no real element can be: what a document offers and what the painter
+ * would ask for are each missing something the other has, and neither signature
+ * is assignable to the other in either direction.
  */
 export interface PaintNode {
   setAttribute(name: string, value: string): void;
   textContent: string | null;
 }
 
-export interface PaintTarget {
-  replaceChildren(...nodes: PaintNode[]): void;
+export interface PaintTarget<Made extends PaintNode = PaintNode> {
+  replaceChildren(...nodes: Made[]): void;
 }
 
-export interface ElementMaker {
-  createElementNS(namespace: string, tag: string): PaintNode;
+export interface ElementMaker<Made extends PaintNode = PaintNode> {
+  createElementNS(namespace: string, tag: string): Made;
 }
 
 /**
@@ -141,7 +146,15 @@ export interface ElementMaker {
  * and matching them up first would cost more than it saved while adding a way for
  * two frames to disagree.
  */
-export function paintSvg(into: PaintTarget, marks: readonly Mark[], view: Mat3, maker: ElementMaker): void {
+export function paintSvg<Made extends PaintNode>(
+  // The maker alone says what kind of element this is. Read from the target as
+  // well, a real element would offer the whole union its own call accepts, text
+  // included, and that union is not a thing this painter can set an attribute on.
+  into: PaintTarget<NoInfer<Made>>,
+  marks: readonly Mark[],
+  view: Mat3,
+  maker: ElementMaker<Made>
+): void {
   const elements = svgElements(marks, view);
   into.replaceChildren(
     ...elements.map((element) => {
