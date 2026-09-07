@@ -42,6 +42,14 @@ marks onto a two-dimensional canvas, which is what a recording needs, because an
 one surface. A test holds the two to emitting the same geometry and the same style for every
 mark.
 
+## The way in
+
+`pathFromData` reads an SVG `d` attribute as a path, which is the inverse of what the SVG painter
+writes. Without it the only shapes that exist are the ones the builders here make, so a glyph from
+a typesetter or an outline from a drawing program could not be trimmed, aligned or walked into
+another shape, and those are the operations this package is for. Every command is read, elliptical
+arcs included, and a command it does not know stops the read rather than being skipped.
+
 ## The line through the package
 
 **Values and timing** are below it: vectors, a transform, the four curves a change can travel
