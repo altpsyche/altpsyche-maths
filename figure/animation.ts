@@ -16,6 +16,7 @@ import { lerp } from '../values/scalar.js';
 import { transformPath, type Path } from './path.js';
 import { trimPath } from './trim.js';
 import { lerpPath } from './morph.js';
+import { pointAlong } from './length.js';
 import { boundsOfMarks, centreOf } from './bounds.js';
 import type { Mark } from './mark.js';
 
@@ -174,4 +175,24 @@ export function scale(target: string, to: number, options: ScaleOptions = {}): A
     const factor = lerp(start, to, along);
     return factor === 1 ? null : around(pivot, mat3.scaling(vec2(factor, factor)));
   });
+}
+
+/**
+ * Carried along a path at a steady pace, by length rather than by piece.
+ *
+ * What it moves is the offset from the path's own start, so a mark placed at that
+ * start travels the path and a mark placed elsewhere travels the same shape from
+ * where it stands. That is what `moveBy` does with a straight offset, and it is
+ * what makes this nothing at the beginning of its span like every other change
+ * here.
+ */
+export function moveAlong(target: string, path: Path): Animation {
+  const start = pointAlong(path, 0);
+  return (marks, along) => {
+    if (start === null || along === 0) return marks;
+    const reached = pointAlong(path, along);
+    if (reached === null) return marks;
+    const step = mat3.translation(vec2.sub(reached, start));
+    return marks.map((mark) => (touches(mark.id, target) ? carried(mark, step) : mark));
+  };
 }

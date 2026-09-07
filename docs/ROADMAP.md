@@ -195,9 +195,13 @@ That parser is its own item and is queued below.
       back is a different point. A growth by two doubles the box, keeps its centre, and carries a
       stroke of 0.1 to 0.2 and a word of 0.5 to 1. Both hand back the very marks they were given at
       a fraction of nothing.
-- [ ] **5. `moveAlong`.** A mark carried along a path at a steady pace. Measurement: twenty places
-      along the demo's own curve, worst deviation from even spacing; and the mark sitting on the
-      path's two ends exactly at nothing and at one.
+- [x] **5. `moveAlong`.** A mark carried along a path at a steady pace, by length rather than by
+      piece. What it moves is the offset from the path's own start, so a mark placed at that start
+      travels the path and one placed elsewhere travels the same shape from where it stands, which
+      is what makes it nothing at the beginning of its span like every other change here.
+      **Landed.** Twenty steps along the demo's curve vary in size by 0.07%, and the mark lands on
+      the far end exactly. A stroke and a word keep the size they had, since a translation scales
+      nothing.
 - [ ] **6. `growFrom`.** Scaled up from nothing at a point, which is `scale` from zero with a pivot.
       Measurement: the geometry at nothing is the point to 1e-12 and at one is the original to 1e-12.
 - [ ] **7. `indicate`.** Scaled up and back with a colour swapped for the span. Measurement: the

@@ -3,12 +3,19 @@ import {
   boundsOfMarks,
   centreOf,
   circle,
+  coordsOf,
+  dot,
   flatten,
   group,
+  interval,
+  moveAlong,
+  plot,
+  pointAlong,
   polygon,
   rotate,
   sameMarks,
   scale,
+  scaleOf,
   shape,
   text,
   vec2,
@@ -149,5 +156,66 @@ describe('a growth', () => {
     const box = boundsOfMarks(nothing)!;
     expect(box.x.to - box.x.from).toBeCloseTo(0, 12);
     expect(sameMarks(scale('fig', 1, { from: 0 })(marks, 1), marks)).toBe(true);
+  });
+});
+
+describe('a mark carried along a path', () => {
+  const coords = coordsOf(
+    scaleOf(interval(-1, 4), interval(-4.6, 4.6)),
+    scaleOf(interval(-1, 9), interval(-2.4, 2.4))
+  );
+  const curve = plot(coords, (x) => x * x);
+  const start = pointAlong(curve, 0)!;
+  const rider = () => flatten(group('fig', [dot('point', start, 0.08, ink)]));
+
+  it('takes steps of one size along the path', () => {
+    // By length rather than by piece: even steps in a cubic's parameter cover
+    // more of the curve where the curve is moving fast.
+    const places = Array.from({ length: 21 }, (_, step) => {
+      const marks = moveAlong('fig', curve)(rider(), step / 20);
+      return centreOf(boundsOfMarks(marks)!);
+    });
+    const gaps = places
+      .slice(1)
+      .map((place, at) => Math.hypot(place.x - places[at].x, place.y - places[at].y));
+    expect(Math.max(...gaps) / Math.min(...gaps)).toBeLessThan(1.002);
+  });
+
+  it('sits on the far end of the path at a fraction of one', () => {
+    const marks = moveAlong('fig', curve)(rider(), 1);
+    const place = centreOf(boundsOfMarks(marks)!);
+    const end = pointAlong(curve, 1)!;
+    expect(place.x).toBeCloseTo(end.x, 9);
+    expect(place.y).toBeCloseTo(end.y, 9);
+  });
+
+  it('hands back the very same marks at a fraction of nothing', () => {
+    const marks = rider();
+    expect(moveAlong('fig', curve)(marks, 0)).toBe(marks);
+  });
+
+  it('carries a mark placed elsewhere along the same shape from where it stands', () => {
+    const away = flatten(group('fig', [dot('point', vec2(0, 0), 0.08, ink)]));
+    const carriedTo = centreOf(boundsOfMarks(moveAlong('fig', curve)(away, 1))!);
+    const end = pointAlong(curve, 1)!;
+    expect(carriedTo.x).toBeCloseTo(end.x - start.x, 9);
+    expect(carriedTo.y).toBeCloseTo(end.y - start.y, 9);
+  });
+
+  it('changes nothing along a path with no points', () => {
+    const marks = rider();
+    expect(moveAlong('fig', [])(marks, 0.5)).toBe(marks);
+  });
+
+  it('leaves a stroke and a word the size they were', () => {
+    const marks = flatten(
+      group('fig', [shape('ring', circle(vec2(0, 0), 1), { stroke: pen }), text('word', vec2(0, 0), 'hi', 0.5, { fill: ink })])
+    );
+    const moved = moveAlong('fig', curve)(marks, 0.5);
+    const ring = moved[0];
+    const word = moved[1];
+    if (ring.kind !== 'path' || word.kind !== 'text') throw new Error('a ring is a path and a word is text');
+    expect(ring.stroke?.width).toBe(0.1);
+    expect(word.size).toBe(0.5);
   });
 });
