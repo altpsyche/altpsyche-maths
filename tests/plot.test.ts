@@ -318,9 +318,10 @@ describe('the bars under a curve', () => {
     for (const mark of marks) {
       if (mark.kind !== 'path') throw new Error('a bar is a path');
       for (const point of mark.path.flatMap((subpath) => [subpath.start, ...subpath.curves.map((c) => c.to)])) {
-        // A value on the graph's own bound remaps a hair past the figure unit
-        // bound, because a walk to a fraction of one does not land on the end.
-        expect(Math.abs(point.y)).toBeLessThanOrEqual(2.4 + 1e-12);
+        // Exactly on the edge, not near it: the bar is built from its own
+        // corners, so the top one is the number the scale gave rather than the
+        // near corner with a height added back on.
+        expect(interval.holds(square.y.units, point.y)).toBe(true);
       }
     }
   });
@@ -399,8 +400,8 @@ describe('the tangent to a curve', () => {
     // side asks for 7.2 graph units of height on an axis that holds 10.
     const path = tangentAt(square, (x) => x * x, 3, { reach: 1.2 });
     for (const point of [path[0].start, path[0].curves[0].to]) {
-      expect(Math.abs(point.y)).toBeLessThanOrEqual(2.4 + 1e-12);
-      expect(Math.abs(point.x)).toBeLessThanOrEqual(4.6 + 1e-12);
+      expect(interval.holds(square.y.units, point.y)).toBe(true);
+      expect(interval.holds(square.x.units, point.x)).toBe(true);
     }
   });
 

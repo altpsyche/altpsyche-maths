@@ -86,8 +86,8 @@ describe('the flat demo', () => {
             ? mark.path.flatMap((subpath) => [subpath.start, ...subpath.curves.map((piece) => piece.to)])
             : [mark.at];
         for (const point of points) {
-          expect(Math.abs(point.x)).toBeLessThanOrEqual(5.4 + 1e-12);
-          expect(Math.abs(point.y)).toBeLessThanOrEqual(3 + 1e-12);
+          expect(Math.abs(point.x)).toBeLessThanOrEqual(5.4);
+          expect(Math.abs(point.y)).toBeLessThanOrEqual(3);
         }
       }
     }

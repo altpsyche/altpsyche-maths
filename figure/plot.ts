@@ -20,7 +20,7 @@ import { vec2 } from '../values/vec2.js';
 import { pointOf, scaled, type Coords } from './scale.js';
 import { group, shape, type GroupNode } from './node.js';
 import type { Fill, Stroke } from './mark.js';
-import { line, rect, straight, type Cubic, type Path, type Subpath } from './path.js';
+import { line, polygon, straight, type Cubic, type Path, type Subpath } from './path.js';
 
 export interface PlotOptions {
   /** How many pieces the curve is cut into. */
@@ -252,9 +252,14 @@ export function riemannBars(
     const y = of(x);
     if (!Number.isFinite(y)) continue;
     const top = interval.clampTo(coords.y.graph, y);
+    // Built from its four corners rather than from a corner and a size. A bar
+    // whose top is held on the graph's own edge has that edge as an exact
+    // number, and adding a height back on to the near corner overshoots it.
     const corner = pointOf(coords, left, foot);
     const far = pointOf(coords, right, top);
-    children.push(shape(String(bar), rect(corner, far.x - corner.x, far.y - corner.y), {}));
+    children.push(
+      shape(String(bar), polygon([corner, vec2(far.x, corner.y), far, vec2(corner.x, far.y)]), {})
+    );
   }
 
   return group(name, children, { style: { fill: options.fill, stroke: options.stroke } });

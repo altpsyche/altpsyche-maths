@@ -106,10 +106,6 @@ the motion in a still.
 and a session resumes at the first unticked one. One call in that item is Siva's and it decides step
 11, so the ten steps before it are workable while it is open.
 
-**One fix is queued outside every version and is a patch rather than a feature.** `lerp` does not
-land on its own ends, which is below the line and reaches every scale, track and animation, so it is
-0.4.1 on its own.
-
 ## The items
 
 Each is a version above. What follows is what each one covers.
@@ -277,12 +273,6 @@ whole door with that promise in mind.
 
 ## Found while working, not yet queued
 
-- **A walk to a fraction of one does not land on the end.** `lerp(from, to, 1)` is
-  `from + (to - from) * 1`, which for -2.4 and 2.4 gives 2.4000000000000004, so a graph value on its
-  own bound scales to a hair outside the figure units it should land on. Two tests now carry a
-  tolerance for it that they should not need. The fix is `lerp` handing back its own ends at zero and
-  one, which is below the line and reaches every scale, every track and every animation, so it is a
-  commit of its own with its own before and after. Found while working step 11 of 0.4.0.
 - **Two colours cannot be walked between.** A colour is any CSS colour written as text, and there is
   no parser here, so `indicate` swaps a colour rather than easing into one and nothing can cross-fade
   a palette. What it needs is a reader for the forms a figure is actually handed, which is hex and
