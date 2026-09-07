@@ -7,7 +7,7 @@
  * same suite everything else is.
  */
 import { at, resolveExtent, svgMarkup, viewMatrix, type Figure } from '../index.js';
-import { tangent } from './tangent.js';
+import { FRAMES, SLOT, strip, tangent } from './tangent.js';
 
 /** A hundred pixels to the figure unit, which is the size the README shows and
  * the only place the number matters, since the picture scales from its view box. */
@@ -27,4 +27,13 @@ export interface Sheet {
 
 export const sheets: readonly Sheet[] = [
   { file: 'docs/tangent.svg', markup: () => stillMarkup(tangent, tangent.still) },
+  {
+    file: 'docs/tangent-strip.svg',
+    markup: () => {
+      // The surface is shaped like the strip's own extent, so contain leaves no
+      // margin above and below the frames.
+      const across = Math.round((SLOT / (HEIGHT / 100)) * HEIGHT) * FRAMES.length;
+      return stillMarkup(strip(FRAMES), 0, across, HEIGHT);
+    },
+  },
 ];

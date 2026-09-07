@@ -100,9 +100,9 @@ a strip of frames in one SVG, which shows the motion in a still.
 
 ## Now
 
-**0.4.0 is planned and step 1 is the pick.** Its steps are under its item below, each one a commit,
-and a session resumes at the first unticked one. One naming call in that item is Siva's, and it is a
-rename across the step list either way rather than a change to the plan.
+**0.4.0 is cut and 0.5.0 is next, and it needs its steps written before it is worked.** Writing them
+is a session on its own. One thing is queued below the items rather than inside one: `lerp` does not
+land on its own ends, which is a commit below the line with its own before and after.
 
 ## The items
 
@@ -275,11 +275,12 @@ resumes at the first unticked one.
       one-sided difference over the same step of 1e-5 is 4.2e-6 out where the central difference is
       1.1e-11, which is the whole reason for taking both sides. The line is cut by arithmetic rather
       than by sampling, because a straight line crosses each edge once.
-- [ ] **13. The demo complete, and 0.4.0 cut.** The demo gains the walking point, the sliding tangent,
-      the shaded area and the slope as a number that changes, all driven by the `x` track; the README
-      carries a strip of frames in one SVG, because a moving image needs a GIF and this package has no
-      encoder. Bump to 0.4.0 in this commit. Measurement: the demo's mark count and the slope text at
-      zero, one, two and four seconds, and the byte length of both committed SVGs. **This is the
+- [x] **13. The demo complete, and 0.4.0 cut.** The demo gains the walking point, the sliding
+      tangent, the shaded region and the slope as a number that changes, all driven by the `x` track;
+      the README carries a strip of frames in one SVG. **Landed.** 74 marks at 0, 1, 2 and 4 seconds
+      alike, reading `slope 0.00`, `slope 0.94`, `slope 3.00` and `slope 6.00`, which is twice the x
+      the point stands at in every one. `docs/tangent.svg` is 18,845 bytes and
+      `docs/tangent-strip.svg` is 76,182, and regenerating both leaves the tree clean. **This is the
       second step the demo gains from.**
 
 **Done criteria, line by line.**

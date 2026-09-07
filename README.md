@@ -20,7 +20,7 @@ svgMarkup(at(figure, 0.5), viewMatrix(figure.extent, 'contain', 640, 360), 640, 
 
 ## Axes and a plotted function
 
-<img src="docs/tangent.svg" width="720" alt="A parabola on a grid, with both axes labelled, cut where it meets the top of its own y axis.">
+<img src="docs/tangent.svg" width="720" alt="A parabola on a labelled grid, the region under it shaded to a point on the curve, the tangent at that point drawn, and the slope written as a number.">
 
 ```ts
 import { axes, coordsOf, group, interval, numberPlane, plot, scaleOf, shape } from '@altpsyche/maths';
@@ -48,8 +48,18 @@ breaks in two instead of drawing a line up the picture, and the cut end sits on 
 than a sample short of it. The curve above is cut at x = 3, where the parabola meets the 9 its y
 axis stops at.
 
-That picture is written by `svgMarkup`, which needs no browser, so `npm run demos` regenerates it
-and a test compares the bytes against the committed file.
+`areaUnder` closes the region between a curve and a level line, `riemannBars` draws the bars the
+region is the limit of at the left edge, the right edge or the middle of each one, and `tangentAt`
+lays the tangent along the curve, cut where it leaves the graph. `slopeOf` reads the slope itself,
+which is what the number in the corner is.
+
+<img src="docs/tangent-strip.svg" width="960" alt="Four frames of the same figure side by side, the point walking up the curve and the shaded region growing behind it.">
+
+Four times of one figure, side by side. A moving picture in a README needs a GIF and this package
+has no encoder, so the strip shows the motion in a still.
+
+Both pictures are written by `svgMarkup`, which needs no browser, so `npm run demos` regenerates
+them and a test compares the bytes against the committed files.
 
 ## What it is built on
 
