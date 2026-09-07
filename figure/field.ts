@@ -16,6 +16,7 @@
 import { interval, type Interval } from '../values/interval.js';
 import { vec2, type Vec2 } from '../values/vec2.js';
 import { pointOf, type Coords } from './scale.js';
+import { stepsOf } from './grid.js';
 import { group, type GroupNode } from './node.js';
 import { arrow } from './annotate.js';
 import type { Colour } from './mark.js';
@@ -43,10 +44,6 @@ export interface VectorFieldOptions {
   spread?: number;
 }
 
-function stepsOf(resolution: number | { x: number; y: number }): { x: number; y: number } {
-  return typeof resolution === 'number' ? { x: resolution, y: resolution } : resolution;
-}
-
 /**
  * The arrows of a field over a graph, one group per sample, named by its column
  * and row so a stagger can reach them one at a time.
@@ -71,7 +68,7 @@ export function vectorField(
   of: (at: Vec2) => Vec2,
   options: VectorFieldOptions
 ): GroupNode {
-  const steps = stepsOf(options.resolution ?? 12);
+  const steps = stepsOf(options.resolution ?? 12, 'x', 'y');
   const overX = interval.ordered(options.overX ?? coords.x.graph);
   const overY = interval.ordered(options.overY ?? coords.y.graph);
   const children = [];

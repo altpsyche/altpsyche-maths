@@ -13,6 +13,7 @@
 import { interval, type Interval } from '../values/interval.js';
 import { vec3, type Vec3 } from '../values/vec3.js';
 import { TOLERANCE } from './tolerance.js';
+import { cornersOf, stepsOf } from './grid.js';
 
 export interface Plane {
   /** A point the plane passes through. */
@@ -142,20 +143,13 @@ export function sectionOf(
   options: SectionOptions = {},
 ): Vec3[][] {
   const { u = interval(0, 1), v = interval(0, 1), resolution = 24, tolerance = TOLERANCE } = options;
-  const steps = typeof resolution === 'number' ? { u: resolution, v: resolution } : resolution;
+  const steps = stepsOf(resolution, 'u', 'v');
   const facing = vec3.normalize(plane.normal);
 
-  const sample: Vec3[][] = [];
-  const gap: number[][] = [];
-  for (let i = 0; i <= steps.u; i += 1) {
-    sample.push([]);
-    gap.push([]);
-    for (let j = 0; j <= steps.v; j += 1) {
-      const point = of(interval.at(u, i / steps.u), interval.at(v, j / steps.v));
-      sample[i].push(point);
-      gap[i].push(vec3.dot(facing, vec3.sub(point, plane.point)));
-    }
-  }
+  const sample = cornersOf(of, u, v, steps);
+  const gap = sample.map((column) =>
+    column.map((point) => vec3.dot(facing, vec3.sub(point, plane.point)))
+  );
 
   const points: Vec3[] = [];
   const found = new Map<string, number>();

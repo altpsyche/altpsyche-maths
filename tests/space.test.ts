@@ -245,6 +245,22 @@ describe('surface3', () => {
     });
     expect(uneven.children).toHaveLength(15);
   });
+
+  it('asks the surface for each corner of the grid once', () => {
+    // Four cells meet at every inside corner, so a cell working out its own
+    // four corners asks for most of them four times over.
+    let asked = 0;
+    surface3(
+      'ball',
+      (u, v) => {
+        asked += 1;
+        return sphere(u, v);
+      },
+      looking,
+      { resolution: 28, shade: () => ({ colour: 'grey' }) }
+    );
+    expect(asked).toBe(29 * 29);
+  });
 });
 
 describe('the door', () => {

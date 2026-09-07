@@ -15,6 +15,7 @@ import { interval, type Interval } from '../values/interval.js';
 import type { Colour, Fill, Stroke } from './mark.js';
 import { arrow, type ArrowOptions } from './annotate.js';
 import type { Camera3 } from './camera.js';
+import { cornersOf, stepsOf } from './grid.js';
 
 /** A run the eye can see, and whether it is all of what the author gave. */
 type Run = { points: Vec2[]; whole: boolean };
@@ -193,10 +194,6 @@ export type VectorField3Options = ArrowOptions & {
   colourFor: (magnitude: number) => Colour;
 };
 
-function gridOf(resolution: number | { x: number; y: number; z: number }): { x: number; y: number; z: number } {
-  return typeof resolution === 'number' ? { x: resolution, y: resolution, z: resolution } : resolution;
-}
-
 /**
  * The arrows of a field sampled over a box in space, and the points each was
  * drawn from, for a figure that sorts them among pieces of its own.
@@ -223,7 +220,7 @@ export function fieldArrows3(
     y: interval.ordered(over.y ?? interval(0, 1)),
     z: interval.ordered(over.z ?? interval(0, 1)),
   };
-  const steps = gridOf(resolution);
+  const steps = stepsOf(resolution, 'x', 'y', 'z');
   const items: SpaceItem[] = [];
 
   for (let i = 0; i < steps.x; i += 1) {
@@ -290,10 +287,6 @@ export type Surface3Options = {
   stroke?: Stroke;
 };
 
-function resolutionOf(resolution: number | { u: number; v: number }): { u: number; v: number } {
-  return typeof resolution === 'number' ? { u: resolution, v: resolution } : resolution;
-}
-
 /**
  * The cells a surface is made of, before they are put in an order.
  *
@@ -310,18 +303,14 @@ function resolutionOf(resolution: number | { u: number; v: number }): { u: numbe
  */
 export function surfaceCells(name: string, of: (u: number, v: number) => Vec3, camera: Camera3, options: Surface3Options): SpaceItem[] {
   const { u = interval(0, 1), v = interval(0, 1), resolution = 24, shade, light = vec3(0, 0, 1), cull = false, stroke } = options;
-  const steps = resolutionOf(resolution);
+  const steps = stepsOf(resolution, 'u', 'v');
+  const grid = cornersOf(of, u, v, steps);
   const toLight = vec3.normalize(light);
   const items: SpaceItem[] = [];
 
   for (let i = 0; i < steps.u; i += 1) {
     for (let j = 0; j < steps.v; j += 1) {
-      const corners = [
-        of(interval.at(u, i / steps.u), interval.at(v, j / steps.v)),
-        of(interval.at(u, (i + 1) / steps.u), interval.at(v, j / steps.v)),
-        of(interval.at(u, (i + 1) / steps.u), interval.at(v, (j + 1) / steps.v)),
-        of(interval.at(u, i / steps.u), interval.at(v, (j + 1) / steps.v)),
-      ];
+      const corners = [grid[i][j], grid[i + 1][j], grid[i + 1][j + 1], grid[i][j + 1]];
       const normal = vec3.normalize(
         vec3.cross(vec3.sub(corners[1], corners[0]), vec3.sub(corners[3], corners[0])),
       );

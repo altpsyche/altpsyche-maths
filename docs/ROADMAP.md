@@ -277,11 +277,16 @@ demo is recompiled by steps 6 and 7 against the renamed door.
   to zero; 1,994 comment lines of 6,624 to 1,987 of 6,563; the suite from 590 tests to 592; all
   eight sheets identical.
 
-- [ ] **2. The same thing said twice.** `figure/space.ts` and `figure/section.ts` both walk a `u` by
-  `v` grid over a parametric surface, and `figure/field.ts` and `figure/space.ts` both sample a box at
-  a resolution. Whatever else the read finds goes here; a name that stopped matching what it does goes
-  to step 5, since that is a door question. **Measures:** lines across `figure`, `values`, `timing`
-  and `paint` from 6,624; the suite holds at its step 1 count with no test deleted.
+- [x] **2. The same thing said twice.** Four copies of the same widening, a resolution given as one
+  number spread over the ways a grid is counted: `resolutionOf` and `gridOf` in `figure/space.ts`
+  under two names in one file, `stepsOf` in `figure/field.ts`, and a fourth written inline in
+  `figure/section.ts`. The grid itself was walked twice: `surfaceCells` worked out each cell's four
+  corners, where `sectionOf` already took the corners once and read cells out of them. Both now come
+  from `figure/grid.ts`, and the cheaper walk is the one that was already there. **Measured:** four
+  wideners to one; `surfaceCells` at a resolution of 28 asked its surface for 3,136 points and asks
+  for 841, since four cells meet at every inside corner; `sectionOf` unchanged at 2,401, which is
+  what it always did; 6,563 lines to 6,540 with a 41-line file added, so 64 lines of repetition gone;
+  the suite from 592 tests to 593; all eight sheets identical.
 
 - [ ] **3. Files past what their header claims.** `figure/space.ts` is 349 lines and has taken new
   calls three versions running, and `figure/annotate.ts` is 188. A header naming two subjects is a
