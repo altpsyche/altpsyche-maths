@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+import * as door from '@altpsyche/maths';
 import {
   boundsOf,
   boundsOfMarks,
@@ -240,5 +241,27 @@ describe('surface3', () => {
       shade: () => ({ colour: 'grey' }),
     });
     expect(uneven.children).toHaveLength(15);
+  });
+});
+
+describe('the door', () => {
+  it('hands out every call three dimensions added', () => {
+    for (const name of [
+      'mat4',
+      'camera3',
+      'orthographic',
+      'perspective',
+      'polyline3',
+      'dot3',
+      'text3',
+      'space',
+      'surface3',
+      'surfaceCells',
+      'axes3',
+      'sectionOf',
+      'viewAt',
+    ]) {
+      expect(typeof (door as Record<string, unknown>)[name], name).not.toBe('undefined');
+    }
   });
 });

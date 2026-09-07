@@ -241,6 +241,50 @@ The quarters of the turn. The whole turn is left off the strip because it draws 
 nothing draws: this is the first figure here to declare itself a loop, and `loops(figure)` is the gate
 behind that flag, comparing the marks at the duration against the marks at zero.
 
+## A surface in space
+
+<img src="docs/surface.svg" width="720" alt="A saddle-shaped surface drawn as a grid of shaded cells, with a flat pane cutting through it at one height and the two branches of the curve where they meet drawn in orange along the surface. Three axes with their numbers stand behind it and the equation of the surface is typeset in the top left.">
+
+A figure's camera is a value the caller holds. `camera3({ eye, target, up, projection })` answers
+where a point in space lands in the figure's own units, how far off it is along the way the camera
+looks, and whether it is in front of the eye at all. `polyline3`, `dot3`, `text3` and `surface3` take
+points in space and hand back the same flat nodes everything else here draws, so `fadeIn` and `draw`
+reach a mark in space with no change to either of them. Nothing in the marks, the tree, the flattening
+or the two painters knows that space exists.
+
+`space(name, items, camera)` puts the pieces in the order they are painted, near over far. That is
+the painter's algorithm, and what it cannot do is worth knowing before it is used: two pieces that
+pass through each other have no one order at all. The answer for those is smaller pieces, which is why
+`surfaceCells` cuts a surface into a grid and why the saddle and the pane above are sorted together
+rather than one after the other.
+
+`sectionOf` finds the curve where a plane cuts a surface, by marching squares over the grid the
+surface is already drawn from. Every point it finds lies on the plane exactly, because signed distance
+to a plane changes evenly along a straight line. What it does not lie on exactly is the surface: it
+sits on the chord between two samples of it, 4.870e-4 of a unit off at the resolution the demo uses,
+and halving the cell size quarters that.
+
+The camera is driven by a track and never by an animation, which is the call the flat demo's walk
+already made: a span's eased fraction and a track's value are unrelated numbers, and a camera on one
+with a surface on the other would be two clocks free to disagree.
+
+<img src="docs/surface-strip.svg" width="820" alt="Four frames in two rows, showing the same saddle and pane from four points around one orbit of the eye.">
+
+The quarters of one orbit. The eye comes back to where it started, which the gate holds by comparing
+the marks at the end of the entrance against the marks one orbit later, mark for mark by name.
+
+## A view that follows
+
+`Extent` carries a `centre`, which is where the middle of the frame sits in figure units, and an
+extent may be a function of the shape of the surface and of the time. `viewAt(figure, seconds, width,
+height)` hands a painter its matrix at a time in one call, so a figure whose extent moves cannot be
+asked for its extent at one time and its marks at another.
+
+The flat demo's view follows its dot across. The dot stays within 1.2 figure units of the middle of
+the frame, where before it crossed 2.76. `fractionOf` reads the centre off the extent it is handed, so
+the reading and the typeset rule stay where they are on the surface while the grid slides under them:
+they drift 1.14e-15 figure units over the whole walk.
+
 ## The animations
 
 `fadeIn`, `fadeOut`, `fadeTo`, `draw`, `morph`, `morphEquation`, `countTo`, `moveBy`, `rotate`,
@@ -256,7 +300,7 @@ moving fast, which on a quarter circle is a 6.9% difference between the longest 
 and on the demo's own walk is 82%.
 
 Every picture here is written by `svgMarkup`, which needs no browser, so `npm run demos` regenerates
-all six and a test compares the bytes against the committed files.
+all eight and a test compares the bytes against the committed files.
 
 ## What it is built on
 
