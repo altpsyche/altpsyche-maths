@@ -125,13 +125,14 @@ the motion in a still.
 
 ## Now
 
-**0.10.0 is being worked, and steps 1 to 6 of its ten are landed.** `mat4` is below the line, and
-`camera3`, `polyline3`, `dot3`, `text3`, `space`, `surface3` and `axes3` are above it. A camera is a value the
+**0.10.0 is being worked, and steps 1 to 7 of its ten are landed.** `mat4` is below the line, and
+`camera3`, `polyline3`, `dot3`, `text3`, `space`, `surface3`, `axes3` and `sectionOf` are above it. A camera is a value the
 caller holds, a builder that works in space hands back the flat nodes the rest of the package already
 draws, cut where they cross the near plane, `space` orders a list of pieces back to front, and a
-surface is a grid of cells the author's own function shades. The suite went from 479 tests to 519.
+surface is a grid of cells the author's own function shades. The suite went from 479 tests to 525.
 
-**Step 7, the curve where a plane cuts a surface, is next.** A step is ticked by writing the number its commit measured into
+**Step 8, the view that moves, is next, and it is the one step that changes something already
+drawn.** A step is ticked by writing the number its commit measured into
 that step rather than by a bare tick, so the first step carrying no measurement is where a session
 resumes.
 
@@ -295,7 +296,7 @@ written once rather than three times. The suite went from 514 tests to 519 and t
 above the line to 102.
 
 
-**7. The curve where a plane cuts a surface.** Marching squares over the grid the surface is already
+**7. Done. The curve where a plane cuts a surface.** Marching squares over the grid the surface is already
 sampled on, with the plane's signed distance as the value at each grid point, and the segments joined
 into runs. The curve is drawn as a polyline in space, so it sits on the surface and on the plane both.
 
@@ -303,6 +304,15 @@ into runs. The curve is drawn as a polyline in space, so it sits on the surface 
 circle of radius 0.866 to a measured share of that radius at a stated resolution, and that share falls
 by about four when the resolution doubles, which is what a method built on straight cuts through square
 cells gives. The curve closes: its two ends meet within the tolerance.
+
+*Measured:* a sphere of radius 1 cut by the plane at z = 0.5 gives one run of 45 points at 24 by 24,
+whose furthest point is 8.005e-3 of the radius off the true circle of 0.866. At 48 by 48 that share is
+2.294e-3 and at 96 by 96 it is 6.401e-4, so doubling the resolution divides the error by 3.49 and then
+by 3.58. Every point of the curve lies on the plane exactly rather than to a tolerance, because the
+signed distance changes evenly along the cell edge the point is found on. The curve closes: its two
+ends are the same point. A plane cutting a surface that runs off the grid gives two open runs instead.
+The suite went from 519 tests to 525 and the door from 102 values above the line to 103.
+
 
 **8. The view moves, and the flat demo gains it.** `Extent` gains a `centre`, which is where the middle
 of the frame sits in figure units and which defaults to the origin. `ExtentChoice` gains the clock, so an
