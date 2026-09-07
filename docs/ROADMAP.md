@@ -157,12 +157,16 @@ That parser is its own item and is queued below.
 
 **The steps.** Each one is a commit, and each names the measurement its commit body quotes.
 
-- [ ] **1. A path's own bounds.** `figure/bounds.ts`: the smallest box holding a path, from the roots
-      of each cubic's derivative, which is a quadratic, together with the segment ends. A text mark
-      contributes its anchor alone, because measuring text gives a different answer per machine.
-      Measurement: the box round a circle of radius one against the true one, which the cubic's own
-      2.7 parts in ten thousand bounds; the box round the demo's plotted curve; and how much wider
-      the box round the control points is for the same circle, which is what the cheap answer costs.
+- [x] **1. A path's own bounds.** `figure/bounds.ts`: `boundsOf` for a path and `boundsOfMarks` for a
+      list, each two intervals, and nothing where there are no points. A text mark contributes its
+      anchor alone. **Landed.** The box round a circle is exactly its centre plus and minus its
+      radius, at three radii, with no error at all rather than the 2.7 parts in ten thousand the plan
+      allowed for: the four cubics meet at the points furthest out along each axis, so those are
+      segment ends and the cubics' own error sits at the corners inside the box. The circle turned
+      out not to separate the exact answer from the box round the control points, so the case that
+      does is one cubic whose controls stand off the curve: exact 0.75 against a hull of 1, which is
+      a third too tall. The demo's curve reads -4.6 to 2.76 across and -1.92 to 2.4 up, which is the
+      graph cut at x = 3.
 - [ ] **2. The length table comes out of `trim`, and a cut is even inside a segment.** The private
       per-segment measurement in `figure/trim.ts` moves to a file both it and step 3 read. A cut
       lands inside a segment by treating that segment's parameter as proportional to its length,
@@ -207,7 +211,8 @@ That parser is its own item and is queued below.
 **Done criteria, line by line.**
 
 - `npm test`, `npm run type-check` and `npm run build` all pass on a clean tree.
-- `index.ts` exports `boundsOf`, `Bounds`, `lengthOf`, `pointAtLength`, `rotate`, `scale`,
+- `index.ts` exports `boundsOf`, `boundsOfMarks`, `Bounds`, `lengthOf`, `pointAtLength`, `rotate`,
+  `scale`,
   `moveAlong`, `growFrom`, `indicate`, `flash`, `circumscribe`, and `Timeline.stagger` is on the
   class.
 - The eight animations each hand back the marks they were given, to 1e-12, at a fraction of nothing

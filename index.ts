@@ -28,6 +28,8 @@ export { pathFromData } from './figure/path-data.js';
 export type { Colour, Fill, Mark, PathMark, Stroke, TextMark } from './figure/mark.js';
 export { byAspect, fractionOf, matchingAspect, resolveExtent, viewMatrix } from './figure/extent.js';
 export type { Extent, ExtentChoice, Fit } from './figure/extent.js';
+export { boundsOf, boundsOfMarks } from './figure/bounds.js';
+export type { Bounds } from './figure/bounds.js';
 export { areaUnder, plot, riemannBars, slopeOf, tangentAt } from './figure/plot.js';
 export type { AreaOptions, BarsOptions, PlotOptions, TangentOptions } from './figure/plot.js';
 export { axes, numberLine, numberPlane } from './figure/axis.js';
