@@ -207,9 +207,13 @@ That parser is its own item and is queued below.
       span is the point to 1e-12 on all four sides; half way through it is half the width with a
       stroke of 0.05 against 0.1; and at the end it is the very marks it was given rather than the
       marks rebuilt through a transform of one.
-- [ ] **7. `indicate`.** Scaled up and back with a colour swapped for the span. Measurement: the
-      geometry at nothing and at one is the original to 1e-12, the peak is the factor asked for, and
-      the colour is the given one across the span and the mark's own outside it.
+- [x] **7. `indicate`.** Swelled and settled with a colour swapped for the span, each half of the
+      swell being the smoothstep the tracks already pace with. **Landed.** A ring two across at a
+      factor of 1.5 reads 2, 2.5, 3, 2.5, 2 at nothing, a quarter, half, three quarters and one, so
+      the peak is exact and the two halves match. It leaves from rest: the first twentieth of the
+      span moves it 2.8e-2 against 1.48e-1 for the twentieth a quarter of the way in. The colour is
+      the given one across the span and the mark's own at both ends, on fill and stroke and on a
+      word. Both ends hand back the very marks they were given.
 - [ ] **8. `flash`.** Rays out from a point and gone. Measurement: the mark count is the same at
       every fraction of the span, the rays are at nothing at both ends, and the count is what was
       asked for.

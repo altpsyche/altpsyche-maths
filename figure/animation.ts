@@ -13,12 +13,13 @@
 import { mat3, type Mat3 } from '../values/mat3.js';
 import { vec2, type Vec2 } from '../values/vec2.js';
 import { lerp } from '../values/scalar.js';
+import { smoothstep } from '../values/ease.js';
 import { transformPath, type Path } from './path.js';
 import { trimPath } from './trim.js';
 import { lerpPath } from './morph.js';
 import { pointAlong } from './length.js';
 import { boundsOfMarks, centreOf } from './bounds.js';
-import type { Mark } from './mark.js';
+import type { Colour, Mark } from './mark.js';
 
 export type Animation = (marks: readonly Mark[], along: number) => readonly Mark[];
 
@@ -207,4 +208,53 @@ export function moveAlong(target: string, path: Path): Animation {
  */
 export function growFrom(target: string, from?: Vec2): Animation {
   return scale(target, 1, { from: 0, pivot: from });
+}
+
+/**
+ * Out and back over a span, flat at the beginning, the peak and the end.
+ *
+ * Each half is the smoothstep the tracks and the timeline already pace changes
+ * with, so a pulse leaves from rest, turns without a corner, and settles.
+ */
+function thereAndBack(along: number): number {
+  return along < 0.5 ? smoothstep(along * 2) : smoothstep(2 - along * 2);
+}
+
+/** A mark's own colours replaced, fill and stroke together. */
+function painted(mark: Mark, colour: Colour): Mark {
+  if (mark.kind === 'text') return { ...mark, fill: { ...mark.fill, colour } };
+  return {
+    ...mark,
+    fill: mark.fill ? { ...mark.fill, colour } : undefined,
+    stroke: mark.stroke ? { ...mark.stroke, colour } : undefined,
+  };
+}
+
+export interface IndicateOptions extends AboutOptions {
+  /** How big it gets at the middle of the span. */
+  factor?: number;
+  /** Held for the length of the span and then let go. */
+  colour?: Colour;
+}
+
+/**
+ * Swelled and settled, to point at something without moving it.
+ *
+ * The colour is swapped for the length of the span rather than walked into. A
+ * colour here is any CSS colour written as text, and walking between two of them
+ * needs a reader for every form one can take, which does not exist here yet.
+ */
+export function indicate(target: string, options: IndicateOptions = {}): Animation {
+  const peak = options.factor ?? 1.2;
+  const swell = about(target, options, (along, pivot) => {
+    const factor = lerp(1, peak, thereAndBack(along));
+    return factor === 1 ? null : around(pivot, mat3.scaling(vec2(factor, factor)));
+  });
+  const colour = options.colour;
+  return (marks, along) => {
+    const swelled = swell(marks, along);
+    if (colour === undefined || along <= 0 || along >= 1) return swelled;
+    if (!swelled.some((mark) => touches(mark.id, target))) return swelled;
+    return swelled.map((mark) => (touches(mark.id, target) ? painted(mark, colour) : mark));
+  };
 }

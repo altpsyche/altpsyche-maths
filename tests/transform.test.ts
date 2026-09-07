@@ -8,6 +8,7 @@ import {
   flatten,
   group,
   growFrom,
+  indicate,
   interval,
   moveAlong,
   plot,
@@ -260,5 +261,72 @@ describe('a thing grown from a point', () => {
     if (word.kind !== 'text') throw new Error('a word is text');
     expect(word.size).toBeCloseTo(0, 12);
     expect(word.at.x).toBeCloseTo(0, 12);
+  });
+});
+
+describe('a thing indicated', () => {
+  const ring = () =>
+    flatten(
+      group('fig', [
+        shape('ring', circle(vec2(2, 1), 1), { stroke: pen, fill: { colour: '#eee' } }),
+        text('word', vec2(2, 1), 'hi', 0.5, { fill: ink }),
+      ])
+    );
+  const widthOf = (marks: readonly Mark[]) => {
+    const box = boundsOfMarks(marks)!;
+    return box.x.to - box.x.from;
+  };
+
+  it('is the very same marks at both ends of its span', () => {
+    const marks = ring();
+    expect(indicate('fig', { colour: '#f00' })(marks, 0)).toBe(marks);
+    expect(indicate('fig', { colour: '#f00' })(marks, 1)).toBe(marks);
+  });
+
+  it('is at its fullest half way through', () => {
+    const marks = ring();
+    const swelled = indicate('fig', { factor: 1.5 })(marks, 0.5);
+    expect(widthOf(swelled) / widthOf(marks)).toBeCloseTo(1.5, 12);
+  });
+
+  it('swells and settles rather than growing straight through', () => {
+    const marks = ring();
+    const at = (along: number) => widthOf(indicate('fig', { factor: 1.5 })(marks, along));
+    expect(at(0.25)).toBeGreaterThan(widthOf(marks));
+    expect(at(0.25)).toBeCloseTo(at(0.75), 12);
+    expect(at(0.5)).toBeGreaterThan(at(0.25));
+  });
+
+  it('leaves from rest and settles, since each half is the curve a track uses', () => {
+    const marks = ring();
+    const at = (along: number) => widthOf(indicate('fig', { factor: 1.5 })(marks, along));
+    // Flat at both ends: the first twentieth of the span moves less than the
+    // twentieth either side of a quarter through.
+    expect(at(0.05) - at(0)).toBeLessThan(at(0.3) - at(0.25));
+  });
+
+  it('holds a colour for the length of the span and lets it go at the ends', () => {
+    const marks = ring();
+    const held = indicate('fig', { colour: '#f00' })(marks, 0.5);
+    const ringMark = held[0];
+    const word = held[1];
+    if (ringMark.kind !== 'path' || word.kind !== 'text') throw new Error('a ring is a path and a word is text');
+    expect(ringMark.stroke?.colour).toBe('#f00');
+    expect(ringMark.fill?.colour).toBe('#f00');
+    expect(word.fill.colour).toBe('#f00');
+    const ended = indicate('fig', { colour: '#f00' })(marks, 1)[0];
+    if (ended.kind !== 'path') throw new Error('a ring is a path');
+    expect(ended.stroke?.colour).toBe('#222');
+  });
+
+  it('leaves the colours alone where none is named', () => {
+    const held = indicate('fig')(ring(), 0.5)[0];
+    if (held.kind !== 'path') throw new Error('a ring is a path');
+    expect(held.stroke?.colour).toBe('#222');
+  });
+
+  it('changes nothing where its target matches nothing', () => {
+    const marks = ring();
+    expect(indicate('nowhere', { colour: '#f00' })(marks, 0.5)).toBe(marks);
   });
 });
