@@ -109,9 +109,10 @@ the motion in a still.
 
 ## Now
 
-**0.6.0 is cut and 0.7.0 is next, and it needs its steps written before it is worked.** Writing them
-is a session on its own. The colour reader queued below the items is wanted by that morphing, so it
-is the first thing that planning session has to place.
+**0.6.0 is cut and released, the website draws through it, and 0.7.0 is next with its steps written
+under its item below.** A session resumes at the first unticked step and does not redesign the ones
+after it. The colour reader queued below the items is not wanted by the morphing, so nothing above it
+is waiting on it.
 
 ## The items
 
@@ -121,8 +122,79 @@ Each is a version above. What follows is what each one covers.
 
 The most recognisable single animation in the reference material: two expressions where the shared
 sub-expressions stay put and only the difference moves. `alignPaths` and `lerpPath` are the mechanism
-and what is missing is the matching, which needs a glyph to carry where in the expression it came
-from. The website's ids already carry each glyph's own code point, which is half of it.
+and what is missing is the matching, which is the question of which glyph of one expression is which
+glyph of the other.
+
+**The matching is on the id, and the id already carries what it needs.** A glyph is named
+`3-1D465`, which is its place in the expression and the code point the typesetter wrote on it, and a
+fraction bar is named `4-rule`. So the thing two glyphs match on is the part of the id after the
+first dash, which needs no parsing and treats a rule as a token of its own. Matched by that token,
+`\frac{dy}{dx} = 0` and `\frac{dy}{dx} = 2x` share `1D451 1D466 1D451 1D465 rule 3D`, which is the
+six marks that stay put, and differ by the `0` that leaves and the `32 1D465` that arrives.
+
+**Why the id rather than a field on the mark.** A consumer stores a typeset equation rather than
+typesetting it again, and the website stores each mark as its id and its path data alone. A code
+point kept beside the mark would have to be stored beside it too, so every consumer's cache would
+have to change or the matching would fail on everything read back from one. The id survives a cache
+because the id is what a mark is. **What would change this answer** is a consumer that renames the
+marks it stores, which would break the read and want the code point given separately.
+
+**Two equations are both in the scene and the animation moves one onto the other.** A mark that
+arrives part way through a span turns up in a frame-to-frame comparison as something that changed,
+which is what `flash` and `circumscribe` are written around, so the expression being left and the
+expression being arrived at are both in the list at every time. The animation is handed the whole
+flat list, so it can find both by name.
+
+**The colour reader queued below the items is not wanted by this.** A glyph with no partner leaves by
+its opacity, and a glyph with one keeps its own colour the whole way, so nothing here walks between
+two colours. It stays queued for whatever asks for it first.
+
+#### The steps
+
+**1. Which glyph of one expression is which glyph of the other.** A pure function over two lists of
+marks that hands back the pairs and the two lists of what is left over. The pairing is the longest
+common subsequence of the two token sequences, which is the published algorithm for the longest run
+of items that appears in both lists in the same order. It is exact rather than a heuristic, and
+matching in order is what stops the `x` of a numerator pairing with the `x` of a right-hand side.
+
+*Measures:* `\frac{dy}{dx} = 0` against `\frac{dy}{dx} = 2x` gives 6 pairs, 1 left over on the left
+and 2 on the right. An expression against itself pairs every mark and leaves none. Two expressions
+with no token in common give no pairs. An expression against one with a repeated glyph pairs each
+occurrence once rather than pairing both to the same partner.
+
+**2. The animation that walks one expression into the other.** It takes the name of the expression
+being left and the name of the one being arrived at. A paired glyph walks its path into its
+partner's and fades as its partner arrives. An unpaired glyph on the left fades out and one on the
+right fades in. Both expressions are in the list at every fraction, so the count does not move.
+
+*Measures:* the mark count is the same at every fraction of the span and at both ends. At 0 every
+mark of the left expression is at the opacity it was written with and every mark of the right is at
+nothing, and at 1 the reverse. A paired glyph at 0.5 sits between the two, measured as the distance
+from its start and its end being within a part in a thousand of half the distance between them.
+
+**3. The flat demo morphs at the stationary point.** The reading currently draws
+`\frac{dy}{dx} = 2x` at every time. It becomes `\frac{dy}{dx} = 0` while the walk is held at the
+stationary point, and morphs into `\frac{dy}{dx} = 2x` as the dot leaves it. This is the step the
+demos gain from, and the expression pair is the one measured above.
+
+*Measures:* the demo's mark count at every named time, which is 93 now and 93 plus the second
+expression's 7 afterwards. The committed pictures' byte counts, which are 37,265 and 147,624 now.
+The suite's duration, 745 ms over 364 tests now.
+
+**4. The cut.** The version goes to 0.7.0, the README gains the paragraph, and this entry is deleted.
+The website moves after the release rather than before it, and its cached geometry needs no rebuild,
+because the ids it already stores are what the matching reads.
+
+#### Done when
+
+- `npm test`, `npm run type-check` and `npm run build` all pass.
+- The matching gives the pair counts above, and pairs each occurrence of a repeated glyph once.
+- The morph holds the mark count still across its whole span.
+- A paired glyph is half way between its two places at half way through.
+- The flat demo morphs at the stationary point, and `npm run demos` leaves the committed files
+  unchanged.
+- `index.ts` exports the matching, the animation and their types, and nothing reaches a file inside
+  this package by path.
 
 ### Braces, a number that counts, boolean operations on paths, 0.8.0
 
