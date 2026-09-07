@@ -163,6 +163,47 @@ matters. The slope in the demo is a value of the walk, so it is worked out by th
 track and cannot drift from the dot. The rise is counted by the clock, which is honest only because
 the dot has stopped by the time it counts: two clocks running at once would be free to disagree.
 
+## Two shapes combined
+
+<img src="docs/boolean.svg" width="720" alt="Two discs drawn three times side by side: everything either one covers, only what both cover, and the first with the second taken out of it.">
+
+`unionOf` is everything either path covers, `intersectionOf` is only what both cover, and
+`differenceOf` is the first with the second taken out of it. Each input is closed loops that do not
+cross themselves, and a loop left open is closed by a straight run back to where it started before
+anything else happens.
+
+```ts
+import { circle, differenceOf, intersectionOf, unionOf, vec2 } from '@altpsyche/maths';
+
+const first = circle(vec2(0, 0), 0.9);
+const second = circle(vec2(-0.6, 0), 0.36);
+
+unionOf(first, second);
+intersectionOf(first, second);
+differenceOf(first, second);
+```
+
+A result may have a hole even though an input may not. A disc with a smaller disc taken out of it is
+a ring, which is an outer loop and an inner loop wound the opposite way, and the nonzero rule the
+mark already carries leaves the middle empty.
+
+The work happens in four steps, and each of them is a call of its own. `curveCrossings` says where
+two cubics cross, by halving both curves and following only the halves whose boxes still overlap,
+then sharpening what it finds by Newton's method. `cutPath` puts a cut wherever something crosses,
+so that afterwards every piece is wholly inside the other path or wholly outside it. `containsPoint`
+decides which of those a piece is, by counting how many times the other path winds round its middle.
+`areaOf` says how much a path encloses, in closed form rather than by sampling, which is what every
+claim above is checked against.
+
+<img src="docs/boolean-strip.svg" width="960" alt="Four frames side by side, each showing the three panels, as the small disc walks from clear of the large one, through touching it at one point, through overlapping it, to sitting wholly inside it.">
+
+Four times of one figure. A small disc walks across a larger one: clear of it, touching it at one
+point, crossing it at two, and wholly inside it. Those are the four cases this kind of code gets
+silently wrong, which is why the demo walks through all of them rather than drawing one.
+
+Two edges that lie on top of each other for a stretch have no one answer, and what comes back for
+them is decided by the tolerance rather than by the geometry.
+
 ## The animations
 
 `fadeIn`, `fadeOut`, `fadeTo`, `draw`, `morph`, `morphEquation`, `countTo`, `moveBy`, `rotate`,

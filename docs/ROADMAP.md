@@ -247,15 +247,17 @@ each piece's own length and the slivers are never cut.
 area by that times its length, and as two discs draw apart the overlap shrinks towards nothing while
 its edge does not, so a share of it grows to 4.3e-3 at 1.9 apart with nothing having gone wrong.
 
-**6. The third demo.** `demos/boolean.ts`: two discs drawn three times side by side as their union,
-their overlap, and the first with the second taken out of it, with one disc walking across the other
-from clear of it to wholly inside it and out the far side. Committed as a still and a strip like the
-flat demo, and in the README.
+**6. The third demo.** Done. `demos/boolean.ts`, committed as `docs/boolean.svg` and
+`docs/boolean-strip.svg`, and in the README.
 
-*Measures:* the mark count is the same at every time, since a panel whose result is empty draws an
-empty path rather than no mark. At four named times the three panels enclose what the closed form
-says they should. The walk passes through the moment the two touch at one point without the mark
-count moving.
+*Measured:* 12 marks at every time, four to a panel, including both moments the discs touch. The
+three panels enclose what the closed form says at seven distances, the worst of them 8.3e-4 out
+against the 1.65e-3 the two discs' edges can move an area by. The overlap panel draws an empty path
+while the discs are clear of each other and one loop while they cross, and the difference panel draws
+two loops when the walker sits wholly inside.
+
+*The walk is a straight ramp rather than an eased one*, so a distance can be turned back into the
+time it happens at and the gate can ask for the moment the discs touch rather than guessing at it.
 
 **7. The cut.** The version goes to 0.9.0, the README gains the paragraph and the third demo's
 picture, and this entry is deleted.

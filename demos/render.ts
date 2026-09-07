@@ -8,6 +8,11 @@
  */
 import { at, resolveExtent, svgMarkup, viewMatrix, type Extent, type Figure, type Mark } from '../index.js';
 import { FRAMES, stripMarks, tangent } from './tangent.js';
+import {
+  FRAMES as BOOLEAN_FRAMES,
+  booleans,
+  stripMarks as booleanStripMarks,
+} from './boolean.js';
 
 /** A hundred pixels to the figure unit, which is the size the README shows and
  * the only place the number matters, since the picture scales from its view box. */
@@ -30,16 +35,16 @@ export interface Sheet {
   markup: () => string;
 }
 
+/** A strip of frames written out over a surface shaped like the strip's own
+ * extent, so contain leaves no margin above or below the frames. */
+function stripMarkup(strip: { marks: readonly Mark[]; extent: Extent }): string {
+  const across = Math.round((strip.extent.width / strip.extent.height) * HEIGHT);
+  return markupOf(strip.marks, strip.extent, across, HEIGHT);
+}
+
 export const sheets: readonly Sheet[] = [
   { file: 'docs/tangent.svg', markup: () => stillMarkup(tangent, tangent.still) },
-  {
-    file: 'docs/tangent-strip.svg',
-    markup: () => {
-      const { marks, extent } = stripMarks(FRAMES);
-      // The surface is shaped like the strip's own extent, so contain leaves no
-      // margin above or below the frames.
-      const across = Math.round((extent.width / extent.height) * HEIGHT);
-      return markupOf(marks, extent, across, HEIGHT);
-    },
-  },
+  { file: 'docs/tangent-strip.svg', markup: () => stripMarkup(stripMarks(FRAMES)) },
+  { file: 'docs/boolean.svg', markup: () => stillMarkup(booleans, booleans.still) },
+  { file: 'docs/boolean-strip.svg', markup: () => stripMarkup(booleanStripMarks(BOOLEAN_FRAMES)) },
 ];
