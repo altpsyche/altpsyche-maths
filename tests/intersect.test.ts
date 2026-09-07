@@ -105,9 +105,41 @@ describe('where two cubics cross', () => {
     expect(Math.hypot(crossings[0].point.x - touch.x, crossings[0].point.y - touch.y)).toBeLessThan(1e-6);
   });
 
-  it('answers two curves lying on top of each other rather than halving forever', () => {
+  it('answers two curves lying on top of each other with the ends of the stretch they share', () => {
     const piece = { control1: vec2(1, 3), control2: vec2(2, -3), to: vec2(3, 0) };
     const crossings = curveCrossings(vec2(0, 0), piece, vec2(0, 0), piece);
-    expect(crossings.length).toBe(1);
+    expect(crossings.map((crossing) => [crossing.alongFirst, crossing.alongSecond])).toEqual([
+      [0, 0],
+      [1, 1],
+    ]);
+  });
+
+  it('answers a shared stretch walked the other way with the same two ends', () => {
+    const there = straight(vec2(0, 0), vec2(2, 0));
+    const back = straight(vec2(2, 0), vec2(0, 0));
+    const crossings = curveCrossings(vec2(0, 0), there, vec2(2, 0), back);
+    expect(crossings.map((crossing) => [crossing.alongFirst, crossing.alongSecond])).toEqual([
+      [0, 1],
+      [1, 0],
+    ]);
+  });
+
+  it('answers a stretch two pieces share only part of by where it starts and ends', () => {
+    const left = straight(vec2(0, 0), vec2(2, 0));
+    const right = straight(vec2(1, 0), vec2(3, 0));
+    const crossings = curveCrossings(vec2(0, 0), left, vec2(1, 0), right);
+    expect(crossings.length).toBe(2);
+    expect(crossings[0].alongFirst).toBeCloseTo(0.5, 9);
+    expect(crossings[0].alongSecond).toBeCloseTo(0, 9);
+    expect(crossings[1].alongFirst).toBeCloseTo(1, 9);
+    expect(crossings[1].alongSecond).toBeCloseTo(0.5, 9);
+  });
+
+  it('leaves a meeting at one point to the halving rather than reading it as a stretch', () => {
+    // Two arcs that touch have both ends of one lying nowhere on the other, so
+    // the stretch is refused and the answer is the single sharpened crossing.
+    const left = pieces(circle(vec2(0, 0), 1)[0])[3];
+    const right = pieces(circle(vec2(2, 0), 1)[0])[1];
+    expect(curveCrossings(left.from, left.curve, right.from, right.curve).length).toBe(1);
   });
 });

@@ -293,13 +293,114 @@ function clustered(hits: readonly Hit[]): Crossing[] {
   }));
 }
 
+
+/** How many places the coarse sweep looks at before it decides which part of a
+ * curve a point is nearest. */
+const SWEEP = 32;
+
+/** How hard the curve is turning at a place, which Newton needs because the
+ * nearest point moves as the curve bends away from it. */
+function bendAt(hull: Hull, along: number): Vec2 {
+  const u = 1 - along;
+  return vec2(
+    6 * (u * (hull[2].x - 2 * hull[1].x + hull[0].x) + along * (hull[3].x - 2 * hull[2].x + hull[1].x)),
+    6 * (u * (hull[2].y - 2 * hull[1].y + hull[0].y) + along * (hull[3].y - 2 * hull[2].y + hull[1].y))
+  );
+}
+
+/**
+ * Where on a curve a point sits nearest, as a fraction along it, and how far
+ * away it is there.
+ *
+ * A coarse sweep picks which part of the curve to believe, and Newton's method
+ * on the distance finishes it, since the nearest point on a cubic is a fifth
+ * degree root and solving one is more than this needs. The sweep gives up before
+ * Newton when its best is further off than the tolerance plus the most one step
+ * of the sweep can be hiding, since no refining brings it under from there.
+ */
+function nearestPlace(hull: Hull, point: Vec2, tolerance: number): { along: number; gap: number } {
+  let along = 0;
+  let gap = Infinity;
+  for (let step = 0; step <= SWEEP; step++) {
+    const at = step / SWEEP;
+    const away = vec2.distance(pointAt(hull, at), point);
+    if (away < gap) {
+      gap = away;
+      along = at;
+    }
+  }
+  const reach = spread(boxOf(hull)) * 2;
+  if (gap > tolerance + reach / SWEEP) return { along, gap };
+
+  for (let step = 0; step < 12; step++) {
+    const away = vec2.sub(pointAt(hull, along), point);
+    const heading = slopeAt(hull, along);
+    const turning = vec2.dot(heading, heading) + vec2.dot(away, bendAt(hull, along));
+    if (Math.abs(turning) < PARALLEL) break;
+    const next = held(along - vec2.dot(away, heading) / turning);
+    const closer = vec2.distance(pointAt(hull, next), point);
+    if (!(closer < gap)) break;
+    along = next;
+    gap = closer;
+  }
+  return { along, gap };
+}
+
+/** How many places along a shared stretch are checked to still be on the other
+ * curve before the stretch is believed. */
+const ALONG_SHARED = 12;
+
+/**
+ * The two ends of the stretch two curves cover together, when they cover one.
+ *
+ * Halving into a stretch like that answers it as a spray of meetings, because
+ * every pair of small pieces along it overlaps and the budget runs out before
+ * the run is walked. So the stretch is found first, from the ends of each curve
+ * that lie on the other, and answered by where it starts and where it ends.
+ *
+ * Two curves meeting at a single point are not a stretch and are left to the
+ * halving, which places one meeting more sharply than a sweep can.
+ */
+function sharedStretch(first: Hull, second: Hull, tolerance: number): Crossing[] | null {
+  const ends: { first: number; second: number }[] = [];
+  for (const along of [0, 1]) {
+    const place = nearestPlace(second, pointAt(first, along), tolerance);
+    if (place.gap <= tolerance) ends.push({ first: along, second: place.along });
+  }
+  for (const along of [0, 1]) {
+    const place = nearestPlace(first, pointAt(second, along), tolerance);
+    if (place.gap <= tolerance) ends.push({ first: place.along, second: along });
+  }
+  if (ends.length < 2) return null;
+
+  let low = ends[0];
+  let high = ends[0];
+  for (const end of ends) {
+    if (end.first < low.first) low = end;
+    if (end.first > high.first) high = end;
+  }
+  const from = pointAt(first, low.first);
+  const to = pointAt(first, high.first);
+  if (vec2.distance(from, to) <= tolerance) return null;
+
+  for (let step = 1; step < ALONG_SHARED; step++) {
+    const along = low.first + ((high.first - low.first) * step) / ALONG_SHARED;
+    if (nearestPlace(second, pointAt(first, along), tolerance).gap > tolerance) return null;
+  }
+
+  return [
+    { alongFirst: low.first, alongSecond: low.second, point: from },
+    { alongFirst: high.first, alongSecond: high.second, point: to },
+  ];
+}
+
 /**
  * Every place two cubics cross, as a fraction along each and the point.
  *
  * Each segment is given the point it starts from, since a segment carries where
- * it ends and not where it began. Two curves that lie on top of each other for
- * a stretch have no one answer, and what comes back for them is decided by the
- * tolerance rather than by the geometry.
+ * it ends and not where it began. Two curves covering the same stretch answer
+ * with the two ends of that stretch, so a caller reading the answer as places to
+ * cut at gets the stretch marked off rather than chopped into slivers.
  */
 export function curveCrossings(
   fromFirst: Vec2,
@@ -311,6 +412,10 @@ export function curveCrossings(
   const tolerance = options.tolerance ?? TOLERANCE;
   const firstHull = hullOf(fromFirst, first);
   const secondHull = hullOf(fromSecond, second);
+  if (apart(boxOf(firstHull), boxOf(secondHull), tolerance)) return [];
+  const shared = sharedStretch(firstHull, secondHull, tolerance);
+  if (shared) return shared;
+
   const stack: Pair[] = [
     {
       first: firstHull,

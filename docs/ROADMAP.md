@@ -157,16 +157,36 @@ answer is 4. Two rectangles whose top and bottom edges partly cover each other u
 answer is 8. A coincident pair also takes 170ms to 240ms, so two 99-piece regions sharing their sides
 take 564ms and a path against itself takes 13.8s.
 
-*The steps.* Detect a shared stretch before halving into it: two pieces are read as covering the same
-run when each one's ends lie on the other within the tolerance and the pieces stay within the
-tolerance between them. Answer that stretch by its two ends rather than by what the halving finds
-inside it. Then give the operations a rule for a piece that lies on a piece of the other path, which
-is where this may prove to be two commits rather than one: a shared stretch walked the same way and a
-shared stretch walked opposite ways are kept by different operations, and until the code is written it
-is not certain both fall out of the existing keep rules.
+*It is two commits, as the plan allowed for.*
 
-*Measures:* the four areas above become 8, 4, 4 and 8. A coincident pair costs under 1ms rather than
-200ms, and a path against itself under 50ms rather than 13.8s. The fuzz above still holds to 1e-14.
+**Done: the stretch is answered by its two ends.** `sharedStretch` in `figure/intersect.ts` finds it
+from the ends of each curve that lie on the other, checks the run between them still lies on the
+other, and answers with where it starts and where it ends. `nearestPlace` is the coarse sweep and
+Newton that puts a point on a curve.
+
+*Measured:* two straight pieces covering the same run the other way round answered 14 crossings in
+197ms and answer 2 in 1ms, at exactly 0 and 1 along one and 1 and 0 along the other. Two pieces
+sharing half their length answered 1 crossing in 184ms and answer 2 in under 1ms, at 0.5 and 1 along
+one and 0 and 0.5 along the other. A piece against itself answered 1 and answers 2. A path against
+itself took 13.8s and takes 71ms, and two 99-piece regions sharing their sides took 564ms and take
+33ms. A meeting at one point is still left to the halving, since neither end of either curve lies on
+the other there.
+
+*Narrowing windows were tried before Newton and were not sharp enough to be believed.* A point lying
+exactly on the curve still read 1.5e-5 away after six rounds, against a tolerance of 1e-6, so every
+shared stretch was refused.
+
+**Next: the operations keep the right copy of a shared edge.** The areas are still wrong, because a
+piece lying on the other path's boundary is decided by winding at its own middle, which is the one
+place that has no answer. What is wanted is a rule by direction: a stretch two paths walk the same
+way is on the boundary of a union and of an overlap and is kept once, and a stretch they walk
+opposite ways is inside a union and outside an overlap and is dropped by both, with the first path's
+copy kept by a difference.
+
+*Measures:* two rectangles sharing an edge unite to 8 rather than 6 and differ to 4 rather than 2,
+two triangles sharing their diagonal unite to 4 rather than 2, two rectangles sharing part of an edge
+unite to 8 rather than 7, and a path against itself differs to nothing rather than to -0.123167 over
+95 loops. The fuzz still holds to 1e-14.
 
 #### 0.9.2, the stitch says when it gave up
 
