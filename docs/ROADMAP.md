@@ -111,8 +111,9 @@ the motion in a still.
 ## Now
 
 **0.5.0 is cut and 0.6.0 is next, and it needs its steps written before it is worked.** Writing them
-is a session on its own. Two things are queued below the items rather than inside one, and the colour
-reader is the one 0.6.0 may want first.
+is a session on its own. Two things are queued below the items rather than inside one and neither
+blocks 0.6.0: the colour reader is wanted by the morphing at 0.7.0, and spotting the red an undefined
+macro comes back as is a string comparison rather than a parse.
 
 ## The items
 
