@@ -110,10 +110,11 @@ the motion in a still.
 
 ## Now
 
-**0.5.0 is cut and 0.6.0 is next, and it needs its steps written before it is worked.** Writing them
-is a session on its own. Two things are queued below the items rather than inside one and neither
-blocks 0.6.0: the colour reader is wanted by the morphing at 0.7.0, and spotting the red an undefined
-macro comes back as is a string comparison rather than a parse.
+**0.5.0 is cut and 0.6.0 is next, and its steps are written under its item below.** A session resumes
+at the first unticked step and does not redesign the ones after it. Two things are queued below the
+items rather than inside one and neither blocks 0.6.0: the colour reader is wanted by the morphing at
+0.7.0, and spotting the red an undefined macro comes back as is a string comparison rather than a
+parse.
 
 ## The items
 
@@ -122,7 +123,9 @@ Each is a version above. What follows is what each one covers.
 ### Equations, 0.6.0
 
 The typesetter behind the one door, the walk from a typesetter's SVG into marks, and the placement of
-an equation in a figure. About four hundred lines exist in the website and move here.
+an equation in a figure. About four hundred and seventy lines exist in the website across
+`lib/equation-typeset.ts`, `lib/equation-marks.ts` and the part of `lib/equations.ts` that places one,
+and they move here.
 
 **Three refusals are not optional and are the expensive part to rediscover.** A TeX error carries
 `data-mjx-error`. A character the font has no outline for arrives as a `<text>` element, which draws
@@ -130,6 +133,89 @@ with whatever font a browser has and draws nothing at all in a recording. And `A
 the `noundefined` extension, so an undefined macro is not an error: it comes back as glyph outlines
 under `fill="red"`, indistinguishable from an expression that typeset, and a typo ships as a red word
 inside the picture.
+
+**What stays in the website.** The website writes each typeset equation to a JSON file at build time
+so that no page loads MathJax, and that cache is the website's own concern. It needs nothing new here
+to keep it: a path is written out with `pathData` and read back with `pathFromData`, and both are
+already exported. So this version adds the typesetter, the walk and the placement, and adds no file
+format.
+
+#### The steps
+
+**1. The typesetter arrives and costs nothing until it is asked.** Add `mathjax-full` to
+`dependencies`. Add `figure/typeset.ts` holding one function that takes TeX and hands back MathJax's
+SVG tree in this package's own shape, with no walk over it yet. It reaches MathJax through a dynamic
+import, which is an import written as a call in the middle of the function rather than as a line at
+the top of the file, so nothing loads until somebody typesets something. The reason is that
+`mathjax-full` 3.2.1 is 41 MB of CommonJS with no `sideEffects` declaration, so an import at the top
+of the file would make every consumer load all of it to draw a circle. Correct the line in `CLAUDE.md`
+that says this package has no runtime dependencies, and the line in `DESIGN.md` that says the
+typesetter is coming.
+
+*Measures:* importing the built door takes 9.5 ms and leaves 0 CommonJS modules in Node's cache
+today. The commit quotes both again afterwards, and quotes what the first typeset call costs on top.
+
+*The risk worth naming:* the published build compiles under `NodeNext`, and `mathjax-full` is
+CommonJS with no `exports` map. If a named import out of it is refused there, this is the step that
+finds out.
+
+**2. The walk from a typesetter's SVG into marks.** Add `figure/equation.ts`. It walks MathJax's
+nested groups, carries the transform down them, and turns the whole expression over on the way in
+because SVG counts y downward and a figure counts it upward. A glyph outline becomes a path, a
+fraction bar becomes a rectangle, and the `viewBox` becomes the box the typesetter measured the
+expression into. A mark comes back with no fill, because the palette arrives when the equation is
+placed. Its id carries the glyph's own code point, which is what the matching at 0.7.0 needs.
+
+*Measures:* five expressions and their mark and rule counts, which are MathJax 3.2.1's own numbers
+and hold it to a layout rather than to a total: 11 marks and 1 rule, 7 and 2, 5 and 0, 7 and 0, 14
+and 2. Plus the numerator of `\frac{a}{b}` sitting above the baseline, which is the reading that says
+the expression was turned over.
+
+**3. The three refusals.** Each of the three above throws, and the message names what was found
+rather than reporting that something was wrong.
+
+*Measures:* three expressions, one per refusal, each throwing. The undefined macro's message carries
+the macro's own name, read off the code points of the glyphs the typesetter drew in red.
+
+**4. An equation placed in a figure.** A builder that takes a typeset equation and returns a group,
+alongside `dot`, `arrow` and `callout`. It fits the equation inside a width and a height together
+rather than sizing it by the height alone, because an equation twice as wide as it is tall runs off
+the sides of a narrow figure the moment the height decides its size. The group carries the transform
+and the glyphs keep the typesetter's own numbers, so moving an equation is one matrix. The colour is
+given here.
+
+*Measures:* an equation wider than it is tall, asked into a box narrower than it is wide, has every
+point of every mark inside that box. Its centre sits where it was asked for to within 1e-12.
+
+**5. The flat demo gains its equation.** `demos/tangent.ts` draws the slope's equation beside the
+number it already reads, which is `\frac{dy}{dx} = 2x` for the parabola it plots. The equation fades
+in with the rest of the picture, and the committed SVG files are regenerated. This is the step the
+demos gain from, and it is the expression 0.7.0 morphs at the stationary point.
+
+*Measures:* the demo's mark count at every named time, which is 85 now and 85 plus the equation's
+glyphs afterwards, since nothing may arrive or leave part way through. The committed pictures' byte
+counts before and after. And the suite's own duration, 541 ms over 343 tests today, because the demo
+typesets when it loads.
+
+*If the suite grows past about two seconds*, the demo commits its geometry the way the website does
+and only `npm run demos` typesets. The measurement decides it rather than a preference.
+
+**6. The cut.** The version goes to 0.6.0, the README gains the paragraph and the still that shows an
+equation, and this entry is deleted. The website drops its three files and calls this package
+instead, after the release rather than before it.
+
+#### Done when
+
+- `npm test`, `npm run type-check` and `npm run build` all pass.
+- Importing the door still loads no MathJax: 0 CommonJS modules in Node's cache, and an import time
+  within a millisecond of the 9.5 ms it takes today.
+- The five expressions typeset to the mark and rule counts above.
+- Each of the three refusals throws, and each message names what it found.
+- An equation placed in a box has every point inside that box.
+- The flat demo draws its equation, and `npm run demos` leaves the committed files unchanged.
+- `index.ts` exports the typeset call, the walk, the placement and their types, and nothing reaches a
+  file inside this package by path.
+- `CLAUDE.md` and `DESIGN.md` no longer say this package has no runtime dependencies.
 
 ### One equation morphing into the next, 0.7.0
 
