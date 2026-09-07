@@ -52,7 +52,6 @@ with it, because `git log` is what keeps a closed plan.
 
 | version | what lands |
 | --- | --- |
-| 0.8.0 | Braces and a number that counts |
 | 0.9.0 | Boolean operations on paths |
 | 0.10.0 | Three dimensions, and a camera that moves |
 | 0.11.0 | Vector fields and streamlines |
@@ -87,7 +86,8 @@ shaded under it, a point walking along it, the tangent at that point, and the sl
 number that changes. As of 0.5.0 the picture arrives rather than appearing, and the walk is measured
 along the curve's own length so the dot keeps one speed. As of 0.6.0 the number sits under the
 typeset rule it is a value of, and as of 0.7.0 that rule reads `\frac{dy}{dx} = 0` at the stationary
-point and walks into `\frac{dy}{dx} = 2x` as the dot leaves it.
+point and walks into `\frac{dy}{dx} = 2x` as the dot leaves it. As of 0.8.0 the walk ends with a
+brace measuring how far the curve climbed and a number counting up to that rise.
 
 **How the walk is driven was Siva's call and the answer is the track.** The track drives a fraction of
 the curve's length and the scene recovers the graph x from the point it lands on, so the dot, the
@@ -96,8 +96,8 @@ stayed on an x track would have been two clocks free to disagree, since a span's
 track's value are unrelated. **What would change this answer** is an animation that can hand the
 scene back what it did, which the seam refuses on purpose.
 
-Every version after adds to that same figure: a brace measures the rise at 0.8.0, the view follows
-the point at 0.10.0, and the curve's gradient becomes a field at 0.11.0.
+Every version after adds to that same figure: the view follows the point at 0.10.0, and the curve's
+gradient becomes a field at 0.11.0.
 
 **The solid demo starts at 0.10.0**, because nothing before it can draw one, and it is a surface with
 a plane cutting through it and the curve of the intersection drawn on both. What it then takes from
@@ -129,107 +129,13 @@ the motion in a still.
 
 ## Now
 
-**0.7.0 is cut and released, and 0.8.0 is next with its steps written under its item below.** A
-session resumes at the first unticked step and does not redesign the ones after it. One thing in that
-item is Siva's rather than a session's: whether the boolean operations on paths leave the version,
-which is argued where they sit.
+**0.8.0 is cut and 0.9.0 is next, and it needs its steps written before it is worked.** Writing them
+is a session on its own, and it is the largest planning job on this page after three dimensions. The
+third demo is written before the operation it needs, the way the other two were.
 
 ## The items
 
 Each is a version above. What follows is what each one covers.
-
-### Braces, a number that counts, boolean operations on paths, 0.8.0
-
-`Brace`, a brace with a label on it, and a number that ticks from one value to another, all three
-heavily used by the reference material against the `arrow`, `callout` and `dot` that exist.
-
-**The brace measures the rise at the top of the curve, and its label counts.** The dot walks, flashes
-at the top, and then a brace arrives along the right of the shaded region measuring how far the curve
-climbed, with its number ticking from nothing up to that rise. The counting is on the clock rather
-than on the walk's track, which is what makes it a counter rather than a reading: the dot has stopped
-by then, so there is no second clock for it to disagree with. Every other number in this demo is a
-value of the track and stays that way.
-
-#### The steps
-
-**1. Done. The brace itself.** A path spanning two points with a tip pushed out to one side, built from
-cubics like everything else here. `annotate.ts` gains it beside `arrow` and `callout`, since a brace
-is an annotation rather than a shape a figure plots, and the path builder is exported alongside the
-group for a figure that wants the shape and no label.
-
-*Measures:* the two ends sit exactly on the two points given, to within 1e-12. The tip sits the given
-depth from the line between them, to within 1e-12. The two halves are mirror images about the middle,
-measured as every point of one half being within 1e-12 of the reflection of its partner. Every point
-of the path is inside the box the span and the depth describe. A brace spanning zero length draws
-nothing rather than dividing by zero.
-
-*Measured:* one open subpath of 6 pieces. The ends sit on the two points exactly. The tip stands
-0.800000000000000 off a line at a depth of 0.8. The worst mirror error over every point of the path
-is 2.22e-16. Walked at 17 places a piece, every point is inside the box the span and the depth
-describe. A span of 0.2 asked for a depth of 1 still reaches 1, because the curl narrows rather than
-the brace flattening. A brace between one point and itself is an empty path. The suite is 392 tests
-in 907 ms, against 384 in 880 ms.
-
-**2. Done. A brace with a label on it.** A group of the brace and a text mark placed beyond the tip, on the
-far side from the span, by a padding in figure units. The text is anchored and never measured,
-because nothing about a figure's layout may depend on how wide some text is.
-
-*Measures:* the label's anchor sits the padding beyond the tip along the same direction the tip was
-pushed, to within 1e-12, at four rotations of the same brace. The group's ids are the brace and the
-label under the name it was given.
-
-*Measured:* the anchor sits 0.6 out from the middle for a depth of 0.4 and a padding of 0.2, to
-within 1e-12, at all four quarter turns. A label of one character and a label of twenty-nine sit at
-the same point. The group is `rise/brace` and `rise/word`. The suite is 396 tests in 896 ms, against
-392 in 907 ms.
-
-**3. Done. A number that counts.** An animation over a text mark, writing the value it has reached rather
-than the value it will reach. It takes the two values and how to write one, so the rounding is the
-caller's and this holds no opinion about decimal places. The scene writes the value the count ends
-at, which is what the animation writes at the end of its span, so the two never disagree.
-
-*Measures:* the text at 0, 0.5 and 1 is the start, the middle and the end written by the format given.
-The mark count does not change. A mark that is not text is left alone. A count over a name that
-matches nothing changes nothing.
-
-*Measured:* a count from 0 to 9 reads 0.00, 4.50 and 9.00. The same half way through reads 5 at a
-rounding of 1 and 4.500 at a rounding of 0.001, so the decimals are the caller's. Counting down from
-9 reads 6.75 a quarter of the way. The mark count does not change, the path mark beside it is the
-same object it was, a name matching nothing changes nothing, and a name over a group reaches every
-text mark under it. The suite is 403 tests in 936 ms, against 396 in 896 ms.
-
-**4. Done. The flat demo braces the rise and counts it.** After the flash at the top of the curve, a brace
-arrives along the right of the shaded region from the stationary point to the top, and its label
-counts from 0 to the 9 the curve climbed. This is the step the demos gain from, and it is the only
-number in this demo that the clock drives rather than the track.
-
-*Measures:* the demo's mark count at every named time, which is 100 now. The label reads the bottom
-of the count at the moment the brace arrives and 9.00 at the end. The brace's ends sit on the two
-points the graph gives, to within 1e-12. The committed pictures' byte counts, which are 49,971 and
-203,664 now. The suite's duration, 880 ms over 384 tests now.
-
-*Measured:* the demo draws 102 marks at every named time, against 100. The number is at nothing until
-the dot has stopped, reads 0.00 as the brace begins, something else half way, and 9.00 at the end.
-The brace's ends sit on the two points the graph gives to within 1e-12. The strip's last frame is now
-the end rather than the top of the curve, since a strip stopping at the top shows none of this, and
-its four frames read 0.00 hidden, 0.00 hidden, 0.00 hidden and 9.00 shown. The committed still went
-from 49,971 to 50,238 bytes and the strip from 203,664 to 205,222. The suite is 405 tests in 918 ms,
-against 403 in 936 ms.
-
-**5. The cut.** The version goes to 0.8.0, the README gains the paragraph, and this entry is deleted,
-with the boolean operations moved under the items if Siva agrees they leave.
-
-#### Done when
-
-- `npm test`, `npm run type-check` and `npm run build` all pass.
-- A brace's ends sit on its two points and its tip at its depth, and its halves mirror, each to
-  within 1e-12.
-- A braced label sits beyond the tip at four rotations.
-- A count writes the start, the middle and the end, and touches nothing that is not text.
-- The flat demo braces the rise, its label counts to 9.00, and `npm run demos` leaves the committed
-  files unchanged.
-- `index.ts` exports the brace, the braced label, the count and their types, and nothing reaches a
-  file inside this package by path.
 
 ### Boolean operations on paths, 0.9.0
 

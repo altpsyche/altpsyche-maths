@@ -24,9 +24,10 @@ svgMarkup(at(figure, 0.5), viewMatrix(figure.extent, 'contain', 640, 360), 640, 
 
 The picture arrives rather than appearing. The grid fades, the axes draw on, their labels come in one
 after another, the curve draws, the dot grows out of the origin, and the dot is pointed at where the
-slope is nothing. Then it walks the curve at one speed and flashes at the top. The number in the
-corner is a value of the typeset rule under it, and that rule reads no slope while the dot is held at
-the stationary point and walks into the one that depends on x as the dot leaves.
+slope is nothing. Then it walks the curve at one speed and flashes at the top, and a brace measures
+how far it climbed with its number counting up to the rise. The number in the corner is a value of
+the typeset rule under it, and that rule reads no slope while the dot is held at the stationary point
+and walks into the one that depends on x as the dot leaves.
 
 ```ts
 import { axes, coordsOf, group, interval, numberPlane, plot, scaleOf, shape } from '@altpsyche/maths';
@@ -59,7 +60,7 @@ region is the limit of at the left edge, the right edge or the middle of each on
 lays the tangent along the curve, cut where it leaves the graph. `slopeOf` reads the slope itself,
 which is what the number in the corner is.
 
-<img src="docs/tangent-strip.svg" width="960" alt="Four frames of the same figure side by side, the point walking up the curve, the shaded region growing behind it, and the typeset rule in the corner changing from a slope of nothing to one that depends on x.">
+<img src="docs/tangent-strip.svg" width="960" alt="Four frames of the same figure side by side, the point walking up the curve, the shaded region growing behind it, the typeset rule in the corner changing from a slope of nothing to one that depends on x, and a brace measuring the rise in the last frame.">
 
 Four times of one figure, side by side: the picture arrived, the beat at the stationary point, half
 way up, and the top. A moving picture in a README needs a GIF and this package has no encoder, so the
@@ -126,10 +127,46 @@ which would draw with whatever font a browser had and draw nothing at all in a r
 undefined macro is not an error at all, because MathJax draws the macro's own name in red, so a typo
 would otherwise ship as a red word inside the picture.
 
+## Braces and a number that counts
+
+`bracePath` draws a curly brace from one point to another with its tip standing off the line between
+them, and `brace` is that path with a word beyond the tip. It is one open subpath of six pieces: a
+curl out of each end, a run along at the curl's own height, and two curls meeting at the tip. The tip
+is a corner rather than a smooth turn, which is what a brace has and what says which point of it is
+doing the pointing. The tip stands at the depth asked for whatever the span, and only the curl
+narrows when the span is short, so two close points get a shallower brace rather than one whose
+halves cross.
+
+The label is anchored and never measured, because nothing about a figure's layout may depend on how
+wide some text is.
+
+`countTo` writes the value a count has reached into a text mark. How the value is written is the
+caller's, so a count of a length and a count of a population can round differently and this holds no
+opinion about either.
+
+```ts
+import { brace, countTo, labelFor, pointOf, vec2 } from '@altpsyche/maths';
+
+brace('rise', pointOf(coords, 3, 9), pointOf(coords, 3, 0), labelFor(9, 0.01), {
+  depth: 0.3,
+  padding: 0.28,
+  stroke: pen,
+  fill: ink,
+  size: 0.3,
+});
+
+countTo('rise/word', 0, 9, (value) => labelFor(value, 0.01));
+```
+
+A number driven by the clock is not the same as a reading driven by a track, and the difference
+matters. The slope in the demo is a value of the walk, so it is worked out by the scene from the
+track and cannot drift from the dot. The rise is counted by the clock, which is honest only because
+the dot has stopped by the time it counts: two clocks running at once would be free to disagree.
+
 ## The animations
 
-`fadeIn`, `fadeOut`, `fadeTo`, `draw`, `morph`, `morphEquation`, `moveBy`, `rotate`, `scale`,
-`growFrom`, `moveAlong`, `indicate`, `flash` and `circumscribe`. A `Timeline` plays them in order, plays several `together`, or
+`fadeIn`, `fadeOut`, `fadeTo`, `draw`, `morph`, `morphEquation`, `countTo`, `moveBy`, `rotate`,
+`scale`, `growFrom`, `moveAlong`, `indicate`, `flash` and `circumscribe`. A `Timeline` plays them in order, plays several `together`, or
 `stagger`s a row so its parts arrive one after another.
 
 A turn and a growth happen about a point the marks decide for themselves, which is the middle of the
