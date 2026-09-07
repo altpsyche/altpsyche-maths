@@ -181,11 +181,16 @@ the expression was turned over.
 holds the baseline inside it. A single `x` is named `0-1D465`, which is its place and its code point.
 The suite is 356 tests in 584 ms, against 349 in 552 ms.
 
-**3. The three refusals.** Each of the three above throws, and the message names what was found
+**3. Done. The three refusals.** Each of the three above throws, and the message names what was found
 rather than reporting that something was wrong.
 
 *Measures:* three expressions, one per refusal, each throwing. The undefined macro's message carries
 the macro's own name, read off the code points of the glyphs the typesetter drew in red.
+
+*Measured:* `\nosuchmacro` came back as 12 glyph outlines with no error on any of them and now throws
+naming itself. `\frac{1}`, `x^` and `\mbox{ü}` are each one text element, all three of which stopped
+the walk with the same word before, and each now names what it found. The five expressions that typeset still do. The
+suite is 360 tests in 547 ms, against 356 in 584 ms.
 
 **4. An equation placed in a figure.** A builder that takes a typeset equation and returns a group,
 alongside `dot`, `arrow` and `callout`. It fits the equation inside a width and a height together

@@ -20,6 +20,9 @@
  *
  * An id carries the glyph's own code point, which is what a match between two
  * expressions has to be made on.
+ *
+ * Three things stop the walk instead of being drawn, and each names what it
+ * found. They are written up on `refuse` below.
  */
 import { mat3, type Mat3 } from '../values/mat3.js';
 import { vec2 } from '../values/vec2.js';
@@ -92,6 +95,38 @@ function svgOf(element: EquationElement): EquationElement {
   return found;
 }
 
+/** The colour the `noundefined` extension draws a macro the typesetter does not
+ * know, which is the only sign that it did not typeset one. */
+const UNKNOWN = 'red';
+
+/** The characters under an element, read off the code point each glyph carries.
+ * It is what names a run the typesetter drew instead of typesetting. */
+function charactersOf(element: EquationElement): string {
+  const code = element.tag === 'path' ? Number.parseInt(element.attributes['data-c'] ?? '', 16) : NaN;
+  const own = Number.isInteger(code) ? String.fromCodePoint(code) : '';
+  return own + element.children.map(charactersOf).join('');
+}
+
+/**
+ * The three things that stop the walk rather than being drawn, each naming what
+ * it found.
+ *
+ * A TeX error carries its message on the group MathJax puts the error box in. A
+ * character the font has no outline for arrives as a text element, which draws
+ * in a browser with whatever font it found and draws nothing at all in a
+ * recording. And an undefined macro is not an error under `AllPackages`, since
+ * the `noundefined` extension in it draws the macro's own name in red, so a typo
+ * would otherwise ship as a red word inside the picture.
+ */
+function refuse(element: EquationElement): void {
+  const error = element.attributes['data-mjx-error'];
+  if (error !== undefined) throw new Error(`the typesetter refused the expression: ${error}`);
+  if (element.attributes.fill === UNKNOWN)
+    throw new Error(`the typesetter does not know "${charactersOf(element)}" and drew it in ${UNKNOWN}`);
+  if (element.tag === 'text')
+    throw new Error(`the typesetter has no outline for "${element.text ?? ''}" and wrote it as text`);
+}
+
 /** The four numbers of the `viewBox`, turned over the way the marks are. */
 function boxOf(svg: EquationElement): EquationBox {
   const numbers = attribute(svg, 'viewBox')
@@ -114,6 +149,7 @@ export function equationMarks(root: EquationElement): Equation {
 
   const walk = (element: EquationElement, stack: Mat3) => {
     for (const child of element.children) {
+      refuse(child);
       const written = child.attributes.transform;
       const own = written ? mat3.multiply(stack, transformOf(written)) : stack;
       switch (child.tag) {

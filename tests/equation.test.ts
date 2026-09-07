@@ -105,3 +105,32 @@ describe('the walk into marks', () => {
     expect(box.height).toBeGreaterThan(0);
   });
 });
+
+describe('the three refusals', () => {
+  it('refuses a TeX error with the message the typesetter gave', async () => {
+    await expect(equationFromTex('\\frac{1}')).rejects.toThrow(
+      /refused the expression: Missing argument for \\frac/
+    );
+    await expect(equationFromTex('x^')).rejects.toThrow(
+      /refused the expression: Missing superscript or subscript argument/
+    );
+  });
+
+  it('refuses a macro the typesetter drew in red rather than typeset', async () => {
+    // Under `AllPackages` this is not an error at all: `noundefined` draws the
+    // macro's own name, so the picture would otherwise ship with a red word in it.
+    await expect(equationFromTex('\\nosuchmacro')).rejects.toThrow(
+      /does not know "\\nosuchmacro" and drew it in red/
+    );
+  });
+
+  it('refuses a character the font has no outline for', async () => {
+    // It would draw in a browser with whatever font it found and draw nothing
+    // at all in a recording.
+    await expect(equationFromTex('\\mbox{ü}')).rejects.toThrow(/has no outline for "ü"/);
+  });
+
+  it('still draws every expression that typesets', async () => {
+    for (const tex of Object.keys(EXPRESSIONS)) await expect(equationFromTex(tex)).resolves.toBeDefined();
+  });
+});
