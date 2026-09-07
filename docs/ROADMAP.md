@@ -214,15 +214,17 @@ leaves a region two units wide at a step of 0.1 stops after 11 points. `directio
 backward as well as forward, which is what step 3 needs to draw one curve through the origin. The
 suite went from 549 tests to 560.
 
-**3. The flat demo gains the field.** `demos/tangent.ts` draws the slope field of its own curve behind
+**3. The flat demo gains the field. Done.** `demos/tangent.ts` draws the slope field of its own curve behind
 the parabola, arriving with `fadeIn` and sitting under the curve and over the grid. The parabola is the
 streamline of that field through the origin, which is the check this demo is the right one to carry:
 the drawn curve and the integrated one are two answers to the same question.
 
-*Measures:* the streamline through the origin matches `plot`'s own curve to a measured share of a
-figure unit over the whole run. The mark count goes from 102 to a stated number and holds at every
-named time. `docs/tangent.svg` and `docs/tangent-strip.svg` grow to stated sizes, and the grid is
-chosen so the strip stays near the 282 kB the solid strip already costs rather than doubling it.
+*Measured:* the streamline through the origin runs 561 points from x of -0.991 to 2.999 and never
+leaves the plotted curve by more than 4.689e-10 of a figure unit. Every one of the field's fifty
+arrows lies along the tangent the curve has at its own x, to 1e-9 of the sine of the angle between
+them. The mark count goes from 102 to 202 at all six times the gate reads, and the strip from 408 to
+808. A ten by five grid takes `docs/tangent-strip.svg` from 203,891 bytes to 282,371, which is the
+282,528 the solid strip already costs, and `docs/tangent.svg` from 50,653 to 69,413.
 
 **4. Arrows and fields in space.** `arrow3(name, from, to, camera, options)` in `figure/space.ts`, a
 shaft that is a `polyline3` and a head that is a flat triangle at the projected tip, and

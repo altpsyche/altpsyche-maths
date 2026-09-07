@@ -22,6 +22,11 @@
  * its number counts up to that rise. The dot has stopped by then, which is what
  * lets a number here be driven by the clock: every other one is a value of the
  * track and two clocks would be free to disagree.
+ *
+ * At 0.11.0 the slope field of the curve is drawn behind it. Every arrow lies
+ * along the tangent the curve has at that x, so the tangent the dot carries is
+ * the one arrow of the field that is being pointed at, and the curve itself is
+ * the streamline of the field through the origin.
  */
 import {
   areaUnder,
@@ -57,6 +62,7 @@ import {
   text,
   unscaled,
   vec2,
+  vectorField,
   Timeline,
   at as marksAt,
   type Equation,
@@ -75,6 +81,11 @@ const drawn = { colour: '#c2410c', width: 0.05 };
 const accent = { colour: '#0369a1', width: 0.035 };
 const wash = { colour: '#fdba74' };
 const lit = '#b45309';
+
+/** The two colours a field arrow takes, the second where the curve has begun to
+ * climb, so the field darkens across the picture the way the curve steepens. */
+const gentle = '#bfd7e6';
+const steep = '#7fb2cc';
 
 const size = { width: 10.8, height: 6 };
 
@@ -115,6 +126,25 @@ export const coords = coordsOf(
 );
 
 export const curve = (x: number) => x * x;
+
+/**
+ * The direction the curve has at a place, which is one across and the curve's
+ * own slope up.
+ *
+ * The slope is read from the curve rather than written out a second time, so
+ * the field and the tangent the dot carries cannot come to disagree.
+ */
+export const slopeField = (at: Vec2) => vec2(1, slopeOf(curve, at.x));
+
+/** How many arrows across and up. Ten by five leaves the cells nearly square on
+ * the figure, since the graph is 9.2 figure units wide and 4.15 tall. */
+const FIELD = { x: 10, y: 5 };
+
+/** How long an arrow is, in figure units, against the magnitude of the vector
+ * there. It settles towards a third of a figure unit as the curve steepens
+ * rather than growing with the slope, since a slope of eight drawn at eight
+ * times the length of a slope of one would cover the curve it belongs to. */
+const arrowLength = (magnitude: number) => (0.34 * magnitude) / (0.6 + magnitude);
 
 /** The stretch the dot walks, from the stationary point to where the curve meets
  * the top of its axis. The walk is measured along this rather than across x, so
@@ -173,6 +203,12 @@ export function sceneAt(along: number): Node {
     numberPlane('grid', coords, { stroke: faint, minors: 4, minorOpacity: 0.45 }),
     axes('axes', coords, { stroke: pen, fill: ink, size: 0.26, tip: 0.18 }),
     shape('area', areaUnder(coords, curve, interval(0, x)), { fill: wash }),
+    vectorField('field', coords, slopeField, {
+      resolution: FIELD,
+      lengthOf: arrowLength,
+      colourFor: (magnitude) => (magnitude > 3 ? steep : gentle),
+      width: 0.018,
+    }),
     shape('curve', plot(coords, curve), { stroke: drawn }),
     shape('tangent', tangentAt(coords, curve, x, { reach: 1.2 }), { stroke: accent }),
     dot('point', point, 0.08, ink),
@@ -213,7 +249,13 @@ const entrance = Timeline.empty()
   .play(draw('tangent/curve'), 0.9, { after: -0.1 })
   .play(growFrom('tangent/point', pointOf(coords, 0, 0)), 0.4, { after: -0.2 })
   .together(
-    [fadeIn('tangent/area'), fadeIn('tangent/tangent'), fadeIn('tangent/reading'), fadeIn('tangent/equation')],
+    [
+      fadeIn('tangent/area'),
+      fadeIn('tangent/field'),
+      fadeIn('tangent/tangent'),
+      fadeIn('tangent/reading'),
+      fadeIn('tangent/equation'),
+    ],
     0.5,
     { after: -0.1 }
   );

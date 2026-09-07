@@ -17,6 +17,7 @@ import {
   resolveExtent,
   sameMarks,
   sampleTrack,
+  streamlineOf,
   tangentAt,
   unscaled,
   vec2,
@@ -34,7 +35,7 @@ import {
   solid,
   stripMarks as solidStripMarks,
 } from '../demos/surface.js';
-import { FRAMES, TIMES, coords, curve, stripMarks, tangent, walk } from '../demos/tangent.js';
+import { FRAMES, TIMES, coords, curve, slopeField, stripMarks, tangent, walk } from '../demos/tangent.js';
 import {
   FRAMES as TURN_FRAMES,
   GIVEN,
@@ -91,12 +92,13 @@ describe('the committed pictures', () => {
 });
 
 describe('the flat demo', () => {
-  it('draws the same 102 marks at every time', () => {
-    // Ninety-one the scene writes, of which fifteen are the two rules and two
-    // the brace and its number, plus the box round the reading and ten rays.
-    // Nothing arrives or leaves part way through, which is what lets one frame
-    // be compared against another at all.
-    for (const seconds of [0, ...FRAMES, durationOf(tangent)]) expect(at(tangent, seconds)).toHaveLength(102);
+  it('draws the same 202 marks at every time', () => {
+    // A hundred and ninety-one the scene writes, of which a hundred are the
+    // field's fifty arrows, fifteen the two rules and two the brace and its
+    // number, plus the box round the reading and ten rays. Nothing arrives or
+    // leaves part way through, which is what lets one frame be compared against
+    // another at all.
+    for (const seconds of [0, ...FRAMES, durationOf(tangent)]) expect(at(tangent, seconds)).toHaveLength(202);
   });
 
   it('braces the rise at the end and counts up to it', () => {
@@ -226,6 +228,41 @@ describe('the flat demo', () => {
     expect(Math.max(...uneven) / Math.min(...uneven)).toBeGreaterThan(1.6);
   });
 
+  it('draws the curve and the streamline of its own field as one answer', () => {
+    // The whole reason this demo is the one to carry a field: the plotted curve
+    // and the run integrated through the field are two answers to one question.
+    const points = streamlineOf(slopeField, vec2(0, 0), {
+      step: 0.02,
+      steps: 2000,
+      direction: 'both',
+      within: { x: coords.x.graph, y: coords.y.graph },
+    });
+    expect(points.length).toBeGreaterThan(400);
+    let worst = 0;
+    for (const point of points) {
+      const drawn = pointOf(coords, point.x, curve(point.x));
+      const walked = pointOf(coords, point.x, point.y);
+      worst = Math.max(worst, Math.hypot(walked.x - drawn.x, walked.y - drawn.y));
+    }
+    expect(worst).toBeLessThan(1e-6);
+  });
+
+  it('draws one arrow of its field along the tangent the dot carries', () => {
+    const marks = at(tangent, TIMES.walkTo);
+    const shafts = marks.filter((mark) => mark.id.startsWith('tangent/field/') && mark.id.endsWith('/shaft'));
+    expect(shafts).toHaveLength(50);
+    for (const mark of shafts) {
+      if (mark.kind !== 'path') throw new Error('a shaft is a path');
+      const start = mark.path[0].start;
+      const end = mark.path[0].curves[mark.path[0].curves.length - 1].to;
+      const x = unscaled(coords.x, start.x);
+      const wanted = tangentAt(coords, curve, x, { reach: 1.2 })[0];
+      const along = vec2.sub(wanted.curves[0].to, wanted.start);
+      const shaft = vec2.sub(end, start);
+      expect(Math.abs(vec2.cross(vec2.normalize(along), vec2.normalize(shaft)))).toBeLessThan(1e-9);
+    }
+  });
+
   it('keeps the tangent on the dot at every place along the walk', () => {
     // The whole reason the graph x is recovered from the point rather than
     // driven beside it: one number, so these cannot drift apart.
@@ -309,7 +346,7 @@ describe('the flat demo', () => {
 describe('the strip of frames', () => {
   it('carries every frame with no two marks sharing an id', () => {
     const { marks } = stripMarks(FRAMES);
-    expect(marks).toHaveLength(102 * FRAMES.length);
+    expect(marks).toHaveLength(202 * FRAMES.length);
     expect(new Set(marks.map((mark) => mark.id)).size).toBe(marks.length);
   });
 
