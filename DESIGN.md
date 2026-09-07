@@ -221,9 +221,11 @@ A text mark is text, and on the page it is a real SVG text node.
 
 What follows from that is what a reader is given instead of selectable text. A figure is one picture carrying one label, so an equation inside it was never going to be text a character could be selected out of, and the LaTeX is that label.
 
-**The typesetter is coming into this package and the way in for its output is already here.** `pathFromData` reads an SVG `d` attribute back as a path, the inverse of what the SVG painter writes, so a glyph from a typesetter, an icon from a designer or an outline a drawing program exported can all be trimmed, aligned and walked into another shape. Without it the only shapes that existed were the ones the builders here make.
+**The typesetter is in this package and the way in for its output was already here.** `pathFromData` reads an SVG `d` attribute back as a path, the inverse of what the SVG painter writes, so a glyph from a typesetter, an icon from a designer or an outline a drawing program exported can all be trimmed, aligned and walked into another shape. Without it the only shapes that existed were the ones the builders here make.
 
 **The typesetter goes behind the one door rather than behind a second one**, which costs this package its freedom from runtime dependencies. Siva's reason is that nobody installs a figures package without needing to label a picture with mathematics, so a consumer who pays for MathJax and never typesets is a consumer who does not exist. It runs at build time rather than in a browser, so what a reader downloads does not change.
+
+**What the door does not cost is the load.** MathJax is reached by an import written as a call inside the typesetting function, so importing the door reaches none of it and a consumer who draws figures and typesets nothing pays nothing. Written as a line at the top of the file instead, 41 MB of CommonJS would sit in the graph of every consumer that draws a circle. What it costs is that typesetting answers with a promise.
 
 ## Motion the reader did not ask for
 

@@ -1,7 +1,8 @@
 # @altpsyche/maths — house rules
 
-The mathematics AltPsyche's figures are drawn from. TypeScript, ESM, no runtime dependencies,
-published to npm. Ships from `master`.
+The mathematics AltPsyche's figures are drawn from. TypeScript, ESM, published to npm, and one
+runtime dependency: MathJax, which is loaded by the typesetting call itself so that a consumer who
+never typesets never loads it. Ships from `master`.
 
 **Where things are.** [`DESIGN.md`](DESIGN.md) is the design: what a figure is, the rule every part
 of it follows, the line through the middle of the package, and the seam everything rests on.

@@ -55,3 +55,5 @@ export { paintCanvas } from './paint/canvas.js';
 export type { CanvasLike } from './paint/canvas.js';
 export { arrow, callout, dot } from './figure/annotate.js';
 export type { ArrowOptions, CalloutOptions } from './figure/annotate.js';
+export { typesetElement } from './figure/typeset.js';
+export type { EquationElement } from './figure/typeset.js';

@@ -142,7 +142,7 @@ format.
 
 #### The steps
 
-**1. The typesetter arrives and costs nothing until it is asked.** Add `mathjax-full` to
+**1. Done. The typesetter arrives and costs nothing until it is asked.** Add `mathjax-full` to
 `dependencies`. Add `figure/typeset.ts` holding one function that takes TeX and hands back MathJax's
 SVG tree in this package's own shape, with no walk over it yet. It reaches MathJax through a dynamic
 import, which is an import written as a call in the middle of the function rather than as a line at
@@ -158,6 +158,11 @@ today. The commit quotes both again afterwards, and quotes what the first typese
 *The risk worth naming:* the published build compiles under `NodeNext`, and `mathjax-full` is
 CommonJS with no `exports` map. If a named import out of it is refused there, this is the step that
 finds out.
+
+*Measured:* importing the built door takes 9.6 ms and leaves 0 CommonJS modules in Node's cache,
+against 9.5 ms and 0 before. The first typeset call costs 73 ms and loads 287 CommonJS modules, and
+every call after it costs 1.6 ms. The build under `NodeNext` took the named imports without
+complaint, since they are written as a call rather than as a line at the top.
 
 **2. The walk from a typesetter's SVG into marks.** Add `figure/equation.ts`. It walks MathJax's
 nested groups, carries the transform down them, and turns the whole expression over on the way in
