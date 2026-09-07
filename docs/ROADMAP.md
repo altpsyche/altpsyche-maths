@@ -159,8 +159,9 @@ eight.
 **The lock file agrees with the manifest again**, and holding it there is one
 `npm install --package-lock-only` in whichever commit bumps a version.
 
-**1.0.0 is next and it has no step list yet**, so planning it is a session of its own. What it needs
-beyond the features is a read of the whole door with the promise a 1.0.0 makes in mind.
+**1.0.0 is next and its sixteen steps are written below.** What it needs beyond the features is a
+read of the whole door with the promise a 1.0.0 makes in mind, and the read that planned it is a
+session of its own that touched no code.
 
 **What the 0.9.x audit found sound**, so that a later session does not go looking again. Sixty random
 pairs of shapes with no coincident edges hold both `area(A) + area(B) = area(A or B) + area(A and B)`
@@ -179,19 +180,20 @@ Both demos complete, the README carrying both, and the public surface frozen. A 
 about `index.ts` not changing under a consumer, so what it needs beyond the features is a read of the
 whole door with that promise in mind.
 
-**It has no step list, so planning it is a session of its own and no code is touched in that session.**
+**Its steps are written below, and no code was touched in the session that wrote them.**
 
 #### What the polish covers, given by Siva
 
 He called this one crucial and named five areas. They are written here rather than left to a session
 to guess, and each one needs the plan to say how it is checked.
 
-**The codebase.** 6,535 lines across `figure`, `values`, `timing` and `paint`. What a read is looking
+**The codebase.** 6,624 lines across `figure`, `values`, `timing` and `paint`. What a read is looking
 for is the same thing said two ways, a name that stopped matching what it does, a comment carrying a
 measurement that is now stale, and a file that grew past what its header claims. `figure/space.ts` and
 `figure/annotate.ts` have both taken new calls three versions running.
 
-**The API.** 132 names come out of `index.ts` across 78 lines. A 1.0.0 says none of them moves under a
+**The API.** 225 names come out of `index.ts` across 89 lines, 132 of them values and 93 of them
+types. A 1.0.0 says none of them moves under a
 consumer, so the read has to answer, for each one, whether it is the name a caller would guess, whether
 it belongs at the door at all, and whether two of them are the same idea under different names. The
 option bags want the same read: `resolution`, `over`, `within` and `samples` mean nearly the same thing
@@ -211,31 +213,188 @@ top of this file names. What that means for colour, composition, what a still is
 whether the README's first picture is one of the eight or a new one is the plan's to answer.
 
 **The docs.** DESIGN.md is 242 lines and is the design. There is nothing between it and the README:
-no page a reader lands on to learn what a figure is, no reference for the 132 names, and nothing that
+no page a reader lands on to learn what a figure is, no reference for the 225 names, and nothing that
 says what this package refuses to do and why. Whether that gap is filled at 1.0.0, and where it lives
 if it is, is Siva's call rather than a session's.
 
-**What else is in scope** is the two items under "Found while working": the colour reader, which is the
+**What else is in scope** is the two items that were under "Found while working": the colour reader, which is the
 one thing keeping `indicate` from easing between two colours, and the byte gate's rounding boundary. A
 1.0.0 that freezes the door with a known gap behind it should say so on purpose rather than by
 omission.
 
-#### What the plan has to produce
+#### The calls Siva made on this item
 
-An ordered list of steps, each one commit-sized and each naming the measurement its commit will quote,
-plus done-criteria checkable line by line. A version is cut against its demos, so a step list that
-never touches one is a version nothing checks, and here the demos are also the images being polished.
-Prose and pictures are the hard half: **the plan has to say what a measurement of "reads better" is**
-before it writes a step that claims it, or every step of the README and the images is an opinion
-signed off by whoever ran it.
+**A guide and a reference both land at 1.0.0.** Four prose surfaces after that: the README sells,
+the guide teaches, the reference is looked up, and DESIGN.md says why the design is what it is. The
+reference is the one that can go stale in silence, so it gets a gate that fails when a name at the
+door has no entry.
+
+**The colour reader is code at 1.0.0.** A reader for hex and `rgb()`, a refusal for every other form,
+and `indicate` easing between two colours instead of swapping them. It adds a name to a door about to
+be frozen, which is the reason to land it now rather than at 1.1.0, and it is what lets the demos'
+palette cross-fade.
+
+**Whether the README opens on one of the eight pictures or a ninth is decided by which reads better**,
+and step 10 decides it on a number rather than on taste. The eight are measured for what fraction of
+their frame the drawn bounds cover and how tall the smallest labelled text stands at the width the
+README shows. A ninth sheet is cut only when none of the eight clears both.
+
+#### What a measurement of "reads better" is
+
+**The greppable half of the prose rules already passes.** The README carries none of the phrases
+CLAUDE.md bans and DESIGN.md carries one, so the robotic reading Siva named is not phrase-level and no
+word list will find it. What is measurable is shape and load. Nine of the fifteen sections are the
+same shape, `IMG P CODE P IMG P`, so a reader meeting the fourth one already knows what the fifth
+looks like. The page has 148 sentences at a mean of 24.7 words with 46 of them over 30, and 55 prose
+paragraphs at a mean of 66.5 words. There is no install line anywhere in it.
+
+**Those numbers are a floor and not the verdict.** A step that claims a page reads better quotes them
+and then says plainly that the reading is Siva's, taken once against the whole page rather than per
+commit. The same holds for the pictures: a palette and a frame size are numbers, and whether a still
+is worth looking at is not.
+
+#### The steps
+
+**The order is not free.** The colour reader lands before the door is read, so the read sees the name
+set it is being asked to freeze. The code is read before the door is renamed, because a rename lands
+in `index.ts` and in the file it points at. The door is settled before any page is written, because a
+page written against the old names is a page written twice. The pictures are cut before the pages that
+carry them, and 1.0.0 is cut last.
+
+**The demos gain from steps 8, 9 and 10**, which are the pictures Siva called not enticing, and every
+demo is recompiled by steps 6 and 7 against the renamed door.
+
+- [ ] **1. The comments carrying a measurement.** Nine comments hold a number: `figure/inside.ts:36`,
+  `figure/length.ts:20`, `:24` and `:80`, `figure/path.ts:81`, `figure/plot.ts:36` and `:49`,
+  `figure/ticks.ts:67`, `figure/extent.ts:39`. A number in a comment cannot be dated, so each one is
+  either an invariant the code must hold, which makes it an assertion in the suite, or a finding,
+  which `git log` already keeps. Seven inline `//` runs also exceed the two-line rule:
+  `figure/axis.ts:77`, `figure/node.ts:114`, `figure/path-data.ts:167`, `figure/plot.ts:255`,
+  `figure/section.ts:188`, `paint/number.ts:12`, `paint/svg.ts:150`. **Measures:** nine sites carrying
+  a number today and how many are assertions after; seven inline runs over two lines today; 1,994
+  comment lines of 6,624 today; the suite from 590 tests.
+
+- [ ] **2. The same thing said twice.** `figure/space.ts` and `figure/section.ts` both walk a `u` by
+  `v` grid over a parametric surface, and `figure/field.ts` and `figure/space.ts` both sample a box at
+  a resolution. Whatever else the read finds goes here; a name that stopped matching what it does goes
+  to step 5, since that is a door question. **Measures:** lines across `figure`, `values`, `timing`
+  and `paint` from 6,624; the suite holds at its step 1 count with no test deleted.
+
+- [ ] **3. Files past what their header claims.** `figure/space.ts` is 349 lines and has taken new
+  calls three versions running, and `figure/annotate.ts` is 188. A header naming two subjects is a
+  file that wants splitting. **Measures:** lines and exported names per file before and after; the
+  door's own name count is unchanged by this step, since a split moves a name's file and not the name.
+
+- [ ] **4. Two colours walked between.** A reader for hex, in three, four, six and eight digits, and
+  for `rgb()` and `rgba()`, which are the forms a figure is handed. Every other form is refused rather
+  than answered wrongly, since a named CSS colour read as black is a silently wrong picture. `indicate`
+  then eases between two colours instead of swapping them, and the typesetter's own red keeps being
+  spotted by comparing the string, which needs none of this. **Measures:** the forms read and the
+  forms refused, each with a test; `indicate` at half a span before and after, which is a swap today;
+  names at the door from 132 values.
+
+- [ ] **5. The door read, name by name.** No code. `index.ts` exports 132 values and 93 types across
+  89 lines, plus whatever step 4 added. For each name the read answers three questions: is it the name
+  a caller would guess, does it belong at the door at all, and is it the same idea as another name
+  already there. The verdict is written into this entry as a table, so step 6 applies a list rather
+  than a judgement. **Measures:** names read, and the count marked rename, remove and keep.
+
+- [ ] **6. The door verdict applied.** Every rename and removal in one commit, because a rename split
+  across two commits leaves the door disagreeing with the file it points at. **Measures:** names at
+  the door before and after; all eight sheets regenerate to identical bytes; the three gates pass.
+
+- [ ] **7. The option bags take one shape.** Four names mean sampling density today, `resolution` in
+  `space.ts` twice and `section.ts` and `field.ts`, and `samples` in `plot.ts`, in three different
+  shapes. Three names mean a domain: `over` in `space.ts` and `plot.ts` twice, and `within` in
+  `streamline.ts`. **Measures:** four names for density to one and three for a domain to one; the
+  shape each takes written out; every demo compiles.
+
+- [ ] **8. One palette the demos share.** Thirteen colours are written as hex across four demo files
+  with no shared source, and `#1b1b1b` appears six times. The palette is the demos' own and not the
+  package's, because DESIGN.md keeps colour the author's. **Measures:** thirteen ad hoc colours to a
+  named list, each with its contrast ratio against the ground; distinct fill and stroke values per
+  sheet from 11 on `tangent.svg`, 25 on `surface.svg`, 5 on `boolean.svg` and 4 on `rotate.svg`.
+
+- [ ] **9. The strips take one shape.** `tangent-strip.svg` is 7.60 to 1 in a single row, so at the
+  960 pixels the README shows it a frame is 240 by 126. The other three are two rows between 1.78 and
+  2.59 to 1, giving frames from 410 by 158 to 410 by 230. **Measures:** the four frame sizes at the
+  width the README shows, before and after, against a floor of 200 pixels tall.
+
+- [ ] **10. The stills chosen to be looked at, and the picture the README opens on.** `boolean.svg` is
+  12 marks and `rotate.svg` is 8, so both read as diagrams beside `tangent.svg` at 202 and
+  `surface.svg` at 265. Two numbers decide a still: the fraction of the view box the drawn bounds
+  cover, read with `boundsOfMarks` against the extent, and the height in pixels of the smallest
+  labelled text at the width the README shows it. The opening picture is whichever of the eight clears
+  both by the most, and a ninth sheet is cut only if none of them clears both. **Measures:** both
+  numbers for all eight sheets before and after, the time each still is taken at, and which sheet
+  opens the page.
+
+- [ ] **11. The four surfaces divided, and who each is for.** No code. Two readers land here, the
+  person deciding whether to install this and the person looking up what `sectionOf` does, and a page
+  serves one of them at a time. This step writes into this entry what belongs on the README, what
+  belongs in the guide, what belongs in the reference and what stays in DESIGN.md, plus the numeric
+  floor steps 12 to 14 are held to. **Measures:** the outline; the count of README sections sharing
+  one shape from nine of fifteen; the count of the 402 README lines that move to the guide rather than
+  being rewritten.
+
+- [ ] **12. The README written.** A full rewrite against the step 11 outline rather than a pass with a
+  comb, and it sells rather than teaches. **Measures:** sentence mean from 24.7 words and the count
+  over 30 from 46; prose paragraph mean from 66.5 words; the install line from absent to present; the
+  opening picture from step 10; the banned-phrase count still zero.
+
+- [ ] **13. The guide written.** The page a new reader lands on: what a figure is, what a mark is,
+  what a painter does with one, and how to draw and move a first picture. It teaches in the order a
+  reader needs rather than in the order the package is built, and every technical word gets its
+  everyday meaning where it first appears. **Measures:** the same sentence and paragraph numbers as
+  step 12; the count of terms defined before first use, which has to be all of them; every code block
+  in it compiles under `tsconfig.demos.json`.
+
+- [ ] **14. The reference for the door.** One entry per name at the door, each saying what it is and
+  what it takes, and a gate that fails when a name at the door has no entry or an entry names nothing
+  at the door. That gate is what stops the fourth surface going stale in silence, and it needs no
+  browser because it reads `index.ts` and a page of text. **Measures:** entries against names at the
+  door, which have to be equal; the suite from its step 13 count.
+
+- [ ] **15. DESIGN.md, and the byte gate's boundary.** DESIGN.md is 242 lines and carries one banned
+  word, `seamless`. Every claim it makes is checked against the tree, since four versions landed after
+  it was last read, and the gradient refusal it makes is re-read rather than assumed. The picture
+  gate's rounding boundary is written down as a known gap on purpose, since nothing has hit it and the
+  fix costs the gate its ability to say a committed file is stale. **Measures:** banned words from one
+  to zero; the count of DESIGN.md claims checked and the count corrected.
+
+- [ ] **16. Cut 1.0.0.** The version bumped in this commit, `npm install --package-lock-only` in the
+  same one, the done-criteria verified line by line with the number that satisfies each, and
+  publishing asked for rather than assumed. **Measures:** the three gates; all eight sheets identical
+  after `npm run demos`; the suite's final count from 590.
+
+#### Done-criteria
+
+- Every comment in the tree that holds a number is an assertion in the suite instead, or gone.
+- No inline `//` run is longer than two lines.
+- No two files hold the same sampling walk.
+- Every file's header names one subject.
+- A colour written as hex or `rgb()` is read, every other form is refused, and `indicate` eases
+  between two colours at half a span.
+- Every name at the door has been read against the three questions of step 5, and the verdict table
+  is in this entry.
+- One name means sampling density and one name means a domain, in one shape each.
+- The demos take their colours from one named list, and no hex is written in a demo file.
+- Every strip frame is at least 200 pixels tall at the width the README shows it.
+- Every sheet's covered fraction and smallest text height are recorded, and the picture the README
+  opens on is the one that clears both by the most.
+- The README's sentence mean is under 18 words and no sentence is over 30, and the guide's too.
+- The README carries an install line.
+- No section of the README shares its shape with more than two others.
+- Every technical word in the guide has its everyday meaning where it first appears.
+- Every code block in the guide compiles.
+- The reference has one entry per name at the door, and a gate in the suite says so.
+- All eight pictures, or nine, are referenced and regenerate to identical bytes.
+- DESIGN.md carries none of the banned phrases and every claim in it is true of the tree.
+- The byte gate's rounding boundary is written down as a known gap.
+- `npm test`, `npm run type-check` and `npm run build` pass, and the lock file agrees with the manifest.
+- Siva has read the README, the guide and the pictures once, and said so.
 
 ## Found while working, not yet queued
-
-- **Two colours cannot be walked between.** A colour is any CSS colour written as text, and there is
-  no parser here, so `indicate` swaps a colour rather than easing into one and nothing can cross-fade
-  a palette. What it needs is a reader for the forms a figure is actually handed, which is hex and
-  `rgb()`, and a refusal for the rest rather than a wrong answer. Found while planning 0.5.0. The
-  typesetter's own red is spotted by comparing the string and needs none of this.
 
 - **The picture gate is engine-dependent at a rounding boundary.** A coordinate is written to three
   decimal places, so the sine and cosine differences between engines are invisible in the bytes,
