@@ -144,15 +144,25 @@ answer 4.11e-4 of the closed form, the same share at every one, so nothing there
 tolerance being an absolute distance. Two 400-piece paths unite in 48ms, so the crossing search needs
 no box test in front of it and the quadratic over piece pairs is not worth removing.
 
-#### 0.9.2, the stitch says when it gave up
+#### 0.9.2, a failure that cannot be seen
 
-**A run of pieces that never closes is handed back as a closed loop, so a caller cannot tell.** The
-union of two rectangles sharing an edge comes back as a subpath whose two ends are 2.0 apart, marked
-closed. That is what turns any failure of the geometry into silence, and it is worth fixing whether or
-not 0.9.1 removes the failure that shows it today.
+**Done.** Two of them, both found by asking what a caller sees when this code is wrong.
 
-*Measures:* a stitch that cannot close a run says so rather than answering a shape. The wrong answers
-0.9.1 removes are shown to be caught by this on the tree as it stands before 0.9.1 lands.
+**A run of pieces that would not close was handed back as a closed loop.** Nothing about the shape
+said so. Now the stitch stops and names how many pieces it had, where the run began and ended, and how
+far apart those are. A path that crosses itself is outside what the operations take, and united with a
+disc it drew a shape with a gap in it and said nothing; it now stops with a run of 3 pieces whose ends
+are 1.5 apart.
+
+**A tolerance finer than the flattening reaches took the machine out of memory.** Halving a piece was
+bounded by a depth of 24, which is sixteen million points for one piece, so a union at a tolerance of
+1e-15 never returned. A whole flattening is now bounded at a million points and refuses past that,
+which it reaches in 295ms. A circle of radius 1 at a tolerance of a millionth wants 4096, so the room
+is a thousandfold.
+
+**The pairs the crossing search makes are counted rather than the pairs it looks at.** Each pair looked
+at makes up to four more, so counting the ones looked at let the pile waiting grow four times faster
+than it drained. The budget is 200000 made, where a near tangency at a millionth wanted 67000.
 
 #### 0.9.3, the small gaps
 

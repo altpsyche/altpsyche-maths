@@ -111,6 +111,26 @@ function cutsBetween(first: Path, second: Path, tolerance: number): [Cut[], Cut[
   return [forFirst, forSecond];
 }
 
+function place(point: Vec2): string {
+  return `(${point.x.toFixed(6)}, ${point.y.toFixed(6)})`;
+}
+
+/**
+ * What a run of pieces that will not close stops with.
+ *
+ * Handing it back as a loop anyway is the one failure a caller cannot see: the
+ * shape drawn is wrong and nothing about it says so. Every input is closed
+ * loops, so a run that will not close is this code being wrong rather than the
+ * caller, and stopping is what makes that visible on the frame it happens.
+ */
+function refuse(pieces: number, start: Vec2, end: Vec2, tolerance: number): never {
+  throw new Error(
+    `the pieces kept do not close into a loop: ${pieces} of them run from ${place(start)} ` +
+      `to ${place(end)}, which is ${vec2.distance(end, start).toFixed(6)} apart against a ` +
+      `tolerance of ${tolerance}`
+  );
+}
+
 /**
  * The kept pieces joined into loops, by taking each end to the piece that
  * starts where it finishes.
@@ -141,7 +161,7 @@ function stitch(pieces: readonly Piece[], tolerance: number): Path {
           next = at;
         }
       }
-      if (next < 0) break;
+      if (next < 0) refuse(curves.length, start, end, tolerance);
       used[next] = true;
       curves.push(pieces[next].curve);
       end = pieces[next].curve.to;

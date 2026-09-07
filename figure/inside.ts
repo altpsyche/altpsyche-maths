@@ -28,6 +28,16 @@ const TOLERANCE = 1e-6;
  * otherwise leave unbounded. */
 const DEPTH = 24;
 
+/**
+ * How many points a whole flattening may hold before it is refused.
+ *
+ * Halving is the only bound the depth gives, and sixteen million points for one
+ * piece is a machine out of memory rather than a fine flattening. A circle of
+ * radius 1 wants 4096 of these at a tolerance of a millionth, so the room here
+ * is a thousandfold.
+ */
+const POINTS = 1_000_000;
+
 /** How far the two controls sit from the straight run between the ends.
  *
  * The curve itself stays within three quarters of this, so measuring the
@@ -48,6 +58,12 @@ function walk(from: Vec2, curve: Cubic, tolerance: number, depth: number, into: 
   if (depth >= DEPTH || offChord(from, curve) <= tolerance) {
     into.push(curve.to);
     return;
+  }
+  if (into.length >= POINTS) {
+    throw new Error(
+      `a tolerance of ${tolerance} asks for more than ${POINTS} straight runs to stand for one ` +
+        `curve, which is finer than this flattens`
+    );
   }
   const a = vec2.lerp(from, curve.control1, 0.5);
   const b = vec2.lerp(curve.control1, curve.control2, 0.5);

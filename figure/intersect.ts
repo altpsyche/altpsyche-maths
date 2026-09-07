@@ -33,10 +33,15 @@ export interface CrossingOptions {
  * supplies the sharpness afterwards. */
 const TOLERANCE = 1e-6;
 
-/** How many pairs the search may open before it answers with where it had got
- * to, which is what stops two curves lying on top of each other for a stretch
- * from halving forever. */
-const BUDGET = 500_000;
+/**
+ * How many pairs the search may make before it answers with where it had got to.
+ *
+ * It counts pairs made rather than pairs looked at, because each one looked at
+ * makes up to four more: counting the ones looked at leaves the pile of pairs
+ * waiting growing four times faster than it drains, and a tolerance small enough
+ * ran the machine out of memory before the count was ever reached.
+ */
+const BUDGET = 200_000;
 
 /** How deep the halving goes, which a tolerance of zero would otherwise leave
  * unbounded. */
@@ -428,7 +433,7 @@ export function curveCrossings(
     },
   ];
   const hits: Hit[] = [];
-  let opened = 0;
+  let made = 1;
 
   const record = (pair: Pair) => {
     const alongFirst = (pair.firstLow + pair.firstHigh) / 2;
@@ -446,11 +451,10 @@ export function curveCrossings(
 
   while (stack.length > 0) {
     const pair = stack.pop() as Pair;
-    opened += 1;
     const firstBox = boxOf(pair.first);
     const secondBox = boxOf(pair.second);
     if (apart(firstBox, secondBox, tolerance)) continue;
-    if (opened >= BUDGET) {
+    if (made >= BUDGET) {
       record(pair);
       break;
     }
@@ -480,6 +484,7 @@ export function curveCrossings(
           high: side === 0 ? secondMid : pair.secondHigh,
         }))
       : [{ hull: pair.second, low: pair.secondLow, high: pair.secondHigh }];
+    made += firstParts.length * secondParts.length;
     for (const left of firstParts) {
       for (const right of secondParts) {
         stack.push({

@@ -135,6 +135,36 @@ describe('union, intersection and difference', () => {
     expect(differenceOf(square, square)).toHaveLength(0);
   });
 
+  it('stops rather than handing back a run of pieces that will not close', () => {
+    // A path that crosses itself is outside what these take, and before this it
+    // drew a shape with a gap in it and said nothing.
+    const bowtie = polygon([vec2(0, 0), vec2(2, 2), vec2(2, 0), vec2(0, 2)]);
+    expect(() => unionOf(bowtie, circle(vec2(1, 1), 0.5))).toThrow(/do not close into a loop/);
+  });
+
+  it('stops rather than running out of memory on a tolerance finer than it flattens', () => {
+    expect(() => unionOf(circle(vec2(0, 0), 1), circle(vec2(1, 0), 1), { tolerance: 1e-15 })).toThrow(
+      /finer than this flattens/
+    );
+  });
+
+  it('closes every loop it does hand back', () => {
+    const cases: [Path, Path][] = [
+      [circle(vec2(0, 0), 1), circle(vec2(1, 0), 1)],
+      [circle(vec2(0, 0), 1), circle(vec2(0, 0), 0.5)],
+      [rect(vec2(0, 0), 2, 2), rect(vec2(2, 0), 2, 2)],
+      [rect(vec2(-1, -1), 2, 2), circle(vec2(1, 1), 1)],
+    ];
+    for (const [first, second] of cases) {
+      for (const answer of [unionOf(first, second), intersectionOf(first, second), differenceOf(first, second)]) {
+        for (const loop of answer) {
+          const end = loop.curves[loop.curves.length - 1].to;
+          expect(Math.hypot(end.x - loop.start.x, end.y - loop.start.y)).toBeLessThan(1e-6);
+        }
+      }
+    }
+  });
+
   it('answers an empty path with the other path', () => {
     const disc = circle(vec2(0, 0), 1);
     expect(unionOf([], disc)).toEqual(disc);
