@@ -33,9 +33,8 @@ export interface PlotOptions {
 /**
  * How many pieces a curve is cut into when a figure does not say.
  *
- * A sine over two turns at this count leaves the drawn curve within 3.3e-4
- * figure units of the true one, which is under a tenth of a pixel on the largest
- * surface anything here is drawn at.
+ * The count is what draws a sine over two turns under a tenth of a pixel from
+ * the true one on the largest surface anything here is drawn at.
  */
 const SAMPLES = 96;
 
@@ -45,10 +44,8 @@ const SAMPLES = 96;
  *
  * An end with evenly spaced neighbours takes the three-point one-sided
  * difference, which is second order like the middle and exact for a quadratic.
- * An end that was cut at the edge of the graph is not evenly spaced, so it takes
- * the two-point difference instead: measured on a parabola at 64 samples, the
- * three-point ends leave an uncut curve exact where the two-point ends leave it
- * 3.7e-4 figure units out.
+ * An end that was cut at the edge of the graph is not evenly spaced, so the
+ * three-point form does not hold there and it takes the two-point difference.
  */
 function slopes(xs: readonly number[], ys: readonly number[]): number[] {
   const last = xs.length - 1;
@@ -252,9 +249,8 @@ export function riemannBars(
     const y = of(x);
     if (!Number.isFinite(y)) continue;
     const top = interval.clampTo(coords.y.graph, y);
-    // Built from its four corners rather than from a corner and a size. A bar
-    // whose top is held on the graph's own edge has that edge as an exact
-    // number, and adding a height back on to the near corner overshoots it.
+    // Built from four corners rather than a corner and a size: a bar whose top is held on the
+    // graph's own edge has that edge exactly, and adding a height back on overshoots it.
     const corner = pointOf(coords, left, foot);
     const far = pointOf(coords, right, top);
     children.push(

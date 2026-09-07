@@ -66,6 +66,18 @@ describe('whether a path holds a point', () => {
     expect(worst).toBeLessThan(1e-4 + 2.8e-4);
   });
 
+  it('stays well inside the point ceiling at the finest tolerance a figure asks for', () => {
+    const points = flattenPath(circle(vec2(0, 0), 1), { tolerance: 1e-6 }).reduce(
+      (sum, loop) => sum + loop.length,
+      0
+    );
+    expect(points).toBeGreaterThan(4000);
+    expect(points).toBeLessThan(4200);
+    // The ceiling on a whole flattening is a million points, so this is the room
+    // the ceiling leaves over the finest tolerance anything here asks for.
+    expect(points * 200).toBeLessThan(1_000_000);
+  });
+
   it('closes a subpath that was left open before it decides anything', () => {
     const halfMoon = arc(vec2(0, 0), 1, 0, Math.PI);
     expect(halfMoon[0].closed).toBe(false);

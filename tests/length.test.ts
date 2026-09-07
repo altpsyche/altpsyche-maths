@@ -119,7 +119,19 @@ describe('how long a path is', () => {
     const ring = circle(vec2(0, 0), 1);
     const fine = trueLength(ring);
     expect(lengthOf(ring)).toBeLessThan(fine);
-    expect((fine - lengthOf(ring)) / fine).toBeLessThan(5e-4);
+    const short = (fine - lengthOf(ring)) / fine;
+    expect(short).toBeGreaterThan(3.9e-4);
+    expect(short).toBeLessThan(4.2e-4);
+  });
+
+  it('reads a quarter circle the same fraction short as it reads a whole one', () => {
+    // The shortfall is what the sample count leaves against the curve's own
+    // length, and it is a share rather than a distance, so a quarter agrees.
+    const quarter = arc(vec2(0, 0), 1, 0, Math.PI / 2);
+    const fine = trueLength(quarter);
+    const short = (fine - lengthOf(quarter)) / fine;
+    expect(short).toBeGreaterThan(3.9e-4);
+    expect(short).toBeLessThan(4.2e-4);
   });
 
   it('adds up every subpath', () => {

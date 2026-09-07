@@ -264,15 +264,18 @@ carry them, and 1.0.0 is cut last.
 **The demos gain from steps 8, 9 and 10**, which are the pictures Siva called not enticing, and every
 demo is recompiled by steps 6 and 7 against the renamed door.
 
-- [ ] **1. The comments carrying a measurement.** Nine comments hold a number: `figure/inside.ts:36`,
-  `figure/length.ts:20`, `:24` and `:80`, `figure/path.ts:81`, `figure/plot.ts:36` and `:49`,
-  `figure/ticks.ts:67`, `figure/extent.ts:39`. A number in a comment cannot be dated, so each one is
-  either an invariant the code must hold, which makes it an assertion in the suite, or a finding,
-  which `git log` already keeps. Seven inline `//` runs also exceed the two-line rule:
-  `figure/axis.ts:77`, `figure/node.ts:114`, `figure/path-data.ts:167`, `figure/plot.ts:255`,
-  `figure/section.ts:188`, `paint/number.ts:12`, `paint/svg.ts:150`. **Measures:** nine sites carrying
-  a number today and how many are assertions after; seven inline runs over two lines today; 1,994
-  comment lines of 6,624 today; the suite from 590 tests.
+- [x] **1. The comments carrying a measurement.** Seven of the nine numbers in comments were
+  measurements and two were definitions: `figure/ticks.ts` names three fifths as
+  0.6000000000000001 and `figure/extent.ts` names sixteen by nine as 1.78, and neither can drift,
+  so both stay. The seven left their comments and became brackets in the suite. One of them was
+  stale: `figure/inside.ts` claimed the point ceiling left a thousandfold of room over a unit
+  circle at a tolerance of a millionth, and that circle wants 4,097 points against a ceiling of a
+  million, so the room is 244-fold. The chord shortfall was not stale and the suite proved it while
+  the number was being moved: 16 chords read a curve 4.02e-4 short of the curve's own length, where
+  measuring against an exact circle instead reads 2.62e-4 and mixes in the error the cubic already
+  has. **Measured:** seven comments carrying a measurement to zero; seven inline runs over two lines
+  to zero; 1,994 comment lines of 6,624 to 1,987 of 6,563; the suite from 590 tests to 592; all
+  eight sheets identical.
 
 - [ ] **2. The same thing said twice.** `figure/space.ts` and `figure/section.ts` both walk a `u` by
   `v` grid over a parametric surface, and `figure/field.ts` and `figure/space.ts` both sample a box at

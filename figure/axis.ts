@@ -74,11 +74,8 @@ export function numberLine(name: string, scale: Scale, options: NumberLineOption
   const { from: low, to: high } = interval.ordered(scale.units);
   const at = (along: number, off: number): Vec2 => (across ? vec2(along, seat + off) : vec2(seat + off, along));
 
-  // The line runs the whole of the axis and each head stands beyond its end,
-  // rather than the heads eating into the line. Eating in leaves the outermost
-  // tick standing under a head instead of on the line, and the line still stops
-  // where a head begins, so a head that is not fully opaque has nothing showing
-  // through it.
+  // Each head stands beyond the line's end, or the outermost tick stands under a head instead of on
+  // the line. The line stops where a head begins, so a head that is not opaque shows nothing through.
   const parts: Node[] = [shape('line', line(at(low, 0), at(high, 0)), { stroke: options.stroke })];
 
   if (tip > 0 && options.fill) {

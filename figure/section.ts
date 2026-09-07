@@ -185,9 +185,8 @@ export function sectionOf(
         continue;
       }
       if (crossed.length !== 4) continue;
-      // A cell whose corners alternate in sign has two ways to be joined and the
-      // grid cannot tell them apart. The middle of the cell decides: the pair of
-      // corners it agrees with is the pair the curve runs around.
+      // A cell whose corners alternate in sign has two ways to be joined, so the middle of the cell
+      // decides: the pair of corners it agrees with is the pair the curve runs around.
       const middle = (gaps[0] + gaps[1] + gaps[2] + gaps[3]) / 4;
       const pairs = middle >= 0 === gaps[0] >= 0 ? [[0, 1], [2, 3]] : [[3, 0], [1, 2]];
       for (const [first, second] of pairs) {

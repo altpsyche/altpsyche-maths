@@ -77,8 +77,8 @@ export function rect(corner: Vec2, width: number, height: number): Path {
  * fraction of the radius.
  *
  * Four cubics cannot be a circle exactly, and this is the value that makes the
- * error smallest: the arc passes through both ends and the midpoint, and never
- * leaves the true radius by more than 2.7 parts in ten thousand of it.
+ * error smallest: the arc passes through both ends and the midpoint, and leaves
+ * the true radius by a few parts in ten thousand of it between them.
  */
 const KAPPA = 0.5522847498307936;
 

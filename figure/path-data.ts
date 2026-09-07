@@ -164,9 +164,8 @@ export function pathFromData(d: string): Path {
   let moved = false;
   let command = '';
   let index = 0;
-  // Held per kind because an S reflects a cubic's second control and a T a
-  // quadratic's only one, and either falls back to the current point when the
-  // segment before it was neither.
+  // Held per kind because an S reflects a cubic's second control and a T a quadratic's only one, and
+  // either falls back to the current point when the segment before it was neither.
   let lastCubic: Vec2 | undefined;
   let lastQuadratic: Vec2 | undefined;
 

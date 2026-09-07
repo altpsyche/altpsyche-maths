@@ -111,9 +111,8 @@ function walk(node: Node, prefix: string, transform: Mat3, style: Style, into: M
 
   const settled = inherited(style, node);
   const opacity = settled.opacity ?? 1;
-  // A group that scales makes the lines inside it thicker, the way it makes
-  // everything else bigger, so the width travels through the same transform the
-  // geometry did rather than staying at the number the author typed.
+  // A group that scales makes the lines inside it thicker, the way it makes everything else bigger,
+  // so the width goes through the transform the geometry did rather than staying as it was typed.
   const scale = mat3.scaleFactor(transform);
 
   if (node.kind === 'shape') {

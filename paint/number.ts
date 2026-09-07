@@ -9,8 +9,7 @@
 const PLACES = 3;
 
 export function short(value: number): string {
-  // A rounded value that lands on an integer keeps no decimal point, and a
-  // negative zero is written as zero, because otherwise the same coordinate
+  // An integer keeps no decimal point and a negative zero is written as zero, or the same coordinate
   // reached two ways would compare as two strings.
   const rounded = Number(value.toFixed(PLACES));
   return Object.is(rounded, -0) ? '0' : String(rounded);

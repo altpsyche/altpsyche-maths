@@ -17,13 +17,12 @@ import { clamp } from '../values/scalar.js';
 /**
  * How many samples measure one piece.
  *
- * Sixteen chords read a quarter circle 4 parts in ten thousand short of its true
- * length, since a chord cuts the corner off the arc it spans. What the count is
- * chosen for is the evenness of a walk rather than the total, and a share of the
- * length is a ratio the shortfall largely cancels out of: measured, twenty steps
- * along a quarter circle vary by 0.36% in size at this count. Doubling it costs
- * twice the work in every cut and every walk and buys a total four times closer,
- * which nothing here has asked for.
+ * A chord cuts the corner off the arc it spans, so a total read this way is
+ * short of the true one. What the count is chosen for is the evenness of a walk
+ * rather than the total, and a share of the length is a ratio the shortfall
+ * largely cancels out of. Doubling it costs twice the work in every cut and
+ * every walk and buys a total four times closer, which nothing here has asked
+ * for.
  */
 const SAMPLES = 16;
 
@@ -76,9 +75,7 @@ export function measurePath(path: Path): Measure {
  * Reading the fraction of the length as the parameter is exact only where the
  * curve moves at one rate, which is a straight line. Walking the table instead
  * and interpolating inside the one sample the length lands in makes a cut by
- * length even along a curve as well: measured on a quarter circle, cutting at
- * twenty even fractions of its length was 4.7e-3 of the whole out at the worst
- * of them and is 1.4e-4 out now.
+ * length even along a curve as well.
  */
 export function parameterAt(measured: Measured, wanted: number): number {
   const { upTo, total } = measured;

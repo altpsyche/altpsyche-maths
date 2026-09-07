@@ -31,10 +31,9 @@ const DEPTH = 24;
 /**
  * How many points a whole flattening may hold before it is refused.
  *
- * Halving is the only bound the depth gives, and sixteen million points for one
- * piece is a machine out of memory rather than a fine flattening. A circle of
- * radius 1 wants 4096 of these at a tolerance of a millionth, so the room here
- * is a thousandfold.
+ * Halving is the only bound the depth gives, so with no ceiling on the count a
+ * fine tolerance is a machine out of memory rather than a fine flattening. The
+ * ceiling sits far above what the finest tolerance a figure asks for reaches.
  */
 const POINTS = 1_000_000;
 

@@ -147,9 +147,8 @@ export interface ElementMaker<Made extends PaintNode = PaintNode> {
  * two frames to disagree.
  */
 export function paintSvg<Made extends PaintNode>(
-  // The maker alone says what kind of element this is. Read from the target as
-  // well, a real element would offer the whole union its own call accepts, text
-  // included, and that union is not a thing this painter can set an attribute on.
+  // The maker alone says what kind of element this is: read from the target as well, a real element
+  // would offer the whole union its own call accepts, which is not one this painter can write to.
   into: PaintTarget<NoInfer<Made>>,
   marks: readonly Mark[],
   view: Mat3,
