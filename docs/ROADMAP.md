@@ -125,12 +125,12 @@ the motion in a still.
 
 ## Now
 
-**0.10.0 is being worked, and steps 1 and 2 of its ten are landed.** `mat4` is below the line and
-`camera3` above it. A camera is a value the caller holds, built from an eye, a target and a
-projection, and it answers where a point in space lands in figure units, how far off it is along the
-way the camera looks, and whether it is in front of the eye. The suite went from 479 tests to 496.
+**0.10.0 is being worked, and steps 1 to 3 of its ten are landed.** `mat4` is below the line, and
+`camera3`, `polyline3`, `dot3` and `text3` are above it. A camera is a value the caller holds, and a
+builder that works in space hands back the flat nodes the rest of the package already draws, cut where
+they cross the near plane. The suite went from 479 tests to 505.
 
-**Step 3, marks in space, is next.** A step is ticked by writing the number its commit measured into
+**Step 4, the depth sort, is next.** A step is ticked by writing the number its commit measured into
 that step rather than by a bare tick, so the first step carrying no measurement is where a session
 resumes.
 
@@ -221,7 +221,7 @@ otherwise have been given is 14.14 figure units from the place its mirror in fro
 frame ten units tall. The suite went from 488 tests to 496 and the door from 93 values above the line
 to 96.
 
-**3. Marks in space.** `polyline3`, `dot3` and `text3`, each taking points in space and a camera and
+**3. Done. Marks in space.** `polyline3`, `dot3` and `text3`, each taking points in space and a camera and
 handing back a flat node. A segment with one end behind the eye is cut where it crosses the near plane,
 and a segment wholly behind is left out. A builder with nothing in front of the camera hands back a
 group with no children, which flattens to no marks rather than to a mark of nothing.
@@ -230,6 +230,16 @@ group with no children, which flattens to no marks rather than to a mark of noth
 projection of its four points, to 1e-12. A polyline running from in front of the camera to behind it is
 cut, its last point lies on the near plane to 1e-12, and without the cut that point lands a measured
 distance on the wrong side of the frame. A polyline wholly behind the camera draws no marks.
+
+*Measured:* a square two units across, seen through a ninety-degree eye five units back, draws a closed
+path whose four corners are the camera's own answer for its four points, exactly. A line running from
+in front of that eye to nine units behind it is cut at a depth of 1, which is the near plane's own, to
+0, and the drawn end is the camera's answer for the point at that depth, to 0. The point the line
+actually ends at lands 8.84 figure units from the cut, on the far side of the middle of a frame ten
+units tall, which is what the cut is for. A line wholly behind the eye draws no marks, and a line that
+passes the eye and comes back draws two. The suite went from 496 tests to 505 and the door from 96
+values above the line to 99.
+
 
 **4. The depth sort.** `space(name, items, camera)`, a group whose children are ordered back to front
 so the near piece is painted over the far one. This is the painter's algorithm, named in the comment
