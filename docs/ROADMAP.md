@@ -224,15 +224,18 @@ would leave it still. A figure of no
 duration walks one frame. Reading one frame of a 300 frame walk builds one scene. The suite went from
 575 tests to 584.
 
-**2. Every frame paints, through both painters.** No new call. A test walks both demos at 30 frames a
+**2. Every frame paints, through both painters. Done.** No new call. A test walks both demos at 30 frames a
 second, paints each frame through `paintCanvas` into a counting context and through `svgMarkup`, and
 holds what comes out. This is the claim the item makes, held without a browser.
 
-*Measures:* the solid demo walks a stated number of frames at 30 a second and paints every one, with
-the count of drawing calls per frame holding at a stated number. Every frame's markup parses to a
-stated element count. The flat demo's view moves, so the matrix its frames carry changes across the
-walk by a stated amount, where a walk resolving the extent once would leave it unchanged. The whole
-walk of both demos is timed and the number goes in the commit body rather than into an assertion.
+*Measured:* the solid demo walks 354 frames at 30 a second and the flat one 308, and every frame of
+both is painted through both painters. Each frame of the solid demo makes 205 fills, 69 strokes and 7
+texts, which is 16 more calls than it has marks: those are the panes of glass, and a mark carrying
+both a fill and a stroke is painted twice and written once. Each frame of the flat demo makes 71, 119
+and 12, which is its 202 marks exactly. Every frame's markup holds one element per mark. The flat
+demo's view is carried 312 across the walk over 78 distinct places, since it holds still while the dot
+is inside its own reach of the middle of the frame. The two walks add 1.34 seconds to a suite that ran
+in 2.42, which is the cost of the gate.
 
 **3. The rotate demo's strip is a walk.** `demos/rotate.ts` builds its strip from `frameTimes` at 4
 frames rather than from four times written out by hand, and `demos/render.ts` reads it the same way.
