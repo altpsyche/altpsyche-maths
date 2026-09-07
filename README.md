@@ -18,6 +18,39 @@ const figure = {
 svgMarkup(at(figure, 0.5), viewMatrix(figure.extent, 'contain', 640, 360), 640, 360);
 ```
 
+## Axes and a plotted function
+
+<img src="docs/tangent.svg" width="720" alt="A parabola on a grid, with both axes labelled, cut where it meets the top of its own y axis.">
+
+```ts
+import { axes, coordsOf, group, interval, numberPlane, plot, scaleOf, shape } from '@altpsyche/maths';
+
+const coords = coordsOf(
+  scaleOf(interval(-1, 4), interval(-4.6, 4.6)),
+  scaleOf(interval(-1, 9), interval(-2.4, 2.4))
+);
+
+group('graph', [
+  numberPlane('grid', coords, { stroke: faint, minors: 4 }),
+  axes('axes', coords, { stroke: pen, fill: ink, size: 0.26, tip: 0.18 }),
+  shape('curve', plot(coords, (x) => x * x), { stroke: drawn }),
+]);
+```
+
+A **scale** is the run of numbers an axis counts through and where that run lands in figure units.
+Two of them are a **coords**, and `pointOf` reads a pair of graph numbers as a point. The steps
+between ticks are one, two or five times a power of ten, because those are the numbers a reader
+adds up in their head.
+
+`plot` samples a function at a fixed count and joins the samples with cubics that leave each one at
+the slope the function has there. It cuts the curve where the curve leaves the graph, so a pole
+breaks in two instead of drawing a line up the picture, and the cut end sits on the edge rather
+than a sample short of it. The curve above is cut at x = 3, where the parabola meets the 9 its y
+axis stops at.
+
+That picture is written by `svgMarkup`, which needs no browser, so `npm run demos` regenerates it
+and a test compares the bytes against the committed file.
+
 ## What it is built on
 
 **A figure at a time is data.** `at(figure, seconds)` is the whole public surface, and it is a

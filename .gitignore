@@ -1,6 +1,7 @@
 # What a checkout of this package makes rather than carries.
 node_modules/
 dist/
+.demos/
 
 # What `npm pack` leaves behind, which is the thing that gets published rather
 # than something to commit.

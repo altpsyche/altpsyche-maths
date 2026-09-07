@@ -1,0 +1,19 @@
+{
+  // The demos are not published, so they are checked by the wide config and
+  // emitted by this one, into a directory a checkout makes rather than carries.
+  // Compiling them into the published build would ship a picture nobody imports.
+  "extends": "./tsconfig.build.json",
+  "compilerOptions": {
+    "outDir": "./.demos",
+    "declaration": false
+  },
+  "include": [
+    "index.ts",
+    "values/**/*.ts",
+    "timing/**/*.ts",
+    "figure/**/*.ts",
+    "paint/**/*.ts",
+    "demos/**/*.ts"
+  ],
+  "exclude": ["dist", "node_modules"]
+}

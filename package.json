@@ -36,6 +36,7 @@
   "scripts": {
     "build": "tsc -p tsconfig.build.json",
     "test": "vitest run",
+    "demos": "tsc -p tsconfig.demos.json && node .demos/demos/write.js",
     "type-check": "tsc --noEmit -p tsconfig.json",
     "prepack": "npm run build"
   },
