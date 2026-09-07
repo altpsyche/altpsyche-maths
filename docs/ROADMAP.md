@@ -1,7 +1,7 @@
 # Roadmap
 
 **This file is the only queue.** If a piece of work is not written below, nobody is tracking it.
-[DESIGN.md](DESIGN.md) is the design and queues nothing.
+[DESIGN.md](../DESIGN.md) is the design and queues nothing.
 
 ## The goal, stated by Siva
 
@@ -16,7 +16,7 @@ What is queued here is the part a library can be held to: whether a picture that
 can be expressed at all.
 
 **What decides the order.** A package is real when it has a consumer that ships, which is the
-argument [DESIGN.md](DESIGN.md) makes about timing moving in here before a single figure existed. So
+argument [DESIGN.md](../DESIGN.md) makes about timing moving in here before a single figure existed. So
 an item earns its place by a picture something is waiting to draw, and the two demos below are what
 is waiting until the website has a chapter that is.
 
@@ -100,8 +100,9 @@ a strip of frames in one SVG, which shows the motion in a still.
 
 ## Now
 
-Nothing is queued for work. **0.4.0 is next and it needs its steps written before it is worked**, and
-writing them is a session on its own.
+**0.4.0 is planned and step 1 is the pick.** Its steps are under its item below, each one a commit,
+and a session resumes at the first unticked one. One naming call in that item is Siva's, and it is a
+rename across the step list either way rather than a change to the plan.
 
 ## The items
 
@@ -109,13 +110,150 @@ Each is a version above. What follows is what each one covers.
 
 ### Axes and plotting, 0.4.0
 
-`NumberLine`, `Axes`, `NumberPlane`, ticks and their labels, a function plotted over a range, the area
+`numberLine`, `axes`, `numberPlane`, ticks and their labels, a function plotted over a range, the area
 under a curve, and a tangent that slides along one. **This is the most-used picture in the reference
 material and the package has none of it.**
 
 The sampler already gives the part that is usually hard. `scene` is a function of `(seconds, values)`
 and `tracks` carries the values, so a curve that is genuinely a different curve each frame is what
 this package already does rather than something to add.
+
+**One call is Siva's, and it is a rename either way.** The plan is written to lower-case functions
+handing back a `GroupNode`, which is what `arrow`, `callout` and `dot` already are. `NumberLine`,
+`Axes` and `NumberPlane` are Manim's class names and were written into this file to say which pictures
+were meant. Nothing in this package is a class, and three capitals among forty lower-case exports
+would make a reader of `index.ts` look for a constructor that is not there. Say the word and the step
+list takes the capitals instead.
+
+**Three things the plan settles rather than asks.**
+
+A curve is sampled at a fixed number of points and is never subdivided by curvature. Adaptive
+subdivision hands back a different point count as the curve changes, and `morph` walks one path into
+another by pairing their points, so a curve that resamples itself between frames cannot be morphed
+into anything. The count is an option with a default, and step 7 measures what the default costs.
+
+The mapping from graph units to figure units is a value the caller holds rather than something read
+back out of a drawn group. `axes` draws the two lines and `plot` needs the mapping, so a plot over
+axes that were never drawn has to work.
+
+An interval goes below the line, in `values/`, because [DESIGN.md](../DESIGN.md) already lists
+intervals there and none exists yet. Ticks and scales go above it, in `figure/`, because a tick
+exists to be drawn.
+
+**The demo is written first, as the target the steps compile to.** It is `demos/tangent.ts`, and this
+is what it says at 0.4.0. The names in it are the public surface the steps have to produce.
+
+```ts
+const coords = coordsOf(
+  scaleOf({ from: -1, to: 4 }, { from: -4.6, to: 4.6 }),
+  scaleOf({ from: -1, to: 9 }, { from: -2.4, to: 2.4 })
+);
+const curve = (x: number) => x * x;
+
+export const tangent: Figure = {
+  extent: { width: 10.8, height: 6 },
+  duration: 4,
+  still: 2,
+  tracks: { x: [{ time: 0, value: 0 }, { time: 4, value: 3, smooth: true }] },
+  scene: (seconds, values) => {
+    const x = values.x as number;
+    const slope = slopeOf(curve, x);
+    return group('tangent', [
+      numberPlane('grid', coords, { stroke: faint, minors: 4 }),
+      axes('axes', coords, { stroke: pen, fill: ink, size: 0.28 }),
+      areaUnder('area', coords, curve, { from: 0, to: x }, { fill: wash }),
+      shape('curve', plot(coords, curve, { samples: 96 }), { stroke: pen }),
+      tangentAt('tangent', coords, curve, x, { stroke: accent, reach: 1.2 }),
+      dot('point', pointOf(coords, x, curve(x)), 0.08, ink),
+      text('reading', fractionOf(extent, 0.06, 0.9), `slope ${labelFor(slope, 0.01)}`, 0.32, { fill: ink }),
+    ]);
+  },
+};
+```
+
+**The steps.** Each one is a commit, and each names the measurement its commit body quotes. A session
+resumes at the first unticked one.
+
+- [ ] **1. An interval.** `values/interval.ts`: `Interval` as `{ from, to }`, its length, whether it
+      holds a value, and one interval remapped onto another over the existing `remap`. Measurement:
+      the round trip through two remaps over a thousand samples, and what a reversed interval does
+      where `from` is above `to`.
+- [ ] **2. Ticks on an interval, and their labels.** `figure/ticks.ts`: the step size chosen by
+      Heckbert's nice numbers, which is the published version of the one, two, five and ten rule; the
+      tick values inside an interval; and each tick's own text, formatted from the number of decimals
+      the step has. A tick comes back as its value and its text together, so a caller never re-derives
+      the decimals. Measurement: how many of the labels over zero to one at a step of a fifth carry
+      float noise when formatted the obvious way, against none after; the step and the count chosen
+      for four ranges including one where `from` is above `to` and one of no width.
+- [ ] **3. A scale, and the pair of them.** `figure/scale.ts`: `Scale` as a graph interval onto a
+      figure-unit interval, `scaled` and `unscaled`, then `Coords` as the two scales together with
+      `pointOf(coords, x, y)`. Measurement: where the demo's coords put graph `(0, 0)`, `(4, 9)` and
+      one point outside both intervals, and the round trip through `unscaled` over a thousand samples.
+- [ ] **4. `numberLine`.** One drawn axis: the line, a tick at each value, a label under each tick,
+      and an optional tip at each end. Measurement: the mark count and the id list for the demo's x
+      interval; and the geometry of every mark with a label forty characters long against the same
+      figure with a label one character long, which is DESIGN.md's rule that nothing about a figure's
+      layout may depend on how wide some text is.
+- [ ] **5. `axes`.** Two number lines under one group, crossing at zero, and at the near edge of the
+      interval where zero is outside it. Measurement: the mark count; and where the horizontal line
+      sits for a y interval of minus one to nine against one of two to nine, where zero is off the
+      picture and an axis drawn at zero would be invisible.
+- [ ] **6. `numberPlane`.** The grid: a line at each tick and a fainter line at each division
+      between them. Measurement: the line count for the demo's coords at four divisions, the count
+      with the divisions off, and how many lines fall outside the coords' own intervals, which is
+      none.
+- [ ] **7. `plot`.** A function of one number sampled over an interval into a path, at a fixed count.
+      Measurement: the largest distance from the sampled path to the true curve, taken at the midpoint
+      of every segment, for the demo's curve and for a sine over two turns, at sixteen, sixty-four and
+      two hundred and fifty-six samples. The default is the count that reading those three makes
+      obvious rather than a guess.
+- [ ] **8. A plotted curve stays inside its own axes.** A sample that is not finite ends the subpath,
+      and so does a sample outside the y interval, with the next sample that is back inside starting
+      a new one. Measurement: the subpath count for one over x across zero, for tangent over two
+      turns, and for the square root from below zero, against what step 7 gives for each; and the
+      number of points left outside the y interval, which is none.
+- [ ] **9. The demo draws, first cut.** `demos/tangent.ts` carrying the grid, the axes and the curve;
+      `npm run demos` writing `docs/tangent.svg` through `svgMarkup`; a gate comparing the regenerated
+      bytes against the committed file; and the README carrying the image. Measurement: the demo's
+      mark count and id list at zero seconds and at its still time, and the byte length of the
+      committed SVG. **This is the first step the demo gains from.**
+- [ ] **10. `areaUnder`.** The closed region between a plotted curve and a horizontal line, over an
+      interval. Measurement: the region's own area, worked out from its cubics by Green's theorem,
+      against the exact integral of the demo's curve over zero to two, which is eight thirds; quoted
+      as parts in ten thousand at the sample count step 7 settled.
+- [ ] **11. `riemannBars`.** The bars under a curve, with the height taken at each bar's left edge,
+      right edge or middle. Measurement: the summed area at four, sixteen and sixty-four bars for
+      each of the three placements against eight thirds, which shows the left sum below and the right
+      sum above at every count.
+- [ ] **12. `tangentAt` and `slopeOf`.** The slope of a function at a point by the central difference,
+      and the tangent line through that point drawn a stated reach either side. Measurement: the slope
+      at three x values on the demo's curve against the exact derivative, and the same on a sine,
+      quoting the error and the step size `h` that produced it; and the distance from the tangent's
+      midpoint to the curve, which is zero to within that error.
+- [ ] **13. The demo complete, and 0.4.0 cut.** The demo gains the walking point, the sliding tangent,
+      the shaded area and the slope as a number that changes, all driven by the `x` track; the README
+      carries a strip of frames in one SVG, because a moving image needs a GIF and this package has no
+      encoder. Bump to 0.4.0 in this commit. Measurement: the demo's mark count and the slope text at
+      zero, one, two and four seconds, and the byte length of both committed SVGs. **This is the
+      second step the demo gains from.**
+
+**Done criteria, line by line.**
+
+- `npm test`, `npm run type-check` and `npm run build` all pass on a clean tree.
+- `index.ts` exports `Interval`, the interval calls, `Tick`, the tick calls, `Scale`, `Coords`,
+  `scaleOf`, `coordsOf`, `scaled`, `unscaled`, `pointOf`, `labelFor`, `numberLine`, `axes`,
+  `numberPlane`, `plot`, `areaUnder`, `riemannBars`, `tangentAt` and `slopeOf`, and no file under
+  `demos/` reaches into the package by any path other than the door.
+- `at(tangent, seconds)` gives the mark counts step 13 quotes, at all four times.
+- `npm run demos` leaves the working tree clean, which is the gate saying the committed SVGs are what
+  the code now produces.
+- The README carries the still and the strip of frames.
+- No label's position changes when its text gets forty characters longer.
+- No plotted point sits outside its coords' y interval, for all three functions of step 8.
+- The area under the demo's curve over zero to two is eight thirds to within the bound step 10 quotes.
+- The slope from `slopeOf` matches the exact derivative to within the error step 12 quotes, at three
+  points on each of two functions.
+- `package.json` says `0.4.0`.
 
 ### The animation vocabulary, 0.5.0
 
