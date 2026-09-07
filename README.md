@@ -212,23 +212,51 @@ When the pieces kept will not join into a loop, the operation stops and says how
 ends of the run it had are. That happens when an input crosses itself, which these do not take. A
 shape drawn with a gap in it and nothing said about it is the one failure a caller cannot see.
 
+## A turn about a point
+
+<img src="docs/rotate.svg" width="720" alt="Two panels side by side, each an L-shaped block turned part way round with a dot marking the point it turns about. In the left panel the dot sits at the middle of the block's own box. In the right it sits off to one side, so the block swings round it. A word rides with the block in both panels and stays upright.">
+
+`rotate(target, angle)` turns the marks a name reaches, over a span of the timeline. The point it
+turns about is the middle of the box round those marks unless a figure names one, and it is read off
+them as they arrive rather than after the turn has moved them. The box round a turned shape is not the
+turned box, so reading it back afterwards would let the pivot drift and the turn would stop being a
+turn.
+
+The left panel takes that default and spins where it stands. The right panel is given a point off to
+one side, so the same shape swings round it instead. The furthest corner of the left shape stays 1.00
+figure units from its pivot at every time and the right one's stays 2.34, which is what makes the two
+read as different motions rather than as the same one twice.
+
+A word rides with the shape in both panels and stays upright the whole way round. A mark carries no
+rotation of its own, so turning the words would be work in both painters for a label that is easier to
+read left as it is, which is the same reason a number line takes a direction rather than being turned
+on its side.
+
+A turn does not thicken a line. A stroke's width is multiplied by how much the transform stretches a
+length, and a rotation stretches nothing, where `scale` stretches by the factor it grew by.
+
+<img src="docs/rotate-strip.svg" width="820" alt="Four frames in two rows, each showing both panels, at nothing, a quarter, a half and three quarters of the way round.">
+
+The quarters of the turn. The whole turn is left off the strip because it draws the picture that
+nothing draws: this is the first figure here to declare itself a loop, and `loops(figure)` is the gate
+behind that flag, comparing the marks at the duration against the marks at zero.
+
 ## The animations
 
 `fadeIn`, `fadeOut`, `fadeTo`, `draw`, `morph`, `morphEquation`, `countTo`, `moveBy`, `rotate`,
 `scale`, `growFrom`, `moveAlong`, `indicate`, `flash` and `circumscribe`. A `Timeline` plays them in order, plays several `together`, or
 `stagger`s a row so its parts arrive one after another.
 
-A turn and a growth happen about a point the marks decide for themselves, which is the middle of the
-box round them. `boundsOf` is that box, worked out from where each piece of the curve turns back on
-itself rather than from the points the curve is written from.
+`boundsOf` is the box a turn and a growth are worked about, found from where each piece of the curve
+turns back on itself rather than from the points the curve is written from.
 
 `moveAlong` carries a mark along a path at one speed, measured by the path's length. Even steps in a
 curve's own parameter are uneven steps along the curve: a step covers more of it where the curve is
 moving fast, which on a quarter circle is a 6.9% difference between the longest step and the shortest
 and on the demo's own walk is 82%.
 
-Both pictures are written by `svgMarkup`, which needs no browser, so `npm run demos` regenerates
-them and a test compares the bytes against the committed files.
+Every picture here is written by `svgMarkup`, which needs no browser, so `npm run demos` regenerates
+all six and a test compares the bytes against the committed files.
 
 ## What it is built on
 

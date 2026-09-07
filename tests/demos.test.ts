@@ -4,19 +4,33 @@ import { describe, expect, it } from 'vitest';
 import {
   areaOf,
   at,
+  boundsOfMarks,
   durationOf,
   flatten,
   interval,
+  loops,
   plot,
   pointAlong,
   pointOf,
   sampleTrack,
   tangentAt,
   unscaled,
+  vec2,
   type Mark,
 } from '../index.js';
 import { sheets, stillMarkup } from '../demos/render.js';
 import { FRAMES, TIMES, coords, curve, stripMarks, tangent, walk } from '../demos/tangent.js';
+import {
+  FRAMES as TURN_FRAMES,
+  GIVEN,
+  LOCAL,
+  OWN,
+  SWING,
+  TIMES as TURN_TIMES,
+  TURN,
+  stripMarks as turnStripMarks,
+  turns,
+} from '../demos/rotate.js';
 import {
   BIG,
   FRAMES as BOOLEAN_FRAMES,
@@ -47,12 +61,14 @@ describe('the committed pictures', () => {
     }
   });
 
-  it('are all four there', () => {
+  it('are all six there', () => {
     expect(sheets.map((sheet) => sheet.file)).toEqual([
       'docs/tangent.svg',
       'docs/tangent-strip.svg',
       'docs/boolean.svg',
       'docs/boolean-strip.svg',
+      'docs/rotate.svg',
+      'docs/rotate-strip.svg',
     ]);
   });
 });
@@ -407,5 +423,117 @@ describe('the boolean strip', () => {
       return mark?.kind === 'path' ? mark.path.length : -1;
     });
     expect(loops).toEqual([0, 0, 1, 1]);
+  });
+});
+
+describe('the rotation demo', () => {
+  const corners = (seconds: number, panel: string) => {
+    const mark = at(turns, seconds).find((each) => each.id === `turns/${panel}/rider/ell`);
+    if (mark?.kind !== 'path') throw new Error('the shape is a path');
+    const subpath = mark.path[0];
+    return [subpath.start, ...subpath.curves.slice(0, -1).map((piece) => piece.to)];
+  };
+  const word = (seconds: number, panel: string) => {
+    const mark = at(turns, seconds).find((each) => each.id === `turns/${panel}/rider/word`);
+    if (mark?.kind !== 'text') throw new Error('the rider is text');
+    return mark;
+  };
+
+  it('draws the same eight marks at every time', () => {
+    // Two panels of four: the pivot, the shape, the word riding with it, and the
+    // words underneath. Nothing arrives or leaves, which is what lets one frame
+    // be compared against another.
+    for (const seconds of [0, ...TURN_FRAMES, TURN]) expect(at(turns, seconds)).toHaveLength(8);
+  });
+
+  it('lands where it began after the whole turn, which is why it declares a loop', () => {
+    expect(turns.loop).toBe(true);
+    expect(loops(turns, 1e-9)).toBe(true);
+  });
+
+  it('turns the left panel about the middle of the box round it', () => {
+    // The pivot is the shape's own centre because the shape is written about it,
+    // so the closed form is stated here rather than read back off the marks.
+    for (const [index, corner] of corners(TURN_TIMES.quarter, 'own').entries()) {
+      const want = vec2.add(OWN, vec2.rotate(LOCAL[index], Math.PI / 2));
+      expect(corner.x).toBeCloseTo(want.x, 12);
+      expect(corner.y).toBeCloseTo(want.y, 12);
+    }
+  });
+
+  it('turns the right panel about the point it is given', () => {
+    for (const [index, corner] of corners(TURN_TIMES.half, 'given').entries()) {
+      const want = vec2.sub(GIVEN, vec2.add(vec2(SWING, 0), LOCAL[index]));
+      expect(corner.x).toBeCloseTo(want.x, 12);
+      expect(corner.y).toBeCloseTo(want.y, 12);
+    }
+  });
+
+  it('spins the left panel where it stands and swings the right one round', () => {
+    // A turn keeps every corner the distance from the pivot it started at, so
+    // the furthest corner is the reach of the panel. The left panel's reach is
+    // the shape's own, and the right one's is that plus the swing.
+    const reach = (swing: number) => Math.max(...LOCAL.map((point) => Math.hypot(swing + point.x, point.y)));
+    for (const seconds of [0, ...TURN_FRAMES, TURN]) {
+      const own = corners(seconds, 'own').map((point) => vec2.distance(point, OWN));
+      const given = corners(seconds, 'given').map((point) => vec2.distance(point, GIVEN));
+      expect(Math.max(...own)).toBeCloseTo(reach(0), 9);
+      expect(Math.max(...given)).toBeCloseTo(reach(SWING), 9);
+    }
+    expect(reach(SWING)).toBeGreaterThan(2 * reach(0));
+  });
+
+  it('leaves the words upright and moves nothing about them but where they sit', () => {
+    const start = word(0, 'given');
+    for (const seconds of TURN_FRAMES) {
+      const now = word(seconds, 'given');
+      expect(now.text).toBe(start.text);
+      expect(now.size).toBe(start.size);
+      expect(now.align).toBe(start.align);
+      expect(vec2.distance(now.at, GIVEN)).toBeCloseTo(vec2.distance(start.at, GIVEN), 9);
+    }
+  });
+
+  it('does not thicken a line by turning it', () => {
+    // A rotation's scale factor is one, where a growth's is the factor it grew
+    // by, so a turned outline keeps the width the figure asked for.
+    const width = (seconds: number) => {
+      const mark = at(turns, seconds).find((each) => each.id === 'turns/own/rider/ell');
+      return mark?.kind === 'path' ? mark.stroke?.width : undefined;
+    };
+    for (const seconds of [0, ...TURN_FRAMES, TURN]) expect(width(seconds)).toBe(0.04);
+  });
+
+  it('keeps every mark inside the frame it declares', () => {
+    for (const seconds of [0, ...TURN_FRAMES, TURN]) {
+      for (const mark of at(turns, seconds)) {
+        const points =
+          mark.kind === 'path'
+            ? mark.path.flatMap((subpath) => [subpath.start, ...subpath.curves.map((piece) => piece.to)])
+            : [mark.at];
+        for (const point of points) {
+          expect(Math.abs(point.x)).toBeLessThanOrEqual(5.4);
+          expect(Math.abs(point.y)).toBeLessThanOrEqual(3);
+        }
+      }
+    }
+  });
+});
+
+describe('the rotation strip', () => {
+  it('carries every frame with no two marks sharing an id', () => {
+    const { marks } = turnStripMarks(TURN_FRAMES, 2);
+    expect(marks).toHaveLength(8 * TURN_FRAMES.length);
+    expect(new Set(marks.map((mark) => mark.id)).size).toBe(marks.length);
+  });
+
+  it('leaves a wider gap between two frames than between the panels inside one', () => {
+    // A row read by its gaps: the narrower gap has to be the one inside a frame,
+    // or two frames of two panels read as one row of four.
+    const { marks } = turnStripMarks(TURN_FRAMES, 2);
+    const span = (id: string) => boundsOfMarks(marks.filter((mark) => mark.id.startsWith(id)))!;
+    const insideFrame = span('at0/turns/given').x.from - span('at0/turns/own').x.to;
+    const betweenFrames = span('at1/turns/own').x.from - span('at0/turns/given').x.to;
+    expect(betweenFrames).toBeGreaterThan(insideFrame);
   });
 });

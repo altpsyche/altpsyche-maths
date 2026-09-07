@@ -13,6 +13,7 @@ import {
   booleans,
   stripMarks as booleanStripMarks,
 } from './boolean.js';
+import { FRAMES as TURN_FRAMES, stripMarks as turnStripMarks, turns } from './rotate.js';
 
 /** A hundred pixels to the figure unit, which is the size the README shows and
  * the only place the number matters, since the picture scales from its view box. */
@@ -49,4 +50,6 @@ export const sheets: readonly Sheet[] = [
   // contain fits it to the width and leaves a band of white above and below.
   { file: 'docs/boolean.svg', markup: () => stillMarkup(booleans, booleans.still, WIDTH, 400) },
   { file: 'docs/boolean-strip.svg', markup: () => stripMarkup(booleanStripMarks(BOOLEAN_FRAMES, 2)) },
+  { file: 'docs/rotate.svg', markup: () => stillMarkup(turns, turns.still) },
+  { file: 'docs/rotate-strip.svg', markup: () => stripMarkup(turnStripMarks(TURN_FRAMES, 2)) },
 ];
