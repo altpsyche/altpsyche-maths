@@ -16,8 +16,9 @@
  * resamples itself between frames could not be morphed into anything.
  */
 import { interval, type Interval } from '../values/interval.js';
-import { pointOf, type Coords } from './scale.js';
-import type { Cubic, Path, Subpath } from './path.js';
+import { vec2 } from '../values/vec2.js';
+import { pointOf, scaled, type Coords } from './scale.js';
+import { straight, type Cubic, type Path, type Subpath } from './path.js';
 
 export interface PlotOptions {
   /** How many pieces the curve is cut into. */
@@ -171,4 +172,37 @@ export function plot(coords: Coords, of: (x: number) => number, options: PlotOpt
     at = end + 1;
   }
   return path;
+}
+
+export interface AreaOptions extends PlotOptions {
+  /** The height the region is measured down to, which is the axis itself where
+   * it is left out. A height off the graph sits at the near edge instead. */
+  baseline?: number;
+}
+
+/**
+ * The region between a curve and a level line, closed, as one subpath per
+ * stretch of the curve that is on the graph.
+ *
+ * The curve is the same one `plot` draws over the same run, so the top of the
+ * region and the curve laid over it are the same geometry rather than two
+ * samplings that agree to within a sample.
+ */
+export function areaUnder(
+  coords: Coords,
+  of: (x: number) => number,
+  over: Interval,
+  options: AreaOptions = {}
+): Path {
+  const foot = scaled(coords.y, interval.clampTo(coords.y.graph, options.baseline ?? 0));
+  return plot(coords, of, { ...options, over }).map((top) => {
+    const last = top.curves.length > 0 ? top.curves[top.curves.length - 1].to : top.start;
+    const under = vec2(last.x, foot);
+    const back = vec2(top.start.x, foot);
+    return {
+      start: top.start,
+      curves: [...top.curves, straight(last, under), straight(under, back), straight(back, top.start)],
+      closed: true,
+    } satisfies Subpath;
+  });
 }

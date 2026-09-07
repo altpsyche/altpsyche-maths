@@ -161,7 +161,7 @@ export const tangent: Figure = {
     return group('tangent', [
       numberPlane('grid', coords, { stroke: faint, minors: 4 }),
       axes('axes', coords, { stroke: pen, fill: ink, size: 0.28 }),
-      areaUnder('area', coords, curve, { from: 0, to: x }, { fill: wash }),
+      shape('area', areaUnder(coords, curve, { from: 0, to: x }), { fill: wash }),
       shape('curve', plot(coords, curve, { samples: 96 }), { stroke: pen }),
       tangentAt('tangent', coords, curve, x, { stroke: accent, reach: 1.2 }),
       dot('point', pointOf(coords, x, curve(x)), 0.08, ink),
@@ -252,10 +252,14 @@ resumes at the first unticked one.
       into a directory a checkout makes rather than carries, because compiling them into the
       published build would ship a picture nobody imports. **This is the first step the demo gains
       from.**
-- [ ] **10. `areaUnder`.** The closed region between a plotted curve and a horizontal line, over an
-      interval. Measurement: the region's own area, worked out from its cubics by Green's theorem,
-      against the exact integral of the demo's curve over zero to two, which is eight thirds; quoted
-      as parts in ten thousand at the sample count step 7 settled.
+- [x] **10. `areaUnder`.** The closed region between a plotted curve and a level line, over an
+      interval, as one subpath per stretch of the curve that is on the graph. **Landed.** The
+      region's own area, worked out from its cubics by Green's theorem with three-point
+      Gauss-Legendre, which is exact for the degree-five integrand: eight thirds to within 1.3e-15
+      at 4 and 16 samples, 4.9e-15 at 64 and 4.4e-16 at 96. It is exact rather than close because a
+      cubic holds a parabola with nothing left over, so the region's top has no sampling error to
+      carry into its area. It hands back a path rather than a group, which is the rule the
+      neighbouring calls follow: one mark is a path and several are a group.
 - [ ] **11. `riemannBars`.** The bars under a curve, with the height taken at each bar's left edge,
       right edge or middle. Measurement: the summed area at four, sixteen and sixty-four bars for
       each of the three placements against eight thirds, which shows the left sum below and the right

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { coordsOf, interval, plot, pointCount, pointOf, scaleOf, type Path } from '../index.js';
+import { areaUnder, coordsOf, interval, plot, pointCount, pointOf, scaleOf, type Path } from '../index.js';
 
 // The demo's own coords, whose y axis stops at 9 while the parabola reaches 16.
 const square = coordsOf(scaleOf(interval(-1, 4), interval(-4.6, 4.6)), scaleOf(interval(-1, 9), interval(-2.4, 2.4)));
@@ -173,5 +173,95 @@ describe('a curve that leaves its graph', () => {
 
   it('draws nothing where the function is nowhere on the graph', () => {
     expect(plot(pole, () => 50)).toEqual([]);
+  });
+});
+
+/**
+ * The area a closed path encloses, by Green's theorem over each cubic.
+ *
+ * The integrand is x times the derivative of y minus y times the derivative of
+ * x, which for two cubics is a polynomial of degree five, and three-point
+ * Gauss-Legendre is exact for degree five. So this reads the path's own area
+ * rather than an approximation of it.
+ */
+function enclosedArea(path: Path): number {
+  const nodes = [-Math.sqrt(3 / 5), 0, Math.sqrt(3 / 5)];
+  const weights = [5 / 9, 8 / 9, 5 / 9];
+  let total = 0;
+  for (const subpath of path) {
+    let from = subpath.start;
+    for (const curve of subpath.curves) {
+      const p = [from, curve.control1, curve.control2, curve.to];
+      for (let node = 0; node < 3; node++) {
+        const t = (nodes[node] + 1) / 2;
+        const u = 1 - t;
+        const value = (axis: 'x' | 'y') =>
+          u * u * u * p[0][axis] + 3 * u * u * t * p[1][axis] + 3 * u * t * t * p[2][axis] + t * t * t * p[3][axis];
+        const slope = (axis: 'x' | 'y') =>
+          3 * (u * u * (p[1][axis] - p[0][axis]) + 2 * u * t * (p[2][axis] - p[1][axis]) + t * t * (p[3][axis] - p[2][axis]));
+        total += (weights[node] / 2) * ((value('x') * slope('y') - value('y') * slope('x')) / 2);
+      }
+      from = curve.to;
+    }
+  }
+  return Math.abs(total);
+}
+
+describe('the area under a curve', () => {
+  /** A graph area of one, in figure units squared, which is what the two scales
+   * turn one square graph unit into. */
+  const perGraphUnit =
+    (interval.span(tall.x.units) / interval.span(tall.x.graph)) *
+    (interval.span(tall.y.units) / interval.span(tall.y.graph));
+
+  it('is the exact integral of a parabola, at every count', () => {
+    // A cubic holds a parabola with nothing left over, so the region's top is
+    // the parabola itself and its area has no sampling error in it.
+    for (const samples of [4, 16, 64, 96]) {
+      const area = enclosedArea(areaUnder(tall, (x) => x * x, interval(0, 2), { samples }));
+      expect(area / perGraphUnit).toBeCloseTo(8 / 3, 12);
+    }
+  });
+
+  it('closes down to the axis and back', () => {
+    const path = areaUnder(tall, (x) => x * x, interval(0, 2), { samples: 4 });
+    expect(path).toHaveLength(1);
+    expect(path[0].closed).toBe(true);
+    expect(path[0].curves).toHaveLength(7);
+    const foot = pointOf(tall, 0, 0);
+    expect(path[0].curves[5].to.y).toBeCloseTo(foot.y, 12);
+  });
+
+  it('shares its top with the curve drawn over it', () => {
+    const region = areaUnder(tall, (x) => x * x, interval(0, 2), { samples: 8 });
+    const curve = plot(tall, (x) => x * x, { samples: 8, over: interval(0, 2) });
+    expect(region[0].start).toEqual(curve[0].start);
+    for (let piece = 0; piece < 8; piece++) expect(region[0].curves[piece]).toEqual(curve[0].curves[piece]);
+  });
+
+  it('measures down to the level it is given', () => {
+    const area = enclosedArea(areaUnder(tall, (x) => x * x, interval(0, 2), { baseline: -1, samples: 16 }));
+    // The parabola over a floor one below the axis: eight thirds and two more.
+    expect(area / perGraphUnit).toBeCloseTo(8 / 3 + 2, 12);
+  });
+
+  it('holds a level off the graph at the near edge', () => {
+    const low = enclosedArea(areaUnder(tall, (x) => x * x, interval(0, 2), { baseline: -9, samples: 16 }));
+    const edge = enclosedArea(areaUnder(tall, (x) => x * x, interval(0, 2), { baseline: -1, samples: 16 }));
+    expect(low).toBeCloseTo(edge, 12);
+  });
+
+  it('is one region per stretch of curve that is on the graph', () => {
+    const pole = coordsOf(
+      scaleOf(interval(-2, 2), interval(-4.6, 4.6)),
+      scaleOf(interval(-4, 4), interval(-2.4, 2.4))
+    );
+    const path = areaUnder(pole, (x) => 1 / x, interval(-2, 2));
+    expect(path).toHaveLength(2);
+    for (const subpath of path) expect(subpath.closed).toBe(true);
+  });
+
+  it('is nothing over a run with no width', () => {
+    expect(areaUnder(tall, (x) => x * x, interval(2, 2))).toEqual([]);
   });
 });
