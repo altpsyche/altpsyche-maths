@@ -15,6 +15,8 @@ export { vec2 } from './values/vec2.js';
 export type { Vec2 } from './values/vec2.js';
 export { vec3 } from './values/vec3.js';
 export type { Vec3 } from './values/vec3.js';
+export { interval } from './values/interval.js';
+export type { Interval } from './values/interval.js';
 export { mat3 } from './values/mat3.js';
 export type { Mat3 } from './values/mat3.js';
 export { SAME_TIME, keyAt, sampleTrack, sampleTracks, withKey, withoutKey } from './timing/track.js';

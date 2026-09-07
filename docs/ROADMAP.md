@@ -174,10 +174,14 @@ export const tangent: Figure = {
 **The steps.** Each one is a commit, and each names the measurement its commit body quotes. A session
 resumes at the first unticked one.
 
-- [ ] **1. An interval.** `values/interval.ts`: `Interval` as `{ from, to }`, its length, whether it
-      holds a value, and one interval remapped onto another over the existing `remap`. Measurement:
-      the round trip through two remaps over a thousand samples, and what a reversed interval does
-      where `from` is above `to`.
+- [x] **1. An interval.** `values/interval.ts`: `Interval` as `{ from, to }`, its span, whether it
+      holds a value, its order, a fraction along it, a value held inside it, and one interval remapped
+      onto another over the existing `remap`. The width is `span` rather than `length` because the
+      namespace is a callable object and a function's own `length` cannot be assigned. **Landed.** The
+      round trip through two remaps over a thousand samples is worst 8.9e-16 forward and 1.8e-15
+      through a reversed target, so the test holds it at 1e-12 rather than exactly. A bound above its
+      partner maps in reverse rather than erroring, and a source of no width reports the target's
+      first bound rather than an infinity.
 - [ ] **2. Ticks on an interval, and their labels.** `figure/ticks.ts`: the step size chosen by
       Heckbert's nice numbers, which is the published version of the one, two, five and ten rule; the
       tick values inside an interval; and each tick's own text, formatted from the number of decimals
