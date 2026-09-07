@@ -40,7 +40,7 @@ export { labelFor, tickStep, ticksOn } from './figure/ticks.js';
 export type { Tick } from './figure/ticks.js';
 export { flatten, group, shape, text } from './figure/node.js';
 export type { GroupNode, Node, ShapeNode, Style, TextNode, TextOptions } from './figure/node.js';
-export { fadeIn, fadeOut, fadeTo, draw, morph, moveAlong, moveBy, rotate, scale } from './figure/animation.js';
+export { fadeIn, fadeOut, fadeTo, draw, growFrom, morph, moveAlong, moveBy, rotate, scale } from './figure/animation.js';
 export type { AboutOptions, Animation, ScaleOptions } from './figure/animation.js';
 export { Timeline } from './figure/timeline.js';
 export type { PlayOptions, Span } from './figure/timeline.js';

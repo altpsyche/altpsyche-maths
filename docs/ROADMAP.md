@@ -202,8 +202,11 @@ That parser is its own item and is queued below.
       **Landed.** Twenty steps along the demo's curve vary in size by 0.07%, and the mark lands on
       the far end exactly. A stroke and a word keep the size they had, since a translation scales
       nothing.
-- [ ] **6. `growFrom`.** Scaled up from nothing at a point, which is `scale` from zero with a pivot.
-      Measurement: the geometry at nothing is the point to 1e-12 and at one is the original to 1e-12.
+- [x] **6. `growFrom`.** Scaled up from nothing at a point, which is `scale` from zero with a pivot,
+      and out of its own middle where no point is named. **Landed.** The box at the beginning of the
+      span is the point to 1e-12 on all four sides; half way through it is half the width with a
+      stroke of 0.05 against 0.1; and at the end it is the very marks it was given rather than the
+      marks rebuilt through a transform of one.
 - [ ] **7. `indicate`.** Scaled up and back with a colour swapped for the span. Measurement: the
       geometry at nothing and at one is the original to 1e-12, the peak is the factor asked for, and
       the colour is the given one across the span and the mark's own outside it.

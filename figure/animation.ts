@@ -196,3 +196,15 @@ export function moveAlong(target: string, path: Path): Animation {
     return marks.map((mark) => (touches(mark.id, target) ? carried(mark, step) : mark));
   };
 }
+
+/**
+ * Grown from nothing at a point, which is a growth starting at no size.
+ *
+ * Left out, the point is the middle of the box round the marks, so a thing grows
+ * out of where it already is. At the end of the span it is the marks themselves
+ * rather than the marks rebuilt through a transform of one, so a growth that has
+ * finished leaves the geometry the author wrote.
+ */
+export function growFrom(target: string, from?: Vec2): Animation {
+  return scale(target, 1, { from: 0, pivot: from });
+}

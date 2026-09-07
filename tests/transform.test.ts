@@ -7,6 +7,7 @@ import {
   dot,
   flatten,
   group,
+  growFrom,
   interval,
   moveAlong,
   plot,
@@ -217,5 +218,47 @@ describe('a mark carried along a path', () => {
     if (ring.kind !== 'path' || word.kind !== 'text') throw new Error('a ring is a path and a word is text');
     expect(ring.stroke?.width).toBe(0.1);
     expect(word.size).toBe(0.5);
+  });
+});
+
+describe('a thing grown from a point', () => {
+  const ring = () => flatten(group('fig', [shape('ring', circle(vec2(2, 1), 1), { stroke: pen })]));
+
+  it('is the point itself at the beginning of its span', () => {
+    const marks = growFrom('fig', vec2(0, 0))(ring(), 0);
+    const box = boundsOfMarks(marks)!;
+    expect(box.x.from).toBeCloseTo(0, 12);
+    expect(box.x.to).toBeCloseTo(0, 12);
+    expect(box.y.from).toBeCloseTo(0, 12);
+    expect(box.y.to).toBeCloseTo(0, 12);
+  });
+
+  it('is the marks themselves at the end of its span', () => {
+    const marks = ring();
+    expect(growFrom('fig', vec2(0, 0))(marks, 1)).toBe(marks);
+  });
+
+  it('grows out of its own middle when no point is named', () => {
+    const small = growFrom('fig')(ring(), 0);
+    const box = boundsOfMarks(small)!;
+    expect(box.x.from).toBeCloseTo(2, 12);
+    expect(box.y.from).toBeCloseTo(1, 12);
+  });
+
+  it('is half its size half way through', () => {
+    const half = growFrom('fig', vec2(0, 0))(ring(), 0.5);
+    const box = boundsOfMarks(half)!;
+    expect(box.x.to - box.x.from).toBeCloseTo(1, 12);
+    const stroke = half[0];
+    if (stroke.kind !== 'path') throw new Error('a ring is a path');
+    expect(stroke.stroke?.width).toBeCloseTo(0.05, 12);
+  });
+
+  it('takes its words down with it', () => {
+    const marks = flatten(group('fig', [text('word', vec2(2, 0), 'hi', 0.5, { fill: ink })]));
+    const word = growFrom('fig', vec2(0, 0))(marks, 0)[0];
+    if (word.kind !== 'text') throw new Error('a word is text');
+    expect(word.size).toBeCloseTo(0, 12);
+    expect(word.at.x).toBeCloseTo(0, 12);
   });
 });
