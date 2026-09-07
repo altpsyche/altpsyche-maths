@@ -4,15 +4,12 @@
  * The cut is by length rather than by segment, so a path whose segments differ in
  * size is drawn at one steady pace. Parameterising by segment instead is cheaper
  * and reads wrong: a long side would be crossed in the same time as a short one
- * and the pen would visibly speed up and slow down.
+ * and the pen would visibly speed up and slow down. The length inside a segment
+ * is read off that segment's own table for the same reason.
  */
 import { vec2, type Vec2 } from '../values/vec2.js';
-import { pointOn, type Cubic, type Path, type Subpath } from './path.js';
-
-/** How many samples measure one segment. Sixteen holds the length of a quarter
- * circle to better than a part in ten thousand, which is finer than the curve's
- * own error against a true arc. */
-const SAMPLES = 16;
+import { measurePath, parameterAt } from './length.js';
+import type { Cubic, Path, Subpath } from './path.js';
 
 /**
  * A cubic cut at a fraction of its own parameter, keeping the first piece.
@@ -29,34 +26,6 @@ function splitCubic(from: Vec2, curve: Cubic, along: number): Cubic {
   return { control1: a, control2: d, to: vec2.lerp(d, e, along) };
 }
 
-/** A segment's length, measured by walking it in straight steps. */
-function segmentLength(from: Vec2, curve: Cubic): number {
-  let total = 0;
-  let previous = from;
-  for (let at = 1; at <= SAMPLES; at++) {
-    const point = pointOn(from, curve, at / SAMPLES);
-    total += vec2.distance(previous, point);
-    previous = point;
-  }
-  return total;
-}
-
-/** Every segment's length and the total, which is what a cut by length needs
- * before it can find which segment the cut falls in. */
-function lengths(path: Path): { per: number[][]; total: number } {
-  let total = 0;
-  const per = path.map((subpath) => {
-    let from = subpath.start;
-    return subpath.curves.map((curve) => {
-      const length = segmentLength(from, curve);
-      from = curve.to;
-      total += length;
-      return length;
-    });
-  });
-  return { per, total };
-}
-
 /**
  * The path up to a fraction of its total length.
  *
@@ -68,7 +37,7 @@ function lengths(path: Path): { per: number[][]; total: number } {
 export function trimPath(path: Path, fraction: number): Path {
   if (fraction >= 1) return path;
   if (fraction <= 0) return [];
-  const { per, total } = lengths(path);
+  const { per, total } = measurePath(path);
   if (total === 0) return path;
 
   const wanted = total * fraction;
@@ -83,14 +52,15 @@ export function trimPath(path: Path, fraction: number): Path {
 
     for (let piece = 0; piece < subpath.curves.length; piece++) {
       const curve = subpath.curves[piece];
-      const length = per[at][piece];
+      const measured = per[at][piece];
+      const length = measured.total;
       if (walked + length <= wanted || length === 0) {
         curves.push(curve);
         walked += length;
         from = curve.to;
         continue;
       }
-      curves.push(splitCubic(from, curve, (wanted - walked) / length));
+      curves.push(splitCubic(from, curve, parameterAt(measured, wanted - walked)));
       cut = true;
       break;
     }

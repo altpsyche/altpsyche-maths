@@ -167,12 +167,13 @@ That parser is its own item and is queued below.
       does is one cubic whose controls stand off the curve: exact 0.75 against a hull of 1, which is
       a third too tall. The demo's curve reads -4.6 to 2.76 across and -1.92 to 2.4 up, which is the
       graph cut at x = 3.
-- [ ] **2. The length table comes out of `trim`, and a cut is even inside a segment.** The private
-      per-segment measurement in `figure/trim.ts` moves to a file both it and step 3 read. A cut
-      lands inside a segment by treating that segment's parameter as proportional to its length,
-      which is exact only for a straight line, and the sixteen samples already taken per segment are
-      enough to interpolate properly. Measurement: twenty cuts at even fractions of a quarter circle
-      and of the demo's curve, worst gap between the lengths drawn, before and after.
+- [x] **2. The length table comes out of `trim`, and a cut is even inside a segment.** The private
+      per-segment measurement in `figure/trim.ts` is now `figure/length.ts`, which keeps the length
+      reached at each of the sixteen samples rather than only the total, so a length can be read back
+      as a parameter. **Landed.** Twenty cuts at even fractions, worst gap as a share of the whole
+      length, before then after: a quarter circle as one piece, 4.7e-3 then 1.4e-4; a whole circle
+      as four, 1.2e-3 then 9.6e-6; the demo's curve as ninety-six, 2.9e-5 then 9.4e-8. Many short
+      pieces hid the defect and one long piece exposed it, which is why both are measured.
 - [ ] **3. A path's length, and the point at a fraction of it.** `lengthOf` and `pointAtLength` on the
       table from step 2. Measurement: the length of a circle of radius one against two pi, and of a
       straight line exactly; and the spacing of twenty points at even fractions of length against the
