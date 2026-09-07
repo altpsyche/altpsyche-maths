@@ -176,17 +176,24 @@ the other there.
 exactly on the curve still read 1.5e-5 away after six rounds, against a tolerance of 1e-6, so every
 shared stretch was refused.
 
-**Next: the operations keep the right copy of a shared edge.** The areas are still wrong, because a
-piece lying on the other path's boundary is decided by winding at its own middle, which is the one
-place that has no answer. What is wanted is a rule by direction: a stretch two paths walk the same
-way is on the boundary of a union and of an overlap and is kept once, and a stretch they walk
-opposite ways is inside a union and outside an overlap and is dropped by both, with the first path's
-copy kept by a difference.
+**Done: the operations keep the right copy of a shared edge.** A piece lying on the other path's own
+edge is decided by which way the two run rather than by which side it is on, since a point on an edge
+is the one place the winding count has no answer for. `nearestEdge` in `figure/inside.ts` says which
+edge a point sits nearest and which way it runs, and `slopeOn` in `figure/path.ts` says which way a
+piece is heading.
 
-*Measures:* two rectangles sharing an edge unite to 8 rather than 6 and differ to 4 rather than 2,
-two triangles sharing their diagonal unite to 4 rather than 2, two rectangles sharing part of an edge
-unite to 8 rather than 7, and a path against itself differs to nothing rather than to -0.123167 over
-95 loops. The fuzz still holds to 1e-14.
+*Measured:* two rectangles sharing an edge unite to 8.000000 over one loop where they united to 6,
+differ to 4.000000 where they differed to 2, and overlap in nothing where they overlapped in a loop
+enclosing nothing. Two triangles sharing their diagonal unite to 4.000000 over one loop where they
+united to 2. Two rectangles sharing part of an edge unite to 8.000000 where they united to 7. A
+square against itself unites to 4.000000, overlaps in 4.000000, and differs to nothing over no loops.
+The fuzz over sixty random pairs still holds to 1.776e-15 and its slowest pair is 13ms.
+
+*One thing this does not make empty.* The shaded region under a parabola differed against itself
+encloses 0.000000 where it enclosed -0.123167, but over one loop rather than none. Near the origin
+the parabola lies within the tolerance of its own baseline for 1.26e-3, so that stretch is genuinely
+shared by two pieces of the same path walked opposite ways, and a hairline is the honest answer for a
+boundary that comes that close to itself.
 
 #### 0.9.2, the stitch says when it gave up
 

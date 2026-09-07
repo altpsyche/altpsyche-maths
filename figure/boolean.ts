@@ -10,12 +10,20 @@
  * is what turns a disc taken out of the middle of another disc into a ring: the
  * inner loop is wound against the outer one and the nonzero rule the mark
  * carries leaves it empty.
+ *
+ * A piece lying along the other path's own edge is decided by which way the two
+ * run rather than by which side it is on, because a point on an edge is the one
+ * place the winding count has no answer for. Two paths walking a shared stretch
+ * the same way have their solid on the same side of it, so the stretch is on the
+ * edge of a union and of an overlap and is kept once. Walking it opposite ways
+ * puts their solids on opposite sides, so the stretch is inside a union and
+ * outside an overlap, and a difference keeps the first path's copy of it.
  */
 import { vec2, type Vec2 } from '../values/vec2.js';
-import { pointOn, type Cubic, type Path, type Subpath } from './path.js';
+import { pointOn, slopeOn, type Cubic, type Path, type Subpath } from './path.js';
 import { cutPath, type Cut } from './cut.js';
 import { curveCrossings } from './intersect.js';
-import { flattenPath, windingAt } from './inside.js';
+import { flattenPath, nearestEdge, windingAt } from './inside.js';
 
 export interface BooleanOptions {
   /** How close two things come before they count as the same place, in the
@@ -143,13 +151,48 @@ function stitch(pieces: readonly Piece[], tolerance: number): Path {
   return loops;
 }
 
-/** Which side of the other path each piece falls on, taken at its middle, which
- * after the cutting stands for the whole piece. */
-function insideOther(pieces: readonly Piece[], other: readonly (readonly Vec2[])[]): boolean[] {
-  return pieces.map((piece) => windingAt(other, pointOn(piece.from, piece.curve, 0.5)) !== 0);
+/** Where a piece stands against the other path: within its solid, clear of it,
+ * or lying along its edge running with it or against it. */
+type Side = 'inside' | 'outside' | 'along' | 'against';
+
+/**
+ * Where each piece stands against the other path, read at its middle.
+ *
+ * The middle stands for the whole piece because the cutting has already put a
+ * break wherever the two paths meet, so a piece after it is wholly one thing.
+ */
+function sidesAgainst(
+  pieces: readonly Piece[],
+  other: readonly (readonly Vec2[])[],
+  tolerance: number
+): Side[] {
+  return pieces.map((piece) => {
+    const middle = pointOn(piece.from, piece.curve, 0.5);
+    const edge = nearestEdge(other, middle);
+    if (edge && edge.gap <= tolerance) {
+      return vec2.dot(slopeOn(piece.from, piece.curve, 0.5), edge.heading) >= 0 ? 'along' : 'against';
+    }
+    return windingAt(other, middle) !== 0 ? 'inside' : 'outside';
+  });
 }
 
 type Keep = 'union' | 'intersection' | 'difference';
+
+/** Whether the first path's piece belongs to the answer. */
+function keepsFirst(keep: Keep, side: Side): boolean {
+  if (side === 'along') return keep !== 'difference';
+  if (side === 'against') return keep === 'difference';
+  if (keep === 'intersection') return side === 'inside';
+  return side === 'outside';
+}
+
+/** Whether the second path's piece belongs to the answer. A shared stretch is
+ * never taken from here, since the first path's copy of it is already in. */
+function keepsSecond(keep: Keep, side: Side): boolean {
+  if (side === 'along' || side === 'against') return false;
+  if (keep === 'union') return side === 'outside';
+  return side === 'inside';
+}
 
 function combine(first: Path, second: Path, keep: Keep, options: BooleanOptions): Path {
   const tolerance = options.tolerance ?? TOLERANCE;
@@ -161,19 +204,16 @@ function combine(first: Path, second: Path, keep: Keep, options: BooleanOptions)
   const [leftCuts, rightCuts] = cutsBetween(left, right, tolerance);
   const leftPieces = piecesOf(cutPath(left, leftCuts, { tolerance }));
   const rightPieces = piecesOf(cutPath(right, rightCuts, { tolerance }));
-  const leftInside = insideOther(leftPieces, flattenPath(right, { tolerance }));
-  const rightInside = insideOther(rightPieces, flattenPath(left, { tolerance }));
+  const leftSide = sidesAgainst(leftPieces, flattenPath(right, { tolerance }), tolerance);
+  const rightSide = sidesAgainst(rightPieces, flattenPath(left, { tolerance }), tolerance);
 
   const kept: Piece[] = [];
   for (let at = 0; at < leftPieces.length; at++) {
-    if (leftInside[at] === (keep === 'intersection')) kept.push(leftPieces[at]);
+    if (keepsFirst(keep, leftSide[at])) kept.push(leftPieces[at]);
   }
   for (let at = 0; at < rightPieces.length; at++) {
-    if (keep === 'difference') {
-      if (rightInside[at]) kept.push(reversed(rightPieces[at]));
-      continue;
-    }
-    if (rightInside[at] === (keep === 'intersection')) kept.push(rightPieces[at]);
+    if (!keepsSecond(keep, rightSide[at])) continue;
+    kept.push(keep === 'difference' ? reversed(rightPieces[at]) : rightPieces[at]);
   }
   return stitch(kept, tolerance);
 }

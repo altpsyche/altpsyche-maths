@@ -179,8 +179,8 @@ function pointAt(hull: Hull, along: number): Vec2 {
   );
 }
 
-/** Which way the curve is heading, which is the derivative of a cubic and so a
- * quadratic over the differences between neighbouring points. */
+/** Which way the curve is heading, read off the four points the search already
+ * holds rather than off a piece, so following a pair down allocates nothing. */
 function slopeAt(hull: Hull, along: number): Vec2 {
   const u = 1 - along;
   const a = 3 * u * u;

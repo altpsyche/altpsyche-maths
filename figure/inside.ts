@@ -107,6 +107,36 @@ export function windingAt(loops: readonly (readonly Vec2[])[], point: Vec2): num
   return winding;
 }
 
+/** The nearest straight run of a flattening to a point: how far off it is, and
+ * which way that run goes. */
+export interface Edge {
+  readonly gap: number;
+  readonly heading: Vec2;
+}
+
+/**
+ * Which edge of a flattening a point sits nearest, and which way it runs.
+ *
+ * This is what tells a piece lying along another path's edge from one merely
+ * near it, which the winding count cannot answer because a point on the edge
+ * itself is the one place the count has no answer for.
+ */
+export function nearestEdge(loops: readonly (readonly Vec2[])[], point: Vec2): Edge | null {
+  let nearest: Edge | null = null;
+  for (const loop of loops) {
+    for (let at = 1; at < loop.length; at++) {
+      const from = loop[at - 1];
+      const to = loop[at];
+      const run = vec2.sub(to, from);
+      const square = vec2.dot(run, run);
+      const along = square === 0 ? 0 : Math.min(1, Math.max(0, vec2.dot(vec2.sub(point, from), run) / square));
+      const gap = vec2.distance(point, vec2.add(from, vec2.scale(run, along)));
+      if (!nearest || gap < nearest.gap) nearest = { gap, heading: run };
+    }
+  }
+  return nearest;
+}
+
 /**
  * Whether a path holds a point, under the nonzero rule.
  *

@@ -149,6 +149,19 @@ export function pointOn(from: Vec2, curve: Cubic, along: number): Vec2 {
   );
 }
 
+/** Which way a piece is heading at a fraction along it, which is the derivative
+ * of a cubic and so a quadratic over the gaps between neighbouring points. */
+export function slopeOn(from: Vec2, curve: Cubic, along: number): Vec2 {
+  const u = 1 - along;
+  const a = 3 * u * u;
+  const b = 6 * u * along;
+  const c = 3 * along * along;
+  return vec2(
+    a * (curve.control1.x - from.x) + b * (curve.control2.x - curve.control1.x) + c * (curve.to.x - curve.control2.x),
+    a * (curve.control1.y - from.y) + b * (curve.control2.y - curve.control1.y) + c * (curve.to.y - curve.control2.y)
+  );
+}
+
 /**
  * One piece cut into two at a fraction, both pieces drawing what the whole
  * drew, by de Casteljau's construction.

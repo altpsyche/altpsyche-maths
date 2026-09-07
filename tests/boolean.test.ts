@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { areaOf, circle, differenceOf, intersectionOf, rect, unionOf, vec2 } from '@altpsyche/maths';
+import { areaOf, circle, differenceOf, intersectionOf, polygon, rect, unionOf, vec2 } from '@altpsyche/maths';
 import type { Path } from '@altpsyche/maths';
 
 /**
@@ -100,6 +100,39 @@ describe('union, intersection and difference', () => {
     const quarter = areaOf(circle(vec2(0, 0), 1)) / 4;
     encloses(differenceOf(square, bite), 4 - quarter);
     encloses(intersectionOf(square, bite), quarter);
+  });
+
+  it('unites two rectangles that share an edge into one', () => {
+    const left = rect(vec2(0, 0), 2, 2);
+    const right = rect(vec2(2, 0), 2, 2);
+    const union = unionOf(left, right);
+    expect(union).toHaveLength(1);
+    expect(areaOf(union)).toBeCloseTo(8, 9);
+    expect(areaOf(differenceOf(left, right))).toBeCloseTo(4, 9);
+    expect(intersectionOf(left, right)).toHaveLength(0);
+  });
+
+  it('unites two triangles that share their diagonal into one', () => {
+    const lower = polygon([vec2(0, 0), vec2(2, 0), vec2(0, 2)]);
+    const upper = polygon([vec2(2, 0), vec2(2, 2), vec2(0, 2)]);
+    const union = unionOf(lower, upper);
+    expect(union).toHaveLength(1);
+    expect(areaOf(union)).toBeCloseTo(4, 9);
+  });
+
+  it('unites two rectangles that share part of an edge', () => {
+    const lower = rect(vec2(0, 0), 2, 2);
+    const upper = rect(vec2(1, 2), 2, 2);
+    expect(areaOf(unionOf(lower, upper))).toBeCloseTo(8, 9);
+  });
+
+  it('answers a path against itself', () => {
+    // A shared stretch the two walk the same way is on the edge of a union and
+    // of an overlap and is kept once, and a difference has nothing there.
+    const square = rect(vec2(0, 0), 2, 2);
+    expect(areaOf(unionOf(square, square))).toBeCloseTo(4, 9);
+    expect(areaOf(intersectionOf(square, square))).toBeCloseTo(4, 9);
+    expect(differenceOf(square, square)).toHaveLength(0);
   });
 
   it('answers an empty path with the other path', () => {
