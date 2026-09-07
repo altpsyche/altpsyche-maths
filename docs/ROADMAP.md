@@ -151,7 +151,7 @@ two colours. It stays queued for whatever asks for it first.
 
 #### The steps
 
-**1. Which glyph of one expression is which glyph of the other.** A pure function over two lists of
+**1. Done. Which glyph of one expression is which glyph of the other.** A pure function over two lists of
 marks that hands back the pairs and the two lists of what is left over. The pairing is the longest
 common subsequence of the two token sequences, which is the published algorithm for the longest run
 of items that appears in both lists in the same order. It is exact rather than a heuristic, and
@@ -161,6 +161,12 @@ matching in order is what stops the `x` of a numerator pairing with the `x` of a
 and 2 on the right. An expression against itself pairs every mark and leaves none. Two expressions
 with no token in common give no pairs. An expression against one with a repeated glyph pairs each
 occurrence once rather than pairing both to the same partner.
+
+*Measured:* `\frac{dy}{dx} = 0` against `\frac{dy}{dx} = 2x` gives 6 pairs on `1D451 1D466 1D451
+1D465 rule 3D`, leaves `30` behind and brings `32 1D465`. `e^{i\pi} + 1 = 0` against itself pairs all
+7 and leaves none. Two expressions sharing no token give none. `x + x` against `x` gives one pair and
+leaves the other `x` behind. Three tokens against the same three moved gives 2 pairs, since pairing
+the third would cross another pair. The suite is 372 tests in 741 ms, against 364 in 745 ms.
 
 **2. The animation that walks one expression into the other.** It takes the name of the expression
 being left and the name of the one being arrived at. A paired glyph walks its path into its
