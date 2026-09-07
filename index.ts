@@ -22,9 +22,11 @@ export type { Mat3 } from './values/mat3.js';
 export { SAME_TIME, keyAt, sampleTrack, sampleTracks, withKey, withoutKey } from './timing/track.js';
 export type { Key, Track, TrackValue, Tracks } from './timing/track.js';
 
-export { arc, circle, line, polygon, polyline, pointCount, pointOn, rect, straight, transformPath } from './figure/path.js';
+export { arc, circle, line, polygon, polyline, pointCount, pointOn, rect, splitCurve, straight, transformPath } from './figure/path.js';
 export type { Cubic, Path, Subpath } from './figure/path.js';
 export { pathFromData } from './figure/path-data.js';
+export { cutPath } from './figure/cut.js';
+export type { Cut, CutOptions } from './figure/cut.js';
 export { curveCrossings } from './figure/intersect.js';
 export type { Crossing, CrossingOptions } from './figure/intersect.js';
 export type { Colour, Fill, Mark, PathMark, Stroke, TextMark } from './figure/mark.js';

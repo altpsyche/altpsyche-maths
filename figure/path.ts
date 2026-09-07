@@ -149,6 +149,26 @@ export function pointOn(from: Vec2, curve: Cubic, along: number): Vec2 {
   );
 }
 
+/**
+ * One piece cut into two at a fraction, both pieces drawing what the whole
+ * drew, by de Casteljau's construction.
+ *
+ * The piece's own start is passed in because a piece carries where it ends and
+ * not where it began.
+ */
+export function splitCurve(from: Vec2, curve: Cubic, along: number): [Cubic, Cubic] {
+  const a = vec2.lerp(from, curve.control1, along);
+  const b = vec2.lerp(curve.control1, curve.control2, along);
+  const c = vec2.lerp(curve.control2, curve.to, along);
+  const d = vec2.lerp(a, b, along);
+  const e = vec2.lerp(b, c, along);
+  const middle = vec2.lerp(d, e, along);
+  return [
+    { control1: a, control2: d, to: middle },
+    { control1: e, control2: c, to: curve.to },
+  ];
+}
+
 /** Every point of a path moved by a transform, which is how a group's transform
  * reaches the geometry rather than being carried alongside it. */
 export function transformPath(path: Path, m: Mat3): Path {

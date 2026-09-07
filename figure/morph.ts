@@ -8,22 +8,7 @@
  */
 import { vec2 } from '../values/vec2.js';
 import type { Cubic, Path, Subpath } from './path.js';
-import { pointOn } from './path.js';
-
-/** One segment cut into two at a fraction, both pieces kept, which is how a
- * subpath gains a point without changing shape. */
-function halves(from: Cubic['to'], curve: Cubic, along: number): [Cubic, Cubic] {
-  const a = vec2.lerp(from, curve.control1, along);
-  const b = vec2.lerp(curve.control1, curve.control2, along);
-  const c = vec2.lerp(curve.control2, curve.to, along);
-  const d = vec2.lerp(a, b, along);
-  const e = vec2.lerp(b, c, along);
-  const middle = vec2.lerp(d, e, along);
-  return [
-    { control1: a, control2: d, to: middle },
-    { control1: e, control2: c, to: curve.to },
-  ];
-}
+import { pointOn, splitCurve } from './path.js';
 
 /**
  * A subpath rewritten to hold exactly this many segments, drawing the same shape.
@@ -50,7 +35,7 @@ function withCurves(subpath: Subpath, wanted: number): Subpath {
     const cutAt = best < 0 ? 0 : best;
     let start = subpath.start;
     for (let at = 0; at < cutAt; at++) start = curves[at].to;
-    const [first, second] = halves(start, curves[cutAt], 0.5);
+    const [first, second] = splitCurve(start, curves[cutAt], 0.5);
     curves = [...curves.slice(0, cutAt), first, second, ...curves.slice(cutAt + 1)];
   }
   return { start: subpath.start, curves, closed: subpath.closed };

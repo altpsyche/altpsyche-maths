@@ -185,12 +185,18 @@ the two curves touch rather than by how close two hits are, since a hit is only 
 tolerance. The tolerance is 1e-6 rather than something finer because Newton's method on the pair
 supplies the sharpness, so a finer search buys nothing and costs a tangency 30 times the work.
 
-**2. A path cut at those crossings.** Every crossing splits the piece it lands in, by de Casteljau,
-which `morph.ts` already does for one cut and this needs for several in a row.
+**2. A path cut at those crossings.** Done. `cutPath` in `figure/cut.ts`, exported, with de
+Casteljau's construction moved out of `morph.ts` into `splitCurve` so the cutting and the walking
+between two paths share one.
 
-*Measures:* the cut path walks through the same points as the one it came from, sampled at 200 places
-along its whole length, to within 1e-12. The piece count is the count it started with plus one per
-crossing. A path with no crossings comes back with the pieces it had.
+*Measured:* a circle cut in four places, a circle with three cuts in one piece, and two subpaths cut
+together all walk through the points they walked through, sampled at 200 places per piece, the worst
+of them 5.0e-16 out. Each holds one more piece per cut. A path handed no cuts comes back as itself,
+and so does a path handed a cut naming a subpath it does not have.
+
+*One thing the plan did not say.* A cut at an end, or a second cut where one has already been made,
+is dropped rather than made, since a piece of nothing is a piece the stitch in step 5 would have to
+know to skip.
 
 **3. Inside or outside.** A point against a path, by counting the crossings of a ray from it. The
 count is taken on a flattening of the path at a stated tolerance rather than on the cubics, because
