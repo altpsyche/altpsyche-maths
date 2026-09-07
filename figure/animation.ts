@@ -14,12 +14,13 @@ import { mat3, type Mat3 } from '../values/mat3.js';
 import { vec2, type Vec2 } from '../values/vec2.js';
 import { lerp } from '../values/scalar.js';
 import { smoothstep } from '../values/ease.js';
-import { transformPath, type Path } from './path.js';
+import { line, transformPath, type Path } from './path.js';
 import { trimPath } from './trim.js';
 import { lerpPath } from './morph.js';
 import { pointAlong } from './length.js';
 import { boundsOfMarks, centreOf } from './bounds.js';
-import type { Colour, Mark } from './mark.js';
+import { interval } from '../values/interval.js';
+import type { Colour, Mark, Stroke } from './mark.js';
 
 export type Animation = (marks: readonly Mark[], along: number) => readonly Mark[];
 
@@ -256,5 +257,58 @@ export function indicate(target: string, options: IndicateOptions = {}): Animati
     if (colour === undefined || along <= 0 || along >= 1) return swelled;
     if (!swelled.some((mark) => touches(mark.id, target))) return swelled;
     return swelled.map((mark) => (touches(mark.id, target) ? painted(mark, colour) : mark));
+  };
+}
+
+export interface FlashOptions {
+  stroke: Stroke;
+  /** Where it flashes from. The middle of the box round the marks unless named. */
+  at?: Vec2;
+  rays?: number;
+  /** How far the far end of a ray reaches at the widest, in figure units. Twice
+   * the distance from the middle of the box to its corner unless named, so the
+   * rays sit outside the thing they are pointing at. */
+  reach?: number;
+  /** Where the near end of a ray sits, as a share of the reach. */
+  inner?: number;
+}
+
+/**
+ * Rays out from a point and gone, for a moment a figure wants a reader to look
+ * at.
+ *
+ * The rays are in the list at every fraction of the span, at nothing at both
+ * ends, rather than appended part way through. A mark that arrives between one
+ * frame and the next turns up in a comparison between two frames as something
+ * that changed, and a figure's marks are compared frame to frame by every gate
+ * here.
+ */
+export function flash(target: string, options: FlashOptions): Animation {
+  const count = Math.max(1, Math.round(options.rays ?? 12));
+  const inner = options.inner ?? 0.5;
+  return (marks, along) => {
+    const touched = marks.filter((mark) => touches(mark.id, target));
+    if (touched.length === 0) return marks;
+    const box = boundsOfMarks(touched);
+    if (box === null) return marks;
+    const centre = options.at ?? centreOf(box);
+    const corner = Math.hypot(interval.span(box.x) / 2, interval.span(box.y) / 2);
+    const reach = options.reach ?? corner * 2;
+    const opacity = thereAndBack(along);
+    const rays: Mark[] = [];
+    for (let ray = 0; ray < count; ray++) {
+      const angle = (2 * Math.PI * ray) / count;
+      const direction = vec2(Math.cos(angle), Math.sin(angle));
+      const near = vec2.add(centre, vec2.scale(direction, reach * inner * along));
+      const far = vec2.add(centre, vec2.scale(direction, reach * along));
+      rays.push({
+        kind: 'path',
+        id: `${target}/flash/${ray}`,
+        path: line(near, far),
+        stroke: options.stroke,
+        opacity,
+      });
+    }
+    return [...marks, ...rays];
   };
 }

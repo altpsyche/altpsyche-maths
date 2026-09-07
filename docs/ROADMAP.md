@@ -214,9 +214,11 @@ That parser is its own item and is queued below.
       span moves it 2.8e-2 against 1.48e-1 for the twentieth a quarter of the way in. The colour is
       the given one across the span and the mark's own at both ends, on fill and stroke and on a
       word. Both ends hand back the very marks they were given.
-- [ ] **8. `flash`.** Rays out from a point and gone. Measurement: the mark count is the same at
-      every fraction of the span, the rays are at nothing at both ends, and the count is what was
-      asked for.
+- [x] **8. `flash`.** Rays out from a point and gone, named under the thing they point at.
+      **Landed.** Thirteen marks at nothing, a quarter, half, three quarters and one alike, for a
+      figure of one mark and twelve rays, so nothing arrives or leaves part way through. The rays are
+      at an opacity of nothing at both ends and one in the middle, and they reach 0, 2 and 4 figure
+      units across at those three fractions for a reach of 2.
 - [ ] **9. `circumscribe`.** A box or an ellipse round a thing's bounds, drawn on and faded.
       Measurement: the shape's own bounds against the target's plus the padding asked for, to 1e-12,
       and the mark count the same at every fraction.
@@ -305,6 +307,14 @@ whole door with that promise in mind.
   no parser here, so `indicate` swaps a colour rather than easing into one and nothing can cross-fade
   a palette. What it needs is a reader for the forms a figure is actually handed, which is hex and
   `rgb()`, and a refusal for the rest rather than a wrong answer. Found while planning 0.5.0.
+
+- **The picture gate is engine-dependent at a rounding boundary.** A coordinate is written to three
+  decimal places, so the sine and cosine differences between engines are invisible in the bytes,
+  which is what lets the committed pictures be compared byte for byte at all. A value landing exactly
+  on a half in the fourth place would still round two ways. Nothing has hit it, and the fix if
+  anything ever does is a picture gate that compares marks by tolerance rather than bytes, which
+  costs the gate its ability to say the committed file is stale. Found while planning step 8 of
+  0.5.0.
 
 ## Someday
 

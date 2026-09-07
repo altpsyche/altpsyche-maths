@@ -5,6 +5,7 @@ import {
   circle,
   coordsOf,
   dot,
+  flash,
   flatten,
   group,
   growFrom,
@@ -328,5 +329,56 @@ describe('a thing indicated', () => {
   it('changes nothing where its target matches nothing', () => {
     const marks = ring();
     expect(indicate('nowhere', { colour: '#f00' })(marks, 0.5)).toBe(marks);
+  });
+});
+
+describe('a flash', () => {
+  const dotted = () => flatten(group('fig', [dot('point', vec2(1, 2), 0.1, ink)]));
+  const rays = (marks: readonly Mark[]) => marks.filter((mark) => mark.id.includes('/flash/'));
+
+  it('has the same number of marks at every fraction of its span', () => {
+    // A mark that arrives between one frame and the next turns up in a
+    // comparison between two frames as something that changed.
+    const counts = [0, 0.25, 0.5, 0.75, 1].map((along) => flash('fig', { stroke: pen })(dotted(), along).length);
+    expect(new Set(counts)).toEqual(new Set([1 + 12]));
+  });
+
+  it('draws the number of rays it was asked for', () => {
+    expect(rays(flash('fig', { stroke: pen, rays: 5 })(dotted(), 0.5))).toHaveLength(5);
+  });
+
+  it('shows nothing at both ends of the span', () => {
+    for (const along of [0, 1]) {
+      for (const ray of rays(flash('fig', { stroke: pen })(dotted(), along))) expect(ray.opacity).toBe(0);
+    }
+    for (const ray of rays(flash('fig', { stroke: pen })(dotted(), 0.5))) expect(ray.opacity).toBe(1);
+  });
+
+  it('reaches further as the span runs on', () => {
+    const spanOf = (along: number) => {
+      const box = boundsOfMarks(rays(flash('fig', { stroke: pen, reach: 2 })(dotted(), along)))!;
+      return box.x.to - box.x.from;
+    };
+    expect(spanOf(0)).toBeCloseTo(0, 12);
+    expect(spanOf(0.5)).toBeCloseTo(2, 12);
+    expect(spanOf(1)).toBeCloseTo(4, 12);
+  });
+
+  it('names its rays under the thing it points at', () => {
+    const marks = flash('fig/point', { stroke: pen, rays: 2 })(dotted(), 0.5);
+    expect(marks.map((mark) => mark.id)).toEqual(['fig/point/disc', 'fig/point/flash/0', 'fig/point/flash/1']);
+  });
+
+  it('flashes from a point a figure names instead of the middle of the box', () => {
+    const marks = flash('fig', { stroke: pen, at: vec2(0, 0), reach: 1, inner: 0 })(dotted(), 1);
+    const first = rays(marks)[0];
+    if (first.kind !== 'path') throw new Error('a ray is a path');
+    expect(first.path[0].start.x).toBeCloseTo(0, 12);
+    expect(first.path[0].start.y).toBeCloseTo(0, 12);
+  });
+
+  it('changes nothing where its target matches nothing', () => {
+    const marks = dotted();
+    expect(flash('nowhere', { stroke: pen })(marks, 0.5)).toBe(marks);
   });
 });
