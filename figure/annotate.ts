@@ -2,10 +2,11 @@
  * The shapes an annotation is made of, composed from marks rather than being
  * marks of their own.
  *
- * Each one hands back a group, so an arrow is a shaft and a head with ids of
+ * A builder hands back a group, so an arrow is a shaft and a head with ids of
  * their own and an animation naming the arrow reaches both. Making an arrow a
  * single mark instead would mean one path that is stroked along its shaft and
- * filled at its head, and no mark can be both.
+ * filled at its head, and no mark can be both. `bracePath` is the one call here
+ * that hands back a path, for a figure that wants the outline and not the group.
  */
 import { vec2, type Vec2 } from '../values/vec2.js';
 import { circle, line, polygon, straight, type Cubic, type Path } from './path.js';

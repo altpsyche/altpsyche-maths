@@ -2,20 +2,20 @@
  * Marks placed at points in space, which a camera turns into the flat nodes the
  * rest of this package already draws.
  *
- * Every builder here hands back a group, because a shape in space is not always
- * one shape on the page: a line running past the eye comes back as the pieces of
- * it the eye can see, and a shape wholly behind the eye comes back as a group
- * with no children, which flattens to no marks rather than to a mark of nothing.
+ * A builder that draws one thing hands back a group, because a shape in space is
+ * not always one shape on the page: a line running past the eye comes back as
+ * the pieces of it the eye can see, and a shape wholly behind the eye comes back
+ * as a group with no children, which flattens to no marks rather than to a mark
+ * of nothing. A builder that draws pieces for a scene to sort hands back those
+ * pieces with the points they came from, which is what says how far off each is.
  */
 import { vec3, type Vec3 } from '../values/vec3.js';
 import type { Vec2 } from '../values/vec2.js';
 import { circle, line, polygon, polyline } from './path.js';
+import type { Fill } from './mark.js';
 import { group, shape, text, type GroupNode, type Node, type Style, type TextOptions } from './node.js';
-import { interval, type Interval } from '../values/interval.js';
-import type { Colour, Fill, Stroke } from './mark.js';
 import { arrow, type ArrowOptions } from './annotate.js';
 import type { Camera3 } from './camera.js';
-import { cornersOf, stepsOf } from './grid.js';
 
 /** A run the eye can see, and whether it is all of what the author gave. */
 type Run = { points: Vec2[]; whole: boolean };
@@ -180,159 +180,4 @@ export function arrow3(name: string, from: Vec3, to: Vec3, camera: Camera3, opti
   const tail = start.inFront ? start.at : cut();
   if (tail.x === end.at.x && tail.y === end.at.y) return group(name, []);
   return arrow(name, tail, end.at, options);
-}
-
-export type VectorField3Options = ArrowOptions & {
-  /** The box the samples are taken in, nothing to one each way unless named. */
-  over?: { x?: Interval; y?: Interval; z?: Interval };
-  /** How many samples each way. One number is all three. */
-  resolution?: number | { x: number; y: number; z: number };
-  /** How long an arrow is, in the world's own units, from the magnitude of the
-   * vector at its own sample. */
-  lengthOf: (magnitude: number) => number;
-  /** What colour an arrow is, from that same magnitude. */
-  colourFor: (magnitude: number) => Colour;
-};
-
-/**
- * The arrows of a field sampled over a box in space, and the points each was
- * drawn from, for a figure that sorts them among pieces of its own.
- *
- * An arrow is measured in the world's own units rather than the figure's, unlike
- * the arrows of a flat field, because a length in space is what perspective is
- * for: a far arrow drawing shorter than a near one of the same magnitude is what
- * says which is far. Its head is still in figure units, since the head is drawn
- * on the page.
- *
- * A sample sits at the middle of its cell and the count is fixed by the
- * resolution, so a gate can hold it as the eye moves. A sample whose vector is
- * nothing draws no arrow there.
- */
-export function fieldArrows3(
-  name: string,
-  of: (at: Vec3) => Vec3,
-  camera: Camera3,
-  options: VectorField3Options,
-): SpaceItem[] {
-  const { over = {}, resolution = 6, lengthOf, colourFor, ...rest } = options;
-  const box = {
-    x: interval.ordered(over.x ?? interval(0, 1)),
-    y: interval.ordered(over.y ?? interval(0, 1)),
-    z: interval.ordered(over.z ?? interval(0, 1)),
-  };
-  const steps = stepsOf(resolution, 'x', 'y', 'z');
-  const items: SpaceItem[] = [];
-
-  for (let i = 0; i < steps.x; i += 1) {
-    for (let j = 0; j < steps.y; j += 1) {
-      for (let k = 0; k < steps.z; k += 1) {
-        const from = vec3(
-          interval.at(box.x, (i + 0.5) / steps.x),
-          interval.at(box.y, (j + 0.5) / steps.y),
-          interval.at(box.z, (k + 0.5) / steps.z),
-        );
-        const vector = of(from);
-        const magnitude = vec3.magnitude(vector);
-        const length = lengthOf(magnitude);
-        if (!(magnitude > 0) || !Number.isFinite(length) || !(length > 0)) continue;
-
-        const to = vec3.add(from, vec3.scale(vector, length / magnitude));
-        items.push({
-          points: [from, to],
-          node: arrow3(`${name}/${i}-${j}-${k}`, from, to, camera, {
-            ...rest,
-            stroke: { ...rest.stroke, colour: colourFor(magnitude) },
-          }),
-        });
-      }
-    }
-  }
-
-  return items;
-}
-
-/** A field of vectors in space, drawn as arrows ordered back to front. */
-export function vectorField3(
-  name: string,
-  of: (at: Vec3) => Vec3,
-  camera: Camera3,
-  options: VectorField3Options,
-): GroupNode {
-  return space(name, fieldArrows3('arrow', of, camera, options), camera);
-}
-
-export type Surface3Options = {
-  /** The run of the first parameter, nothing to one unless named. */
-  u?: Interval;
-  /** The run of the second parameter, nothing to one unless named. */
-  v?: Interval;
-  /** How many cells each way. */
-  resolution?: number | { u: number; v: number };
-  /**
-   * The colour a cell is filled with, given how squarely it faces the light: one
-   * where it faces the light head on, a half where it is edge on, and nothing
-   * where it faces straight away.
-   *
-   * The author supplies this rather than naming two colours to mix, because
-   * mixing two colours means reading them, and a colour here is any CSS colour
-   * written as text with nothing that parses one.
-   */
-  shade: (amount: number) => Fill;
-  /** Which way the light comes from, over the shoulder of an eye on the positive
-   * z axis unless named. */
-  light?: Vec3;
-  /** Whether a cell facing away from the eye is left out. Off by default, because
-   * a count that changes as the camera turns is a count no gate can hold. */
-  cull?: boolean;
-  stroke?: Stroke;
-};
-
-/**
- * The cells a surface is made of, before they are put in an order.
- *
- * Cells rather than one shape is what makes the depth sort work at all: a surface
- * that folds over itself has no one place in a painting order, and pieces small
- * enough to be flat do.
- *
- * A scene holding a surface and a plane that cuts through it has to sort all of
- * their cells together, since two surfaces sorted apart are two groups and the
- * second is painted over the first whichever way round they stand. Each cell
- * carries the name it was given ahead of its own place in the grid, so an
- * animation can still name a whole surface once its cells are mixed with
- * another's.
- */
-export function surfaceCells(name: string, of: (u: number, v: number) => Vec3, camera: Camera3, options: Surface3Options): SpaceItem[] {
-  const { u = interval(0, 1), v = interval(0, 1), resolution = 24, shade, light = vec3(0, 0, 1), cull = false, stroke } = options;
-  const steps = stepsOf(resolution, 'u', 'v');
-  const grid = cornersOf(of, u, v, steps);
-  const toLight = vec3.normalize(light);
-  const items: SpaceItem[] = [];
-
-  for (let i = 0; i < steps.u; i += 1) {
-    for (let j = 0; j < steps.v; j += 1) {
-      const corners = [grid[i][j], grid[i + 1][j], grid[i + 1][j + 1], grid[i][j + 1]];
-      const normal = vec3.normalize(
-        vec3.cross(vec3.sub(corners[1], corners[0]), vec3.sub(corners[3], corners[0])),
-      );
-      if (cull) {
-        const middle = corners.reduce((sum, corner) => vec3.add(sum, vec3.scale(corner, 1 / 4)), vec3.ZERO);
-        if (vec3.dot(normal, vec3.sub(camera.eye, middle)) <= 0) continue;
-      }
-      const fill = shade((vec3.dot(normal, toLight) + 1) / 2);
-      items.push({
-        points: corners,
-        node: polyline3(`${name}/${i}-${j}`, corners, camera, { close: true, fill, stroke }),
-      });
-    }
-  }
-
-  return items;
-}
-
-/**
- * A surface given by a function of two parameters, drawn as a grid of
- * four-cornered cells ordered back to front.
- */
-export function surface3(name: string, of: (u: number, v: number) => Vec3, camera: Camera3, options: Surface3Options): GroupNode {
-  return space(name, surfaceCells('cell', of, camera, options), camera);
 }

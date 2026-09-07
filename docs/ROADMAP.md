@@ -288,10 +288,17 @@ demo is recompiled by steps 6 and 7 against the renamed door.
   what it always did; 6,563 lines to 6,540 with a 41-line file added, so 64 lines of repetition gone;
   the suite from 592 tests to 593; all eight sheets identical.
 
-- [ ] **3. Files past what their header claims.** `figure/space.ts` is 349 lines and has taken new
-  calls three versions running, and `figure/annotate.ts` is 188. A header naming two subjects is a
-  file that wants splitting. **Measures:** lines and exported names per file before and after; the
-  door's own name count is unchanged by this step, since a split moves a name's file and not the name.
+- [x] **3. Files past what their header claims.** `figure/space.ts` held three subjects under a
+  header naming one: the primitives a camera projects, the field of arrows, and the surface of cells.
+  It split along them into `space.ts`, `field3.ts` and `surface3.ts`, which is the naming
+  `axis.ts` and `axis3.ts` already set. `figure/annotate.ts` turned out to hold one subject and did
+  not want splitting; what it had was the same overclaim `space.ts` had, a header promising every
+  builder hands back a group where `bracePath` hands back a path and the pieces a scene sorts are not
+  groups either. Both headers now say what their file does. **Measured:** `space.ts` from 349 lines
+  to 182, with `field3.ts` at 94 and `surface3.ts` at 90; exports per file from 14 to 8, 3 and 3;
+  225 names at the door unchanged across 94 lines from 89, since a split moves a name's file and not
+  the name; 6,540 lines to 6,569, the two new headers being what grew; the suite holds at 593; all
+  eight sheets identical.
 
 - [ ] **4. Two colours walked between.** A reader for hex, in three, four, six and eight digits, and
   for `rgb()` and `rgba()`, which are the forms a figure is handed. Every other form is refused rather
