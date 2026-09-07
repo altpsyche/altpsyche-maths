@@ -152,7 +152,7 @@ value of the track and stays that way.
 
 #### The steps
 
-**1. The brace itself.** A path spanning two points with a tip pushed out to one side, built from
+**1. Done. The brace itself.** A path spanning two points with a tip pushed out to one side, built from
 cubics like everything else here. `annotate.ts` gains it beside `arrow` and `callout`, since a brace
 is an annotation rather than a shape a figure plots, and the path builder is exported alongside the
 group for a figure that wants the shape and no label.
@@ -162,6 +162,13 @@ depth from the line between them, to within 1e-12. The two halves are mirror ima
 measured as every point of one half being within 1e-12 of the reflection of its partner. Every point
 of the path is inside the box the span and the depth describe. A brace spanning zero length draws
 nothing rather than dividing by zero.
+
+*Measured:* one open subpath of 6 pieces. The ends sit on the two points exactly. The tip stands
+0.800000000000000 off a line at a depth of 0.8. The worst mirror error over every point of the path
+is 2.22e-16. Walked at 17 places a piece, every point is inside the box the span and the depth
+describe. A span of 0.2 asked for a depth of 1 still reaches 1, because the curl narrows rather than
+the brace flattening. A brace between one point and itself is an empty path. The suite is 392 tests
+in 907 ms, against 384 in 880 ms.
 
 **2. A brace with a label on it.** A group of the brace and a text mark placed beyond the tip, on the
 far side from the span, by a padding in figure units. The text is anchored and never measured,

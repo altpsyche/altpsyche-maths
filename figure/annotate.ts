@@ -8,7 +8,7 @@
  * filled at its head, and no mark can be both.
  */
 import { vec2, type Vec2 } from '../values/vec2.js';
-import { circle, line, polygon } from './path.js';
+import { circle, line, polygon, straight, type Cubic, type Path } from './path.js';
 import { group, shape, text, type GroupNode, type Style, type TextOptions } from './node.js';
 import type { Fill, Stroke } from './mark.js';
 
@@ -48,6 +48,70 @@ export function arrow(name: string, from: Vec2, to: Vec2, options: ArrowOptions)
 /** A filled disc, which is what marks a place a line is pointing at. */
 export function dot(name: string, at: Vec2, radius: number, fill: Fill): GroupNode {
   return group(name, [shape('disc', circle(at, radius), { fill })]);
+}
+
+export interface BraceOptions {
+  /** How far the tip stands off the line between the two points, in figure
+   * units. A negative depth puts the brace on the other side of that line. */
+  depth: number;
+  /**
+   * How wide the curl at each end and at the tip is, in figure units. Half the
+   * depth unless named, which is the curl a quarter circle gives, and never more
+   * than a quarter of the span, since two curls wider than that would cross.
+   */
+  curl?: number;
+}
+
+/** The control distance a quarter circle wants, which is what makes each curl of
+ * a brace an arc rather than a corner rounded by eye. */
+const QUARTER = (4 / 3) * (Math.SQRT2 - 1);
+
+/**
+ * A curly brace from one point to the other, with its tip standing off the line
+ * between them.
+ *
+ * It is one open subpath of six pieces: a curl out of each end, a run along at
+ * the curl's own height, and two curls meeting at the tip. The tip is a corner
+ * rather than a smooth turn, which is what a brace has and what says which point
+ * of it is being pointed at.
+ *
+ * The tip stands at the depth asked for whatever the span, and only the curl
+ * narrows when the span is short, so a brace between two close points is a
+ * shallower shape rather than one whose halves cross.
+ */
+export function bracePath(from: Vec2, to: Vec2, options: BraceOptions): Path {
+  const span = vec2.distance(from, to);
+  if (span === 0) return [];
+  const along = vec2.normalize(vec2.sub(to, from));
+  const out = vec2.perpendicular(along);
+  const depth = options.depth;
+  const curl = Math.min(Math.abs(options.curl ?? depth / 2), span / 4);
+  const rise = Math.sign(depth || 1) * curl;
+  const at = (forward: number, off: number) => vec2.add(from, vec2.add(vec2.scale(along, forward), vec2.scale(out, off)));
+
+  const shoulder = at(curl, rise);
+  const beforeTip = at(span / 2 - curl, rise);
+  const tip = at(span / 2, depth);
+  const afterTip = at(span / 2 + curl, rise);
+  const beyond = at(span - curl, rise);
+  const reach = QUARTER * curl;
+  const lift = QUARTER * (depth - rise);
+  const piece = (control1: Vec2, control2: Vec2, end: Vec2): Cubic => ({ control1, control2, to: end });
+
+  return [
+    {
+      start: from,
+      curves: [
+        piece(vec2.add(from, vec2.scale(out, rise * QUARTER)), vec2.sub(shoulder, vec2.scale(along, reach)), shoulder),
+        straight(shoulder, beforeTip),
+        piece(vec2.add(beforeTip, vec2.scale(along, reach)), vec2.sub(tip, vec2.scale(out, lift)), tip),
+        piece(vec2.sub(tip, vec2.scale(out, lift)), vec2.sub(afterTip, vec2.scale(along, reach)), afterTip),
+        straight(afterTip, beyond),
+        piece(vec2.add(beyond, vec2.scale(along, reach)), vec2.add(to, vec2.scale(out, rise * QUARTER)), to),
+      ],
+      closed: false,
+    },
+  ];
 }
 
 export interface CalloutOptions {
