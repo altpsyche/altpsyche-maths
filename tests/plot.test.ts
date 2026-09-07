@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { areaUnder, coordsOf, interval, plot, pointCount, pointOf, scaleOf, type Path } from '../index.js';
+import { areaUnder, coordsOf, flatten, interval, plot, pointCount, pointOf, riemannBars, scaleOf, type Path } from '../index.js';
 
 // The demo's own coords, whose y axis stops at 9 while the parabola reaches 16.
 const square = coordsOf(scaleOf(interval(-1, 4), interval(-4.6, 4.6)), scaleOf(interval(-1, 9), interval(-2.4, 2.4)));
@@ -263,5 +263,79 @@ describe('the area under a curve', () => {
 
   it('is nothing over a run with no width', () => {
     expect(areaUnder(tall, (x) => x * x, interval(2, 2))).toEqual([]);
+  });
+});
+
+describe('the bars under a curve', () => {
+  const perGraphUnit =
+    (interval.span(tall.x.units) / interval.span(tall.x.graph)) *
+    (interval.span(tall.y.units) / interval.span(tall.y.graph));
+  const wash = { colour: '#c2410c' };
+  const summed = (bars: number, height: 'left' | 'right' | 'middle') =>
+    enclosedArea(
+      flatten(riemannBars('bars', tall, (x) => x * x, { fill: wash, bars, height, over: interval(0, 2) })).flatMap(
+        (mark) => (mark.kind === 'path' ? mark.path : [])
+      )
+    ) / perGraphUnit;
+
+  it('is one bar per piece, each named by its place in the run', () => {
+    const marks = flatten(riemannBars('bars', tall, (x) => x * x, { fill: wash, bars: 4, over: interval(0, 2) }));
+    // The first bar reads its height at zero, where the curve is zero, and it is
+    // still a mark: dropping it would make it appear between one frame and the
+    // next as soon as the curve or the level moves.
+    expect(marks.map((mark) => mark.id)).toEqual(['bars/0', 'bars/1', 'bars/2', 'bars/3']);
+  });
+
+  it('reads the left sum below the true area and the right sum above it', () => {
+    for (const bars of [4, 16, 64]) {
+      expect(summed(bars, 'left')).toBeLessThan(8 / 3);
+      expect(summed(bars, 'right')).toBeGreaterThan(8 / 3);
+    }
+  });
+
+  it('reads the sums a hand calculation gives for four bars', () => {
+    expect(summed(4, 'left')).toBeCloseTo(1.75, 12);
+    expect(summed(4, 'right')).toBeCloseTo(3.75, 12);
+    expect(summed(4, 'middle')).toBeCloseTo(2.625, 12);
+  });
+
+  it('closes on the true area as the count rises', () => {
+    const gaps = [4, 16, 64, 256].map((bars) => Math.abs(summed(bars, 'middle') - 8 / 3));
+    for (let at = 1; at < gaps.length; at++) expect(gaps[at]).toBeLessThan(gaps[at - 1]);
+    expect(gaps[3]).toBeLessThan(1e-4);
+  });
+
+  it('reads the middle closer than either edge, at every count', () => {
+    for (const bars of [4, 16, 64]) {
+      const middle = Math.abs(summed(bars, 'middle') - 8 / 3);
+      expect(middle).toBeLessThan(Math.abs(summed(bars, 'left') - 8 / 3));
+      expect(middle).toBeLessThan(Math.abs(summed(bars, 'right') - 8 / 3));
+    }
+  });
+
+  it('cuts a bar whose top is off the graph', () => {
+    const marks = flatten(riemannBars('bars', square, (x) => x * x, { fill: wash, bars: 4, height: 'right' }));
+    for (const mark of marks) {
+      if (mark.kind !== 'path') throw new Error('a bar is a path');
+      for (const point of mark.path.flatMap((subpath) => [subpath.start, ...subpath.curves.map((c) => c.to)])) {
+        // A value on the graph's own bound remaps a hair past the figure unit
+        // bound, because a walk to a fraction of one does not land on the end.
+        expect(Math.abs(point.y)).toBeLessThanOrEqual(2.4 + 1e-12);
+      }
+    }
+  });
+
+  it('leaves out a bar whose height is not a number', () => {
+    const root = coordsOf(scaleOf(interval(-1, 4), interval(-4.6, 4.6)), scaleOf(interval(-1, 3), interval(-2.4, 2.4)));
+    const marks = flatten(riemannBars('bars', root, Math.sqrt, { fill: wash, bars: 5 }));
+    expect(marks).toHaveLength(4);
+  });
+
+  it('carries its style on the group so the run fades as one thing', () => {
+    const marks = flatten(riemannBars('bars', tall, (x) => x * x, { fill: wash, bars: 4, over: interval(0, 2) }));
+    for (const mark of marks) {
+      if (mark.kind !== 'path') throw new Error('a bar is a path');
+      expect(mark.fill).toEqual(wash);
+    }
   });
 });

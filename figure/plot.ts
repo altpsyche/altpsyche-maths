@@ -18,7 +18,9 @@
 import { interval, type Interval } from '../values/interval.js';
 import { vec2 } from '../values/vec2.js';
 import { pointOf, scaled, type Coords } from './scale.js';
-import { straight, type Cubic, type Path, type Subpath } from './path.js';
+import { group, shape, type GroupNode } from './node.js';
+import type { Fill, Stroke } from './mark.js';
+import { rect, straight, type Cubic, type Path, type Subpath } from './path.js';
 
 export interface PlotOptions {
   /** How many pieces the curve is cut into. */
@@ -205,4 +207,55 @@ export function areaUnder(
       closed: true,
     } satisfies Subpath;
   });
+}
+
+export interface BarsOptions {
+  fill?: Fill;
+  stroke?: Stroke;
+  /** How many bars the run is cut into. */
+  bars?: number;
+  /** The run of x the bars cover, which is the whole width of the graph where it
+   * is left out. */
+  over?: Interval;
+  /** Where in each bar its height is read: at the left edge, the right edge or
+   * the middle. The three are what a reader is shown to see that the first is
+   * always short and the second always over. */
+  height?: 'left' | 'right' | 'middle';
+  /** The level the bars stand on. */
+  baseline?: number;
+}
+
+/**
+ * The bars under a curve, each one named by its place in the run so a stagger
+ * can reach them one at a time.
+ *
+ * A bar whose top is off the graph is cut at the edge, and a bar whose height is
+ * not a number is left out. The style sits on the group rather than on each bar,
+ * which is what lets the whole run fade as one thing.
+ */
+export function riemannBars(
+  name: string,
+  coords: Coords,
+  of: (x: number) => number,
+  options: BarsOptions = {}
+): GroupNode {
+  const bars = Math.max(1, Math.round(options.bars ?? 8));
+  const { from, to } = interval.ordered(options.over ?? coords.x.graph);
+  const foot = interval.clampTo(coords.y.graph, options.baseline ?? 0);
+  const read = options.height ?? 'left';
+  const children = [];
+
+  for (let bar = 0; bar < bars; bar++) {
+    const left = from + ((to - from) * bar) / bars;
+    const right = from + ((to - from) * (bar + 1)) / bars;
+    const x = read === 'left' ? left : read === 'right' ? right : (left + right) / 2;
+    const y = of(x);
+    if (!Number.isFinite(y)) continue;
+    const top = interval.clampTo(coords.y.graph, y);
+    const corner = pointOf(coords, left, foot);
+    const far = pointOf(coords, right, top);
+    children.push(shape(String(bar), rect(corner, far.x - corner.x, far.y - corner.y), {}));
+  }
+
+  return group(name, children, { style: { fill: options.fill, stroke: options.stroke } });
 }

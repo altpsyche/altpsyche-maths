@@ -260,10 +260,13 @@ resumes at the first unticked one.
       cubic holds a parabola with nothing left over, so the region's top has no sampling error to
       carry into its area. It hands back a path rather than a group, which is the rule the
       neighbouring calls follow: one mark is a path and several are a group.
-- [ ] **11. `riemannBars`.** The bars under a curve, with the height taken at each bar's left edge,
-      right edge or middle. Measurement: the summed area at four, sixteen and sixty-four bars for
-      each of the three placements against eight thirds, which shows the left sum below and the right
-      sum above at every count.
+- [x] **11. `riemannBars`.** The bars under a curve, with the height taken at each bar's left edge,
+      right edge or middle, each bar named by its place in the run. **Landed.** At four bars over
+      zero to two the sums read 1.75 at the left, 3.75 at the right and 2.625 in the middle against
+      the true eight thirds, all to 1e-12, so the left is short and the right is over at every count
+      of 4, 16 and 64, and the middle is closer than either. The middle sum's gap falls with the
+      count and is under 1e-4 at 256 bars. A bar of no height is still a mark, because dropping it
+      would make it appear between one frame and the next as soon as the curve or the level moves.
 - [ ] **12. `tangentAt` and `slopeOf`.** The slope of a function at a point by the central difference,
       and the tangent line through that point drawn a stated reach either side. Measurement: the slope
       at three x values on the demo's curve against the exact derivative, and the same on a sine,
@@ -352,6 +355,15 @@ step and hands back frames.
 Both demos complete, the README carrying both, and the public surface frozen. A 1.0.0 is a promise
 about `index.ts` not changing under a consumer, so what it needs beyond the features is a read of the
 whole door with that promise in mind.
+
+## Found while working, not yet queued
+
+- **A walk to a fraction of one does not land on the end.** `lerp(from, to, 1)` is
+  `from + (to - from) * 1`, which for -2.4 and 2.4 gives 2.4000000000000004, so a graph value on its
+  own bound scales to a hair outside the figure units it should land on. Two tests now carry a
+  tolerance for it that they should not need. The fix is `lerp` handing back its own ends at zero and
+  one, which is below the line and reaches every scale, every track and every animation, so it is a
+  commit of its own with its own before and after. Found while working step 11 of 0.4.0.
 
 ## Someday
 
