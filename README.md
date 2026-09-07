@@ -20,7 +20,7 @@ svgMarkup(at(figure, 0.5), viewMatrix(figure.extent, 'contain', 640, 360), 640, 
 
 ## Axes and a plotted function
 
-<img src="docs/tangent.svg" width="720" alt="A parabola on a labelled grid, the region under it shaded to a point on the curve, the tangent at that point drawn, and the slope written as a number under the typeset rule it comes from.">
+<img src="docs/tangent.svg" width="720" alt="A parabola on a labelled grid over a field of small blue arrows, the region under it shaded to a point on the curve, the tangent at that point drawn, and the slope written as a number under the typeset rule it comes from.">
 
 The picture arrives rather than appearing. The grid fades, the axes draw on, their labels come in one
 after another, the curve draws, the dot grows out of the origin, and the dot is pointed at where the
@@ -60,7 +60,7 @@ region is the limit of at the left edge, the right edge or the middle of each on
 lays the tangent along the curve, cut where it leaves the graph. `slopeOf` reads the slope itself,
 which is what the number in the corner is.
 
-<img src="docs/tangent-strip.svg" width="960" alt="Four frames of the same figure side by side, the point walking up the curve, the shaded region growing behind it, the typeset rule in the corner changing from a slope of nothing to one that depends on x, and a brace measuring the rise in the last frame.">
+<img src="docs/tangent-strip.svg" width="960" alt="Four frames of the same figure side by side, the point walking up the curve over the field of slope arrows, the shaded region growing behind it, the typeset rule in the corner changing from a slope of nothing to one that depends on x, and a brace measuring the rise in the last frame.">
 
 Four times of one figure, side by side: the picture arrived, the beat at the stationary point, half
 way up, and the top. A moving picture in a README needs a GIF and this package has no encoder, so the
@@ -243,7 +243,7 @@ behind that flag, comparing the marks at the duration against the marks at zero.
 
 ## A surface in space
 
-<img src="docs/surface.svg" width="720" alt="A saddle-shaped surface drawn as a grid of shaded cells, with a flat pane cutting through it at one height and the two branches of the curve where they meet drawn in orange along the surface. Three axes with their numbers stand behind it and the equation of the surface is typeset in the top left.">
+<img src="docs/surface.svg" width="720" alt="A saddle-shaped surface drawn as a grid of shaded cells, with a flat pane cutting through it at one height and the two branches of the curve where they meet drawn in orange along the surface. Blue arrows across the pane show the way the saddle falls and three green runs of steepest descent are drawn on it. Three axes with their numbers stand behind it and the equation of the surface is typeset in the top left.">
 
 A figure's camera is a value the caller holds. `camera3({ eye, target, up, projection })` answers
 where a point in space lands in the figure's own units, how far off it is along the way the camera
@@ -268,10 +268,44 @@ The camera is driven by a track and never by an animation, which is the call the
 already made: a span's eased fraction and a track's value are unrelated numbers, and a camera on one
 with a surface on the other would be two clocks free to disagree.
 
-<img src="docs/surface-strip.svg" width="820" alt="Four frames in two rows, showing the same saddle and pane from four points around one orbit of the eye.">
+<img src="docs/surface-strip.svg" width="820" alt="Four frames in two rows, showing the same saddle, pane, field arrows and runs of descent from four points around one orbit of the eye.">
 
 The quarters of one orbit. The eye comes back to where it started, which the gate holds by comparing
 the marks at the end of the entrance against the marks one orbit later, mark for mark by name.
+
+## Fields and streamlines
+
+`vectorField(name, coords, of, options)` samples a grid over a graph and draws an arrow at each
+sample. A field is a function from a place to a vector, so nothing here stores one. How long an arrow
+is and what colour it is are both the author's, taken from the magnitude of the vector at that
+sample: a field drawn at its true lengths is unreadable the moment two samples differ by a factor of
+ten. The count is fixed by the resolution and never by the field, so a gate can hold it. An arrow's
+length is in figure units, like the width of its shaft, and only its direction comes from the
+mapping of its own vector. The flat demo's own axes count at 1.84 and 0.415 figure units to the graph
+unit, and a length in graph units would draw a level arrow there 4.43 times longer than an upright one
+beside it.
+
+The arrows above are the slope field of the curve they sit under, read from the curve itself with
+`slopeOf`. `streamlineOf(of, from, options)` walks Runge-Kutta 4 through a field and hands back the
+points, and the run through the origin of that field never leaves the plotted parabola by more than
+4.689e-10 of a figure unit. Two answers to one question.
+
+The step is a distance rather than a time: the field is read as a direction and its magnitude decides
+nothing about how far a step moves, which keeps the points evenly spaced in a field whose strength
+changes across the picture. It is fixed and never adaptive, because an adaptive step hands back a
+different number of points as the field changes, and one path is walked into another by pairing their
+points. Three rules stop a run and each has a measurement: a seed outside the region comes back as one
+point, a field that is nothing everywhere stops at one point rather than at its cap, and a run leaving
+its region stops at the last point inside it. In the field that turns a point about the origin,
+halving the step divides the error along the curve by 15.1 and then 15.6, which is the fourth order
+the integrator is named for.
+
+`arrow3` and `fieldArrows3` do the same in space. An arrow there is measured in the world's own units
+rather than the figure's, since a far arrow drawing shorter than a near one of the same magnitude is
+what says which is far, and its head is a flat triangle at the projected tip so it stays readable
+however steeply the arrow points away. The solid demo runs three streamlines of steepest descent down
+its saddle: each is walked in the plane the surface is drawn over and lifted onto it, so every point
+lies on the surface exactly and the height falls at every step.
 
 ## A view that follows
 

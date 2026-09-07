@@ -267,6 +267,12 @@ describe('the door', () => {
       expect(typeof (door as Record<string, unknown>)[name], name).not.toBe('undefined');
     }
   });
+
+  it('hands out every call fields and streamlines added', () => {
+    for (const name of ['vectorField', 'streamlineOf', 'arrow3', 'fieldArrows3', 'vectorField3']) {
+      expect(typeof (door as Record<string, unknown>)[name], name).not.toBe('undefined');
+    }
+  });
 });
 
 describe('arrow3', () => {

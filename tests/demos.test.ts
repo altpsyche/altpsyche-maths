@@ -642,10 +642,12 @@ describe('the solid demo', () => {
     expect(worst).toBe(0);
   });
 
-  it('names a surface, a plane, a curve, three axes and a typeset equation', () => {
+  it('names a surface, a plane, a curve, a field, three runs and three axes', () => {
     const ids = marksAt(SOLID_TIMES.quarter).map((mark) => mark.id);
     expect(ids.filter((id) => id.startsWith('solid/body/hill/')).length).toBe(144);
     expect(ids.filter((id) => id.startsWith('solid/body/pane/')).length).toBe(16);
+    expect(ids.filter((id) => id.startsWith('solid/body/flow/')).length).toBe(72);
+    expect(ids.filter((id) => id.startsWith('solid/descent/run')).length).toBe(3);
     expect(ids.filter((id) => id.startsWith('solid/cut/run')).length).toBe(2);
     for (const axis of ['x', 'y', 'z']) {
       expect(ids.some((id) => id.startsWith(`solid/axes/${axis}/line`))).toBe(true);

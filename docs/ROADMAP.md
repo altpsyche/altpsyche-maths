@@ -52,7 +52,6 @@ with it, because `git log` is what keeps a closed plan.
 
 | version | what lands |
 | --- | --- |
-| 0.11.0 | Vector fields and streamlines |
 | 0.12.0 | Frames out, with no website around it |
 | 1.0.0 | The two demos complete, the README, the surface frozen |
 
@@ -87,13 +86,17 @@ track's value are unrelated. **What would change this answer** is an animation t
 scene back what it did, which the seam refuses on purpose.
 
 As of 0.10.0 the view follows the dot across, holding it within 1.2 figure units of the middle of the
-frame where it used to cross 2.76. The curve's gradient becomes a field at 0.11.0.
+frame where it used to cross 2.76. As of 0.11.0 the parabola sits on the field of its own tangents,
+and the run integrated through that field from the origin never leaves the drawn curve by more than
+4.689e-10 of a figure unit.
 
 **The solid demo draws as of 0.10.0**, since nothing before it could draw one. It is `demos/surface.ts`:
 a saddle with a level plane cutting through it, the two branches of the curve where they meet drawn on
 both, three axes, the equation of the surface typeset beside it, and an eye that goes round once on a
 track. What it takes from the versions before it is everything reusable in three dimensions: the axes
-read the same tick list, the plane arrives with `fadeIn` and the curve is drawn on with `draw`.
+read the same tick list, the plane arrives with `fadeIn` and the curve is drawn on with `draw`. As of
+0.11.0 three runs of steepest descent are drawn on the saddle, with the field they follow shown as
+arrows across the plane.
 
 **A third demo arrived at 0.9.0 and it is the boolean operations' own.** Siva's ask was one demo flat
 and one solid, and this is the exception rather than a change to it: a union of two paths has no
@@ -124,6 +127,16 @@ the motion in a still.
 
 ## Now
 
+**0.11.0 is cut, and this package draws fields.** `vectorField`, `streamlineOf`, `arrow3`,
+`fieldArrows3` and `vectorField3` are the five calls it added. A field is a function from a place to a
+vector and nothing here stores one: what the package holds is the sampling, the drawing and the
+integration. An arrow's length is the author's, taken from the magnitude at its own sample, and it is
+in figure units on a graph and in the world's own units in space. The streamline's step is a distance
+rather than a time, which keeps the points evenly spaced, and halving it divides the error along the
+curve by 15.1 and then 15.6. Both demos draw against it: the flat one carries the slope field its own
+curve is a streamline of, and the solid one three runs of steepest descent down its saddle. The suite
+went from 540 tests to 574.
+
 **0.10.0 is cut, and this package draws in space.** `mat4` is below the line, and `camera3`,
 `polyline3`, `dot3`, `text3`, `space`, `surface3`, `surfaceCells`, `axes3`, `sectionOf` and `viewAt`
 are above it. A camera is a value the caller holds, a builder that works in space hands back the flat
@@ -137,9 +150,7 @@ eight.
 **The lock file agrees with the manifest again**, and holding it there is one
 `npm install --package-lock-only` in whichever commit bumps a version.
 
-**0.11.0 is next and its six steps are written under it.** A step is ticked by writing the number its
-commit measured into that step rather than by a bare tick, so the first step carrying no measurement is
-where a session resumes.
+**0.12.0 is next and it has no step list yet**, so planning it is a session of its own.
 
 **What the 0.9.x audit found sound**, so that a later session does not go looking again. Sixty random
 pairs of shapes with no coincident edges hold both `area(A) + area(B) = area(A or B) + area(A and B)`
@@ -151,127 +162,6 @@ no box test in front of it and the quadratic over piece pairs is not worth remov
 ## The items
 
 Each is a version above. What follows is what each one covers.
-
-### Vector fields and streamlines, 0.11.0
-
-A field sampled over a region, and a streamline integrated through one. A field is a function from a
-place to a vector, so nothing here stores one: what this package adds is the sampling, the drawing and
-the integration.
-
-Six steps. The flat demo gains the field at step 3 and the solid demo gains it at step 5, so both are
-drawn against before the version is cut.
-
-#### The two calls this rests on
-
-**An author decides how long an arrow is and what colour it is, through a function of the vector's own
-magnitude.** That is the call `shade` already made for a surface at 0.10.0, for the same reason: a
-field drawn at its true lengths is unreadable the moment two samples differ by a factor of ten, and
-choosing the scale needs numbers about the picture that this package does not have. **What would change
-this** is a colour reader, which is the gap listed further down this page, and even then the length
-would still be the author's.
-
-**The step is fixed and never adaptive.** An adaptive step gives a point count that changes with the
-field, which is a count no gate can hold, and the same argument kept back-face culling off by default
-at 0.10.0. The order is measurable instead: halving the step divides the error by about sixteen, and a
-step list that quotes that number is a step list that knows the integrator is the one it named.
-
-**The integrator sits above the line beside `sectionOf`.** Both are ways of finding a curve for a
-figure to draw, and a rule that put one below the line and the other above is a rule nobody could
-apply.
-
-#### The steps
-
-**1. The field, sampled and drawn flat. Done.** `figure/field.ts` holding `vectorField(name, coords, of,
-options)`, where `of(at)` gives a vector in graph units at a point in graph units. It samples a grid
-over the graph's own range and draws an arrow at each sample, taking `lengthOf(magnitude)` and
-`colourFor(magnitude)` from the author. The count is fixed by the resolution and never by the field, so
-a gate can hold it. **An arrow's length is in figure units and its direction is the mapping of its own
-vector**, which was corrected while the flat demo was being drawn: that demo's two axes count at 1.84
-and 0.415 figure units to the graph unit, so a length in graph units drew a level arrow 4.43 times
-longer than an upright one of the same magnitude.
-
-*Measured:* a field over a 9 by 5 grid draws 45 arrows and 90 marks, and holds 90 at each of five
-times a turning field is read at. Every arrow points where the mapping of its own vector points to
-within 1e-12 of a radian, and every arrow's length is what the author's own function gives to
-3.33e-16 of a figure unit. A field that is nothing over half the graph draws 25 arrows rather than 45, and the sample
-at the middle of the graph is one of the ones missing. The suite went from 540 tests to 549.
-
-**2. The streamline. Done.** `streamlineOf(of, from, options)`, walking Runge-Kutta 4 through the field from
-a seed point and handing back the points in graph units, the way `sectionOf` hands back points in
-space. It stops on three rules, each stated where a reader looks for it: the run leaves the region, the
-step count reaches its cap, or the vector is too small to move.
-
-*Measured:* in the field that turns a point about the origin, a turn walked in 64 steps stays within
-2.48e-7 of the true radius and its far end lands 1.08e-6 from the seed it started at. **The step is an
-arc length rather than a time**, since the field is read as a direction and its magnitude decides
-nothing, which is what keeps the points evenly spaced in a field whose strength changes across the
-picture. That splits the error in two and the two orders differ. Along the curve the error falls by
-15.1 and 15.6 as the step is halved from a turn in 256 steps, which is the fourth order the integrator
-is named for. Across the curve it falls by 31.5, 31.9 and 32.0, because an arc-length step puts the
-leading error along the curve rather than off it. A seed outside the region comes back as one point, a
-field that is nothing everywhere stops at one point rather than at its cap of 500, and a run that
-leaves a region two units wide at a step of 0.1 stops after 11 points. `direction` runs the seed
-backward as well as forward, which is what step 3 needs to draw one curve through the origin. The
-suite went from 549 tests to 560.
-
-**3. The flat demo gains the field. Done.** `demos/tangent.ts` draws the slope field of its own curve behind
-the parabola, arriving with `fadeIn` and sitting under the curve and over the grid. The parabola is the
-streamline of that field through the origin, which is the check this demo is the right one to carry:
-the drawn curve and the integrated one are two answers to the same question.
-
-*Measured:* the streamline through the origin runs 561 points from x of -0.991 to 2.999 and never
-leaves the plotted curve by more than 4.689e-10 of a figure unit. Every one of the field's fifty
-arrows lies along the tangent the curve has at its own x, to 1e-9 of the sine of the angle between
-them. The mark count goes from 102 to 202 at all six times the gate reads, and the strip from 408 to
-808. A ten by five grid takes `docs/tangent-strip.svg` from 203,891 bytes to 282,371, which is the
-282,528 the solid strip already costs, and `docs/tangent.svg` from 50,653 to 69,413.
-
-**4. Arrows and fields in space. Done.** `arrow3(name, from, to, camera, options)` in `figure/space.ts`, a
-shaft that is a `polyline3` and a head that is a flat triangle at the projected tip, and
-`vectorField3(name, of, camera, options)` sampling a grid in space and putting the arrows through the
-depth sort.
-
-*Measured:* an arrow in space has its tip within 1e-12 of the camera's projection of its far point. A
-field over a 4 by 4 by 3 grid draws 48 arrows and 96 marks at each of five poses of the eye. An arrow
-wholly behind the eye draws no marks, an arrow whose far end is behind it draws a cut shaft and no
-head, and an arrow whose tail alone is behind it keeps both. **An arrow in space is measured in the
-world's own units** rather than the figure's, unlike the arrows of a flat field, since a far arrow
-drawing shorter than a near one of the same magnitude is what says which is far; its head stays in
-figure units because the head is drawn on the page. A field that is nothing over half its box draws 24
-arrows rather than 48. The suite went from 564 tests to 573.
-
-**5. The solid demo gains streamlines. Done.** `demos/surface.ts` draws three runs of steepest descent down
-the saddle, each a streamline of the gradient field integrated across the surface and drawn as a
-`polyline3` lying on it, with the field itself shown as arrows on the plane the demo already carries.
-
-*Measured:* every point of all three runs lies on the surface exactly, at a worst gap of 0, since a run
-is walked in the plane the surface is drawn over and then lifted onto it by the surface's own function.
-The height falls at every one of the 130 steps the three runs take together, from 0.84 down to -1.08.
-The mark count goes from 190 to 265 at all six times the gate reads, and the strip from 760 to 1060.
-**`fieldArrows3` was split out of `vectorField3`** so the arrows go through the same depth sort as the
-saddle and the plane, which is the pattern `surfaceCells` already had under `surface3`: sorted apart,
-the arrows would paint over a saddle standing in front of them. `docs/surface-strip.svg` grows from
-282,528 bytes to 365,164 and `docs/surface.svg` from 69,650 to 89,890. The suite went from 573 tests to
-574.
-
-**6. The cut.** The version goes to 0.11.0, the README gains the paragraph and the two demos' pictures
-are regenerated, the lock file is written with `npm install --package-lock-only`, and this entry is
-deleted.
-
-#### Done-criteria
-
-- `npm test`, `npm run type-check` and `npm run build` all pass.
-- `npm run demos` regenerates the same eight sheets and the committed bytes match all eight.
-- The flat demo draws a field and a streamline, and a test names each by its mark id.
-- The streamline through the origin of the slope field matches the plotted parabola, by the measurement
-  in step 3.
-- The solid demo draws streamlines running down the saddle, every point on the surface by the
-  measurement in step 5.
-- Halving the step divides the streamline's error by about sixteen, and a test holds it.
-- `vectorField`, `streamlineOf`, `arrow3` and `vectorField3` are all exported from `index.ts`, and a
-  test names each.
-- `mark.ts`, `node.ts`, `flatten` and both painters are untouched across the whole item, which is the
-  same boundary 0.10.0 held.
 
 ### Frames out, 0.12.0
 
