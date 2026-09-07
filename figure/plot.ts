@@ -6,6 +6,10 @@
  * by straight lines instead is what makes a plotted sine look faceted, and the
  * slope costs nothing to work out because it comes from samples already taken.
  *
+ * A curve is cut where it leaves the graph. A pole otherwise draws as a line
+ * straight up the picture, and the coordinates on either side of it run to
+ * numbers a painter has nowhere to put.
+ *
  * The count is fixed and the curve is never subdivided by how much it bends.
  * Subdivision hands back a different number of points as the curve changes, and
  * one path is walked into another by pairing their points, so a curve that
@@ -13,7 +17,7 @@
  */
 import { interval, type Interval } from '../values/interval.js';
 import { pointOf, type Coords } from './scale.js';
-import type { Cubic, Path } from './path.js';
+import type { Cubic, Path, Subpath } from './path.js';
 
 export interface PlotOptions {
   /** How many pieces the curve is cut into. */
@@ -33,31 +37,72 @@ export interface PlotOptions {
 const SAMPLES = 96;
 
 /**
- * The slope at each sample, from the central difference of its neighbours, which
- * is the tangent a Catmull-Rom spline uses.
+ * The slope at each sample of one run, from the central difference of its
+ * neighbours, which is the tangent a Catmull-Rom spline uses.
  *
- * The two ends have one neighbour each, so they take the three-point one-sided
- * difference. That is second order like the middle and exact for a quadratic,
- * where the two-point difference an end reaches for first is neither: measured
- * on a parabola at 64 samples, the two-point ends leave the curve 3.7e-4 figure
- * units out and the three-point ends leave it exact.
+ * An end with evenly spaced neighbours takes the three-point one-sided
+ * difference, which is second order like the middle and exact for a quadratic.
+ * An end that was cut at the edge of the graph is not evenly spaced, so it takes
+ * the two-point difference instead: measured on a parabola at 64 samples, the
+ * three-point ends leave an uncut curve exact where the two-point ends leave it
+ * 3.7e-4 figure units out.
  */
 function slopes(xs: readonly number[], ys: readonly number[]): number[] {
   const last = xs.length - 1;
   if (last < 1) return [0];
-  const step = xs[1] - xs[0];
+  const even = (a: number, b: number, c: number) => Math.abs((b - a) - (c - b)) < Math.abs(c - a) * 1e-9;
   const out: number[] = [];
   for (let at = 0; at <= last; at++) {
     if (last < 2) out.push((ys[last] - ys[0]) / (xs[last] - xs[0]));
-    else if (at === 0) out.push((-3 * ys[0] + 4 * ys[1] - ys[2]) / (2 * step));
-    else if (at === last) out.push((3 * ys[last] - 4 * ys[last - 1] + ys[last - 2]) / (2 * step));
-    else out.push((ys[at + 1] - ys[at - 1]) / (xs[at + 1] - xs[at - 1]));
+    else if (at === 0) {
+      out.push(
+        even(xs[0], xs[1], xs[2])
+          ? (-3 * ys[0] + 4 * ys[1] - ys[2]) / (xs[2] - xs[0])
+          : (ys[1] - ys[0]) / (xs[1] - xs[0])
+      );
+    } else if (at === last) {
+      out.push(
+        even(xs[last - 2], xs[last - 1], xs[last])
+          ? (3 * ys[last] - 4 * ys[last - 1] + ys[last - 2]) / (xs[last] - xs[last - 2])
+          : (ys[last] - ys[last - 1]) / (xs[last] - xs[last - 1])
+      );
+    } else out.push((ys[at + 1] - ys[at - 1]) / (xs[at + 1] - xs[at - 1]));
   }
   return out;
 }
 
+/** How many times the gap either side of the edge is halved when looking for the
+ * place the curve crosses it. Twenty-four leaves it within a millionth of one
+ * sample's width. */
+const HALVINGS = 24;
+
 /**
- * The curve of a function over a run of x, in the figure's own units.
+ * The place between a sample on the graph and a sample off it where the curve
+ * crosses the edge, by halving the gap between them.
+ *
+ * The y it hands back is held on the edge rather than taken from the function,
+ * so the cut end sits exactly on the boundary instead of a millionth past it.
+ */
+function crossing(
+  of: (x: number) => number,
+  drawable: (y: number) => boolean,
+  bounds: Interval,
+  inside: number,
+  outside: number
+): { x: number; y: number } {
+  let near = inside;
+  let far = outside;
+  for (let halving = 0; halving < HALVINGS; halving++) {
+    const middle = (near + far) / 2;
+    if (drawable(of(middle))) near = middle;
+    else far = middle;
+  }
+  return { x: near, y: interval.clampTo(bounds, of(near)) };
+}
+
+/**
+ * The curve of a function over a run of x, in the figure's own units, as one
+ * subpath per stretch of it that is on the graph.
  *
  * Each piece is a Hermite cubic written as a Bézier: the controls sit a third of
  * the way along in x and carry the sample's own slope, which is the placement
@@ -68,23 +113,62 @@ export function plot(coords: Coords, of: (x: number) => number, options: PlotOpt
   const { from, to } = interval.ordered(options.over ?? coords.x.graph);
   if (!(to > from)) return [];
 
+  const grain = ((to - from) / samples) * 1e-9;
+  const drawable = (y: number) => Number.isFinite(y) && interval.holds(coords.y.graph, y);
   const xs: number[] = [];
   const ys: number[] = [];
+  const on: boolean[] = [];
   for (let at = 0; at <= samples; at++) {
     const x = from + ((to - from) * at) / samples;
+    const y = of(x);
     xs.push(x);
-    ys.push(of(x));
+    ys.push(y);
+    on.push(drawable(y));
   }
 
-  const slope = slopes(xs, ys);
-  const curves: Cubic[] = [];
-  for (let at = 0; at < samples; at++) {
-    const reach = (xs[at + 1] - xs[at]) / 3;
-    curves.push({
-      control1: pointOf(coords, xs[at] + reach, ys[at] + reach * slope[at]),
-      control2: pointOf(coords, xs[at + 1] - reach, ys[at + 1] - reach * slope[at + 1]),
-      to: pointOf(coords, xs[at + 1], ys[at + 1]),
-    });
+  const path: Subpath[] = [];
+  let at = 0;
+  while (at <= samples) {
+    if (!on[at]) {
+      at++;
+      continue;
+    }
+    let end = at;
+    while (end + 1 <= samples && on[end + 1]) end++;
+
+    const runX = xs.slice(at, end + 1);
+    const runY = ys.slice(at, end + 1);
+    if (at > 0) {
+      const cut = crossing(of, drawable, coords.y.graph, xs[at], xs[at - 1]);
+      // A sample sitting exactly on the edge leaves nothing between it and the
+      // crossing, and a piece of no width has no slope to leave at.
+      if (xs[at] - cut.x > grain) {
+        runX.unshift(cut.x);
+        runY.unshift(cut.y);
+      }
+    }
+    if (end < samples) {
+      const cut = crossing(of, drawable, coords.y.graph, xs[end], xs[end + 1]);
+      if (cut.x - xs[end] > grain) {
+        runX.push(cut.x);
+        runY.push(cut.y);
+      }
+    }
+
+    if (runX.length > 1) {
+      const slope = slopes(runX, runY);
+      const curves: Cubic[] = [];
+      for (let piece = 0; piece + 1 < runX.length; piece++) {
+        const reach = (runX[piece + 1] - runX[piece]) / 3;
+        curves.push({
+          control1: pointOf(coords, runX[piece] + reach, runY[piece] + reach * slope[piece]),
+          control2: pointOf(coords, runX[piece + 1] - reach, runY[piece + 1] - reach * slope[piece + 1]),
+          to: pointOf(coords, runX[piece + 1], runY[piece + 1]),
+        });
+      }
+      path.push({ start: pointOf(coords, runX[0], runY[0]), curves, closed: false });
+    }
+    at = end + 1;
   }
-  return [{ start: pointOf(coords, xs[0], ys[0]), curves, closed: false }];
+  return path;
 }

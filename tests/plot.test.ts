@@ -1,7 +1,10 @@
 import { describe, expect, it } from 'vitest';
 import { coordsOf, interval, plot, pointCount, pointOf, scaleOf, type Path } from '../index.js';
 
+// The demo's own coords, whose y axis stops at 9 while the parabola reaches 16.
 const square = coordsOf(scaleOf(interval(-1, 4), interval(-4.6, 4.6)), scaleOf(interval(-1, 9), interval(-2.4, 2.4)));
+// The same graph with room for the whole parabola, so nothing is cut.
+const tall = coordsOf(scaleOf(interval(-1, 4), interval(-4.6, 4.6)), scaleOf(interval(-1, 17), interval(-2.4, 2.4)));
 const wave = coordsOf(
   scaleOf(interval(0, 4 * Math.PI), interval(-4.6, 4.6)),
   scaleOf(interval(-1, 1), interval(-2.4, 2.4))
@@ -25,7 +28,7 @@ function worstGap(path: Path, coords: typeof square, of: (x: number) => number):
 
 describe('a plotted function', () => {
   it('is one open subpath of one cubic per sample', () => {
-    const path = plot(square, (x) => x * x, { samples: 16 });
+    const path = plot(tall, (x) => x * x, { samples: 16 });
     expect(path).toHaveLength(1);
     expect(path[0].closed).toBe(false);
     expect(path[0].curves).toHaveLength(16);
@@ -33,9 +36,9 @@ describe('a plotted function', () => {
   });
 
   it('starts and ends on the curve itself', () => {
-    const path = plot(square, (x) => x * x, { samples: 16 });
-    const start = pointOf(square, -1, 1);
-    const end = pointOf(square, 4, 16);
+    const path = plot(tall, (x) => x * x, { samples: 16 });
+    const start = pointOf(tall, -1, 1);
+    const end = pointOf(tall, 4, 16);
     expect(path[0].start.x).toBeCloseTo(start.x, 12);
     expect(path[0].start.y).toBeCloseTo(start.y, 12);
     expect(path[0].curves[15].to.x).toBeCloseTo(end.x, 12);
@@ -47,7 +50,7 @@ describe('a plotted function', () => {
     // available is in the slopes, and at the ends those are the three-point
     // difference rather than the two-point one.
     for (const samples of [16, 32, 64, 96]) {
-      expect(worstGap(plot(square, (x) => x * x, { samples }), square, (x) => x * x)).toBeLessThan(1e-12);
+      expect(worstGap(plot(tall, (x) => x * x, { samples }), tall, (x) => x * x)).toBeLessThan(1e-12);
     }
   });
 
@@ -72,17 +75,17 @@ describe('a plotted function', () => {
   });
 
   it('draws over the run it is given rather than the whole graph', () => {
-    const path = plot(square, (x) => x * x, { samples: 8, over: interval(0, 2) });
-    expect(path[0].start.x).toBeCloseTo(pointOf(square, 0, 0).x, 12);
-    expect(path[0].curves[7].to.x).toBeCloseTo(pointOf(square, 2, 4).x, 12);
+    const path = plot(tall, (x) => x * x, { samples: 8, over: interval(0, 2) });
+    expect(path[0].start.x).toBeCloseTo(pointOf(tall, 0, 0).x, 12);
+    expect(path[0].curves[7].to.x).toBeCloseTo(pointOf(tall, 2, 4).x, 12);
   });
 
   it('draws nothing over a run with no width', () => {
-    expect(plot(square, (x) => x * x, { over: interval(2, 2) })).toEqual([]);
+    expect(plot(tall, (x) => x * x, { over: interval(2, 2) })).toEqual([]);
   });
 
   it('draws one piece where one piece is all that was asked for', () => {
-    const path = plot(square, (x) => x * x, { samples: 1 });
+    const path = plot(tall, (x) => x * x, { samples: 1 });
     expect(path[0].curves).toHaveLength(1);
   });
 });
@@ -101,3 +104,74 @@ function worstStraightGap(samples: number): number {
   }
   return worst;
 }
+
+describe('a curve that leaves its graph', () => {
+  const overY = (graph: { from: number; to: number }) =>
+    coordsOf(scaleOf(interval(-2, 2), interval(-4.6, 4.6)), scaleOf(graph, interval(-2.4, 2.4)));
+  const pole = overY(interval(-4, 4));
+  const turns = coordsOf(
+    scaleOf(interval(0, 4 * Math.PI), interval(-4.6, 4.6)),
+    scaleOf(interval(-4, 4), interval(-2.4, 2.4))
+  );
+  const root = coordsOf(scaleOf(interval(-1, 4), interval(-4.6, 4.6)), scaleOf(interval(-1, 3), interval(-2.4, 2.4)));
+
+  const points = (path: Path) =>
+    path.flatMap((subpath) => [
+      subpath.start,
+      ...subpath.curves.flatMap((curve) => [curve.control1, curve.control2, curve.to]),
+    ]);
+
+  it('breaks either side of a pole rather than drawing a line across it', () => {
+    expect(plot(pole, (x) => 1 / x)).toHaveLength(2);
+  });
+
+  it('breaks at each pole of a tangent over two turns', () => {
+    expect(plot(turns, Math.tan)).toHaveLength(5);
+  });
+
+  it('starts where a function first has a value', () => {
+    const path = plot(root, Math.sqrt);
+    expect(path).toHaveLength(1);
+    expect(interval.remap(path[0].start.x, root.x.units, root.x.graph)).toBeCloseTo(0, 6);
+  });
+
+  it('leaves no point without a number and none outside the graph', () => {
+    for (const [coords, of] of [
+      [pole, (x: number) => 1 / x],
+      [turns, Math.tan],
+      [root, Math.sqrt],
+    ] as const) {
+      for (const point of points(plot(coords, of))) {
+        expect(Number.isFinite(point.x)).toBe(true);
+        expect(Number.isFinite(point.y)).toBe(true);
+        expect(interval.holds(coords.y.units, point.y)).toBe(true);
+      }
+    }
+  });
+
+  it('reaches the edge rather than stopping at the last sample inside it', () => {
+    // The demo's own curve: its y axis stops at 9 where the parabola reaches 16,
+    // so it is cut at three, which is the x where the curve meets the top.
+    const path = plot(square, (x) => x * x);
+    const last = path[0].curves[path[0].curves.length - 1].to;
+    expect(interval.remap(last.x, square.x.units, square.x.graph)).toBeCloseTo(3, 6);
+    expect(interval.remap(last.y, square.y.units, square.y.graph)).toBeCloseTo(9, 6);
+  });
+
+  it('adds no piece where a sample already sits on the edge', () => {
+    // Halving the gap from a sample already on the boundary lands back on it,
+    // and a piece of no width has no slope to leave at.
+    const path = plot(pole, (x) => 1 / x, { samples: 96 });
+    for (const subpath of path) {
+      let from = subpath.start;
+      for (const curve of subpath.curves) {
+        expect(Math.abs(curve.to.x - from.x)).toBeGreaterThan(0);
+        from = curve.to;
+      }
+    }
+  });
+
+  it('draws nothing where the function is nowhere on the graph', () => {
+    expect(plot(pole, () => 50)).toEqual([]);
+  });
+});

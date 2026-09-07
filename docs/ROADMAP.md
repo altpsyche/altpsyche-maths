@@ -233,11 +233,16 @@ resumes at the first unticked one.
       end slopes use the three-point difference rather than the two-point one, which left it 3.7e-4
       out. The default is 96, where a sine over two turns is 3.3e-4 figure units out, under a tenth
       of a pixel at 2160 across the demo's extent.
-- [ ] **8. A plotted curve stays inside its own axes.** A sample that is not finite ends the subpath,
-      and so does a sample outside the y interval, with the next sample that is back inside starting
-      a new one. Measurement: the subpath count for one over x across zero, for tangent over two
-      turns, and for the square root from below zero, against what step 7 gives for each; and the
-      number of points left outside the y interval, which is none.
+- [x] **8. A plotted curve stays inside its own axes.** A sample that is not finite ends the subpath,
+      and so does a sample outside the y interval, and the place the curve crosses the edge is found
+      by halving the gap so the cut end sits on the boundary rather than a sample short of it.
+      **Landed.** Subpath counts before and after: one over x across zero, 1 then 2; tangent over two
+      turns, 1 then 5; the square root from below zero, 1 then 1, now starting where the function
+      first has a value. Points with no number, before then after: 7 then 0, 0 then 0, 61 then 0.
+      Points outside the graph: 35, 44 and 61, all now 0. The demo's own curve is cut at x = 3, where
+      the parabola meets the 9 its y axis stops at. A sample already sitting on the edge leaves no
+      gap to halve, and adding the crossing there gave a piece of no width whose slope was 0/0, so
+      a cut closer than a billionth of a sample's width is left out.
 - [ ] **9. The demo draws, first cut.** `demos/tangent.ts` carrying the grid, the axes and the curve;
       `npm run demos` writing `docs/tangent.svg` through `svgMarkup`; a gate comparing the regenerated
       bytes against the committed file; and the README carrying the image. Measurement: the demo's
