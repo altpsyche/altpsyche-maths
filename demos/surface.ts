@@ -17,7 +17,12 @@
  * The surface and the plane are sorted together rather than one after the other.
  * Two grids sorted apart are two groups, and the second is painted over the first
  * whichever way round they stand, which is the one thing a plane cutting through
- * a surface must not do.
+ * a surface must not do. The field's arrows go into that same sort, so an arrow
+ * behind the saddle is covered by it.
+ *
+ * At 0.11.0 three runs of steepest descent are drawn on the saddle. Each is a
+ * streamline of the field that points the way the surface falls, walked in the
+ * plane the surface is drawn over and then lifted onto it.
  */
 import {
   axes3,
@@ -26,6 +31,7 @@ import {
   equationFromTex,
   equationNode,
   fadeIn,
+  fieldArrows3,
   fractionOf,
   group,
   interval,
@@ -35,6 +41,7 @@ import {
   sampleTrack,
   sectionOf,
   space,
+  streamlineOf,
   surfaceCells,
   vec2,
   vec3,
@@ -45,12 +52,15 @@ import {
   type Mark,
   type Node,
   type Track,
+  type Vec2,
 } from '../index.js';
 
 const ink = { colour: '#1b1b1b' };
 const pen = { colour: '#1b1b1b', width: 0.014 };
 const cut = { colour: '#c2410c', width: 0.05 };
 const glass = { colour: '#38bdf8', width: 0.008 };
+const flow = { colour: '#0369a1', width: 0.01 };
+const fall = { colour: '#15803d', width: 0.035 };
 
 /** Same frame as the other two demos, so the pictures in the README are one
  * size. */
@@ -80,6 +90,43 @@ export const section = sectionOf(surfaceAt, { point: vec3(0, 0, HEIGHT), normal:
   v: OVER,
   resolution: 48,
 });
+
+/**
+ * The way the saddle falls at a place, which is the gradient of its own height
+ * turned round.
+ *
+ * The height of this saddle is half of x squared less half of y squared, so it
+ * falls towards the middle along x and away from it along y, and no run of
+ * steepest descent here is a straight line except the two through the middle.
+ */
+const descent = (at: Vec2) => vec2(-at.x, at.y);
+
+/** Where the three runs start. None is on either axis: a run started on one
+ * stays on it, and a straight line down a saddle says nothing about how the run
+ * was found. */
+const SEEDS = [vec2(1.3, 0.06), vec2(-1.3, 0.06), vec2(0.5, -0.04)];
+
+/** How far each step of a run moves, in the units the surface is drawn in, and
+ * how many steps one may take before the region's own edge stops it. */
+const STEP = 0.05;
+const STEPS = 300;
+
+/**
+ * The three runs of steepest descent, walked once rather than at every frame,
+ * each lifted from the plane it was walked in onto the surface itself.
+ */
+export const descents = SEEDS.map((seed) =>
+  streamlineOf(descent, seed, { step: STEP, steps: STEPS, within: { x: OVER, y: OVER } }).map((at) =>
+    surfaceAt(at.x, at.y)
+  )
+);
+
+/** How many arrows of the field are drawn across the plane, and how long one is
+ * in the units the surface is drawn in. An arrow settles towards a third of a
+ * unit rather than growing with the gradient, since the gradient at the corner
+ * of the saddle is thirty times the gradient near the middle. */
+const FLOW = { x: 6, y: 6, z: 1 };
+const arrowLength = (magnitude: number) => (0.34 * magnitude) / (0.9 + magnitude);
 
 /** How dark a cell of the saddle is drawn, from how squarely it faces the light.
  * Two greys mixed by hand, since a colour here is text and nothing reads one. */
@@ -133,8 +180,19 @@ export function sceneAt(along: number): Node {
           shade: () => ({ colour: '#e0f2fe' }),
           stroke: glass,
         }),
+        ...fieldArrows3('flow', (at) => vec3(-at.x, at.y, 0), camera, {
+          over: { x: OVER, y: OVER, z: interval(HEIGHT, HEIGHT) },
+          resolution: FLOW,
+          lengthOf: arrowLength,
+          colourFor: () => flow.colour,
+          stroke: flow,
+        }),
       ],
       camera
+    ),
+    group(
+      'descent',
+      descents.map((run, at) => polyline3(`run${at}`, run, camera, { stroke: fall }))
     ),
     group('cut', section.map((run, at) => polyline3(`run${at}`, run, camera, { stroke: cut })), {
       style: { opacity: 1 },
@@ -170,7 +228,9 @@ const entrance = Timeline.empty()
   .play(fadeIn('solid/body/hill'), 0.7, { after: -0.3 })
   .play(fadeIn('solid/rule'), 0.5, { after: -0.3 })
   .play(fadeIn('solid/body/pane'), 0.7, { after: 0.1 })
-  .play(draw('solid/cut'), 0.9, { after: -0.2 });
+  .play(draw('solid/cut'), 0.9, { after: -0.2 })
+  .play(fadeIn('solid/body/flow'), 0.5, { after: -0.2 })
+  .play(draw('solid/descent'), 0.9, { after: -0.1 });
 
 const ORBIT_FROM = entrance.duration;
 

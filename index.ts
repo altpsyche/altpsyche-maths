@@ -52,7 +52,7 @@ export { axes, numberLine, numberPlane } from './figure/axis.js';
 export type { AxesOptions, NumberLineOptions, NumberPlaneOptions } from './figure/axis.js';
 export { camera3, orthographic, perspective } from './figure/camera.js';
 export type { Camera3, Camera3Choice, OrthographicChoice, PerspectiveChoice, Projected, Projection } from './figure/camera.js';
-export { arrow3, dot3, polyline3, space, surface3, surfaceCells, text3, vectorField3 } from './figure/space.js';
+export { arrow3, dot3, fieldArrows3, polyline3, space, surface3, surfaceCells, text3, vectorField3 } from './figure/space.js';
 export type { Arrow3Options, Polyline3Options, SpaceItem, Surface3Options, Text3Options, VectorField3Options } from './figure/space.js';
 export { axes3 } from './figure/axis3.js';
 export type { Axes3Options } from './figure/axis3.js';

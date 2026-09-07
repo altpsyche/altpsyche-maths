@@ -29,6 +29,7 @@ import {
   HEIGHT,
   TIMES as SOLID_TIMES,
   alongAt,
+  descents,
   eyeAt,
   saddle,
   section,
@@ -624,8 +625,21 @@ describe('the solid demo', () => {
   const marksAt = (seconds: number) => at(solid, seconds);
   const named = [SOLID_TIMES.entrance, SOLID_TIMES.quarter, SOLID_TIMES.half, SOLID_TIMES.round];
 
-  it('draws the same 190 marks at every time', () => {
-    for (const seconds of [0, ...SOLID_FRAMES, SOLID_TIMES.round]) expect(marksAt(seconds)).toHaveLength(190);
+  it('draws the same 265 marks at every time', () => {
+    // A hundred and forty-four cells of saddle, sixteen panes of glass, the
+    // field's thirty-six arrows at two marks each, three runs of descent and the
+    // two branches of the cut, with the axes and the rule making up the rest.
+    for (const seconds of [0, ...SOLID_FRAMES, SOLID_TIMES.round]) expect(marksAt(seconds)).toHaveLength(265);
+  });
+
+  it('runs its three descents down the saddle and never off it', () => {
+    let worst = 0;
+    for (const run of descents) {
+      expect(run.length).toBeGreaterThan(20);
+      for (const point of run) worst = Math.max(worst, Math.abs(point.z - saddle(point.x, point.y)));
+      for (let step = 1; step < run.length; step += 1) expect(run[step].z).toBeLessThan(run[step - 1].z);
+    }
+    expect(worst).toBe(0);
   });
 
   it('names a surface, a plane, a curve, three axes and a typeset equation', () => {
@@ -704,7 +718,7 @@ describe('the solid demo', () => {
 describe('the solid strip', () => {
   it('carries every frame with no two marks sharing an id', () => {
     const { marks } = solidStripMarks(SOLID_FRAMES, 2);
-    expect(marks).toHaveLength(190 * SOLID_FRAMES.length);
+    expect(marks).toHaveLength(265 * SOLID_FRAMES.length);
     expect(new Set(marks.map((mark) => mark.id)).size).toBe(marks.length);
   });
 });

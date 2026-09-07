@@ -357,7 +357,10 @@ describe('vectorField3', () => {
     const level = () => vec3(1, 0, 0);
     const marks = flatten(vectorField3('field', level, along, { ...options, resolution: { x: 1, y: 1, z: 4 } }));
     const order = marks.filter((mark) => mark.id.endsWith('/shaft')).map((mark) => mark.id);
-    expect(order).toEqual(['field/0-0-0/shaft', 'field/0-0-1/shaft', 'field/0-0-2/shaft', 'field/0-0-3/shaft']);
+    expect(order).toEqual(['field/arrow/0-0-0/shaft',
+      'field/arrow/0-0-1/shaft',
+      'field/arrow/0-0-2/shaft',
+      'field/arrow/0-0-3/shaft',]);
   });
 
   it('draws no arrow where the field is nothing', () => {

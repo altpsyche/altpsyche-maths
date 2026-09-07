@@ -240,13 +240,19 @@ drawing shorter than a near one of the same magnitude is what says which is far;
 figure units because the head is drawn on the page. A field that is nothing over half its box draws 24
 arrows rather than 48. The suite went from 564 tests to 573.
 
-**5. The solid demo gains streamlines.** `demos/surface.ts` draws three runs of steepest descent down
+**5. The solid demo gains streamlines. Done.** `demos/surface.ts` draws three runs of steepest descent down
 the saddle, each a streamline of the gradient field integrated across the surface and drawn as a
 `polyline3` lying on it, with the field itself shown as arrows on the plane the demo already carries.
 
-*Measures:* every point of every run lies on the surface to a measured tolerance, and the height falls
-at every step of a run, which is what steepest descent means and what a sign slip would break. The mark
-count goes from 190 to a stated number and holds at every quarter of the orbit.
+*Measured:* every point of all three runs lies on the surface exactly, at a worst gap of 0, since a run
+is walked in the plane the surface is drawn over and then lifted onto it by the surface's own function.
+The height falls at every one of the 130 steps the three runs take together, from 0.84 down to -1.08.
+The mark count goes from 190 to 265 at all six times the gate reads, and the strip from 760 to 1060.
+**`fieldArrows3` was split out of `vectorField3`** so the arrows go through the same depth sort as the
+saddle and the plane, which is the pattern `surfaceCells` already had under `surface3`: sorted apart,
+the arrows would paint over a saddle standing in front of them. `docs/surface-strip.svg` grows from
+282,528 bytes to 365,164 and `docs/surface.svg` from 69,650 to 89,890. The suite went from 573 tests to
+574.
 
 **6. The cut.** The version goes to 0.11.0, the README gains the paragraph and the two demos' pictures
 are regenerated, the lock file is written with `npm install --package-lock-only`, and this entry is

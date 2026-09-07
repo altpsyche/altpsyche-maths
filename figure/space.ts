@@ -198,8 +198,8 @@ function gridOf(resolution: number | { x: number; y: number; z: number }): { x: 
 }
 
 /**
- * A field of vectors sampled over a box in space, drawn as arrows ordered back
- * to front.
+ * The arrows of a field sampled over a box in space, and the points each was
+ * drawn from, for a figure that sorts them among pieces of its own.
  *
  * An arrow is measured in the world's own units rather than the figure's, unlike
  * the arrows of a flat field, because a length in space is what perspective is
@@ -211,12 +211,12 @@ function gridOf(resolution: number | { x: number; y: number; z: number }): { x: 
  * resolution, so a gate can hold it as the eye moves. A sample whose vector is
  * nothing draws no arrow there.
  */
-export function vectorField3(
+export function fieldArrows3(
   name: string,
   of: (at: Vec3) => Vec3,
   camera: Camera3,
   options: VectorField3Options,
-): GroupNode {
+): SpaceItem[] {
   const { over = {}, resolution = 6, lengthOf, colourFor, ...rest } = options;
   const box = {
     x: interval.ordered(over.x ?? interval(0, 1)),
@@ -242,7 +242,7 @@ export function vectorField3(
         const to = vec3.add(from, vec3.scale(vector, length / magnitude));
         items.push({
           points: [from, to],
-          node: arrow3(`${i}-${j}-${k}`, from, to, camera, {
+          node: arrow3(`${name}/${i}-${j}-${k}`, from, to, camera, {
             ...rest,
             stroke: { ...rest.stroke, colour: colourFor(magnitude) },
           }),
@@ -251,7 +251,17 @@ export function vectorField3(
     }
   }
 
-  return space(name, items, camera);
+  return items;
+}
+
+/** A field of vectors in space, drawn as arrows ordered back to front. */
+export function vectorField3(
+  name: string,
+  of: (at: Vec3) => Vec3,
+  camera: Camera3,
+  options: VectorField3Options,
+): GroupNode {
+  return space(name, fieldArrows3('arrow', of, camera, options), camera);
 }
 
 export type Surface3Options = {
