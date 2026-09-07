@@ -1,5 +1,20 @@
 import { describe, expect, it } from 'vitest';
-import { arc, circle, coordsOf, interval, plot, scaleOf, trimPath, vec2, type Cubic, type Path } from '../index.js';
+import {
+  arc,
+  circle,
+  coordsOf,
+  interval,
+  lengthOf,
+  line,
+  plot,
+  pointAlong,
+  pointOn,
+  scaleOf,
+  trimPath,
+  vec2,
+  type Cubic,
+  type Path,
+} from '../index.js';
 
 /**
  * The true length of a path, by a fine polyline walk.
@@ -91,5 +106,85 @@ describe('a cut by length', () => {
       expect(length).toBeGreaterThanOrEqual(previous);
       previous = length;
     }
+  });
+});
+
+describe('how long a path is', () => {
+  it('is exact for a straight line, since a chord of a straight line is the line', () => {
+    expect(lengthOf(line(vec2(0, 0), vec2(3, 4)))).toBe(5);
+    expect(lengthOf(line(vec2(-1, -1), vec2(-1, 5)))).toBeCloseTo(6, 12);
+  });
+
+  it('reads a circle a few parts in ten thousand short, because a chord cuts the corner', () => {
+    const ring = circle(vec2(0, 0), 1);
+    const fine = trueLength(ring);
+    expect(lengthOf(ring)).toBeLessThan(fine);
+    expect((fine - lengthOf(ring)) / fine).toBeLessThan(5e-4);
+  });
+
+  it('adds up every subpath', () => {
+    const two = [...line(vec2(0, 0), vec2(3, 4)), ...line(vec2(0, 0), vec2(0, 6))];
+    expect(lengthOf(two)).toBeCloseTo(11, 12);
+  });
+
+  it('is nothing for a path with no points', () => {
+    expect(lengthOf([])).toBe(0);
+  });
+});
+
+describe('the point a fraction along a path', () => {
+  const quarter = arc(vec2(0, 0), 1, 0, Math.PI / 2);
+  const gaps = (points: readonly { x: number; y: number }[]) =>
+    points.slice(1).map((point, at) => Math.hypot(point.x - points[at].x, point.y - points[at].y));
+  const spread = (points: readonly { x: number; y: number }[]) => {
+    const sizes = gaps(points);
+    return Math.max(...sizes) / Math.min(...sizes);
+  };
+  const walked = (path: Path, steps: number) =>
+    Array.from({ length: steps + 1 }, (_, step) => pointAlong(path, step / steps)!);
+
+  it('takes steps of one size where the parameter takes steps of many', () => {
+    // A cubic covers more of itself per step of parameter where it is moving
+    // fast, so even steps in parameter are uneven steps along the curve.
+    const byParameter = Array.from({ length: 21 }, (_, step) =>
+      pointOn(quarter[0].start, quarter[0].curves[0], step / 20)
+    );
+    expect(spread(byParameter)).toBeGreaterThan(1.06);
+    expect(spread(walked(quarter, 20))).toBeLessThan(1.005);
+  });
+
+  it("takes even steps along the demo's own curve", () => {
+    const coords = coordsOf(
+      scaleOf(interval(-1, 4), interval(-4.6, 4.6)),
+      scaleOf(interval(-1, 9), interval(-2.4, 2.4))
+    );
+    expect(spread(walked(plot(coords, (x) => x * x), 20))).toBeLessThan(1.002);
+  });
+
+  it('sits on the two ends exactly', () => {
+    const path = line(vec2(-2, 1), vec2(3, 4));
+    expect(pointAlong(path, 0)).toEqual(vec2(-2, 1));
+    expect(pointAlong(path, 1)).toEqual(vec2(3, 4));
+  });
+
+  it('holds a fraction outside nothing to one at the nearer end', () => {
+    const path = line(vec2(-2, 1), vec2(3, 4));
+    expect(pointAlong(path, -3)).toEqual(vec2(-2, 1));
+    expect(pointAlong(path, 9)).toEqual(vec2(3, 4));
+  });
+
+  it('crosses from one subpath into the next', () => {
+    // Two lines of five and of six, so half the length lands part way along the
+    // second of them rather than at its start.
+    const two = [...line(vec2(0, 0), vec2(3, 4)), ...line(vec2(0, 0), vec2(0, 6))];
+    const middle = pointAlong(two, 0.5)!;
+    expect(middle.x).toBeCloseTo(0, 9);
+    expect(middle.y).toBeCloseTo(0.5, 9);
+  });
+
+  it('is nothing for a path with no points, and its own start for a path of no length', () => {
+    expect(pointAlong([], 0.5)).toBeNull();
+    const still: Path = [{ start: vec2(2, 3), curves: [], closed: false }];
+    expect(pointAlong(still, 0.5)).toEqual(vec2(2, 3));
   });
 });

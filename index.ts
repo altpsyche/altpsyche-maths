@@ -44,6 +44,7 @@ export { fadeIn, fadeOut, fadeTo, draw, morph, moveBy } from './figure/animation
 export type { Animation } from './figure/animation.js';
 export { Timeline } from './figure/timeline.js';
 export type { PlayOptions, Span } from './figure/timeline.js';
+export { lengthOf, pointAlong } from './figure/length.js';
 export { trimPath } from './figure/trim.js';
 export { alignPaths, lerpPath } from './figure/morph.js';
 export { at, durationOf, loops, sameMarks } from './figure/figure.js';

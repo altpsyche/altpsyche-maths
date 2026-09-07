@@ -174,10 +174,15 @@ That parser is its own item and is queued below.
       length, before then after: a quarter circle as one piece, 4.7e-3 then 1.4e-4; a whole circle
       as four, 1.2e-3 then 9.6e-6; the demo's curve as ninety-six, 2.9e-5 then 9.4e-8. Many short
       pieces hid the defect and one long piece exposed it, which is why both are measured.
-- [ ] **3. A path's length, and the point at a fraction of it.** `lengthOf` and `pointAtLength` on the
-      table from step 2. Measurement: the length of a circle of radius one against two pi, and of a
-      straight line exactly; and the spacing of twenty points at even fractions of length against the
-      spacing of twenty at even fractions of parameter, which is the uneven pace this replaces.
+- [x] **3. A path's length, and the point a fraction along it.** `lengthOf` and `pointAlong` on the
+      table from step 2, named for the fraction they take rather than for a length, since that is
+      what `trimPath` takes and what an animation's own progress is. **Landed.** A straight line reads
+      exactly its own length. Twenty steps along a quarter circle vary in size by 6.9% taken at even
+      fractions of parameter and by 0.36% taken at even fractions of length, and by 0.07% along the
+      demo's curve. The sample count's own claim was wrong and is corrected: sixteen chords read a
+      quarter circle 4 parts in ten thousand short of the truth, not better than one part, and the
+      count is chosen for the evenness of a walk rather than for the total, which is a ratio the
+      shortfall largely cancels out of.
 - [ ] **4. `rotate` and `scale`.** About a pivot, which is the bounds centre of the marks the
       animation touches unless a figure names one. The pivot is read off the marks as they arrive,
       which is before this span has turned them, so it is the same point at every time. Measurement:
@@ -212,7 +217,7 @@ That parser is its own item and is queued below.
 **Done criteria, line by line.**
 
 - `npm test`, `npm run type-check` and `npm run build` all pass on a clean tree.
-- `index.ts` exports `boundsOf`, `boundsOfMarks`, `Bounds`, `lengthOf`, `pointAtLength`, `rotate`,
+- `index.ts` exports `boundsOf`, `boundsOfMarks`, `Bounds`, `lengthOf`, `pointAlong`, `rotate`,
   `scale`,
   `moveAlong`, `growFrom`, `indicate`, `flash`, `circumscribe`, and `Timeline.stagger` is on the
   class.
