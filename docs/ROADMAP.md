@@ -226,15 +226,26 @@ leaves six, three, one, three, three and six twentieths over the six pairs of th
 points. The published closed form that was tried first gave zero for a straight run from (1, 0) to
 (0, 1) where the truth is a half, so it was thrown away.
 
-**5. The three operations.** Split both paths at their crossings, keep the pieces each operation
-wants, and stitch what is kept into loops by joining ends that meet within the tolerance.
+**5. The three operations.** Done in one commit after all. `unionOf`, `intersectionOf` and
+`differenceOf` in `figure/boolean.ts`, exported.
 
-*Measures:* two discs of radius 1 whose centres are 1 apart. The lens where they overlap has a closed
-form, which is 1.22836 to five places. The overlap encloses that, the union encloses two pi less
-that, and the first less the second encloses pi less that, each to within the error the cubic circle
-carries. Two discs that miss: the union is both, the overlap is empty, the difference is the first.
-One disc inside the other: the union is the outer, the overlap is the inner, and the difference is a
-ring enclosing the difference of the two.
+*Measured:* two discs of radius 1 whose centres are 1 apart overlap in 1.228874 against the lens
+formula's 1.228370, union 5.056071 against 5.054816, and first less second 1.913598 against
+1.913223. That is 2.5e-4 of the union and 2.0e-4 of the difference, both inside the 6e-4 four cubics
+cost a circle. Two discs 5 apart give a union of two loops enclosing two pi, an empty overlap, and a
+difference enclosing the first. One disc inside another gives the outer, the inner, and a ring of
+two loops enclosing the difference of the two discs to 2e-16. Two discs touching at one point give a
+union of two loops, an empty overlap and the first. Squares, and a disc bitten out of a square,
+answer their closed forms to 1e-9 and to 6e-4.
+
+*The stitch was not what broke.* Step 2's tolerance was a fraction along a piece rather than a
+distance, so a crossing landing 4e-7 short of a piece's end made a sliver 6e-7 long, and the union of
+two discs touching at one point stitched into 5 loops instead of 2. The tolerance is now read against
+each piece's own length and the slivers are never cut.
+
+*The overlap is held to an amount rather than to a share.* An edge 2.7e-4 out in radius moves the
+area by that times its length, and as two discs draw apart the overlap shrinks towards nothing while
+its edge does not, so a share of it grows to 4.3e-3 at 1.9 apart with nothing having gone wrong.
 
 **6. The third demo.** `demos/boolean.ts`: two discs drawn three times side by side as their union,
 their overlap, and the first with the second taken out of it, with one disc walking across the other

@@ -8,6 +8,7 @@
  * against what is left rather than against the piece it started as.
  */
 import { splitCurve, type Cubic, type Path, type Subpath } from './path.js';
+import { measurePath } from './length.js';
 import type { Vec2 } from '../values/vec2.js';
 
 /** Where one cut falls: which subpath, which piece of it, and how far along
@@ -20,7 +21,7 @@ export interface Cut {
 
 export interface CutOptions {
   /** How close two cuts, or a cut and the end of a piece, are before they count
-   * as the same place, as a fraction along the piece. */
+   * as the same place, in the picture's own units. */
   readonly tolerance?: number;
 }
 
@@ -60,6 +61,11 @@ function cutCurve(from: Vec2, curve: Cubic, fractions: readonly number[]): Cubic
  * A path with every cut put in, drawing what it drew and holding one more piece
  * for each cut.
  *
+ * The tolerance is a distance rather than a fraction, so it is read against
+ * each piece's own length: a cut is worth making only where the piece it would
+ * leave behind is long enough to see, and a piece of nothing is one the stitch
+ * that follows would have to know to skip.
+ *
  * A cut naming a piece the path does not have is ignored, since a caller that
  * has already thrown one subpath away should not have to renumber the cuts it
  * gathered before it did.
@@ -76,12 +82,15 @@ export function cutPath(path: Path, cuts: readonly Cut[], options: CutOptions = 
     else gathered.set(key, [cut.along]);
   }
 
+  const measured = measurePath(path);
   return path.map((subpath, at): Subpath => {
     let from = subpath.start;
     const curves: Cubic[] = [];
     for (let piece = 0; piece < subpath.curves.length; piece++) {
       const curve = subpath.curves[piece];
-      const fractions = wanted(gathered.get(`${at}:${piece}`) ?? [], tolerance);
+      const span = measured.per[at][piece].total;
+      const asFraction = span > 0 ? Math.min(tolerance / span, 0.5) : 1;
+      const fractions = wanted(gathered.get(`${at}:${piece}`) ?? [], asFraction);
       curves.push(...cutCurve(from, curve, fractions));
       from = curve.to;
     }

@@ -26,6 +26,8 @@ export { arc, circle, line, polygon, polyline, pointCount, pointOn, rect, splitC
 export type { Cubic, Path, Subpath } from './figure/path.js';
 export { pathFromData } from './figure/path-data.js';
 export { areaOf } from './figure/area.js';
+export { differenceOf, intersectionOf, unionOf } from './figure/boolean.js';
+export type { BooleanOptions } from './figure/boolean.js';
 export { containsPoint, flattenPath, windingAt } from './figure/inside.js';
 export type { FlattenOptions } from './figure/inside.js';
 export { cutPath } from './figure/cut.js';
