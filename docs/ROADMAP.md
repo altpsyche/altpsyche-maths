@@ -164,7 +164,7 @@ against 9.5 ms and 0 before. The first typeset call costs 73 ms and loads 287 Co
 every call after it costs 1.6 ms. The build under `NodeNext` took the named imports without
 complaint, since they are written as a call rather than as a line at the top.
 
-**2. The walk from a typesetter's SVG into marks.** Add `figure/equation.ts`. It walks MathJax's
+**2. Done. The walk from a typesetter's SVG into marks.** Add `figure/equation.ts`. It walks MathJax's
 nested groups, carries the transform down them, and turns the whole expression over on the way in
 because SVG counts y downward and a figure counts it upward. A glyph outline becomes a path, a
 fraction bar becomes a rectangle, and the `viewBox` becomes the box the typesetter measured the
@@ -175,6 +175,11 @@ placed. Its id carries the glyph's own code point, which is what the matching at
 and hold it to a layout rather than to a total: 11 marks and 1 rule, 7 and 2, 5 and 0, 7 and 0, 14
 and 2. Plus the numerator of `\frac{a}{b}` sitting above the baseline, which is the reading that says
 the expression was turned over.
+
+*Measured:* the five expressions read as 11 marks and 1 rule, 7 and 2, 5 and 0, 7 and 0, and 14 and
+2. The numerator of `\frac{a}{b}` sits above the baseline and the denominator below it, and the box
+holds the baseline inside it. A single `x` is named `0-1D465`, which is its place and its code point.
+The suite is 356 tests in 584 ms, against 349 in 552 ms.
 
 **3. The three refusals.** Each of the three above throws, and the message names what was found
 rather than reporting that something was wrong.

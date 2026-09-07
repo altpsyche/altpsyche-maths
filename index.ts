@@ -57,3 +57,5 @@ export { arrow, callout, dot } from './figure/annotate.js';
 export type { ArrowOptions, CalloutOptions } from './figure/annotate.js';
 export { typesetElement } from './figure/typeset.js';
 export type { EquationElement } from './figure/typeset.js';
+export { equationFromTex, equationMarks } from './figure/equation.js';
+export type { Equation, EquationBox } from './figure/equation.js';
