@@ -51,7 +51,6 @@ with it, because `git log` is what keeps a closed plan.
 
 | version | what lands |
 | --- | --- |
-| 0.6.0 | Equations: the typesetter behind the one door |
 | 0.7.0 | One equation morphing into the next |
 | 0.8.0 | Braces, a number that counts, boolean operations on paths |
 | 0.9.0 | Three dimensions, and a camera that moves |
@@ -59,11 +58,10 @@ with it, because `git log` is what keeps a closed plan.
 | 0.11.0 | Frames out, with no website around it |
 | 1.0.0 | The two demos complete, the README, the surface frozen |
 
-**The order is not arbitrary and two places in it are worth defending.** Equations sit at 0.6.0
-rather than first because the website already has a working copy of them, so nothing here is blocked
-meanwhile, and because the morphing at 0.7.0 needs them. Three dimensions sit at 0.9.0 for the reason
-above. A camera that moves rides with 0.9.0 because a figure's camera is one piece of work whether it
-is orbiting a surface or panning across a plane, and splitting it would build the same matrix twice.
+**The order is not arbitrary and one place in it is worth defending.** Three dimensions sit at 0.9.0
+for the reason above. A camera that moves rides with 0.9.0 because a figure's camera is one piece of
+work whether it is orbiting a surface or panning across a plane, and splitting it would build the
+same matrix twice.
 
 ## The two demos, which are what a version is cut against
 
@@ -79,7 +77,8 @@ written first says what the code has to be able to say.
 `demos/tangent.ts`: the grid, both axes with ticks and labels, the plotted parabola, the region
 shaded under it, a point walking along it, the tangent at that point, and the slope written as a
 number that changes. As of 0.5.0 the picture arrives rather than appearing, and the walk is measured
-along the curve's own length so the dot keeps one speed.
+along the curve's own length so the dot keeps one speed. As of 0.6.0 the number sits under the
+typeset rule it is a value of, which is `\frac{dy}{dx} = 2x`.
 
 **How the walk is driven was Siva's call and the answer is the track.** The track drives a fraction of
 the curve's length and the scene recovers the graph x from the point it lands on, so the dot, the
@@ -88,9 +87,9 @@ stayed on an x track would have been two clocks free to disagree, since a span's
 track's value are unrelated. **What would change this answer** is an animation that can hand the
 scene back what it did, which the seam refuses on purpose.
 
-Every version after adds to that same figure: the slope gains its equation at 0.6.0, that equation
-morphs as the point crosses a stationary point at 0.7.0, a brace measures the rise at 0.8.0, the view
-follows the point at 0.9.0, and the curve's gradient becomes a field at 0.10.0.
+Every version after adds to that same figure: the equation morphs as the point crosses a stationary
+point at 0.7.0, a brace measures the rise at 0.8.0, the view follows the point at 0.9.0, and the
+curve's gradient becomes a field at 0.10.0.
 
 **The solid demo starts at 0.9.0**, because nothing before it can draw one, and it is a surface with
 a plane cutting through it and the curve of the intersection drawn on both. What it then takes from
@@ -110,139 +109,13 @@ the motion in a still.
 
 ## Now
 
-**0.5.0 is cut and 0.6.0 is next, and its steps are written under its item below.** A session resumes
-at the first unticked step and does not redesign the ones after it. Two things are queued below the
-items rather than inside one and neither blocks 0.6.0: the colour reader is wanted by the morphing at
-0.7.0, and spotting the red an undefined macro comes back as is a string comparison rather than a
-parse.
+**0.6.0 is cut and 0.7.0 is next, and it needs its steps written before it is worked.** Writing them
+is a session on its own. The colour reader queued below the items is wanted by that morphing, so it
+is the first thing that planning session has to place.
 
 ## The items
 
 Each is a version above. What follows is what each one covers.
-
-### Equations, 0.6.0
-
-The typesetter behind the one door, the walk from a typesetter's SVG into marks, and the placement of
-an equation in a figure. About four hundred and seventy lines exist in the website across
-`lib/equation-typeset.ts`, `lib/equation-marks.ts` and the part of `lib/equations.ts` that places one,
-and they move here.
-
-**Three refusals are not optional and are the expensive part to rediscover.** A TeX error carries
-`data-mjx-error`. A character the font has no outline for arrives as a `<text>` element, which draws
-with whatever font a browser has and draws nothing at all in a recording. And `AllPackages` carries
-the `noundefined` extension, so an undefined macro is not an error: it comes back as glyph outlines
-under `fill="red"`, indistinguishable from an expression that typeset, and a typo ships as a red word
-inside the picture.
-
-**What stays in the website.** The website writes each typeset equation to a JSON file at build time
-so that no page loads MathJax, and that cache is the website's own concern. It needs nothing new here
-to keep it: a path is written out with `pathData` and read back with `pathFromData`, and both are
-already exported. So this version adds the typesetter, the walk and the placement, and adds no file
-format.
-
-#### The steps
-
-**1. Done. The typesetter arrives and costs nothing until it is asked.** Add `mathjax-full` to
-`dependencies`. Add `figure/typeset.ts` holding one function that takes TeX and hands back MathJax's
-SVG tree in this package's own shape, with no walk over it yet. It reaches MathJax through a dynamic
-import, which is an import written as a call in the middle of the function rather than as a line at
-the top of the file, so nothing loads until somebody typesets something. The reason is that
-`mathjax-full` 3.2.1 is 41 MB of CommonJS with no `sideEffects` declaration, so an import at the top
-of the file would make every consumer load all of it to draw a circle. Correct the line in `CLAUDE.md`
-that says this package has no runtime dependencies, and the line in `DESIGN.md` that says the
-typesetter is coming.
-
-*Measures:* importing the built door takes 9.5 ms and leaves 0 CommonJS modules in Node's cache
-today. The commit quotes both again afterwards, and quotes what the first typeset call costs on top.
-
-*The risk worth naming:* the published build compiles under `NodeNext`, and `mathjax-full` is
-CommonJS with no `exports` map. If a named import out of it is refused there, this is the step that
-finds out.
-
-*Measured:* importing the built door takes 9.6 ms and leaves 0 CommonJS modules in Node's cache,
-against 9.5 ms and 0 before. The first typeset call costs 73 ms and loads 287 CommonJS modules, and
-every call after it costs 1.6 ms. The build under `NodeNext` took the named imports without
-complaint, since they are written as a call rather than as a line at the top.
-
-**2. Done. The walk from a typesetter's SVG into marks.** Add `figure/equation.ts`. It walks MathJax's
-nested groups, carries the transform down them, and turns the whole expression over on the way in
-because SVG counts y downward and a figure counts it upward. A glyph outline becomes a path, a
-fraction bar becomes a rectangle, and the `viewBox` becomes the box the typesetter measured the
-expression into. A mark comes back with no fill, because the palette arrives when the equation is
-placed. Its id carries the glyph's own code point, which is what the matching at 0.7.0 needs.
-
-*Measures:* five expressions and their mark and rule counts, which are MathJax 3.2.1's own numbers
-and hold it to a layout rather than to a total: 11 marks and 1 rule, 7 and 2, 5 and 0, 7 and 0, 14
-and 2. Plus the numerator of `\frac{a}{b}` sitting above the baseline, which is the reading that says
-the expression was turned over.
-
-*Measured:* the five expressions read as 11 marks and 1 rule, 7 and 2, 5 and 0, 7 and 0, and 14 and
-2. The numerator of `\frac{a}{b}` sits above the baseline and the denominator below it, and the box
-holds the baseline inside it. A single `x` is named `0-1D465`, which is its place and its code point.
-The suite is 356 tests in 584 ms, against 349 in 552 ms.
-
-**3. Done. The three refusals.** Each of the three above throws, and the message names what was found
-rather than reporting that something was wrong.
-
-*Measures:* three expressions, one per refusal, each throwing. The undefined macro's message carries
-the macro's own name, read off the code points of the glyphs the typesetter drew in red.
-
-*Measured:* `\nosuchmacro` came back as 12 glyph outlines with no error on any of them and now throws
-naming itself. `\frac{1}`, `x^` and `\mbox{ü}` are each one text element, all three of which stopped
-the walk with the same word before, and each now names what it found. The five expressions that typeset still do. The
-suite is 360 tests in 547 ms, against 356 in 584 ms.
-
-**4. Done. An equation placed in a figure.** A builder that takes a typeset equation and returns a group,
-alongside `dot`, `arrow` and `callout`. It fits the equation inside a width and a height together
-rather than sizing it by the height alone, because an equation twice as wide as it is tall runs off
-the sides of a narrow figure the moment the height decides its size. The group carries the transform
-and the glyphs keep the typesetter's own numbers, so moving an equation is one matrix. The colour is
-given here.
-
-*Measures:* an equation wider than it is tall, asked into a box narrower than it is wide, has every
-point of every mark inside that box. Its centre sits where it was asked for to within 1e-12.
-
-*Measured:* `d = \sqrt{x^2 + y^2} - r` is measured into a box 6.11 times wider than it is tall. Asked
-into a box 2 by 2, it draws 1.99 by 0.31 and every point is inside. Scaled by the height alone it
-would have been 12.23 wide against a box 2 wide. The same equation placed at two points has children
-that compare equal and transforms that do not, which is what says the glyphs keep the typesetter's
-own numbers. The suite is 364 tests in 541 ms, against 360 in 547 ms.
-
-**5. Done. The flat demo gains its equation.** `demos/tangent.ts` draws the slope's equation beside the
-number it already reads, which is `\frac{dy}{dx} = 2x` for the parabola it plots. The equation fades
-in with the rest of the picture, and the committed SVG files are regenerated. This is the step the
-demos gain from, and it is the expression 0.7.0 morphs at the stationary point.
-
-*Measures:* the demo's mark count at every named time, which is 85 now and 85 plus the equation's
-glyphs afterwards, since nothing may arrive or leave part way through. The committed pictures' byte
-counts before and after. And the suite's own duration, 541 ms over 343 tests today, because the demo
-typesets when it loads.
-
-*If the suite grows past about two seconds*, the demo commits its geometry the way the website does
-and only `npm run demos` typesets. The measurement decides it rather than a preference.
-
-*Measured:* the demo draws 93 marks at every named time, against 85, and the eight new ones are the
-seven glyphs of `\frac{dy}{dx} = 2x` and its fraction bar. The committed still went from 20,992 to
-37,265 bytes and the strip from 76,556 to 147,624, because a glyph is an outline rather than a
-letter. The suite is 364 tests in 745 ms against 364 in 541 ms, so the demo keeps typesetting when it
-loads and commits no geometry.
-
-**6. The cut.** The version goes to 0.6.0, the README gains the paragraph and the still that shows an
-equation, and this entry is deleted. The website drops its three files and calls this package
-instead, after the release rather than before it.
-
-#### Done when
-
-- `npm test`, `npm run type-check` and `npm run build` all pass.
-- Importing the door still loads no MathJax: 0 CommonJS modules in Node's cache, and an import time
-  within a millisecond of the 9.5 ms it takes today.
-- The five expressions typeset to the mark and rule counts above.
-- Each of the three refusals throws, and each message names what it found.
-- An equation placed in a box has every point inside that box.
-- The flat demo draws its equation, and `npm run demos` leaves the committed files unchanged.
-- `index.ts` exports the typeset call, the walk, the placement and their types, and nothing reaches a
-  file inside this package by path.
-- `CLAUDE.md` and `DESIGN.md` no longer say this package has no runtime dependencies.
 
 ### One equation morphing into the next, 0.7.0
 
@@ -292,7 +165,8 @@ whole door with that promise in mind.
 - **Two colours cannot be walked between.** A colour is any CSS colour written as text, and there is
   no parser here, so `indicate` swaps a colour rather than easing into one and nothing can cross-fade
   a palette. What it needs is a reader for the forms a figure is actually handed, which is hex and
-  `rgb()`, and a refusal for the rest rather than a wrong answer. Found while planning 0.5.0.
+  `rgb()`, and a refusal for the rest rather than a wrong answer. Found while planning 0.5.0. The
+  typesetter's own red is spotted by comparing the string and needs none of this.
 
 - **The picture gate is engine-dependent at a rounding boundary.** A coordinate is written to three
   decimal places, so the sine and cosine differences between engines are invisible in the bytes,

@@ -20,11 +20,12 @@ svgMarkup(at(figure, 0.5), viewMatrix(figure.extent, 'contain', 640, 360), 640, 
 
 ## Axes and a plotted function
 
-<img src="docs/tangent.svg" width="720" alt="A parabola on a labelled grid, the region under it shaded to a point on the curve, the tangent at that point drawn, and the slope written as a number.">
+<img src="docs/tangent.svg" width="720" alt="A parabola on a labelled grid, the region under it shaded to a point on the curve, the tangent at that point drawn, and the slope written as a number under the typeset rule it comes from.">
 
 The picture arrives rather than appearing. The grid fades, the axes draw on, their labels come in one
 after another, the curve draws, the dot grows out of the origin, and the dot is pointed at where the
-slope is nothing. Then it walks the curve at one speed and flashes at the top.
+slope is nothing. Then it walks the curve at one speed and flashes at the top. The number in the
+corner is a value of the typeset rule under it.
 
 ```ts
 import { axes, coordsOf, group, interval, numberPlane, plot, scaleOf, shape } from '@altpsyche/maths';
@@ -62,6 +63,40 @@ which is what the number in the corner is.
 Four times of one figure, side by side: the picture arrived, the beat at the stationary point, half
 way up, and the top. A moving picture in a README needs a GIF and this package has no encoder, so the
 strip shows the motion in a still.
+
+## Equations
+
+`equationFromTex` typesets an expression with MathJax and reads the SVG the typesetter wrote back as
+marks, one per glyph. `equationNode` places those marks in a figure, fitted inside a box and centred
+on a point. It fits the width as well as the height, because an expression six times wider than it is
+tall runs off the sides of a figure the moment the height alone decides its size.
+
+```ts
+import { equationFromTex, equationNode, vec2 } from '@altpsyche/maths';
+
+const rule = await equationFromTex('\\frac{dy}{dx} = 2x');
+
+equationNode('rule', rule, {
+  at: vec2(-4.27, 1.74),
+  width: 1.2,
+  height: 0.6,
+  fill: { colour: '#1b1b1b' },
+});
+```
+
+An equation is paths on the page as well as in a recording, which is what stops one expression having
+two pictures free to disagree. A glyph is an outline rather than a letter, so no font has to be
+installed anywhere and the LaTeX is the label the picture carries for a reader.
+
+MathJax is the one runtime dependency and the typesetting call is what loads it. Importing the door
+reaches none of it, so a consumer who draws figures and typesets nothing pays nothing. What that
+costs is that typesetting answers with a promise.
+
+Three things stop a typeset expression rather than being drawn, and each names what it found. A TeX
+error carries the typesetter's own message. A character the font has no outline for arrives as text,
+which would draw with whatever font a browser had and draw nothing at all in a recording. An
+undefined macro is not an error at all, because MathJax draws the macro's own name in red, so a typo
+would otherwise ship as a red word inside the picture.
 
 ## The animations
 
