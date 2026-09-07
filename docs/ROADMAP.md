@@ -125,13 +125,13 @@ the motion in a still.
 
 ## Now
 
-**0.10.0 is being worked, and steps 1 to 5 of its ten are landed.** `mat4` is below the line, and
-`camera3`, `polyline3`, `dot3`, `text3`, `space` and `surface3` are above it. A camera is a value the
+**0.10.0 is being worked, and steps 1 to 6 of its ten are landed.** `mat4` is below the line, and
+`camera3`, `polyline3`, `dot3`, `text3`, `space`, `surface3` and `axes3` are above it. A camera is a value the
 caller holds, a builder that works in space hands back the flat nodes the rest of the package already
 draws, cut where they cross the near plane, `space` orders a list of pieces back to front, and a
-surface is a grid of cells the author's own function shades. The suite went from 479 tests to 514.
+surface is a grid of cells the author's own function shades. The suite went from 479 tests to 519.
 
-**Step 6, three axes, is next.** A step is ticked by writing the number its commit measured into
+**Step 7, the curve where a plane cuts a surface, is next.** A step is ticked by writing the number its commit measured into
 that step rather than by a bare tick, so the first step carrying no measurement is where a session
 resumes.
 
@@ -279,13 +279,21 @@ and 5.908e-3 of the diameter short of it at 25 by 25, where it does not. The sha
 509 tests to 514 and the door from 100 values above the line to 101.
 
 
-**6. Three axes.** `axes3`, three number lines in space with their ticks and their labels, reading
+**6. Done. Three axes.** `axes3`, three number lines in space with their ticks and their labels, reading
 `ticksOn` and `labelFor` the flat axes already read. A label is flat text at a projected point.
 
 *Measures:* the tick count on each of the three axes is the count `ticksOn` gives. Every tick's drawn
 position is the camera's projection of its point in space, to 1e-12. At a pose where one axis points
 almost straight at the camera the counts are unchanged, which is the case that tempts a builder to drop
 what it cannot draw well.
+
+*Measured:* over a range of minus two to two asked for about five ticks, `ticksOn` gives 5 and each of
+the three axes draws 5. Every tick's two ends are the camera's own answer for its two points in space,
+exactly, over all fifteen ticks. From an eye a thousandth off the z axis, where the z line points almost
+straight at it, the counts are still 5, 5 and 5 and the marks still 31. The number at the crossing is
+written once rather than three times. The suite went from 514 tests to 519 and the door from 101 values
+above the line to 102.
+
 
 **7. The curve where a plane cuts a surface.** Marching squares over the grid the surface is already
 sampled on, with the plane's signed distance as the value at each grid point, and the segments joined

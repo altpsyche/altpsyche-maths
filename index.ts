@@ -49,7 +49,9 @@ export type { AxesOptions, NumberLineOptions, NumberPlaneOptions } from './figur
 export { camera3, orthographic, perspective } from './figure/camera.js';
 export type { Camera3, Camera3Choice, OrthographicChoice, PerspectiveChoice, Projected, Projection } from './figure/camera.js';
 export { dot3, polyline3, space, surface3, text3 } from './figure/space.js';
-export type { Polyline3Options, SpaceItem, Surface3Options } from './figure/space.js';
+export type { Polyline3Options, SpaceItem, Surface3Options, Text3Options } from './figure/space.js';
+export { axes3 } from './figure/axis3.js';
+export type { Axes3Options } from './figure/axis3.js';
 export { coordsOf, pointOf, scaleOf, scaled, unscaled } from './figure/scale.js';
 export type { Coords, Scale } from './figure/scale.js';
 export { labelFor, tickStep, ticksOn } from './figure/ticks.js';

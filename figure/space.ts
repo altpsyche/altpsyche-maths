@@ -92,6 +92,12 @@ export function dot3(name: string, at: Vec3, radius: number, fill: Fill, camera:
   return group(name, seen.inFront ? [shape('disc', circle(seen.at, radius), { fill })] : []);
 }
 
+export type Text3Options = TextOptions & {
+  /** How far the label stands off the point it names, in figure units, applied
+   * after the point is placed. */
+  offset?: Vec2;
+};
+
 /** A label at a point in space. The letters stay upright and stay the size they
  * are given, since a label is read rather than seen in perspective. */
 export function text3(
@@ -100,10 +106,12 @@ export function text3(
   content: string,
   size: number,
   camera: Camera3,
-  options: TextOptions = {},
+  options: Text3Options = {},
 ): GroupNode {
+  const { offset, ...style } = options;
   const seen = camera.project(at);
-  return group(name, seen.inFront ? [text('label', seen.at, content, size, options)] : []);
+  const anchor = offset ? { x: seen.at.x + offset.x, y: seen.at.y + offset.y } : seen.at;
+  return group(name, seen.inFront ? [text('label', anchor, content, size, style)] : []);
 }
 
 /** A drawn piece and the points in space it was drawn from, which are what say
