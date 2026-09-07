@@ -56,4 +56,4 @@ arcs included, and a command it does not know stops the read rather than being s
 along, and a value walked between keys. That half changes almost never. **Figures and painters**
 are above it. Nothing below the line imports anything above it, and a test says so.
 
-One door, no runtime dependencies. MIT.
+One door. MIT.

@@ -32,7 +32,7 @@ What is a risk is a number. "It converges in twelve steps" is true because of a 
 
 That decides where the work starts. **Drawing over a live shader is the first case, not the advanced one.** An arrow on the photon ring while the disc turns cannot contradict the shader, because the shader is underneath it.
 
-**A figure is flat.** A perspective view of a scene in three dimensions is a shader's job. The engine already owns a camera and a view projection. A figure that grew its own would put two of each in the tree by the back door, which is the mistake the next section is about.
+**A figure was flat, and that refusal is being lifted.** The argument for it was that a perspective view belongs to a shader, that the engine already owns a camera and a view projection, and that a figure growing its own would put two of each in the tree by the back door. What answers it is the goal: a large share of the pictures this package is meant to be able to draw are surfaces and vectors in space, so a package that refuses them refuses the goal. The camera that arrives here is a figure's camera and not the engine's, and the two stay separate for the reason the next section gives. The roadmap says which version it lands in.
 
 ## The engine is left alone
 
@@ -79,7 +79,7 @@ graph TD
     E1["gpu, graph, scene, host"]
   end
 
-  subgraph maths["@altpsyche/maths &nbsp;&nbsp; no runtime dependencies"]
+  subgraph maths["@altpsyche/maths &nbsp;&nbsp; one door"]
     direction TB
     M1["values: vectors, matrices, curves, easing"]
     M2["timing: keys, tracks, sampling"]
@@ -221,7 +221,9 @@ A text mark is text, and on the page it is a real SVG text node.
 
 What follows from that is what a reader is given instead of selectable text. A figure is one picture carrying one label, so an equation inside it was never going to be text a character could be selected out of, and the LaTeX is that label.
 
-**The typesetter is not in this package yet and the way in for its output is.** `pathFromData` reads an SVG `d` attribute back as a path, the inverse of what the SVG painter writes, so a glyph from a typesetter, an icon from a designer or an outline a drawing program exported can all be trimmed, aligned and walked into another shape. Without it the only shapes that existed were the ones the builders here make. Where the typesetter itself lands is the first decision in the roadmap.
+**The typesetter is coming into this package and the way in for its output is already here.** `pathFromData` reads an SVG `d` attribute back as a path, the inverse of what the SVG painter writes, so a glyph from a typesetter, an icon from a designer or an outline a drawing program exported can all be trimmed, aligned and walked into another shape. Without it the only shapes that existed were the ones the builders here make.
+
+**The typesetter goes behind the one door rather than behind a second one**, which costs this package its freedom from runtime dependencies. Siva's reason is that nobody installs a figures package without needing to label a picture with mathematics, so a consumer who pays for MathJax and never typesets is a consumer who does not exist. It runs at build time rather than in a browser, so what a reader downloads does not change.
 
 ## Motion the reader did not ask for
 

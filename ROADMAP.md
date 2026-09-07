@@ -16,61 +16,108 @@ What is queued here is the part a library can be held to: whether a picture that
 can be expressed at all.
 
 **What decides the order.** A package is real when it has a consumer that ships, which is the
-argument [DESIGN.md](DESIGN.md) makes about timing moving in here before a single figure existed.
-So an item earns its place by a picture something is waiting to publish, and the ordering below is a
-recommendation until a chapter names one.
+argument [DESIGN.md](DESIGN.md) makes about timing moving in here before a single figure existed. So
+an item earns its place by a picture something is waiting to draw, and the two demos below are what
+is waiting until the website has a chapter that is.
 
-## Two decisions that gate the rest
+**The website waits.** Its own roadmap has one open item and nothing there needs anything from this
+page, so this package is worked to 1.0.0 first and the site is picked up after.
 
-Both are Siva's, and each changes what the items below are allowed to be.
+## The two decisions are answered
 
-### Where the typesetter goes
+Both were Siva's and both are made. They are recorded here because they shape every item below, and
+DESIGN.md is corrected to match.
 
-An equation is drawn by typesetting TeX, walking the SVG a typesetter emits into marks, and placing
-the result. `pathFromData` is the one step of that this package does. Everything else exists, in the
-website, as four files and about four hundred lines: the typesetter, the tree walk with its three
-refusals, the placement, and a build step that writes one module per equation.
+**The typesetter goes behind the one door.** MathJax becomes a runtime dependency of this package
+rather than sitting behind a second entry point. The reason is that nobody installs a figures package
+without needing to label a picture with mathematics, so a consumer paying for MathJax and never
+typesetting is a consumer who does not exist. It runs at build time, so what a reader downloads does
+not change. **What would change this answer** is a consumer who draws figures and typesets nothing,
+which would make a second door worth its test.
 
-**If a consumer should get equations, MathJax belongs in this package**, and that collides with a
-rule in DESIGN.md: one door, held by a test, and no runtime dependencies. The choices are a
-dependency every consumer of `lerp` installs, or a second entry point so that only
-`@altpsyche/maths/tex` reaches it, which means the one-door rule becomes a two-door rule with a test
-that says so. **The recommendation is the second**, because the alternative is a stated goal with an
-asterisk on it, and because MathJax runs at build time rather than in a browser, so the cost is an
-install rather than bytes a reader downloads.
+**A figure stops being flat.** Surfaces and vectors in space are a large share of the pictures this
+package is meant to be able to draw, so refusing them refuses the goal. The camera is a figure's own
+and never the engine's, which is the rule DESIGN.md keeps. **Which version it lands in was left to
+the session and the answer is 0.9.0**, last of the feature versions, because everything before it is
+reusable in three dimensions and nothing in three dimensions is reusable in two. **What would change
+that** is a chapter needing a surface sooner.
 
-The three refusals are not optional and are the expensive part to rediscover. A TeX error carries
-`data-mjx-error`. A character the font has no outline for arrives as a `<text>` element, which draws
-with whatever font a browser has and draws nothing at all in a recording. And `AllPackages` carries
-the `noundefined` extension, so an undefined macro is not an error: it comes back as glyph outlines
-under `fill="red"`, indistinguishable from an expression that typeset, and a typo ships as a red word
-inside the picture.
+## The version ladder
 
-### Whether a figure stays flat
+**Every item gets its own minor version, then 1.0.0 is the polish.** Siva's plan, and the release
+convention this repository already follows makes each one a minor bump. A version is cut when its
+demos draw, not when its code compiles.
 
-DESIGN.md says a figure is flat and that three dimensions belong to a renderer with a camera. A large
-share of the reference material is not flat: surfaces, vectors in space, an orbiting camera. Keeping
-the refusal is a defensible package with a ceiling on it. Lifting it means a camera, a projection and
-a depth sort, and it is larger than everything else on this page put together.
+| version | what lands |
+| --- | --- |
+| 0.4.0 | Axes and plotting |
+| 0.5.0 | The animation vocabulary, stagger included |
+| 0.6.0 | Equations: the typesetter behind the one door |
+| 0.7.0 | One equation morphing into the next |
+| 0.8.0 | Braces, a number that counts, boolean operations on paths |
+| 0.9.0 | Three dimensions, and a camera that moves |
+| 0.10.0 | Vector fields and streamlines |
+| 0.11.0 | Frames out, with no website around it |
+| 1.0.0 | The two demos complete, the README, the surface frozen |
+
+**The order is not arbitrary and two places in it are worth defending.** Equations sit at 0.6.0
+rather than first because the website already has a working copy of them, so nothing here is blocked
+meanwhile, and because the morphing at 0.7.0 needs them. Three dimensions sit at 0.9.0 for the reason
+above. A camera that moves rides with 0.9.0 because a figure's camera is one piece of work whether it
+is orbiting a surface or panning across a plane, and splitting it would build the same matrix twice.
+
+## The two demos, which are what a version is cut against
+
+**One demo in two dimensions and one in three, and every feature reaches both.** Siva's ask, and it
+is also the test DESIGN.md sets for whether a feature is real: a package is real when it has a
+consumer that ships, and until the website has a chapter waiting on axes these two are that consumer.
+
+They are written before the feature they need, as the target the work is built to compile. That is
+the order rather than a preference: a demo written afterwards checks that the code runs, where a demo
+written first says what the code has to be able to say.
+
+**The flat demo is a tangent sliding along a curve.** Axes with ticks and labels, a plotted function,
+a point walking along it, the tangent at that point, and the slope shown as a number that changes. At
+0.4.0 it is the axes and the curve. Every version after adds to the same figure: the point's walk
+becomes a proper move-along-path at 0.5.0, the slope gains its equation at 0.6.0, that equation
+morphs as the point crosses a stationary point at 0.7.0, a brace measures the rise at 0.8.0, the view
+follows the point at 0.9.0, and the curve's gradient becomes a field at 0.10.0.
+
+**The solid demo starts at 0.9.0**, because nothing before it can draw one, and it is a surface with
+a plane cutting through it and the curve of the intersection drawn on both. What it then takes from
+the versions before it is everything reusable in three dimensions: the axes become three, the
+animations apply to marks in space, the equation of the surface is typeset beside it, and the camera
+orbits.
+
+**A version is not cut until its demos draw.** The measurement is the demo's own marks: a count at
+named times, compared by tolerance, which is the gate DESIGN.md describes and which needs no browser.
+
+**Both demos are committed and both are in the README.** The image is SVG written by `svgMarkup`,
+which needs no browser, so it is regenerated by a script and a gate compares the regenerated bytes
+against the committed file. A picture in a README that nothing regenerates goes stale in silence. **A
+moving image in a README needs a GIF and this package has no encoder**, so what the README carries is
+a strip of frames in one SVG, which shows the motion in a still.
 
 ## Now
 
-Nothing is queued for work yet. The items below are the gap, ordered, and each one needs its steps
-written before it is worked.
+Nothing is queued for work. **0.4.0 is next and it needs its steps written before it is worked**, and
+writing them is a session on its own.
 
-## Next
+## The items
 
-### Axes and plotting
+Each is a version above. What follows is what each one covers.
+
+### Axes and plotting, 0.4.0
 
 `NumberLine`, `Axes`, `NumberPlane`, ticks and their labels, a function plotted over a range, the area
 under a curve, and a tangent that slides along one. **This is the most-used picture in the reference
-material and the package has none of it**, so it buys more than anything else here.
+material and the package has none of it.**
 
 The sampler already gives the part that is usually hard. `scene` is a function of `(seconds, values)`
 and `tracks` carries the values, so a curve that is genuinely a different curve each frame is what
 this package already does rather than something to add.
 
-### The animation vocabulary
+### The animation vocabulary, 0.5.0
 
 Six animations exist: `fadeIn`, `fadeOut`, `fadeTo`, `draw`, `morph`, `moveBy`. Manim has around
 forty. The ones whose absence is felt first are rotate, scale, move-along-path, indicate, flash,
@@ -78,39 +125,56 @@ circumscribe, grow-from-a-point, and a stagger. **`Timeline` can overlap two ani
 negative `after` and cannot stagger a list**, so a row of things appearing one after another has to
 be written out by hand, one `play` per item.
 
-### One equation morphing into the next
+### Equations, 0.6.0
+
+The typesetter behind the one door, the walk from a typesetter's SVG into marks, and the placement of
+an equation in a figure. About four hundred lines exist in the website and move here.
+
+**Three refusals are not optional and are the expensive part to rediscover.** A TeX error carries
+`data-mjx-error`. A character the font has no outline for arrives as a `<text>` element, which draws
+with whatever font a browser has and draws nothing at all in a recording. And `AllPackages` carries
+the `noundefined` extension, so an undefined macro is not an error: it comes back as glyph outlines
+under `fill="red"`, indistinguishable from an expression that typeset, and a typo ships as a red word
+inside the picture.
+
+### One equation morphing into the next, 0.7.0
 
 The most recognisable single animation in the reference material: two expressions where the shared
 sub-expressions stay put and only the difference moves. `alignPaths` and `lerpPath` are the mechanism
 and what is missing is the matching, which needs a glyph to carry where in the expression it came
 from. The website's ids already carry each glyph's own code point, which is half of it.
 
-Waits on the typesetter decision.
+### Braces, a number that counts, boolean operations on paths, 0.8.0
 
-### A camera that moves
+`Brace`, a brace with a label on it, and a number that ticks from one value to another, all three
+heavily used by the reference material against the `arrow`, `callout` and `dot` that exist. Union,
+intersection and difference on paths, which Manim has and this has no way to express.
 
-`Extent` is fixed for the life of a figure, so nothing can zoom or pan. An extent that is a function
-of time, or a keyed track, closes a whole class of shot for a small change.
+### Three dimensions and a camera that moves, 0.9.0
 
-### Braces, brackets and a number that counts
+A figure's own camera with a projection, a depth sort, marks placed in space, and surfaces. `vec3`
+and `Vec3` already exist and nothing above them uses either. `Extent` is fixed for the life of a
+figure today, so nothing can zoom, pan or orbit, and an extent that is a function of time or a keyed
+track is the same piece of work as the camera rather than a separate one.
 
-`Brace`, a brace with a label on it, and a number that ticks from one value to another. Cheap, and
-heavily used by the reference material. `arrow`, `callout` and `dot` are the three that exist.
+**This is larger than everything else on this page put together**, and it is the one item where the
+boundary DESIGN.md draws against the engine has to be restated rather than assumed.
 
-### Vector fields and streamlines
+### Vector fields and streamlines, 0.10.0
 
-A field sampled over a region, and a streamline integrated through one. Flat, so nothing here
-conflicts with the decision above.
+A field sampled over a region, and a streamline integrated through one.
 
-### Boolean operations on paths
-
-Union, intersection and difference. Manim has them and this has no way to express one.
-
-### A renderer
+### Frames out, 0.11.0
 
 A consumer gets marks and a canvas painter and no way to turn either into a file. The encode step is
 in the website rather than here. What is missing is a headless call that walks a figure at a fixed
 step and hands back frames.
+
+### The polish, 1.0.0
+
+Both demos complete, the README carrying both, and the public surface frozen. A 1.0.0 is a promise
+about `index.ts` not changing under a consumer, so what it needs beyond the features is a read of the
+whole door with that promise in mind.
 
 ## Someday
 
