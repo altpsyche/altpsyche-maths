@@ -198,16 +198,20 @@ and so does a path handed a cut naming a subpath it does not have.
 is dropped rather than made, since a piece of nothing is a piece the stitch in step 5 would have to
 know to skip.
 
-**3. Inside or outside.** A point against a path, by counting the crossings of a ray from it. The
-count is taken on a flattening of the path at a stated tolerance rather than on the cubics, because
-a ray against a cubic is a cubic to solve and the answer is wanted as a yes or a no rather than as a
-place. The geometry kept by the operation stays the exact cubics; only this decision is taken on the
-flattening.
+**3. Inside or outside.** Done. `containsPoint`, `flattenPath` and `windingAt` in
+`figure/inside.ts`, all three exported, since the stitch wants the flattening made once rather than
+once per point.
 
-*Measures:* points at known places inside and outside a circle of radius 1, at 0.99 and 1.01 of the
-radius, are decided the right way. A point inside the hole of a ring is outside it. The answer for a
-ray leaving a point exactly through a corner between two pieces is the same as for a ray leaving it
-at any other angle, checked at 16 angles.
+*Measured:* 16 points at 0.99 of a radius of 1 are inside and 16 at 1.01 are outside. In a ring, 16
+points at 0.25 are outside, at 0.75 inside and at 1.5 outside. A diamond with a corner sitting
+exactly on the ray answers inside at its centre and outside on both sides, at all 16 turns of the
+whole picture. Flattening a circle of radius 1 at a tolerance of 1e-4 gives 376 edges whose middles
+are 2.535e-4 off the true radius, and at 1e-6 gives 4096 edges 2.722e-4 off, which is the cubic
+circle's own 2.7e-4 rather than the flattening's.
+
+*One thing the plan did not say.* The rule is the nonzero winding rule rather than a plain count,
+which is the rule the mark is already drawn under, and an edge is counted at its lower end and not
+at its upper one, which is what makes a ray through a corner answer what every other ray answers.
 
 **4. How much a path encloses.** Green's theorem on cubics, which is a closed form rather than a
 sampling, and it is the ground truth every operation below is checked against.
