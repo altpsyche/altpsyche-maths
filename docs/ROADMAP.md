@@ -129,9 +129,9 @@ the motion in a still.
 
 ## Now
 
-**0.8.0 is cut and 0.9.0 is next, and it needs its steps written before it is worked.** Writing them
-is a session on its own, and it is the largest planning job on this page after three dimensions. The
-third demo is written before the operation it needs, the way the other two were.
+**0.8.0 is cut and released, and 0.9.0 is next with its steps written under its item below.** A
+session resumes at the first unticked step and does not redesign the ones after it. That item carries
+a note on which of its steps is most likely to prove the plan wrong, and what to do when it does.
 
 ## The items
 
@@ -143,18 +143,112 @@ Union, intersection and difference on paths, which Manim has and this has no way
 call, made when 0.8.0 was planned: the package is to be feature full, so this is built rather than
 parked until a chapter asks for it, and it is given a picture whose whole purpose is the operation.**
 
-**It is a component rather than a feature.** Two cubics have to be intersected, which is Bézier
-clipping or recursive subdivision and has to survive a touch at one point and a shared edge. Both
-paths are split at every crossing. Each piece is then decided as inside or outside the other, by the
-winding rule the mark already carries. What is kept is stitched back into subpaths by matching
-endpoints within a tolerance. The failure is silent geometric wrongness rather than an error, which
-is what its demo is built to catch.
+**It is a component rather than a feature.** Two cubics have to be intersected. Both paths are split
+at every crossing. Each piece is then decided as inside or outside the other. What is kept is
+stitched back into subpaths. The failure is silent geometric wrongness rather than an error, which is
+what its demo and its areas are built to catch.
 
-**Its picture is the third demo**, described with the other two above. The moving disc walks through
-no crossing, one crossing, two crossings and containment, so the demo's own marks at named times are
-what says the operation survives the cases it is most likely to get wrong.
+#### What it does and does not take
 
-**Its steps are written when it is picked**, and writing them is a session on its own.
+**Each input is closed loops that do not cross themselves.** A loop that crosses itself has no one
+answer for what is inside it without a fill rule chosen first, and choosing one here would make the
+operation disagree with the mark the result is drawn as. An input that is open is closed by a
+straight piece before anything else happens, and that is said in the doc comment rather than
+guessed at by a reader.
+
+**A result may have a hole even though an input may not.** A disc with a smaller disc taken out of it
+is a ring, which is an outer loop and an inner loop wound the opposite way, drawn under the nonzero
+rule the mark already carries. The demo walks one disc all the way inside the other, so the ring is
+drawn rather than described.
+
+**Where two edges lie on top of each other for a stretch, the answer is decided by the tolerance.**
+Two circles at exactly the distance where they touch at one point are the same case. The demo walks
+through that moment, and what it is held to there is that the picture stays whole, not that the shape
+at that instant is one thing rather than another.
+
+#### The steps
+
+**1. Where two cubics cross.** Recursive subdivision on the boxes round two curves: two curves whose
+boxes miss cannot cross, and two curves whose boxes are smaller than the tolerance are one crossing.
+The parameters that come back are clustered, so a near-tangency that splits into a cloud of hits is
+reported once.
+
+*Measures:* two straight cubics crossing at a point worked out by hand agree to within 1e-12, which
+is exact because a straight cubic is a line. Two circles a known distance apart cross at the two
+points the closed form gives, to within the error the cubic circle already carries, which is between
+2.6 and 2.8 parts in ten thousand of the radius. Two circles far apart give none, and one inside
+another gives none. Two circles touching at one point give one crossing rather than a cloud.
+
+**2. A path cut at those crossings.** Every crossing splits the piece it lands in, by de Casteljau,
+which `morph.ts` already does for one cut and this needs for several in a row.
+
+*Measures:* the cut path walks through the same points as the one it came from, sampled at 200 places
+along its whole length, to within 1e-12. The piece count is the count it started with plus one per
+crossing. A path with no crossings comes back with the pieces it had.
+
+**3. Inside or outside.** A point against a path, by counting the crossings of a ray from it. The
+count is taken on a flattening of the path at a stated tolerance rather than on the cubics, because
+a ray against a cubic is a cubic to solve and the answer is wanted as a yes or a no rather than as a
+place. The geometry kept by the operation stays the exact cubics; only this decision is taken on the
+flattening.
+
+*Measures:* points at known places inside and outside a circle of radius 1, at 0.99 and 1.01 of the
+radius, are decided the right way. A point inside the hole of a ring is outside it. The answer for a
+ray leaving a point exactly through a corner between two pieces is the same as for a ray leaving it
+at any other angle, checked at 16 angles.
+
+**4. How much a path encloses.** Green's theorem on cubics, which is a closed form rather than a
+sampling, and it is the ground truth every operation below is checked against.
+
+*Measures:* a circle of radius 1 encloses within 6 parts in ten thousand of pi, which is twice the
+error the cubic circle carries. A square of side 2 encloses 4 to within 1e-12. A ring encloses the
+difference of its two discs. A loop wound the other way encloses the same amount with the opposite
+sign, which is what makes a hole subtract.
+
+**5. The three operations.** Split both paths at their crossings, keep the pieces each operation
+wants, and stitch what is kept into loops by joining ends that meet within the tolerance.
+
+*Measures:* two discs of radius 1 whose centres are 1 apart. The lens where they overlap has a closed
+form, which is 1.22836 to five places. The overlap encloses that, the union encloses two pi less
+that, and the first less the second encloses pi less that, each to within the error the cubic circle
+carries. Two discs that miss: the union is both, the overlap is empty, the difference is the first.
+One disc inside the other: the union is the outer, the overlap is the inner, and the difference is a
+ring enclosing the difference of the two.
+
+**6. The third demo.** `demos/boolean.ts`: two discs drawn three times side by side as their union,
+their overlap, and the first with the second taken out of it, with one disc walking across the other
+from clear of it to wholly inside it and out the far side. Committed as a still and a strip like the
+flat demo, and in the README.
+
+*Measures:* the mark count is the same at every time, since a panel whose result is empty draws an
+empty path rather than no mark. At four named times the three panels enclose what the closed form
+says they should. The walk passes through the moment the two touch at one point without the mark
+count moving.
+
+**7. The cut.** The version goes to 0.9.0, the README gains the paragraph and the third demo's
+picture, and this entry is deleted.
+
+#### Done when
+
+- `npm test`, `npm run type-check` and `npm run build` all pass.
+- Crossings agree with the closed form for lines to 1e-12 and for circles to the cubic circle's own
+  error, and a touch at one point is one crossing.
+- A cut path draws what it drew, sampled at 200 places, to within 1e-12.
+- A point at 0.99 and at 1.01 of a radius is decided the right way, and a ray through a corner
+  answers what every other ray answers.
+- The area of a circle, a square, a ring and a loop wound backwards are all what they should be.
+- The three operations enclose what the lens formula says, at three distances apart.
+- The third demo draws, its mark count holds still through the touch, and `npm run demos` leaves the
+  committed files unchanged.
+- `index.ts` exports the three operations, the area and their types, and nothing reaches a file
+  inside this package by path.
+
+#### What this plan is most likely to get wrong
+
+**The stitch.** Splitting and classifying are local and testable one piece at a time, where the
+stitch is the one part that has to be right about the whole. If a session finds the pieces correct
+and the loops wrong, the plan's steps are not wrong and step 5 is bigger than one commit, which is
+the moment to rewrite it into its own list rather than to keep going.
 
 ### Three dimensions and a camera that moves, 0.10.0
 
