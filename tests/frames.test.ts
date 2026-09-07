@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+import * as door from '@altpsyche/maths';
 import {
   at,
   durationOf,
@@ -12,6 +13,7 @@ import {
   vec2,
   viewAt,
   type Figure,
+  type Frame,
 } from '@altpsyche/maths';
 import { tangent } from '../demos/tangent.js';
 import { turns } from '../demos/rotate.js';
@@ -30,6 +32,17 @@ const still: Figure = {
   still: 0,
   scene: group('one', [shape('disc', circle(vec2(0, 0), 1), {})]),
 };
+
+describe('the door', () => {
+  it('hands out every call frames out added', () => {
+    for (const name of ['frameTimes', 'framesOf']) {
+      expect(typeof (door as Record<string, unknown>)[name], name).not.toBe('undefined');
+    }
+    // A type is not a value, so the door is held to it by a frame that is one.
+    const frame: Frame = framesOf(turns, { frames: 1, width: 8, height: 4 }).next().value as Frame;
+    expect(Object.keys(frame).sort()).toEqual(['index', 'marks', 'seconds', 'view']);
+  });
+});
 
 describe('frameTimes', () => {
   it('walks a rate in steps of exactly one over it', () => {

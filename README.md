@@ -360,6 +360,31 @@ marks onto a two-dimensional canvas, which is what a recording needs, because an
 one surface. A test holds the two to emitting the same geometry and the same style for every
 mark.
 
+## Frames out
+
+`framesOf(figure, options)` walks a figure at a fixed step and hands back a frame at a time. A frame
+is its index, its time, its marks and the view those marks are painted through, read together at one
+moment. A consumer that asks for the marks and the view in two calls has two chances to pass different
+times, and a figure whose view moves then paints its marks through the matrix of some other moment:
+the flat demo's view is carried 312 across its own walk, in the units a 1080 by 600 surface counts in.
+
+Frames come back one at a time rather than as a list. Ten seconds at sixty frames a second is six
+hundred frames of every mark a figure draws, and a recorder encodes a frame and throws it away.
+`frameTimes` answers the times up front, since a recorder showing a reader how far along it is needs
+the total before it has drawn anything.
+
+The step is given as a rate or as a count, and the two are different questions. A recorder knows how
+fast the frames play and needs a step of exactly one over that, or the encoded video drifts from the
+figure's own clock. A strip knows how many pictures fit across a page and wants them spread over the
+whole figure. A walk stops strictly before the duration either way: the frame at the duration of a
+figure that loops is its own first frame, and a recording would show it twice. The rotation strip
+above is a walk of four frames over a six second turn, and it draws the same bytes as the four times
+that were written out by hand before it.
+
+Nothing here writes a file. Every frame of both demos is painted through `paintCanvas` and written by
+`svgMarkup` in the suite, which is the whole claim and needs no browser, and what a consumer does with
+a painted frame is the consumer's own.
+
 ## The way in
 
 `pathFromData` reads an SVG `d` attribute as a path, which is the inverse of what the SVG painter
