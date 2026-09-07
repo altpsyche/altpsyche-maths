@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { equationFromTex, equationMarks, equationNode, flatten, vec2 } from '@altpsyche/maths';
+import { equationFromTex, equationMarks, equationNode, flatten, matchGlyphs, vec2 } from '@altpsyche/maths';
 import type { EquationElement, PathMark } from '@altpsyche/maths';
 
 /**
@@ -196,5 +196,71 @@ describe('an equation placed in a figure', () => {
     const there = equationNode('a', equation, { at: vec2(5, 5), width: 1, height: 1, fill: { colour: 'red' } });
     expect(here.children).toEqual(there.children);
     expect(here.transform).not.toEqual(there.transform);
+  });
+});
+
+describe('an equation placed by an edge', () => {
+  const edges = async (tex: string, align?: 'start' | 'middle' | 'end') => {
+    const marks = flatten(
+      equationNode('label', await equationFromTex(tex), {
+        at: vec2(3, 2),
+        width: 1.2,
+        height: 0.6,
+        align,
+        fill: { colour: '#1b1b1b' },
+      })
+    );
+    const points = marks.flatMap((mark) =>
+      mark.kind === 'path'
+        ? mark.path.flatMap((subpath) => [subpath.start, ...subpath.curves.map((curve) => curve.to)])
+        : [mark.at]
+    );
+    return { marks, left: Math.min(...points.map((point) => point.x)), right: Math.max(...points.map((point) => point.x)) };
+  };
+
+  it('puts the edge it was given on the point it was given', async () => {
+    // What is placed is the box the typesetter measured, and the ink sits a
+    // little inside it, so the three are compared against each other rather
+    // than against the point. Each is half the drawn width from the next.
+    const box = (await equationFromTex('\\frac{dy}{dx} = 2x')).box;
+    const drawn = box.width * Math.min(1.2 / box.width, 0.6 / box.height);
+    const start = await edges('\\frac{dy}{dx} = 2x', 'start');
+    const middle = await edges('\\frac{dy}{dx} = 2x', 'middle');
+    const end = await edges('\\frac{dy}{dx} = 2x', 'end');
+    expect(start.left - middle.left).toBeCloseTo(drawn / 2, 12);
+    expect(middle.left - end.left).toBeCloseTo(drawn / 2, 12);
+    expect(start.right - start.left).toBeCloseTo(middle.right - middle.left, 12);
+    // The ink of the left-hung one begins inside the point rather than on it,
+    // which is the side bearing the typesetter measured into its box.
+    expect(start.left - 3).toBeGreaterThan(0);
+    expect(start.left - 3).toBeLessThan(drawn / 10);
+  });
+
+  it('is centred when no edge is named, which is what it always did', async () => {
+    const named = await edges('\\frac{dy}{dx} = 2x', 'middle');
+    const unnamed = await edges('\\frac{dy}{dx} = 2x');
+    expect(unnamed.left).toBeCloseTo(named.left, 12);
+    expect(unnamed.right).toBeCloseTo(named.right, 12);
+  });
+
+  it('keeps the shared glyphs of two expressions still when both are placed by their start', async () => {
+    // Centred, the part the two share slides sideways as the difference
+    // arrives, which is the one thing a morph promises not to do.
+    const shifted = async (align?: 'start' | 'middle' | 'end') => {
+      const from = flatten(
+        equationNode('a', await equationFromTex('\\frac{dy}{dx} = 0'), {
+          at: vec2(0, 0), width: 1.2, height: 0.6, align, fill: { colour: 'red' },
+        })
+      );
+      const to = flatten(
+        equationNode('b', await equationFromTex('\\frac{dy}{dx} = 2x'), {
+          at: vec2(0, 0), width: 1.2, height: 0.6, align, fill: { colour: 'red' },
+        })
+      );
+      const pairs = matchGlyphs(from, to).pairs;
+      return Math.max(...pairs.map(([left, right]) => Math.abs(left.path[0].start.x - right.path[0].start.x)));
+    };
+    expect(await shifted('start')).toBeLessThan(1e-12);
+    expect(await shifted('middle')).toBeCloseTo(0.083, 3);
   });
 });

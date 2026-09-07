@@ -196,7 +196,26 @@ only the right has are at full. At 0.5 a paired glyph starts half way between th
 within 1e-12, and no mark of the expression being arrived at is drawn at full. A scene already at 0.4
 opacity arrives at 0.4 rather than at 1. The suite is 379 tests in 740 ms, against 372 in 741 ms.
 
-**3. The flat demo morphs at the stationary point.** The reading currently draws
+**3. Done. An equation placed by an edge rather than by its middle.** `equationNode` centres the box the
+typesetter measured on the point it is given, so two expressions placed at one point are centred
+against each other. `\frac{dy}{dx} = 0` draws 0.977 wide at the demo's own size and
+`\frac{dy}{dx} = 2x` draws 1.143, both at the same height and the same glyph size, so centring slides
+the part they share sideways by 0.083 as the difference arrives. That is the one thing the morph
+promises not to do. The placement gains the `align` a text mark already has, and the demo asks for
+the start rather than the middle.
+
+*Measures:* the same expression placed at one point three ways has its left edge, its middle and its
+right edge on that point, each to within 1e-12. The two expressions above, both placed at one point
+by their start, put their shared glyphs at the same places to within 1e-12, against 0.083 apart
+centred.
+
+*Measured:* the three placements sit half the drawn width apart from each other, to within 1e-12, and
+the one hung by its start puts its ink 0.035 inside the point, which is the side bearing the
+typesetter measured into its box. The two expressions placed by their start put every shared glyph
+within 1e-12 of the same place, against 0.083 apart centred. Naming the middle draws what naming
+nothing draws. The suite is 382 tests in 747 ms, against 379 in 740 ms.
+
+**4. The flat demo morphs at the stationary point.** The reading currently draws
 `\frac{dy}{dx} = 2x` at every time. It becomes `\frac{dy}{dx} = 0` while the walk is held at the
 stationary point, and morphs into `\frac{dy}{dx} = 2x` as the dot leaves it. This is the step the
 demos gain from, and the expression pair is the one measured above.
@@ -205,7 +224,7 @@ demos gain from, and the expression pair is the one measured above.
 expression's 7 afterwards. The committed pictures' byte counts, which are 37,265 and 147,624 now.
 The suite's duration, 745 ms over 364 tests now.
 
-**4. The cut.** The version goes to 0.7.0, the README gains the paragraph, and this entry is deleted.
+**5. The cut.** The version goes to 0.7.0, the README gains the paragraph, and this entry is deleted.
 The website moves after the release rather than before it, and its cached geometry needs no rebuild,
 because the ids it already stores are what the matching reads.
 
@@ -216,8 +235,9 @@ because the ids it already stores are what the matching reads.
 - The morph holds the mark count still across its whole span.
 - A paired glyph is half way between its two places at half way through, and is drawn once rather
   than as two copies at half opacity.
-- The flat demo morphs at the stationary point, and `npm run demos` leaves the committed files
-  unchanged.
+- An equation placed by its start, its middle and its end puts that edge on the point it was given.
+- The flat demo morphs at the stationary point with its shared glyphs standing still, and
+  `npm run demos` leaves the committed files unchanged.
 - `index.ts` exports the matching, the animation and their types, and nothing reaches a file inside
   this package by path.
 

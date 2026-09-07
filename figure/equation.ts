@@ -188,8 +188,12 @@ export async function equationFromTex(tex: string): Promise<Equation> {
 }
 
 export interface EquationOptions {
-  /** Where the middle of the expression sits, in the figure's own units. */
+  /** The point the expression is placed against, in the figure's own units. */
   readonly at: Vec2;
+  /** Which edge of the expression sits on that point across, the middle of it
+   * unless named. Two expressions placed at one point by their start keep the
+   * part they share in the same place. */
+  readonly align?: 'start' | 'middle' | 'end';
   /** The box the expression is fitted inside, in the figure's own units. */
   readonly width: number;
   readonly height: number;
@@ -210,10 +214,13 @@ export interface EquationOptions {
 export function equationNode(name: string, equation: Equation, options: EquationOptions): GroupNode {
   const { box } = equation;
   const fit = Math.min(options.width / box.width, options.height / box.height);
-  const centre = vec2(box.x + box.width / 2, box.y + box.height / 2);
+  // The point the expression is hung from, in the typesetter's units, so that
+  // scaling about it lands the asked-for edge on the asked-for place.
+  const across = options.align === 'start' ? box.x : options.align === 'end' ? box.x + box.width : box.x + box.width / 2;
+  const hung = vec2(across, box.y + box.height / 2);
   const transform = mat3.multiply(
     mat3.translation(options.at),
-    mat3.multiply(mat3.scaling(vec2(fit, fit)), mat3.translation(vec2(-centre.x, -centre.y)))
+    mat3.multiply(mat3.scaling(vec2(fit, fit)), mat3.translation(vec2(-hung.x, -hung.y)))
   );
   return group(
     name,
