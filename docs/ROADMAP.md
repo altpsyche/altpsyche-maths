@@ -185,12 +185,15 @@ apply.
 options)`, where `of(at)` gives a vector in graph units at a point in graph units. It samples a grid
 over the graph's own range and draws an arrow at each sample, taking `lengthOf(magnitude)` and
 `colourFor(magnitude)` from the author. The count is fixed by the resolution and never by the field, so
-a gate can hold it.
+a gate can hold it. **An arrow's length is in figure units and its direction is the mapping of its own
+vector**, which was corrected while the flat demo was being drawn: that demo's two axes count at 1.84
+and 0.415 figure units to the graph unit, so a length in graph units drew a level arrow 4.43 times
+longer than an upright one of the same magnitude.
 
 *Measured:* a field over a 9 by 5 grid draws 45 arrows and 90 marks, and holds 90 at each of five
-times a turning field is read at. Every arrow's tip is the mapping of its sample plus its own scaled
-vector exactly, at 0.00e0, and every arrow's length is what the author's own function gives to
-3.33e-16. A field that is nothing over half the graph draws 25 arrows rather than 45, and the sample
+times a turning field is read at. Every arrow points where the mapping of its own vector points to
+within 1e-12 of a radian, and every arrow's length is what the author's own function gives to
+3.33e-16 of a figure unit. A field that is nothing over half the graph draws 25 arrows rather than 45, and the sample
 at the middle of the graph is one of the ones missing. The suite went from 540 tests to 549.
 
 **2. The streamline. Done.** `streamlineOf(of, from, options)`, walking Runge-Kutta 4 through the field from

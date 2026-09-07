@@ -68,18 +68,32 @@ describe('vectorField', () => {
     expect(Math.max(...tails.map((tail) => tail.x))).toBeCloseTo(8 - 8 / 18, 12);
   });
 
-  it('puts each tip at the mapping of its sample plus its own scaled vector', () => {
+  it('points each arrow where the mapping of its own vector points', () => {
     const marks = marksOf(vectorField('field', COORDS, flow, options));
     for (let column = 0; column < 9; column += 1) {
       for (let row = 0; row < 5; row += 1) {
         const x = -4 + (8 * (column + 0.5)) / 9;
         const y = -2 + (4 * (row + 0.5)) / 5;
         const vector = flow(vec2(x, y));
-        const magnitude = Math.hypot(vector.x, vector.y);
-        const reach = options.lengthOf(magnitude) / magnitude;
-        const wanted = pointOf(COORDS, x + vector.x * reach, y + vector.y * reach);
+        const tail = pointOf(COORDS, x, y);
+        const far = pointOf(COORDS, x + vector.x, y + vector.y);
         const tip = tipOf(marks, `field/${column}-${row}/head`);
-        expect(Math.hypot(tip.x - wanted.x, tip.y - wanted.y)).toBeLessThan(1e-12);
+        const turned = Math.atan2(tip.y - tail.y, tip.x - tail.x) - Math.atan2(far.y - tail.y, far.x - tail.x);
+        expect(Math.abs(turned)).toBeLessThan(1e-12);
+      }
+    }
+  });
+
+  it('measures every arrow in figure units, whatever the two axes count at', () => {
+    const marks = marksOf(vectorField('field', COORDS, flow, options));
+    for (let column = 0; column < 9; column += 1) {
+      for (let row = 0; row < 5; row += 1) {
+        const x = -4 + (8 * (column + 0.5)) / 9;
+        const y = -2 + (4 * (row + 0.5)) / 5;
+        const magnitude = Math.hypot(1 + y * y, x);
+        const tail = pointOf(COORDS, x, y);
+        const tip = tipOf(marks, `field/${column}-${row}/head`);
+        expect(Math.hypot(tip.x - tail.x, tip.y - tail.y)).toBeCloseTo(options.lengthOf(magnitude), 12);
       }
     }
   });

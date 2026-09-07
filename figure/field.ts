@@ -21,7 +21,7 @@ import { arrow } from './annotate.js';
 import type { Colour } from './mark.js';
 
 export interface VectorFieldOptions {
-  /** How long an arrow is, in graph units, from the magnitude of the vector at
+  /** How long an arrow is, in figure units, from the magnitude of the vector at
    * its own sample. */
   lengthOf: (magnitude: number) => number;
   /** What colour an arrow is, from that same magnitude. */
@@ -55,10 +55,15 @@ function stepsOf(resolution: number | { x: number; y: number }): { x: number; y:
  * inclusive grid would put the arrows of the outer row and column half outside
  * the graph, where a painter has to clip them.
  *
- * The vector is scaled in graph units and the tip is the mapping of the scaled
- * vector's far end, so an arrow points the way the field does against the drawn
- * curves. Turning it in figure units instead would tilt every arrow wherever the
- * two axes count at different rates.
+ * An arrow points where the mapping of its own vector points, so it lies along
+ * the curves drawn over the same coordinates. Taking the direction in graph
+ * units instead would tilt every arrow wherever the two axes count at different
+ * rates.
+ *
+ * Its length is in figure units, like the width of its shaft and the length of
+ * its head. A length in graph units under two axes counting at different rates
+ * would draw the arrows pointing one way several times shorter than the arrows
+ * pointing the other, at the same magnitude.
  */
 export function vectorField(
   name: string,
@@ -80,9 +85,10 @@ export function vectorField(
       const length = options.lengthOf(magnitude);
       if (!(magnitude > 0) || !Number.isFinite(length) || !(length > 0)) continue;
 
-      const reach = length / magnitude;
       const from = pointOf(coords, x, y);
-      const to = pointOf(coords, x + vector.x * reach, y + vector.y * reach);
+      const along = vec2.sub(pointOf(coords, x + vector.x, y + vector.y), from);
+      if (!(vec2.magnitude(along) > 0)) continue;
+      const to = vec2.add(from, vec2.scale(vec2.normalize(along), length));
       // A head longer than the arrow would put the base of the head behind the
       // tail, which draws the shaft pointing the other way.
       const head = Math.min(options.head ?? options.width * 4, vec2.distance(from, to));
