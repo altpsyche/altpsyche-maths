@@ -150,7 +150,9 @@ eight.
 **The lock file agrees with the manifest again**, and holding it there is one
 `npm install --package-lock-only` in whichever commit bumps a version.
 
-**0.12.0 is next and it has no step list yet**, so planning it is a session of its own.
+**0.12.0 is next and its four steps are written under it.** A step is ticked by writing the number its
+commit measured into that step rather than by a bare tick, so the first step carrying no measurement is
+where a session resumes.
 
 **What the 0.9.x audit found sound**, so that a later session does not go looking again. Sixty random
 pairs of shapes with no coincident edges hold both `area(A) + area(B) = area(A or B) + area(A and B)`
@@ -168,6 +170,90 @@ Each is a version above. What follows is what each one covers.
 A consumer gets marks and a canvas painter and no way to turn either into a file. The encode step is
 in the website rather than here. What is missing is a headless call that walks a figure at a fixed
 step and hands back frames.
+
+Four steps. The rotate demo's strip gains the walk at step 3, and step 2 paints every frame of both
+demos through both painters, so the version is drawn against before it is cut.
+
+#### The picture waiting to be drawn
+
+**The website already walks a figure frame by frame and it walks it wrong.** Its
+`components/figure/record.ts` resolves the extent once, before the first frame, and paints every
+frame of the clip through that one matrix. A figure whose view moves is recorded with its view frozen,
+which is every figure written since 0.10.0. The site cannot fix that by calling `viewAt` in its own
+loop either, because then it holds two calls that can be passed different times, which is the argument
+`viewAt` itself was written from.
+
+**So a frame carries its own view.** What comes back is the marks and the matrix that were read at one
+time, together, and a consumer painting a frame cannot pass two times because it is only handed one
+number. That is the whole reason this item is a call here rather than a loop over `at` written in the
+website.
+
+#### The three calls this rests on
+
+**The walk hands frames back one at a time.** A ten second figure at sixty frames a second is six
+hundred frames, and this package's own solid demo is 265 marks a frame, so a walk that hands back an
+array holds a hundred and fifty thousand marks at once for a consumer that wanted one frame. A
+recorder encodes a frame and throws it away.
+
+**The count is known before the walk starts.** `frameTimes` answers the times up front, because a
+recorder showing a reader how far along it is needs the total before it has drawn anything.
+
+**The step is given as a rate or as a count, and the two are different questions.** A recorder knows
+how fast the frames play and needs a step of exactly one over that, or the encoded video drifts from
+the figure's own clock. A strip knows how many pictures fit across a page and wants them evenly spread
+over the whole figure. Both walk a fixed step and neither can be written as the other.
+
+**A walk stops strictly before the duration.** The frame at the duration of a figure that loops is its
+own frame nothing, which a recording would show twice. `demos/rotate.ts` already leaves it off its
+strip by hand, and step 3 is what turns that note into a rule the call holds.
+
+#### The steps
+
+**1. The walk.** `figure/frames.ts` holding `Frame`, `frameTimes(figure, options)` and
+`framesOf(figure, options)`, where a frame is its index, its time, its marks and its view, and the
+options carry the width and height the view is built for plus either `fps` or `frames`.
+
+*Measures:* the flat demo at 30 frames a second walks a stated number of frames, the first at 0 and the
+last a stated step short of its 10.25 seconds. The rotate demo, which is a loop of 6 seconds, walks 4
+frames when asked for 4 and never hands back the frame at 6, which `sameMarks` says is its own first
+frame. Every frame's marks are `at` of the figure at that frame's own time and every frame's view is
+`viewAt` at that same time, to 1e-12 on the flat demo whose view moves across. A figure of no duration
+walks one frame rather than none.
+
+**2. Every frame paints, through both painters.** No new call. A test walks both demos at 30 frames a
+second, paints each frame through `paintCanvas` into a counting context and through `svgMarkup`, and
+holds what comes out. This is the claim the item makes, held without a browser.
+
+*Measures:* the solid demo walks a stated number of frames at 30 a second and paints every one, with
+the count of drawing calls per frame holding at a stated number. Every frame's markup parses to a
+stated element count. The flat demo's view moves, so the matrix its frames carry changes across the
+walk by a stated amount, where a walk resolving the extent once would leave it unchanged. The whole
+walk of both demos is timed and the number goes in the commit body rather than into an assertion.
+
+**3. The rotate demo's strip is a walk.** `demos/rotate.ts` builds its strip from `frameTimes` at 4
+frames rather than from four times written out by hand, and `demos/render.ts` reads it the same way.
+
+*Measures:* `docs/rotate-strip.svg` is unchanged, byte for byte, at 8,096 bytes, since a walk of 4
+frames over a 6 second turn lands on the same 0, 1.5, 3 and 4.5 the demo names today. That is the
+whole measurement: the rule the call holds and the times a reader chose by hand are the same times.
+
+**4. The cut.** The version goes to 0.12.0, the README gains the paragraph, the lock file is written
+with `npm install --package-lock-only`, and this entry is deleted.
+
+#### Done-criteria
+
+- `npm test`, `npm run type-check` and `npm run build` all pass.
+- `npm run demos` regenerates the same eight sheets and the committed bytes match all eight, with
+  `docs/rotate-strip.svg` unchanged from before the item started.
+- `framesOf`, `frameTimes` and `Frame` are all exported from `index.ts`, and a test names each.
+- A walk of a figure that loops never hands back a frame that `sameMarks` calls its own first frame.
+- Every frame's marks and view are `at` and `viewAt` of the figure at that frame's own time, to 1e-12,
+  held on a figure whose view moves.
+- Both demos walk at 30 frames a second and every frame paints through both painters, held by a test.
+- The walk hands frames back one at a time rather than as a list, which a test holds by walking a
+  figure and reading one frame.
+- `mark.ts`, `node.ts`, `flatten` and both painters are untouched across the whole item, which is the
+  boundary 0.10.0 and 0.11.0 both held.
 
 ### The polish, 1.0.0
 
