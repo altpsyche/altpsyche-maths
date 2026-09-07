@@ -52,7 +52,6 @@ with it, because `git log` is what keeps a closed plan.
 
 | version | what lands |
 | --- | --- |
-| 0.9.x | The polish cycle, four fixes over what 0.9.0 left |
 | 0.10.0 | Three dimensions, and a camera that moves |
 | 0.11.0 | Vector fields and streamlines |
 | 0.12.0 | Frames out, with no website around it |
@@ -121,71 +120,21 @@ the motion in a still.
 
 ## Now
 
-**0.9.0 is cut, and the 0.9.x cycle polishes what is here before three dimensions start.** Siva's
-call, made after an audit of the whole tree. The four items are written below in the order they are
-worked, each one a patch bump because each one is a fix. Three dimensions wait until the cycle
-closes, and 0.10.0 still has no steps written under it.
+**The 0.9.x cycle is closed at 0.9.4, and 0.10.0 is next and has no steps written under it yet.**
+Planning it is a session on its own and no code is touched in that session. It is the largest item on
+this page, and the one where the boundary DESIGN.md draws against the engine has to be restated
+rather than assumed.
+
+**What the 0.9.x audit found sound**, so that a later session does not go looking again. Sixty random
+pairs of shapes with no coincident edges hold both `area(A) + area(B) = area(A or B) + area(A and B)`
+and `difference = A less the overlap` to 1.776e-15. Two circles crossed at every scale from 1e-4 to
+1e4 answer 4.11e-4 of the closed form, the same share at every one, so nothing there turns on the
+tolerance being an absolute distance. Two 400-piece paths unite in 48ms, so the crossing search needs
+no box test in front of it and the quadratic over piece pairs is not worth removing.
 
 ## The items
 
 Each is a version above. What follows is what each one covers.
-
-### The 0.9.x polish cycle
-
-**Found by auditing the whole tree after 0.9.0 was cut.** What the audit found is one severe defect,
-one thing that hides defects, a handful of small gaps, and a picture that reads as poor quality. Each
-is a patch bump, worked in the order below. 0.9.1 is cut: two pieces covering the same stretch are
-answered by its two ends, and a shared edge is kept by which way the two paths run over it. 0.9.2 is
-cut: a stitch that will not close stops, a flattening finer than a million points stops, and the
-crossing search counts the pairs it makes rather than the pairs it looks at. 0.9.3 is cut: one stated
-tolerance, every name on the door named by a test, and four doc lines corrected.
-
-**What the audit found sound**, so that a later session does not go looking again. Sixty random pairs
-of shapes with no coincident edges hold both `area(A) + area(B) = area(A or B) + area(A and B)` and
-`difference = A less the overlap` to 1.8e-15. Two circles crossed at every scale from 1e-4 to 1e4
-answer 4.11e-4 of the closed form, the same share at every one, so nothing there turns on the
-tolerance being an absolute distance. Two 400-piece paths unite in 48ms, so the crossing search needs
-no box test in front of it and the quadratic over piece pairs is not worth removing.
-
-#### 0.9.4, the pictures
-
-**Done.** Three of the six were this package's defaults and three were how a demo laid itself out.
-
-*This package's, measured on the flat demo's still.* The label for 0 was anchored at -2.760 across,
-which is exactly where the y axis stands, and its body ran down into that axis's head between -2.400
-and -2.220 up. It is now written below and to the left of the crossing, at -2.931, moved by the same
-offsets the labels already use rather than by how wide the number is. The axis line ran from -4.420
-to 4.420 while its outermost ticks stood at plus and minus 4.600, so those two ticks stood under a
-head rather than on the line; the line now runs the whole way and each head stands beyond its end.
-A grid's minor lines were the same 0.012 wide as its major ones and differed only in how strong the
-ink was; they are now 0.6 of the width as well.
-
-*The demo's own.* The typeset rule sat between 1.440 and 2.040 up where the graph reached 2.400, so
-0.940 of its 1.200 width lay over live grid lines. The reading was anchored at 2.400, the graph's top
-edge exactly. The graph now stops at 1.600 and both sit in the band above it, the rule's glyphs
-between 2.046 and 2.250 and the reading at 2.550. The grid is drawn in grey rather than in the ink
-the curve is drawn in.
-
-*One of the six was not a fault.* The brace's number sits inside the graph because the brace measures
-the curve, and an annotation of a curve belongs on it.
-
-*Shortening the graph changed what it reads.* Half way along the walk the slope reads 3.44 where it
-read 3.52, and a walk driven across x has its widest step 1.65 times its narrowest where it was 1.8,
-both because the curve is less steep in figure units than it was.
-
-*The boolean demo was reshaped too.* Its frame was 10.8 by 6 with the picture in the middle third of
-it, and the surface it was written onto was shaped like the other demo rather than like itself. It is
-now 10.8 by 4 on a surface of the same shape. The answer was stroked as well as filled, which hid
-both discs' outlines under it, so a reader saw an orange shape and not the two discs it came from;
-the answer is now shaded and the two discs are outlined over it. Its four frames went in one line,
-eleven times wider than tall, which left each panel too small to read at the width a page gives it;
-they now go in two rows at under three times wider than tall.
-
-*How it is gated, with no browser and nothing measuring text.* No label is anchored inside the head at
-the end of the line it crosses. The label at a crossing is written below and to the left of it. No
-tick stands beyond the ends of its own line. A grid's minor lines are thinner than its major ones.
-The flat demo's reading and every glyph of both its rules sit above the top of the graph, which is a
-number the coords give.
 
 ### Three dimensions and a camera that moves, 0.10.0
 
