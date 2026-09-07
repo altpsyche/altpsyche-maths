@@ -27,6 +27,7 @@ import {
   areaUnder,
   axes,
   circumscribe,
+  clamp,
   coordsOf,
   dot,
   brace,
@@ -63,6 +64,7 @@ import {
   type Figure,
   type Mark,
   type Node,
+  type Vec2,
   type Track,
 } from '../index.js';
 
@@ -74,7 +76,30 @@ const accent = { colour: '#0369a1', width: 0.035 };
 const wash = { colour: '#fdba74' };
 const lit = '#b45309';
 
-const extent: Extent = { width: 10.8, height: 6 };
+const size = { width: 10.8, height: 6 };
+
+/**
+ * How far the dot may sit from the middle of the frame, across, before the view
+ * starts to follow it, in figure units.
+ *
+ * The view holds still while the dot is inside that reach and then pushes exactly
+ * as far as it must to hold it there, so the grid slides under a dot that stays
+ * where a reader is already looking. Following the dot exactly would leave the
+ * picture with nothing that stands still.
+ */
+const REACH = 1.2;
+
+/**
+ * Where the middle of the frame sits when the dot is at this point.
+ *
+ * The view follows across and not up and down, because the reading and the rule
+ * are placed against the frame and the graph is not: a view that dropped to
+ * follow the dot at the stationary point would carry that band down over the top
+ * of the grid.
+ */
+function frameAt(point: Vec2): Extent {
+  return { ...size, centre: vec2(point.x - clamp(point.x, -REACH, REACH), 0) };
+}
 
 /**
  * Nine graph units up against five across, so the parabola is cut where it meets
@@ -109,12 +134,11 @@ const moving = await equationFromTex('\\frac{dy}{dx} = 2x');
  * stand still while the right-hand side walks. Centred instead they would slide
  * sideways by 0.083 as the wider one arrives. Both sit in the band above the
  * graph rather than over it. */
-const RULE_AT = fractionOf(extent, 0.02, 0.825);
 const RULE_WIDTH = 1.2;
 const RULE_HEIGHT = 0.6;
-const rule = (name: string, equation: Equation) =>
+const rule = (name: string, equation: Equation, frame: Extent) =>
   equationNode(name, equation, {
-    at: RULE_AT,
+    at: fractionOf(frame, 0.02, 0.825),
     align: 'start',
     width: RULE_WIDTH,
     height: RULE_HEIGHT,
@@ -143,6 +167,7 @@ const acrossLabels = ['-1', '0', '1', '2', '3', '4'].map((label) => `tangent/axe
  */
 export function sceneAt(along: number): Node {
   const point = pointAlong(walkPath, along) ?? START;
+  const frame = frameAt(point);
   const x = unscaled(coords.x, point.x);
   return group('tangent', [
     numberPlane('grid', coords, { stroke: faint, minors: 4, minorOpacity: 0.45 }),
@@ -151,10 +176,10 @@ export function sceneAt(along: number): Node {
     shape('curve', plot(coords, curve), { stroke: drawn }),
     shape('tangent', tangentAt(coords, curve, x, { reach: 1.2 }), { stroke: accent }),
     dot('point', point, 0.08, ink),
-    text('reading', fractionOf(extent, 0.02, 0.925), `slope ${labelFor(slopeOf(curve, x), 0.01)}`, 0.34, {
+    text('reading', fractionOf(frame, 0.02, 0.925), `slope ${labelFor(slopeOf(curve, x), 0.01)}`, 0.34, {
       fill: ink,
     }),
-    group('equation', [rule('at-rest', atRest), rule('moving', moving)]),
+    group('equation', [rule('at-rest', atRest, frame), rule('moving', moving, frame)]),
     brace('rise', pointOf(coords, 3, RISE), pointOf(coords, 3, 0), labelFor(RISE, 0.01), {
       depth: RISE_DEPTH,
       padding: 0.28,
@@ -236,10 +261,16 @@ export const walk: Track = [
   { time: WALK_TO, value: 1, smooth: true },
 ];
 
+/** Where the dot is at a time, which is what the view follows and what the strip
+ * lays each frame out against. */
+export function pointAt(seconds: number): Vec2 {
+  return pointAlong(walkPath, sampleTrack(walk, seconds) as number) ?? START;
+}
+
 export const tangent: Figure = {
-  extent,
+  extent: (_aspect, seconds) => frameAt(pointAt(seconds)),
   duration: line.duration,
-  still: WALK_FROM + WALK * 0.6,
+  still: WALK_FROM + WALK * 0.85,
   tracks: { s: walk },
   timeline: line,
   scene: (_seconds, values) => sceneAt(values.s as number),
@@ -260,12 +291,15 @@ export const SLOT = 11.4;
 export function stripMarks(times: readonly number[]): { marks: readonly Mark[]; extent: Extent } {
   const marks = times.flatMap((seconds, frame) => {
     const across = (frame - (times.length - 1) / 2) * SLOT;
-    return moveBy('tangent', vec2(across, 0))(marksAt(tangent, seconds), 1).map((mark) => ({
+    // Each frame is carried by its own view as well as into its slot, or a frame
+    // whose view had followed the dot would sit off its own slot by that much.
+    const seen = frameAt(pointAt(seconds)).centre ?? vec2(0, 0);
+    return moveBy('tangent', vec2(across - seen.x, -seen.y))(marksAt(tangent, seconds), 1).map((mark) => ({
       ...mark,
       id: `at${frame}/${mark.id}`,
     }));
   });
-  return { marks, extent: { width: SLOT * times.length, height: extent.height } };
+  return { marks, extent: { width: SLOT * times.length, height: size.height } };
 }
 
 /** The times the strip shows, which are also the times the gate reads the demo

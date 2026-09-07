@@ -4,7 +4,9 @@ import { describe, expect, it } from 'vitest';
 import {
   areaOf,
   at,
+  boundsOf,
   boundsOfMarks,
+  centreOf,
   durationOf,
   flatten,
   interval,
@@ -12,6 +14,7 @@ import {
   plot,
   pointAlong,
   pointOf,
+  resolveExtent,
   sampleTrack,
   tangentAt,
   unscaled,
@@ -123,11 +126,14 @@ describe('the flat demo', () => {
 
   it('holds the glyphs the two rules share still while the right-hand side walks', () => {
     // Hung from the same left edge rather than centred. Centred, the six they
-    // share would slide sideways as the wider rule arrived.
+    // share would slide sideways as the wider rule arrived. Read against the
+    // middle of the frame rather than against the world, since the view follows
+    // the dot and the rule is placed against the frame.
     const startOf = (seconds: number, id: string) => {
       const mark = at(tangent, seconds).find((each) => each.id === id);
       if (mark?.kind !== 'path') throw new Error(`${id} is a path`);
-      return mark.path[0].start;
+      const centre = resolveExtent(tangent.extent, 1.8, seconds).centre ?? vec2(0, 0);
+      return vec2(mark.path[0].start.x - centre.x, mark.path[0].start.y - centre.y);
     };
     for (const glyph of ['0-1D451', '1-1D466', '2-1D451', '3-1D465', '4-rule', '5-3D']) {
       const id = `tangent/equation/at-rest/${glyph}`;
@@ -245,19 +251,44 @@ describe('the flat demo', () => {
     }
   });
 
-  it('keeps every mark inside the extent it declares', () => {
+  it('keeps the dot and everything placed against the frame inside the frame', () => {
+    // The grid and the axes run off the edge once the view follows the dot,
+    // which is what following means. What may never leave is the dot the view is
+    // following and the two things placed against the frame itself.
+    const placed = ['tangent/point/disc', 'tangent/reading'];
     for (const seconds of FRAMES) {
+      const centre = resolveExtent(tangent.extent, 1.8, seconds).centre ?? vec2(0, 0);
       for (const mark of at(tangent, seconds)) {
+        if (!placed.includes(mark.id) && !mark.id.startsWith('tangent/equation/')) continue;
         const points =
           mark.kind === 'path'
             ? mark.path.flatMap((subpath) => [subpath.start, ...subpath.curves.map((piece) => piece.to)])
             : [mark.at];
         for (const point of points) {
-          expect(Math.abs(point.x)).toBeLessThanOrEqual(5.4);
-          expect(Math.abs(point.y)).toBeLessThanOrEqual(3);
+          expect(Math.abs(point.x - centre.x), mark.id).toBeLessThanOrEqual(5.4);
+          expect(Math.abs(point.y - centre.y), mark.id).toBeLessThanOrEqual(3);
         }
       }
     }
+  });
+
+  it('follows the dot rather than letting it cross the frame', () => {
+    // Across only: the reading and the rule are placed against the frame and the
+    // graph is not, so a view that dropped to follow the dot at the stationary
+    // point would carry that band down over the grid.
+    let followed = 0;
+    let still = 0;
+    for (let step = 0; step <= 200; step += 1) {
+      const seconds = (durationOf(tangent) * step) / 200;
+      const centre = resolveExtent(tangent.extent, 1.8, seconds).centre ?? vec2(0, 0);
+      const mark = at(tangent, seconds).find((each) => each.id === 'tangent/point/disc');
+      if (mark?.kind !== 'path') continue;
+      const middle = centreOf(boundsOf(mark.path)!);
+      followed = Math.max(followed, Math.abs(middle.x - centre.x));
+      still = Math.max(still, Math.abs(middle.x));
+    }
+    expect(followed).toBeLessThanOrEqual(1.2 + 1e-12);
+    expect(still).toBeGreaterThan(2.7);
   });
 });
 

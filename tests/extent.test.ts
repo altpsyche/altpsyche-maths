@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import { byAspect, mat3, resolveExtent, vec2, viewMatrix } from '@altpsyche/maths';
+import { at, byAspect, fractionOf, group, mat3, resolveExtent, vec2, viewAt, viewMatrix } from '@altpsyche/maths';
+import type { Figure } from '@altpsyche/maths';
 
 /**
  * One matrix takes a figure's own units onto a surface. What it has to get right
@@ -58,5 +59,53 @@ describe('extent choice', () => {
     expect(resolveExtent(choose, 16 / 9)).toEqual(wide);
     expect(resolveExtent(choose, 1)).toEqual({ width: 10, height: 10 });
     expect(resolveExtent(choose, 9 / 16)).toEqual({ width: 9, height: 16 });
+  });
+});
+
+describe('a view that moves', () => {
+  const still = { width: 16, height: 9 };
+  const moved = { ...still, centre: vec2(3, -2) };
+
+  it('leaves an extent with no centre exactly where it was', () => {
+    const before = mat3.multiply(mat3.translation(vec2(80, 45)), mat3.scaling(vec2(10, -10)));
+    const now = viewMatrix(still, 'contain', 160, 90);
+    for (let entry = 0; entry < 9; entry += 1) {
+      expect(Math.abs(now[entry] - before[entry])).toBeLessThan(1e-12);
+    }
+  });
+
+  it('puts the centre of a moved extent at the middle of the surface', () => {
+    const middle = mat3.transformPoint(viewMatrix(moved, 'contain', 160, 90), vec2(3, -2));
+    expect(Math.abs(middle.x - 80)).toBeLessThan(1e-12);
+    expect(Math.abs(middle.y - 45)).toBeLessThan(1e-12);
+  });
+
+  it('reads a fraction of the frame against the centre it is given', () => {
+    expect(fractionOf(still, 0.5, 0.5)).toEqual(vec2(0, 0));
+    expect(fractionOf(moved, 0.5, 0.5)).toEqual(vec2(3, -2));
+    expect(fractionOf(moved, 1, 1)).toEqual(vec2(11, 2.5));
+  });
+
+  it('carries a mark placed against the frame with the frame', () => {
+    const anchor = fractionOf(moved, 0.02, 0.925);
+    const onSurface = mat3.transformPoint(viewMatrix(moved, 'contain', 160, 90), anchor);
+    const stillAnchor = fractionOf(still, 0.02, 0.925);
+    const stillOnSurface = mat3.transformPoint(viewMatrix(still, 'contain', 160, 90), stillAnchor);
+    expect(Math.abs(onSurface.x - stillOnSurface.x)).toBeLessThan(1e-12);
+    expect(Math.abs(onSurface.y - stillOnSurface.y)).toBeLessThan(1e-12);
+  });
+
+  it('hands a painter its matrix at a time in one call', () => {
+    const figure: Figure = {
+      extent: (aspect, seconds) => ({ width: 16 * aspect, height: 16, centre: vec2(seconds, 0) }),
+      scene: group('nothing', []),
+      still: 0,
+    };
+    expect(at(figure, 2)).toHaveLength(0);
+    const early = viewAt(figure, 0, 160, 160);
+    const later = viewAt(figure, 2, 160, 160);
+    const seen = (matrix: typeof early) => mat3.transformPoint(matrix, vec2(2, 0)).x;
+    expect(Math.abs(seen(early) - 100)).toBeLessThan(1e-12);
+    expect(Math.abs(seen(later) - 80)).toBeLessThan(1e-12);
   });
 });

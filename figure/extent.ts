@@ -11,6 +11,10 @@ import { vec2, type Vec2 } from '../values/vec2.js';
 export interface Extent {
   width: number;
   height: number;
+  /** Where the middle of the frame sits in the figure's own units, the origin
+   * unless named. A figure whose view follows something moves this rather than
+   * moving everything it draws. */
+  centre?: Vec2;
 }
 
 /** Whether the extent is held inside the surface, leaving margins where the
@@ -18,11 +22,11 @@ export interface Extent {
 export type Fit = 'contain' | 'cover';
 
 /** An extent that never changes, or one chosen from the shape of the surface it
- * is about to be drawn on. */
-export type ExtentChoice = Extent | ((aspect: number) => Extent);
+ * is about to be drawn on and the time it is drawn at. */
+export type ExtentChoice = Extent | ((aspect: number, seconds: number) => Extent);
 
-export function resolveExtent(choice: ExtentChoice, aspect: number): Extent {
-  return typeof choice === 'function' ? choice(aspect) : choice;
+export function resolveExtent(choice: ExtentChoice, aspect: number, seconds = 0): Extent {
+  return typeof choice === 'function' ? choice(aspect, seconds) : choice;
 }
 
 /**
@@ -64,7 +68,8 @@ export function matchingAspect(height = 2): (aspect: number) => Extent {
  * is drawing would need the shader's camera, and nothing can read one.
  */
 export function fractionOf(extent: Extent, across: number, up: number): Vec2 {
-  return vec2((across - 0.5) * extent.width, (up - 0.5) * extent.height);
+  const centre = extent.centre ?? vec2(0, 0);
+  return vec2(centre.x + (across - 0.5) * extent.width, centre.y + (up - 0.5) * extent.height);
 }
 
 /**
@@ -79,7 +84,9 @@ export function viewMatrix(extent: Extent, fit: Fit, surfaceWidth: number, surfa
   const byWidth = surfaceWidth / extent.width;
   const byHeight = surfaceHeight / extent.height;
   const scale = fit === 'cover' ? Math.max(byWidth, byHeight) : Math.min(byWidth, byHeight);
-  const centre = mat3.translation(vec2(surfaceWidth / 2, surfaceHeight / 2));
+  const middle = mat3.translation(vec2(surfaceWidth / 2, surfaceHeight / 2));
   const flip = mat3.scaling(vec2(scale, -scale));
-  return mat3.multiply(centre, flip);
+  const seen = extent.centre ?? vec2(0, 0);
+  const follow = mat3.translation(vec2(-seen.x, -seen.y));
+  return mat3.multiply(mat3.multiply(middle, flip), follow);
 }

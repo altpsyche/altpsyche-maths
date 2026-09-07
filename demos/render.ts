@@ -6,7 +6,7 @@
  * them as text, so the picture in the README is regenerated and checked by the
  * same suite everything else is.
  */
-import { at, resolveExtent, svgMarkup, viewMatrix, type Extent, type Figure, type Mark } from '../index.js';
+import { at, svgMarkup, viewAt, viewMatrix, type Extent, type Figure, type Mark } from '../index.js';
 import { FRAMES, stripMarks, tangent } from './tangent.js';
 import {
   FRAMES as BOOLEAN_FRAMES,
@@ -26,8 +26,7 @@ export function markupOf(marks: readonly Mark[], extent: Extent, width: number, 
 }
 
 export function stillMarkup(figure: Figure, seconds: number, width = WIDTH, height = HEIGHT): string {
-  const extent = resolveExtent(figure.extent, width / height);
-  return svgMarkup(at(figure, seconds), viewMatrix(extent, figure.fit ?? 'contain', width, height), width, height);
+  return svgMarkup(at(figure, seconds), viewAt(figure, seconds, width, height), width, height);
 }
 
 export interface Sheet {

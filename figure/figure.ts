@@ -12,7 +12,8 @@
 import { sampleTracks, type TrackValue, type Tracks } from '../timing/track.js';
 import { flatten, type Node } from './node.js';
 import { Timeline } from './timeline.js';
-import type { ExtentChoice, Fit } from './extent.js';
+import { resolveExtent, viewMatrix, type ExtentChoice, type Fit } from './extent.js';
+import type { Mat3 } from '../values/mat3.js';
 import type { Mark } from './mark.js';
 
 /** The values a scene is rebuilt from, sampled out of the figure's tracks. This
@@ -54,6 +55,19 @@ export function at(figure: Figure, seconds: number): readonly Mark[] {
   const tree = typeof figure.scene === 'function' ? figure.scene(seconds, values) : figure.scene;
   const marks = flatten(tree);
   return figure.timeline ? figure.timeline.at(marks, seconds) : marks;
+}
+
+/**
+ * The matrix a painter needs at a time, in one call.
+ *
+ * A figure whose extent is a function of the clock has to be asked for its
+ * extent at the same time its marks were asked for, and a consumer writing that
+ * as two calls has two chances to pass different times. What the painter is
+ * handed is the matrix, so the extent and the centring stay in here.
+ */
+export function viewAt(figure: Figure, seconds: number, width: number, height: number): Mat3 {
+  const extent = resolveExtent(figure.extent, width / height, seconds);
+  return viewMatrix(extent, figure.fit ?? 'contain', width, height);
 }
 
 /** Whether a figure declaring itself a loop actually is one, which is the gate

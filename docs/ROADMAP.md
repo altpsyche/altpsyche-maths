@@ -125,14 +125,16 @@ the motion in a still.
 
 ## Now
 
-**0.10.0 is being worked, and steps 1 to 7 of its ten are landed.** `mat4` is below the line, and
-`camera3`, `polyline3`, `dot3`, `text3`, `space`, `surface3`, `axes3` and `sectionOf` are above it. A camera is a value the
+**0.10.0 is being worked, and steps 1 to 8 of its ten are landed.** `mat4` is below the line, and
+`camera3`, `polyline3`, `dot3`, `text3`, `space`, `surface3`, `axes3`, `sectionOf` and `viewAt` are
+above it. A camera is a value the
 caller holds, a builder that works in space hands back the flat nodes the rest of the package already
 draws, cut where they cross the near plane, `space` orders a list of pieces back to front, and a
-surface is a grid of cells the author's own function shades. The suite went from 479 tests to 525.
+surface is a grid of cells the author's own function shades. An extent carries a centre and may be a
+function of the clock, and the flat demo's view follows its dot across. The suite went from 479 tests to
+531.
 
-**Step 8, the view that moves, is next, and it is the one step that changes something already
-drawn.** A step is ticked by writing the number its commit measured into
+**Step 9, the solid demo, is next.** A step is ticked by writing the number its commit measured into
 that step rather than by a bare tick, so the first step carrying no measurement is where a session
 resumes.
 
@@ -314,7 +316,7 @@ ends are the same point. A plane cutting a surface that runs off the grid gives 
 The suite went from 519 tests to 525 and the door from 102 values above the line to 103.
 
 
-**8. The view moves, and the flat demo gains it.** `Extent` gains a `centre`, which is where the middle
+**8. Done. The view moves, and the flat demo gains it.** `Extent` gains a `centre`, which is where the middle
 of the frame sits in figure units and which defaults to the origin. `ExtentChoice` gains the clock, so an
 extent may be a function of the shape of the surface and of the time. `viewAt(figure, seconds, width,
 height)` gives a painter its matrix at a time in one call, sampling the figure's tracks, resolving the
@@ -326,6 +328,19 @@ slides away with the world.
 frame through the whole walk, where today it crosses a measured distance. The typeset rule and the
 reading, both placed by `fractionOf`, sit at the same place on the surface at every time, to 1e-12. An
 extent with no centre gives the matrix it gives today, to 1e-12, so nothing already drawn moves.
+
+*Measured:* the flat demo's dot stays within 1.2 figure units across of the middle of the frame and
+2.449 units of it in all, where today it crosses 2.76 across and 3.489 in all. The typeset rule and the
+reading drift 1.137e-13 pixels on a surface 1080 across, which is 1.14e-15 figure units. An extent with
+no centre gives the matrix it gave before, to 1e-12, entry by entry. The suite went from 525 tests to
+531 and the door from 103 values above the line to 104.
+
+*The call the step needed:* the view follows across and not up and down. The reading and the rule are
+placed against the frame and the graph is not, so a view that dropped to follow the dot at the
+stationary point would carry that band down over the top of the grid. **What would change this** is a
+demo whose writing sits beside the graph rather than above it. The still moved from 0.6 of the walk to
+0.85, since at 0.6 the dot is still inside the reach and the picture shows nothing of the following.
+
 
 **9. The solid demo.** `demos/surface.ts`: a surface with a plane cutting through it, the curve of the
 intersection drawn on both, three axes, the equation of the surface typeset beside it, and a camera that
