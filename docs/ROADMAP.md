@@ -170,13 +170,18 @@ describe. A span of 0.2 asked for a depth of 1 still reaches 1, because the curl
 the brace flattening. A brace between one point and itself is an empty path. The suite is 392 tests
 in 907 ms, against 384 in 880 ms.
 
-**2. A brace with a label on it.** A group of the brace and a text mark placed beyond the tip, on the
+**2. Done. A brace with a label on it.** A group of the brace and a text mark placed beyond the tip, on the
 far side from the span, by a padding in figure units. The text is anchored and never measured,
 because nothing about a figure's layout may depend on how wide some text is.
 
 *Measures:* the label's anchor sits the padding beyond the tip along the same direction the tip was
 pushed, to within 1e-12, at four rotations of the same brace. The group's ids are the brace and the
 label under the name it was given.
+
+*Measured:* the anchor sits 0.6 out from the middle for a depth of 0.4 and a padding of 0.2, to
+within 1e-12, at all four quarter turns. A label of one character and a label of twenty-nine sit at
+the same point. The group is `rise/brace` and `rise/word`. The suite is 396 tests in 896 ms, against
+392 in 907 ms.
 
 **3. A number that counts.** An animation over a text mark, writing the value it has reached rather
 than the value it will reach. It takes the two values and how to write one, so the rounding is the

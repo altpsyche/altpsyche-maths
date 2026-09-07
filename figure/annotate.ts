@@ -114,6 +114,44 @@ export function bracePath(from: Vec2, to: Vec2, options: BraceOptions): Path {
   ];
 }
 
+export interface BracedOptions extends BraceOptions {
+  stroke: Stroke;
+  fill: Fill;
+  size: number;
+  /** How far beyond the tip the label's anchor sits, in figure units. */
+  padding?: number;
+  align?: TextOptions['align'];
+  baseline?: TextOptions['baseline'];
+  family?: string;
+  weight?: number;
+}
+
+/**
+ * A brace with a word on it, placed beyond the tip on the far side from the two
+ * points.
+ *
+ * The label is anchored and never measured. Nothing about a figure's layout may
+ * depend on how wide some text is, because the width depends on which fonts the
+ * machine has and a box sized to fit a label would be a different box on two
+ * machines.
+ */
+export function brace(name: string, from: Vec2, to: Vec2, content: string, options: BracedOptions): GroupNode {
+  const path = bracePath(from, to, options);
+  const padding = options.padding ?? Math.abs(options.depth) / 2;
+  const out = vec2.perpendicular(vec2.normalize(vec2.sub(to, from)));
+  const middle = vec2.lerp(from, to, 0.5);
+  const at = vec2.add(middle, vec2.scale(out, options.depth + Math.sign(options.depth || 1) * padding));
+  const style: Style = { fill: options.fill, family: options.family, weight: options.weight };
+  return group(name, [
+    shape('brace', path, { stroke: options.stroke }),
+    text('word', at, content, options.size, {
+      ...style,
+      align: options.align ?? 'middle',
+      baseline: options.baseline ?? 'middle',
+    }),
+  ]);
+}
+
 export interface CalloutOptions {
   stroke: Stroke;
   fill: Fill;

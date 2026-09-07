@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { bracePath, pointOn, vec2 } from '@altpsyche/maths';
+import { brace, bracePath, flatten, pointOn, vec2 } from '@altpsyche/maths';
 import type { Path, Vec2 } from '@altpsyche/maths';
 
 /**
@@ -101,5 +101,49 @@ describe('bracePath', () => {
     const out = vec2.perpendicular(along);
     const off = (point: Vec2) => point.x * out.x + point.y * out.y;
     expect(Math.max(...walked(slanted).map(off))).toBeCloseTo(0.5, 12);
+  });
+});
+
+describe('a brace with a word on it', () => {
+  const style = { stroke: { colour: '#111', width: 0.02 }, fill: { colour: '#111' }, size: 0.3 };
+
+  it('puts the word beyond the tip, on the far side from the two points', () => {
+    const marks = flatten(brace('rise', from, to, '4', { depth: DEPTH, padding: 0.25, ...style }));
+    const word = marks.find((mark) => mark.id === 'rise/word');
+    if (word?.kind !== 'text') throw new Error('the word is text');
+    expect(word.at.x).toBeCloseTo(0, 12);
+    expect(word.at.y).toBeCloseTo(1 + DEPTH + 0.25, 12);
+    expect(word.text).toBe('4');
+  });
+
+  it('stays beyond the tip at four turns of the same brace', () => {
+    // Measured along the way the tip was pushed rather than up the page, so a
+    // brace pointing sideways is held to the same rule as one pointing up.
+    for (const turn of [0, 1, 2, 3]) {
+      const angle = (turn * Math.PI) / 2;
+      const end = vec2(Math.cos(angle) * 2, Math.sin(angle) * 2);
+      const marks = flatten(brace('b', vec2(0, 0), end, 'n', { depth: 0.4, padding: 0.2, ...style }));
+      const word = marks.find((mark) => mark.id === 'b/word');
+      if (word?.kind !== 'text') throw new Error('the word is text');
+      const out = vec2.perpendicular(vec2.normalize(end));
+      const middle = vec2.scale(end, 0.5);
+      const off = (word.at.x - middle.x) * out.x + (word.at.y - middle.y) * out.y;
+      expect(off, `turn ${turn}`).toBeCloseTo(0.6, 12);
+    }
+  });
+
+  it('anchors the word rather than measuring it, so its length changes nothing', () => {
+    const place = (content: string) => {
+      const word = flatten(brace('b', from, to, content, { depth: DEPTH, ...style })).find(
+        (mark) => mark.id === 'b/word'
+      );
+      return word?.kind === 'text' ? word.at : undefined;
+    };
+    expect(place('9')).toEqual(place('a much longer label than that'));
+  });
+
+  it('is the brace and the word under the name it was given', () => {
+    const marks = flatten(brace('rise', from, to, '4', { depth: DEPTH, ...style }));
+    expect(marks.map((mark) => mark.id)).toEqual(['rise/brace', 'rise/word']);
   });
 });
