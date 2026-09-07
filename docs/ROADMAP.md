@@ -163,7 +163,7 @@ export const tangent: Figure = {
       axes('axes', coords, { stroke: pen, fill: ink, size: 0.28 }),
       shape('area', areaUnder(coords, curve, { from: 0, to: x }), { fill: wash }),
       shape('curve', plot(coords, curve, { samples: 96 }), { stroke: pen }),
-      tangentAt('tangent', coords, curve, x, { stroke: accent, reach: 1.2 }),
+      shape('tangent', tangentAt(coords, curve, x, { reach: 1.2 }), { stroke: accent }),
       dot('point', pointOf(coords, x, curve(x)), 0.08, ink),
       text('reading', fractionOf(extent, 0.06, 0.9), `slope ${labelFor(slope, 0.01)}`, 0.32, { fill: ink }),
     ]);
@@ -267,11 +267,14 @@ resumes at the first unticked one.
       of 4, 16 and 64, and the middle is closer than either. The middle sum's gap falls with the
       count and is under 1e-4 at 256 bars. A bar of no height is still a mark, because dropping it
       would make it appear between one frame and the next as soon as the curve or the level moves.
-- [ ] **12. `tangentAt` and `slopeOf`.** The slope of a function at a point by the central difference,
-      and the tangent line through that point drawn a stated reach either side. Measurement: the slope
-      at three x values on the demo's curve against the exact derivative, and the same on a sine,
-      quoting the error and the step size `h` that produced it; and the distance from the tangent's
-      midpoint to the curve, which is zero to within that error.
+- [x] **12. `tangentAt` and `slopeOf`.** The slope of a function at a point by the central
+      difference, and the tangent line through that point drawn a stated reach either side and cut
+      where it leaves the graph. **Landed.** Against the exact derivative, with the step shown: the
+      parabola reads 1.7e-12 out at x = 0.5 over a step of 6.1e-6, 1.7e-11 at x = 1, and 5.4e-12 at
+      x = 3 over 1.8e-5; a sine reads 6.1e-12 at 0, 5.0e-12 at 1 and 1.2e-11 at a third of pi. The
+      one-sided difference over the same step of 1e-5 is 4.2e-6 out where the central difference is
+      1.1e-11, which is the whole reason for taking both sides. The line is cut by arithmetic rather
+      than by sampling, because a straight line crosses each edge once.
 - [ ] **13. The demo complete, and 0.4.0 cut.** The demo gains the walking point, the sliding tangent,
       the shaded area and the slope as a number that changes, all driven by the `x` track; the README
       carries a strip of frames in one SVG, because a moving image needs a GIF and this package has no

@@ -20,7 +20,7 @@ import { vec2 } from '../values/vec2.js';
 import { pointOf, scaled, type Coords } from './scale.js';
 import { group, shape, type GroupNode } from './node.js';
 import type { Fill, Stroke } from './mark.js';
-import { rect, straight, type Cubic, type Path, type Subpath } from './path.js';
+import { line, rect, straight, type Cubic, type Path, type Subpath } from './path.js';
 
 export interface PlotOptions {
   /** How many pieces the curve is cut into. */
@@ -258,4 +258,68 @@ export function riemannBars(
   }
 
   return group(name, children, { style: { fill: options.fill, stroke: options.stroke } });
+}
+
+/**
+ * The step the central difference is taken over, against the size of x.
+ *
+ * The cube root of the smallest gap between two doubles is the step where the
+ * two errors in a central difference are the same size: the formula's own error
+ * falls as the step squared and the rounding error rises as one over the step.
+ */
+const STEP = Math.cbrt(Number.EPSILON);
+
+/**
+ * The slope of a function at a point, from the central difference either side of
+ * it.
+ *
+ * The difference either side rather than one side is what makes the error fall
+ * as the step squared instead of the step, and it costs the same two calls.
+ */
+export function slopeOf(of: (x: number) => number, x: number, step = STEP * Math.max(Math.abs(x), 1)): number {
+  return (of(x + step) - of(x - step)) / (2 * step);
+}
+
+export interface TangentOptions {
+  /** How far the line reaches either side of the point, in graph units. */
+  reach?: number;
+  /** The step the slope is read over, for a function whose own scale asks for a
+   * different one. */
+  step?: number;
+}
+
+/**
+ * The tangent to a curve at a point, as a straight line held inside the graph.
+ *
+ * The line is cut where it leaves the graph rather than sampled and broken like
+ * a curve, because a straight line crosses each edge once and the crossing is
+ * arithmetic rather than a search. A tangent at a steep place otherwise runs the
+ * width of the picture and out of it.
+ */
+export function tangentAt(coords: Coords, of: (x: number) => number, x: number, options: TangentOptions = {}): Path {
+  const reach = options.reach ?? interval.span(coords.x.graph) / 8;
+  const height = of(x);
+  const slope = slopeOf(of, x, options.step);
+  if (!Number.isFinite(height) || !Number.isFinite(slope)) return [];
+
+  const graphX = interval.ordered(coords.x.graph);
+  const graphY = interval.ordered(coords.y.graph);
+  let low = Math.max(x - reach, graphX.from);
+  let high = Math.min(x + reach, graphX.to);
+
+  if (slope === 0) {
+    if (!interval.holds(graphY, height)) return [];
+  } else {
+    const atY = (y: number) => x + (y - height) / slope;
+    const first = atY(graphY.from);
+    const second = atY(graphY.to);
+    low = Math.max(low, Math.min(first, second));
+    high = Math.min(high, Math.max(first, second));
+  }
+  if (!(high > low)) return [];
+
+  // Held on the graph so an end cut at an edge sits on it rather than a rounding
+  // error past it.
+  const at = (t: number) => pointOf(coords, t, interval.clampTo(graphY, height + slope * (t - x)));
+  return line(at(low), at(high));
 }

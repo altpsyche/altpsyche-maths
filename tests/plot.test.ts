@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { areaUnder, coordsOf, flatten, interval, plot, pointCount, pointOf, riemannBars, scaleOf, type Path } from '../index.js';
+import { areaUnder, coordsOf, flatten, interval, plot, pointCount, pointOf, riemannBars, scaleOf, slopeOf, tangentAt, type Path } from '../index.js';
 
 // The demo's own coords, whose y axis stops at 9 while the parabola reaches 16.
 const square = coordsOf(scaleOf(interval(-1, 4), interval(-4.6, 4.6)), scaleOf(interval(-1, 9), interval(-2.4, 2.4)));
@@ -337,5 +337,86 @@ describe('the bars under a curve', () => {
       if (mark.kind !== 'path') throw new Error('a bar is a path');
       expect(mark.fill).toEqual(wash);
     }
+  });
+});
+
+describe('the slope of a function', () => {
+  it('reads the derivative of a parabola at three places', () => {
+    for (const x of [0.5, 1, 3]) expect(slopeOf((t) => t * t, x)).toBeCloseTo(2 * x, 9);
+  });
+
+  it('reads the derivative of a sine at three places', () => {
+    for (const x of [0, 1, Math.PI / 3]) expect(slopeOf(Math.sin, x)).toBeCloseTo(Math.cos(x), 9);
+  });
+
+  it('is closer than a one-sided difference over the same step', () => {
+    const step = 1e-5;
+    const oneSided = (Math.sin(1 + step) - Math.sin(1)) / step;
+    expect(Math.abs(slopeOf(Math.sin, 1, step) - Math.cos(1))).toBeLessThan(
+      Math.abs(oneSided - Math.cos(1)) / 100
+    );
+  });
+
+  it('takes its step from the size of x, so a large x is read as well as a small one', () => {
+    expect(slopeOf((t) => t * t, 1e6)).toBeCloseTo(2e6, 3);
+  });
+});
+
+describe('the tangent to a curve', () => {
+  it('is one open straight piece', () => {
+    const path = tangentAt(tall, (x) => x * x, 1, { reach: 0.5 });
+    expect(path).toHaveLength(1);
+    expect(path[0].curves).toHaveLength(1);
+    expect(path[0].closed).toBe(false);
+  });
+
+  it('leaves each end at the slope the curve has there', () => {
+    const path = tangentAt(tall, (x) => x * x, 1, { reach: 0.5 });
+    const from = path[0].start;
+    const to = path[0].curves[0].to;
+    const graph = (point: typeof from) => ({
+      x: interval.remap(point.x, tall.x.units, tall.x.graph),
+      y: interval.remap(point.y, tall.y.units, tall.y.graph),
+    });
+    const a = graph(from);
+    const b = graph(to);
+    expect((b.y - a.y) / (b.x - a.x)).toBeCloseTo(2, 9);
+    expect(a.x).toBeCloseTo(0.5, 12);
+    expect(b.x).toBeCloseTo(1.5, 12);
+  });
+
+  it('touches the curve at the point it is taken at', () => {
+    const path = tangentAt(tall, (x) => x * x, 2, { reach: 1 });
+    const from = path[0].start;
+    const to = path[0].curves[0].to;
+    const along = (pointOf(tall, 2, 0).x - from.x) / (to.x - from.x);
+    const height = from.y + (to.y - from.y) * along;
+    expect(height).toBeCloseTo(pointOf(tall, 2, 4).y, 9);
+  });
+
+  it('is cut where it leaves the graph rather than running out of the picture', () => {
+    // At x = 3 the demo's parabola has a slope of 6, so a reach of 1.2 either
+    // side asks for 7.2 graph units of height on an axis that holds 10.
+    const path = tangentAt(square, (x) => x * x, 3, { reach: 1.2 });
+    for (const point of [path[0].start, path[0].curves[0].to]) {
+      expect(Math.abs(point.y)).toBeLessThanOrEqual(2.4 + 1e-12);
+      expect(Math.abs(point.x)).toBeLessThanOrEqual(4.6 + 1e-12);
+    }
+  });
+
+  it('reaches the whole way where nothing cuts it', () => {
+    const path = tangentAt(tall, (x) => x * x, 1, { reach: 0.5 });
+    const width = path[0].curves[0].to.x - path[0].start.x;
+    expect(width).toBeCloseTo((interval.span(tall.x.units) / interval.span(tall.x.graph)) * 1, 12);
+  });
+
+  it('draws nothing where the point itself is off the graph', () => {
+    expect(tangentAt(square, () => 50, 1, { reach: 1 })).toEqual([]);
+    expect(tangentAt(square, (x) => 1 / x, 0, { reach: 1 })).toEqual([]);
+  });
+
+  it('draws a level line where the slope is nothing', () => {
+    const path = tangentAt(tall, (x) => x * x, 0, { reach: 1 });
+    expect(path[0].start.y).toBeCloseTo(path[0].curves[0].to.y, 12);
   });
 });
