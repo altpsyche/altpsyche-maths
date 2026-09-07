@@ -46,6 +46,8 @@ export { areaUnder, plot, riemannBars, slopeOf, tangentAt } from './figure/plot.
 export type { AreaOptions, BarsOptions, PlotOptions, TangentOptions } from './figure/plot.js';
 export { axes, numberLine, numberPlane } from './figure/axis.js';
 export type { AxesOptions, NumberLineOptions, NumberPlaneOptions } from './figure/axis.js';
+export { camera3, orthographic, perspective } from './figure/camera.js';
+export type { Camera3, Camera3Choice, OrthographicChoice, PerspectiveChoice, Projected, Projection } from './figure/camera.js';
 export { coordsOf, pointOf, scaleOf, scaled, unscaled } from './figure/scale.js';
 export type { Coords, Scale } from './figure/scale.js';
 export { labelFor, tickStep, ticksOn } from './figure/ticks.js';

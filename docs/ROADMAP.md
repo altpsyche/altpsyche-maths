@@ -125,13 +125,14 @@ the motion in a still.
 
 ## Now
 
-**0.10.0 is being worked, and step 1 of its ten is landed.** `mat4` is below the line and on the door:
-sixteen numbers column-major the way `Mat3` is, with `lookAt`, `perspective` and `orthographic`, a
-point transform that divides by the fourth coordinate and a direction transform that does not. There is
-no inverse and the file says why. The suite went from 479 tests to 488.
+**0.10.0 is being worked, and steps 1 and 2 of its ten are landed.** `mat4` is below the line and
+`camera3` above it. A camera is a value the caller holds, built from an eye, a target and a
+projection, and it answers where a point in space lands in figure units, how far off it is along the
+way the camera looks, and whether it is in front of the eye. The suite went from 479 tests to 496.
 
-**Step 2, the camera, is next.** A step is ticked by writing the number its commit measured into that
-step rather than by a bare tick, so the first step carrying no measurement is where a session resumes.
+**Step 3, marks in space, is next.** A step is ticked by writing the number its commit measured into
+that step rather than by a bare tick, so the first step carrying no measurement is where a session
+resumes.
 
 **What the 0.9.x audit found sound**, so that a later session does not go looking again. Sixty random
 pairs of shapes with no coincident edges hold both `area(A) + area(B) = area(A or B) + area(A and B)`
@@ -197,7 +198,7 @@ through `multiply(multiply(grow, turn), move)` matches the same point through th
 view space to 3.331e-16. The suite went from 479 tests to 488 and the door from 19 values below the line
 to 20.
 
-**2. The camera.** `camera3({ eye, target, up, projection })`, with `orthographic({ scale })` and
+**2. Done. The camera.** `camera3({ eye, target, up, projection })`, with `orthographic({ scale })` and
 `perspective({ fov, height })`. It gives `project(point)`, answering where that point lands in the
 figure's own units, how far it is from the eye along the way the camera looks, and whether it is in
 front of the eye at all. `height` is in figure units, so an author hands the camera the same height as
@@ -209,6 +210,16 @@ figure coordinates are its world x and y, to 1e-12. Under a perspective camera, 
 away lands half as far from the middle of the frame, to 1e-12. A point behind the eye is reported as
 behind rather than folded to the front, which is the defect that puts a line on the wrong side of the
 frame as it passes the camera.
+
+*Measured:* the eight corners of a unit cube land at their own x and y from an eye five units down the
+z axis, and at minus their z and their own y from an eye five units down the x axis, both exactly and
+both at the right depth. A point at (1, 1, 0) seen through a ninety-degree eye five units back in a
+frame ten units tall lands at (1, 1) to 2.2e-16, and the same point five units further off lands at
+(0.5, 0.5), which is half, exactly. `lookAt`'s target lands in the middle of the frame at a depth of
+7.348 to 3.331e-16. A point one unit behind the eye is reported behind, and the place it would
+otherwise have been given is 14.14 figure units from the place its mirror in front is given, on a
+frame ten units tall. The suite went from 488 tests to 496 and the door from 93 values above the line
+to 96.
 
 **3. Marks in space.** `polyline3`, `dot3` and `text3`, each taking points in space and a camera and
 handing back a flat node. A segment with one end behind the eye is cut where it crosses the near plane,
