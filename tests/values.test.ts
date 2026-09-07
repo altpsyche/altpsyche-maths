@@ -13,6 +13,7 @@ import {
   linear,
   lerp,
   mat3,
+  mat4,
   nearestEdge,
   pointOn,
   rect,
@@ -26,6 +27,7 @@ import {
   windingAt,
   withKey,
 } from '@altpsyche/maths';
+import type { Mat4, Vec3 } from '@altpsyche/maths';
 
 /**
  * The values half, which has no clock and no screen in it. Every curve is
@@ -163,6 +165,123 @@ describe('mat3', () => {
     expect(mat3.scaleFactor(mat3.scaling(vec2(3, 3)))).toBeCloseTo(3, 10);
     expect(mat3.scaleFactor(mat3.rotation(0.7))).toBeCloseTo(1, 10);
     expect(mat3.scaleFactor(mat3.scaling(vec2(2, 4)))).toBeCloseTo(3, 10);
+  });
+});
+
+/** A generator with a written-down seed, so a failure is the same failure on the
+ * next run rather than a different one. */
+function seeded(seed: number): () => number {
+  let state = seed >>> 0;
+  return () => {
+    state = (state + 0x6d2b79f5) >>> 0;
+    let t = Math.imul(state ^ (state >>> 15), 1 | state);
+    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+
+describe('mat4', () => {
+  const random = seeded(20260908);
+  const randomMatrix = (): Mat4 =>
+    Array.from({ length: 16 }, () => random() * 2 - 1) as unknown as Mat4;
+  const randomPoint = (): Vec3 => vec3(random() * 4 - 2, random() * 4 - 2, random() * 4 - 2);
+
+  it('leaves a point where it is under the identity', () => {
+    expect(mat4.transformPoint(mat4.IDENTITY, vec3(3, 7, 11))).toEqual({ x: 3, y: 7, z: 11 });
+  });
+
+  it('moves a point and leaves a direction alone', () => {
+    const move = mat4.translation(vec3(10, 20, 30));
+    expect(mat4.transformPoint(move, vec3(1, 1, 1))).toEqual({ x: 11, y: 21, z: 31 });
+    expect(mat4.transformDirection(move, vec3(1, 1, 1))).toEqual({ x: 1, y: 1, z: 1 });
+  });
+
+  it('multiplies the same way whichever pair is done first', () => {
+    let worst = 0;
+    for (let trial = 0; trial < 100; trial += 1) {
+      const a = randomMatrix();
+      const b = randomMatrix();
+      const c = randomMatrix();
+      const left = mat4.multiply(mat4.multiply(a, b), c);
+      const right = mat4.multiply(a, mat4.multiply(b, c));
+      for (let i = 0; i < 16; i += 1) worst = Math.max(worst, Math.abs(left[i] - right[i]));
+    }
+    expect(worst).toBeLessThan(1e-12);
+  });
+
+  it('brings a point back to itself through a move and its opposite', () => {
+    const there = mat4.translation(vec3(3.5, -2.25, 7.125));
+    const back = mat4.translation(vec3(-3.5, 2.25, -7.125));
+    const round = mat4.multiply(back, there);
+    for (let trial = 0; trial < 100; trial += 1) {
+      const point = randomPoint();
+      const moved = mat4.transformPoint(round, point);
+      expect(Math.abs(moved.x - point.x)).toBeLessThan(1e-12);
+      expect(Math.abs(moved.y - point.y)).toBeLessThan(1e-12);
+      expect(Math.abs(moved.z - point.z)).toBeLessThan(1e-12);
+    }
+  });
+
+  it('applies the right-hand matrix to a point first', () => {
+    const move = mat4.translation(vec3(1, 2, 3));
+    const grow = mat4.scaling(vec3(2, 2, 2));
+    const turn = mat4.rotationZ(0.7);
+    const combined = mat4.multiply(mat4.multiply(grow, turn), move);
+    for (let trial = 0; trial < 100; trial += 1) {
+      const point = randomPoint();
+      const once = mat4.transformPoint(combined, point);
+      const step = mat4.transformPoint(grow, mat4.transformPoint(turn, mat4.transformPoint(move, point)));
+      expect(Math.abs(once.x - step.x)).toBeLessThan(1e-12);
+      expect(Math.abs(once.y - step.y)).toBeLessThan(1e-12);
+      expect(Math.abs(once.z - step.z)).toBeLessThan(1e-12);
+    }
+  });
+
+  it('turns each pair of axes towards the next one round', () => {
+    const aboutX = mat4.transformPoint(mat4.rotationX(Math.PI / 2), vec3(0, 1, 0));
+    expect(aboutX.y).toBeCloseTo(0, 12);
+    expect(aboutX.z).toBeCloseTo(1, 12);
+
+    const aboutY = mat4.transformPoint(mat4.rotationY(Math.PI / 2), vec3(0, 0, 1));
+    expect(aboutY.z).toBeCloseTo(0, 12);
+    expect(aboutY.x).toBeCloseTo(1, 12);
+
+    const aboutZ = mat4.transformPoint(mat4.rotationZ(Math.PI / 2), vec3(1, 0, 0));
+    expect(aboutZ.x).toBeCloseTo(0, 12);
+    expect(aboutZ.y).toBeCloseTo(1, 12);
+  });
+
+  it('puts what the eye looks at straight down its own negative z', () => {
+    const eye = vec3(3, 4, 5);
+    const target = vec3(0, 1, -1);
+    const view = mat4.lookAt(eye, target, vec3(0, 1, 0));
+    const seen = mat4.transformPoint(view, target);
+    const distance = vec3.magnitude(vec3.sub(target, eye));
+    expect(Math.abs(seen.x)).toBeLessThan(1e-12);
+    expect(Math.abs(seen.y)).toBeLessThan(1e-12);
+    expect(Math.abs(seen.z + distance)).toBeLessThan(1e-12);
+    expect(Math.abs(mat4.transformPoint(view, eye).z)).toBeLessThan(1e-12);
+  });
+
+  it('shrinks a point by how far off it is under a perspective', () => {
+    const projection = mat4.perspective({ fov: Math.PI / 3, aspect: 1, near: 0.1, far: 100 });
+    const near = mat4.transformPoint(projection, vec3(1, 1, -2));
+    const far = mat4.transformPoint(projection, vec3(1, 1, -4));
+    expect(Math.abs(far.x - near.x / 2)).toBeLessThan(1e-12);
+    expect(Math.abs(far.y - near.y / 2)).toBeLessThan(1e-12);
+  });
+
+  it('maps the named box onto the frame under an orthographic', () => {
+    const projection = mat4.orthographic({ left: -2, right: 2, bottom: -1, top: 1, near: 1, far: 5 });
+    const corner = mat4.transformPoint(projection, vec3(2, 1, -1));
+    expect(Math.abs(corner.x - 1)).toBeLessThan(1e-12);
+    expect(Math.abs(corner.y - 1)).toBeLessThan(1e-12);
+    expect(Math.abs(corner.z + 1)).toBeLessThan(1e-12);
+
+    const opposite = mat4.transformPoint(projection, vec3(-2, -1, -5));
+    expect(Math.abs(opposite.x + 1)).toBeLessThan(1e-12);
+    expect(Math.abs(opposite.y + 1)).toBeLessThan(1e-12);
+    expect(Math.abs(opposite.z - 1)).toBeLessThan(1e-12);
   });
 });
 

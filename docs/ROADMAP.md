@@ -125,13 +125,13 @@ the motion in a still.
 
 ## Now
 
-**0.9.5 is cut, so every feature on the door now reaches a demo.** `rotate` has `demos/rotate.ts`,
-which turns one L a whole circle in two panels, about the middle of the box round it and about a point
-the figure names. The suite went from 469 tests to 479 and the sheet list from four pictures to six.
+**0.10.0 is being worked, and step 1 of its ten is landed.** `mat4` is below the line and on the door:
+sixteen numbers column-major the way `Mat3` is, with `lookAt`, `perspective` and `orthographic`, a
+point transform that divides by the fourth coordinate and a direction transform that does not. There is
+no inverse and the file says why. The suite went from 479 tests to 488.
 
-**0.10.0 is next, and its ten steps are written under it.** The first of them is `mat4` below the line.
-A step is ticked by writing the number its commit measured into that step rather than by a bare tick,
-so the first step carrying no measurement is where a session resumes.
+**Step 2, the camera, is next.** A step is ticked by writing the number its commit measured into that
+step rather than by a bare tick, so the first step carrying no measurement is where a session resumes.
 
 **What the 0.9.x audit found sound**, so that a later session does not go looking again. Sixty random
 pairs of shapes with no coincident edges hold both `area(A) + area(B) = area(A or B) + area(A and B)`
@@ -178,7 +178,7 @@ says a picture is.
 
 #### The steps
 
-**1. `mat4`, below the line.** Sixteen numbers, column-major, matching the engine's layout the way
+**1. Done. `mat4`, below the line.** Sixteen numbers, column-major, matching the engine's layout the way
 `mat3` already does, so the two can be merged later without either side converting. Identity, multiply,
 translation, scaling, rotation about each axis, `lookAt`, `perspective`, `orthographic`, a point
 transform that divides by w and a direction transform that does not. No inverse until something needs
@@ -189,6 +189,13 @@ and then its opposite comes back to itself to 1e-12. For affine matrices, a poin
 `multiply(a, b)` equals the same point through `b` and then through `a`, to 1e-12, and the doc comment
 says why the perspective matrix is excluded from that claim. `lookAt` puts the target on the negative z
 axis of view space at the distance between the eye and the target, to 1e-12.
+
+*Measured:* `multiply` is associative over 100 random triples to 8.882e-16. A point through a
+translation and then its opposite comes back to itself exactly, over 100 random points. A point
+through `multiply(multiply(grow, turn), move)` matches the same point through the three in turn to
+1.776e-15, over 100 random points. `lookAt` puts a target 7.348 units off on the negative z axis of
+view space to 3.331e-16. The suite went from 479 tests to 488 and the door from 19 values below the line
+to 20.
 
 **2. The camera.** `camera3({ eye, target, up, projection })`, with `orthographic({ scale })` and
 `perspective({ fov, height })`. It gives `project(point)`, answering where that point lands in the

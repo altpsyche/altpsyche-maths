@@ -19,6 +19,8 @@ export { interval } from './values/interval.js';
 export type { Interval } from './values/interval.js';
 export { mat3 } from './values/mat3.js';
 export type { Mat3 } from './values/mat3.js';
+export { mat4 } from './values/mat4.js';
+export type { Mat4, OrthographicOptions, PerspectiveOptions } from './values/mat4.js';
 export { SAME_TIME, keyAt, sampleTrack, sampleTracks, withKey, withoutKey } from './timing/track.js';
 export type { Key, Track, TrackValue, Tracks } from './timing/track.js';
 
