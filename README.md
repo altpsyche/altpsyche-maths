@@ -25,7 +25,8 @@ svgMarkup(at(figure, 0.5), viewMatrix(figure.extent, 'contain', 640, 360), 640, 
 The picture arrives rather than appearing. The grid fades, the axes draw on, their labels come in one
 after another, the curve draws, the dot grows out of the origin, and the dot is pointed at where the
 slope is nothing. Then it walks the curve at one speed and flashes at the top. The number in the
-corner is a value of the typeset rule under it.
+corner is a value of the typeset rule under it, and that rule reads no slope while the dot is held at
+the stationary point and walks into the one that depends on x as the dot leaves.
 
 ```ts
 import { axes, coordsOf, group, interval, numberPlane, plot, scaleOf, shape } from '@altpsyche/maths';
@@ -58,7 +59,7 @@ region is the limit of at the left edge, the right edge or the middle of each on
 lays the tangent along the curve, cut where it leaves the graph. `slopeOf` reads the slope itself,
 which is what the number in the corner is.
 
-<img src="docs/tangent-strip.svg" width="960" alt="Four frames of the same figure side by side, the point walking up the curve and the shaded region growing behind it.">
+<img src="docs/tangent-strip.svg" width="960" alt="Four frames of the same figure side by side, the point walking up the curve, the shaded region growing behind it, and the typeset rule in the corner changing from a slope of nothing to one that depends on x.">
 
 Four times of one figure, side by side: the picture arrived, the beat at the stationary point, half
 way up, and the top. A moving picture in a README needs a GIF and this package has no encoder, so the
@@ -92,6 +93,33 @@ MathJax is the one runtime dependency and the typesetting call is what loads it.
 reaches none of it, so a consumer who draws figures and typesets nothing pays nothing. What that
 costs is that typesetting answers with a promise.
 
+`matchGlyphs` says which glyph of one expression is which glyph of the other, and `morphEquation`
+walks one into the next: the shared sub-expressions stay put and only the difference moves. Two marks
+match on the part of the leaf name after the first dash, which the typesetter's own naming gives, so
+a glyph is `3-1D465` and a fraction bar is `4-rule`. The pairing is the longest common subsequence of
+the two token sequences, which pairs each occurrence of a repeated glyph once and refuses a pair that
+would cross another pair on the way over.
+
+```ts
+import { equationFromTex, equationNode, group, morphEquation, vec2 } from '@altpsyche/maths';
+
+const box = { at: vec2(-4.86, 1.74), align: 'start', width: 1.2, height: 0.6, fill: { colour: '#1b1b1b' } } as const;
+
+group('rule', [
+  equationNode('at-rest', await equationFromTex('\\frac{dy}{dx} = 0'), box),
+  equationNode('moving', await equationFromTex('\\frac{dy}{dx} = 2x'), box),
+]);
+
+morphEquation('rule/at-rest', 'rule/moving');
+```
+
+Both expressions are in the scene at every time and the animation moves one onto the other, because a
+mark that arrived part way through a span would turn up in a comparison between two frames as
+something that changed. A paired glyph is drawn once rather than cross-faded, so the glyph being left
+carries the walk and its partner stays at nothing until it is being stood on exactly. Hang both
+expressions from the same edge with `align`, or the part they share slides sideways as the difference
+arrives.
+
 Three things stop a typeset expression rather than being drawn, and each names what it found. A TeX
 error carries the typesetter's own message. A character the font has no outline for arrives as text,
 which would draw with whatever font a browser had and draw nothing at all in a recording. An
@@ -100,8 +128,8 @@ would otherwise ship as a red word inside the picture.
 
 ## The animations
 
-`fadeIn`, `fadeOut`, `fadeTo`, `draw`, `morph`, `moveBy`, `rotate`, `scale`, `growFrom`, `moveAlong`,
-`indicate`, `flash` and `circumscribe`. A `Timeline` plays them in order, plays several `together`, or
+`fadeIn`, `fadeOut`, `fadeTo`, `draw`, `morph`, `morphEquation`, `moveBy`, `rotate`, `scale`,
+`growFrom`, `moveAlong`, `indicate`, `flash` and `circumscribe`. A `Timeline` plays them in order, plays several `together`, or
 `stagger`s a row so its parts arrive one after another.
 
 A turn and a growth happen about a point the marks decide for themselves, which is the middle of the

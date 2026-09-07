@@ -51,7 +51,6 @@ with it, because `git log` is what keeps a closed plan.
 
 | version | what lands |
 | --- | --- |
-| 0.7.0 | One equation morphing into the next |
 | 0.8.0 | Braces, a number that counts, boolean operations on paths |
 | 0.9.0 | Three dimensions, and a camera that moves |
 | 0.10.0 | Vector fields and streamlines |
@@ -78,7 +77,8 @@ written first says what the code has to be able to say.
 shaded under it, a point walking along it, the tangent at that point, and the slope written as a
 number that changes. As of 0.5.0 the picture arrives rather than appearing, and the walk is measured
 along the curve's own length so the dot keeps one speed. As of 0.6.0 the number sits under the
-typeset rule it is a value of, which is `\frac{dy}{dx} = 2x`.
+typeset rule it is a value of, and as of 0.7.0 that rule reads `\frac{dy}{dx} = 0` at the stationary
+point and walks into `\frac{dy}{dx} = 2x` as the dot leaves it.
 
 **How the walk is driven was Siva's call and the answer is the track.** The track drives a fraction of
 the curve's length and the scene recovers the graph x from the point it lands on, so the dot, the
@@ -87,9 +87,8 @@ stayed on an x track would have been two clocks free to disagree, since a span's
 track's value are unrelated. **What would change this answer** is an animation that can hand the
 scene back what it did, which the seam refuses on purpose.
 
-Every version after adds to that same figure: the equation morphs as the point crosses a stationary
-point at 0.7.0, a brace measures the rise at 0.8.0, the view follows the point at 0.9.0, and the
-curve's gradient becomes a field at 0.10.0.
+Every version after adds to that same figure: a brace measures the rise at 0.8.0, the view follows
+the point at 0.9.0, and the curve's gradient becomes a field at 0.10.0.
 
 **The solid demo starts at 0.9.0**, because nothing before it can draw one, and it is a surface with
 a plane cutting through it and the curve of the intersection drawn on both. What it then takes from
@@ -109,144 +108,13 @@ the motion in a still.
 
 ## Now
 
-**0.6.0 is cut and released, the website draws through it, and 0.7.0 is next with its steps written
-under its item below.** A session resumes at the first unticked step and does not redesign the ones
-after it. The colour reader queued below the items is not wanted by the morphing, so nothing above it
-is waiting on it.
+**0.7.0 is cut and 0.8.0 is next, and it needs its steps written before it is worked.** Writing them
+is a session on its own. The colour reader queued below the items is wanted by nothing above it yet,
+and the item after it is the first thing that planning session has to weigh against a brace.
 
 ## The items
 
 Each is a version above. What follows is what each one covers.
-
-### One equation morphing into the next, 0.7.0
-
-The most recognisable single animation in the reference material: two expressions where the shared
-sub-expressions stay put and only the difference moves. `alignPaths` and `lerpPath` are the mechanism
-and what is missing is the matching, which is the question of which glyph of one expression is which
-glyph of the other.
-
-**The matching is on the id, and the id already carries what it needs.** A glyph is named
-`3-1D465`, which is its place in the expression and the code point the typesetter wrote on it, and a
-fraction bar is named `4-rule`. So the thing two glyphs match on is the part of the id after the
-first dash, which needs no parsing and treats a rule as a token of its own. Matched by that token,
-`\frac{dy}{dx} = 0` and `\frac{dy}{dx} = 2x` share `1D451 1D466 1D451 1D465 rule 3D`, which is the
-six marks that stay put, and differ by the `0` that leaves and the `32 1D465` that arrives.
-
-**Why the id rather than a field on the mark.** A consumer stores a typeset equation rather than
-typesetting it again, and the website stores each mark as its id and its path data alone. A code
-point kept beside the mark would have to be stored beside it too, so every consumer's cache would
-have to change or the matching would fail on everything read back from one. The id survives a cache
-because the id is what a mark is. **What would change this answer** is a consumer that renames the
-marks it stores, which would break the read and want the code point given separately.
-
-**Two equations are both in the scene and the animation moves one onto the other.** A mark that
-arrives part way through a span turns up in a frame-to-frame comparison as something that changed,
-which is what `flash` and `circumscribe` are written around, so the expression being left and the
-expression being arrived at are both in the list at every time. The animation is handed the whole
-flat list, so it can find both by name.
-
-**The colour reader queued below the items is not wanted by this.** A glyph with no partner leaves by
-its opacity, and a glyph with one keeps its own colour the whole way, so nothing here walks between
-two colours. It stays queued for whatever asks for it first.
-
-#### The steps
-
-**1. Done. Which glyph of one expression is which glyph of the other.** A pure function over two lists of
-marks that hands back the pairs and the two lists of what is left over. The pairing is the longest
-common subsequence of the two token sequences, which is the published algorithm for the longest run
-of items that appears in both lists in the same order. It is exact rather than a heuristic, and
-matching in order is what stops the `x` of a numerator pairing with the `x` of a right-hand side.
-
-*Measures:* `\frac{dy}{dx} = 0` against `\frac{dy}{dx} = 2x` gives 6 pairs, 1 left over on the left
-and 2 on the right. An expression against itself pairs every mark and leaves none. Two expressions
-with no token in common give no pairs. An expression against one with a repeated glyph pairs each
-occurrence once rather than pairing both to the same partner.
-
-*Measured:* `\frac{dy}{dx} = 0` against `\frac{dy}{dx} = 2x` gives 6 pairs on `1D451 1D466 1D451
-1D465 rule 3D`, leaves `30` behind and brings `32 1D465`. `e^{i\pi} + 1 = 0` against itself pairs all
-7 and leaves none. Two expressions sharing no token give none. `x + x` against `x` gives one pair and
-leaves the other `x` behind. Three tokens against the same three moved gives 2 pairs, since pairing
-the third would cross another pair. The suite is 372 tests in 741 ms, against 364 in 745 ms.
-
-**2. Done. The animation that walks one expression into the other.** It takes the name of the expression
-being left and the name of the one being arrived at. Both expressions are in the list at every
-fraction, so the count does not move.
-
-**A paired glyph is drawn once rather than cross-faded**, which is a correction to the line this step
-replaced. Cross-fading a pair draws both of them through the whole middle of the span, and two copies
-of one letter sitting on each other at half opacity is a ghost rather than a letter. So the glyph
-from the expression being left carries the walk and keeps its own opacity, and its partner stays at
-nothing the whole way. At the end of the span it is standing exactly on its partner, so the picture
-is the expression being arrived at and no swap has to happen at any moment.
-
-An unpaired mark on the left fades out and one on the right fades in, by multiplying the opacity it
-already has rather than by setting one, so an equation that is still fading in when a morph starts
-does not jump to solid.
-
-*Measures:* the mark count is the same at every fraction of the span and at both ends. At 0 the
-expression being left is at the opacity it was written with and every mark of the other is at
-nothing. At 1 the paired glyphs are the ones from the left carrying the right's shapes, the marks
-only the left has are at nothing, and the marks only the right has are at full. A paired glyph at 0.5
-starts half way between the two starts, to within 1e-12.
-
-*Measured:* 15 marks at every fraction of the span and at both ends. At 0 all 7 marks of the
-expression being left are at full and all 8 of the other are at nothing. At 1 each of the 6 paired
-glyphs stands on its partner to within 1e-12, the 1 mark only the left has is at nothing and the 2
-only the right has are at full. At 0.5 a paired glyph starts half way between the two starts to
-within 1e-12, and no mark of the expression being arrived at is drawn at full. A scene already at 0.4
-opacity arrives at 0.4 rather than at 1. The suite is 379 tests in 740 ms, against 372 in 741 ms.
-
-**3. Done. An equation placed by an edge rather than by its middle.** `equationNode` centres the box the
-typesetter measured on the point it is given, so two expressions placed at one point are centred
-against each other. `\frac{dy}{dx} = 0` draws 0.977 wide at the demo's own size and
-`\frac{dy}{dx} = 2x` draws 1.143, both at the same height and the same glyph size, so centring slides
-the part they share sideways by 0.083 as the difference arrives. That is the one thing the morph
-promises not to do. The placement gains the `align` a text mark already has, and the demo asks for
-the start rather than the middle.
-
-*Measures:* the same expression placed at one point three ways has its left edge, its middle and its
-right edge on that point, each to within 1e-12. The two expressions above, both placed at one point
-by their start, put their shared glyphs at the same places to within 1e-12, against 0.083 apart
-centred.
-
-*Measured:* the three placements sit half the drawn width apart from each other, to within 1e-12, and
-the one hung by its start puts its ink 0.035 inside the point, which is the side bearing the
-typesetter measured into its box. The two expressions placed by their start put every shared glyph
-within 1e-12 of the same place, against 0.083 apart centred. Naming the middle draws what naming
-nothing draws. The suite is 382 tests in 747 ms, against 379 in 740 ms.
-
-**4. Done. The flat demo morphs at the stationary point.** The reading currently draws
-`\frac{dy}{dx} = 2x` at every time. It becomes `\frac{dy}{dx} = 0` while the walk is held at the
-stationary point, and morphs into `\frac{dy}{dx} = 2x` as the dot leaves it. This is the step the
-demos gain from, and the expression pair is the one measured above.
-
-*Measures:* the demo's mark count at every named time, which is 93 now and 93 plus the second
-expression's 7 afterwards. The committed pictures' byte counts, which are 37,265 and 147,624 now.
-The suite's duration, 745 ms over 364 tests now.
-
-*Measured:* the demo draws 100 marks at every named time, against 93. At the beat the `0` of the
-first rule is drawn and the `2` and the `x` of the second are at nothing, and by the end of the morph
-that is the other way round. The six glyphs the two rules share stand in the same place at both ends
-to within 1e-12. The committed still went from 37,265 to 49,971 bytes and the strip from 147,624 to
-203,664, and the strip's second and third frames show the morph in a still. The suite is 384 tests in
-880 ms, against 382 in 747 ms.
-
-**5. The cut.** The version goes to 0.7.0, the README gains the paragraph, and this entry is deleted.
-The website moves after the release rather than before it, and its cached geometry needs no rebuild,
-because the ids it already stores are what the matching reads.
-
-#### Done when
-
-- `npm test`, `npm run type-check` and `npm run build` all pass.
-- The matching gives the pair counts above, and pairs each occurrence of a repeated glyph once.
-- The morph holds the mark count still across its whole span.
-- A paired glyph is half way between its two places at half way through, and is drawn once rather
-  than as two copies at half opacity.
-- An equation placed by its start, its middle and its end puts that edge on the point it was given.
-- The flat demo morphs at the stationary point with its shared glyphs standing still, and
-  `npm run demos` leaves the committed files unchanged.
-- `index.ts` exports the matching, the animation and their types, and nothing reaches a file inside
-  this package by path.
 
 ### Braces, a number that counts, boolean operations on paths, 0.8.0
 
