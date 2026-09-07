@@ -168,16 +168,22 @@ at that instant is one thing rather than another.
 
 #### The steps
 
-**1. Where two cubics cross.** Recursive subdivision on the boxes round two curves: two curves whose
-boxes miss cannot cross, and two curves whose boxes are smaller than the tolerance are one crossing.
-The parameters that come back are clustered, so a near-tangency that splits into a cloud of hits is
-reported once.
+**1. Where two cubics cross.** Done. `curveCrossings` in `figure/intersect.ts`, exported.
 
-*Measures:* two straight cubics crossing at a point worked out by hand agree to within 1e-12, which
-is exact because a straight cubic is a line. Two circles a known distance apart cross at the two
-points the closed form gives, to within the error the cubic circle already carries, which is between
-2.6 and 2.8 parts in ten thousand of the radius. Two circles far apart give none, and one inside
-another gives none. Two circles touching at one point give one crossing rather than a cloud.
+*Measured:* two straight cubics crossing at (1, 1) and at (1, 0) land on the fraction along each
+piece exactly, 0.5 and 0.25, so the crossing agrees to 1e-12 with room to spare. Two circles of
+radius 1 whose centres are 1 apart cross 1.924e-4 from the two points the closed form gives, inside
+the 2.8e-4 the cubic circle carries. Circles 5 apart give none, one inside another gives none, and
+two circles 1e-4 apart whose boxes overlap give none. A touch at one point comes back as one
+crossing 6.6e-7 from it, and a tangency in the middle of a piece as one crossing at the tangent
+point itself, where the search found 13954 hits.
+
+*Two things the plan did not say.* A box holds more than the curve inside it, so a pair small enough
+to answer is kept only when the straight runs across the two pieces come within the tolerance, and
+without that a tangency answered 113 crossings instead of one. Clustering is by which stretches of
+the two curves touch rather than by how close two hits are, since a hit is only as placed as the
+tolerance. The tolerance is 1e-6 rather than something finer because Newton's method on the pair
+supplies the sharpness, so a finer search buys nothing and costs a tangency 30 times the work.
 
 **2. A path cut at those crossings.** Every crossing splits the piece it lands in, by de Casteljau,
 which `morph.ts` already does for one cut and this needs for several in a row.
