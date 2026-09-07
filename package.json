@@ -1,6 +1,6 @@
 {
   "name": "@altpsyche/maths",
-  "version": "0.9.2",
+  "version": "0.9.3",
   "description": "The mathematics AltPsyche's figures are drawn from: vectors, matrices, curves, and a value walked over time.",
   "license": "MIT",
   "author": "Siva",

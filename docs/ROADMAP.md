@@ -137,7 +137,8 @@ one thing that hides defects, a handful of small gaps, and a picture that reads 
 is a patch bump, worked in the order below. 0.9.1 is cut: two pieces covering the same stretch are
 answered by its two ends, and a shared edge is kept by which way the two paths run over it. 0.9.2 is
 cut: a stitch that will not close stops, a flattening finer than a million points stops, and the
-crossing search counts the pairs it makes rather than the pairs it looks at.
+crossing search counts the pairs it makes rather than the pairs it looks at. 0.9.3 is cut: one stated
+tolerance, every name on the door named by a test, and four doc lines corrected.
 
 **What the audit found sound**, so that a later session does not go looking again. Sixty random pairs
 of shapes with no coincident edges hold both `area(A) + area(B) = area(A or B) + area(A and B)` and
@@ -145,18 +146,6 @@ of shapes with no coincident edges hold both `area(A) + area(B) = area(A or B) +
 answer 4.11e-4 of the closed form, the same share at every one, so nothing there turns on the
 tolerance being an absolute distance. Two 400-piece paths unite in 48ms, so the crossing search needs
 no box test in front of it and the quadratic over piece pairs is not worth removing.
-
-#### 0.9.3, the small gaps
-
-**Done.** Seven of them, together, since each was a line or two.
-
-*Measured:* the tolerance is stated once in `figure/tolerance.ts` and the four calls that take one
-fall back to it, where it was written four times at two different values. Every one of the 111 names
-the door hands out is now named by a test, where three were not. A crossing's point says which curve
-it is read off and how far the other one's fraction can land from it. `containsPoint` says what
-flattening again costs and what to do instead. The README says how a shared edge is combined and what
-a stitch that will not close does, where it said the answer was decided by the tolerance. The two
-comments that named an identifier say the thing instead.
 
 #### 0.9.4, the pictures
 
