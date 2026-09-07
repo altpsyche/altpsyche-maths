@@ -208,7 +208,7 @@ would have been 12.23 wide against a box 2 wide. The same equation placed at two
 that compare equal and transforms that do not, which is what says the glyphs keep the typesetter's
 own numbers. The suite is 364 tests in 541 ms, against 360 in 547 ms.
 
-**5. The flat demo gains its equation.** `demos/tangent.ts` draws the slope's equation beside the
+**5. Done. The flat demo gains its equation.** `demos/tangent.ts` draws the slope's equation beside the
 number it already reads, which is `\frac{dy}{dx} = 2x` for the parabola it plots. The equation fades
 in with the rest of the picture, and the committed SVG files are regenerated. This is the step the
 demos gain from, and it is the expression 0.7.0 morphs at the stationary point.
@@ -220,6 +220,12 @@ typesets when it loads.
 
 *If the suite grows past about two seconds*, the demo commits its geometry the way the website does
 and only `npm run demos` typesets. The measurement decides it rather than a preference.
+
+*Measured:* the demo draws 93 marks at every named time, against 85, and the eight new ones are the
+seven glyphs of `\frac{dy}{dx} = 2x` and its fraction bar. The committed still went from 20,992 to
+37,265 bytes and the strip from 76,556 to 147,624, because a glyph is an outline rather than a
+letter. The suite is 364 tests in 745 ms against 364 in 541 ms, so the demo keeps typesetting when it
+loads and commits no geometry.
 
 **6. The cut.** The version goes to 0.6.0, the README gains the paragraph and the still that shows an
 equation, and this entry is deleted. The website drops its three files and calls this package

@@ -9,6 +9,9 @@
  * draw on, their labels come in one after another, the curve draws, the dot
  * grows out of the origin, and the dot is indicated at the stationary point with
  * its reading boxed. Then the dot walks the curve and flashes at the top.
+ *
+ * At 0.6.0 the reading gains the rule it comes from, typeset once when this
+ * module loads. The number beside it is the same rule with a value put in.
  */
 import {
   areaUnder,
@@ -17,6 +20,8 @@ import {
   coordsOf,
   dot,
   draw,
+  equationFromTex,
+  equationNode,
   fadeIn,
   flash,
   fractionOf,
@@ -73,6 +78,16 @@ const walkPath = plot(coords, curve, { over: interval(0, 3) });
 
 const START = pointAlong(walkPath, 0) ?? vec2(0, 0);
 
+/** The rule the reading is a value of, typeset when this module loads rather
+ * than at every frame, since the geometry is the same at every time. */
+const slopeRule = await equationFromTex('\\frac{dy}{dx} = 2x');
+
+/** The equation's middle and the box it is fitted inside. The height is what
+ * binds, so it draws 1.14 wide and its left edge sits under the reading's. */
+const RULE_AT = fractionOf(extent, 0.105, 0.79);
+const RULE_WIDTH = 1.2;
+const RULE_HEIGHT = 0.6;
+
 /** Every label along the x axis, named after the number it shows, which is what
  * lets them arrive one after another. */
 const acrossLabels = ['-1', '0', '1', '2', '3', '4'].map((label) => `tangent/axes/x/labels/${label}`);
@@ -98,6 +113,7 @@ export function sceneAt(along: number): Node {
     text('reading', fractionOf(extent, 0.05, 0.9), `slope ${labelFor(slopeOf(curve, x), 0.01)}`, 0.34, {
       fill: ink,
     }),
+    equationNode('equation', slopeRule, { at: RULE_AT, width: RULE_WIDTH, height: RULE_HEIGHT, fill: ink }),
   ]);
 }
 
@@ -123,7 +139,11 @@ const entrance = Timeline.empty()
   .play(fadeIn('tangent/axes/y/labels'), 0.4, { after: -0.4 })
   .play(draw('tangent/curve'), 0.9, { after: -0.1 })
   .play(growFrom('tangent/point', pointOf(coords, 0, 0)), 0.4, { after: -0.2 })
-  .together([fadeIn('tangent/area'), fadeIn('tangent/tangent'), fadeIn('tangent/reading')], 0.5, { after: -0.1 });
+  .together(
+    [fadeIn('tangent/area'), fadeIn('tangent/tangent'), fadeIn('tangent/reading'), fadeIn('tangent/equation')],
+    0.5,
+    { after: -0.1 }
+  );
 
 /** The beat at the stationary point, where the slope is nothing and the reading
  * says so. */

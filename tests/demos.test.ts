@@ -42,11 +42,12 @@ describe('the committed pictures', () => {
 });
 
 describe('the flat demo', () => {
-  it('draws the same 85 marks at every time', () => {
-    // Seventy-four the scene writes, the box round the reading, and ten rays.
-    // Nothing arrives or leaves part way through, which is what lets one frame
-    // be compared against another at all.
-    for (const seconds of [0, ...FRAMES, durationOf(tangent)]) expect(at(tangent, seconds)).toHaveLength(85);
+  it('draws the same 93 marks at every time', () => {
+    // Eighty-two the scene writes, of which eight are the equation's glyphs and
+    // its fraction bar, plus the box round the reading and ten rays. Nothing
+    // arrives or leaves part way through, which is what lets one frame be
+    // compared against another at all.
+    for (const seconds of [0, ...FRAMES, durationOf(tangent)]) expect(at(tangent, seconds)).toHaveLength(93);
   });
 
   it('arrives rather than appearing', () => {
@@ -159,7 +160,7 @@ describe('the flat demo', () => {
 describe('the strip of frames', () => {
   it('carries every frame with no two marks sharing an id', () => {
     const { marks } = stripMarks(FRAMES);
-    expect(marks).toHaveLength(85 * FRAMES.length);
+    expect(marks).toHaveLength(93 * FRAMES.length);
     expect(new Set(marks.map((mark) => mark.id)).size).toBe(marks.length);
   });
 
