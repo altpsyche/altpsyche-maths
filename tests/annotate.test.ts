@@ -40,6 +40,12 @@ describe('arrow', () => {
     expect(paths(two)[1].fill).toEqual({ colour: '#f00' });
   });
 
+  it('never draws a head longer than the arrow itself', () => {
+    const stubby = flatten(arrow('a', vec2(0, 0), vec2(0.2, 0), { stroke: pen, head: 1 }));
+    expect(ends(paths(stubby)[0]).x).toBeCloseTo(0, 10);
+    expect(paths(stubby)[1].path[0].start).toEqual({ x: 0.2, y: 0 });
+  });
+
   it('points whichever way it was aimed', () => {
     const up = flatten(arrow('a', vec2(0, 0), vec2(0, 10), { stroke: pen }));
     expect(paths(up)[1].path[0].start).toEqual({ x: 0, y: 10 });

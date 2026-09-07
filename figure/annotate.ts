@@ -31,9 +31,12 @@ export interface ArrowOptions {
  *
  * The shaft stops where the head begins rather than running under it, because a
  * shaft drawn to the point shows through a head that is not fully opaque.
+ *
+ * The head is never longer than the arrow. A head longer than that puts its own
+ * base behind the tail, which draws the shaft pointing back the way it came.
  */
 export function arrow(name: string, from: Vec2, to: Vec2, options: ArrowOptions): GroupNode {
-  const head = options.head ?? options.stroke.width * 4;
+  const head = Math.min(options.head ?? options.stroke.width * 4, vec2.distance(from, to));
   const spread = options.spread ?? 0.6;
   const along = vec2.normalize(vec2.sub(to, from));
   const base = vec2.sub(to, vec2.scale(along, head));

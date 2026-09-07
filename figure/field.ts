@@ -89,13 +89,10 @@ export function vectorField(
       const along = vec2.sub(pointOf(coords, x + vector.x, y + vector.y), from);
       if (!(vec2.magnitude(along) > 0)) continue;
       const to = vec2.add(from, vec2.scale(vec2.normalize(along), length));
-      // A head longer than the arrow would put the base of the head behind the
-      // tail, which draws the shaft pointing the other way.
-      const head = Math.min(options.head ?? options.width * 4, vec2.distance(from, to));
       children.push(
         arrow(`${column}-${row}`, from, to, {
           stroke: { colour: options.colourFor(magnitude), width: options.width },
-          head,
+          head: options.head,
           spread: options.spread,
         })
       );
