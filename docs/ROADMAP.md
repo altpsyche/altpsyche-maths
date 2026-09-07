@@ -311,11 +311,38 @@ demo is recompiled by steps 6 and 7 against the renamed door.
   93 types to 135 and 94; the suite from 593 tests to 608; all eight sheets identical, since no still
   and no strip frame lands inside the flat demo's own indicate span.
 
-- [ ] **5. The door read, name by name.** No code. `index.ts` exports 132 values and 93 types across
-  89 lines, plus whatever step 4 added. For each name the read answers three questions: is it the name
-  a caller would guess, does it belong at the door at all, and is it the same idea as another name
-  already there. The verdict is written into this entry as a table, so step 6 applies a list rather
-  than a judgement. **Measures:** names read, and the count marked rename, remove and keep.
+- [x] **5. The door read, name by name.** All 229 names were read against the three questions. Two
+  do not belong at the door and ten are not the name a caller would guess. Five groups looked wrong
+  and turned out to be right, and they are written down so a later read does not go over them again.
+  The renames are not applied here: they reach the site and the README, so step 6 applies whichever
+  of them Siva takes.
+
+  **Two that do not belong.** `OrthographicOptions` and `PerspectiveOptions` come out of
+  `values/mat4.ts` and nothing in this tree, in the tests or in the demos names either of them. Both
+  exist only as the parameter type of a call whose every caller passes a literal, so freezing them
+  freezes two names no consumer has a use for.
+
+  | name | which question it fails | what it would become |
+  | --- | --- | --- |
+  | `at` | the name a caller would guess | `marksAt`, since `viewAt` beside it says what it reads |
+  | `space` | says what it does | `scene3`; the call orders pieces back to front and its name says a place |
+  | `slopeOn` | two ideas under one name, beside `slopeOf` | `tangentOn`, which is the direction it returns |
+  | `scaled` and `unscaled` | which way round they go | `toUnits` and `toGraph` |
+  | `pathData` | which way it goes, beside `pathFromData` | `pathToData` |
+  | `equationMarks` | says what it returns | `equationOf`; it hands back an `Equation`, not marks |
+  | `loops` | reads as a noun for the loops of a thing | `isLoop` |
+  | `frameTimes` | the pattern its own partner uses | `frameTimesOf`, beside `framesOf` |
+  | `Values` | too broad for a door | `TrackValues` |
+  | `Edge` | too broad for a door | `FlatEdge` |
+
+  **Five that read as wrong and are not.** `pointOn`, `pointOf` and `pointAlong` are three ideas
+  whose first argument says which is which, a curve, a coords and a path, and renaming them buys a
+  reader nothing. `boundsOf` and `boundsOfMarks` are one idea over two types, and one call taking a
+  union would be worse to read than two names. `flatten` and `flattenPath` flatten different things,
+  a tree of nodes and a path of curves, and both names say which. `TOLERANCE` is broad but it is the
+  one default this package has. `SAME_TIME` is odd and is the idea it names.
+
+  **Measured:** 229 names read, 2 marked remove, 10 marked rename, 217 marked keep.
 
 - [ ] **6. The door verdict applied.** Every rename and removal in one commit, because a rename split
   across two commits leaves the door disagreeing with the file it points at. **Measures:** names at
