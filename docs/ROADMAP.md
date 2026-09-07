@@ -224,11 +224,15 @@ resumes at the first unticked one.
       three quarters at 0.8: a grid line drawn where nothing is. It rounds to twelve digits instead,
       which drops the noise the multiplication leaves and shifts no value a step of any size lands
       on. No tick ever moved, because a tick's step is always a round number.
-- [ ] **7. `plot`.** A function of one number sampled over an interval into a path, at a fixed count.
-      Measurement: the largest distance from the sampled path to the true curve, taken at the midpoint
-      of every segment, for the demo's curve and for a sine over two turns, at sixteen, sixty-four and
-      two hundred and fifty-six samples. The default is the count that reading those three makes
-      obvious rather than a guess.
+- [x] **7. `plot`.** A function of one number sampled over an interval into a path, at a fixed count,
+      the samples joined by cubics that leave each one at the slope the function has there.
+      **Landed.** The largest gap from the true curve, at the middle of every piece, in figure units:
+      a sine over two turns reads 5.4e-2 at 16 samples, 1.1e-3 at 64 and 1.8e-5 at 256, against
+      1.7e-1, 1.2e-2 and 7.2e-4 for straight pieces between the same samples. The demo's parabola
+      reads exact at every count, because a cubic holds a quadratic with nothing left over once the
+      end slopes use the three-point difference rather than the two-point one, which left it 3.7e-4
+      out. The default is 96, where a sine over two turns is 3.3e-4 figure units out, under a tenth
+      of a pixel at 2160 across the demo's extent.
 - [ ] **8. A plotted curve stays inside its own axes.** A sample that is not finite ends the subpath,
       and so does a sample outside the y interval, with the next sample that is back inside starting
       a new one. Measurement: the subpath count for one over x across zero, for tangent over two
