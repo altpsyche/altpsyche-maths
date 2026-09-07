@@ -17,6 +17,7 @@ import { smoothstep } from '../values/ease.js';
 import { circle, line, polygon, transformPath, type Path } from './path.js';
 import { trimPath } from './trim.js';
 import { lerpPath } from './morph.js';
+import { matchGlyphs } from './equation-match.js';
 import { pointAlong } from './length.js';
 import { boundsOfMarks, centreOf } from './bounds.js';
 import { interval } from '../values/interval.js';
@@ -85,6 +86,43 @@ export function morph(target: string, into: Path): Animation {
     if (mark.kind === 'text') return mark;
     return { ...mark, path: lerpPath(mark.path, into, along) };
   });
+}
+
+/**
+ * One typeset expression walked into another, the shared glyphs staying put and
+ * only the difference moving.
+ *
+ * Both expressions are in the scene at every time and this moves one onto the
+ * other. A mark that arrived part way through a span would turn up in a
+ * comparison between two frames as something that changed, which is what a flash
+ * keeps its rays for.
+ *
+ * A paired glyph is drawn once rather than cross-faded. Two copies of one letter
+ * sitting on each other at half opacity through the middle of the span is a
+ * ghost, so the glyph being left carries the walk and its partner stays at
+ * nothing. At the end it is standing exactly on its partner, so nothing has to be
+ * swapped at any moment.
+ *
+ * An unpaired mark has its own opacity multiplied rather than set, so an
+ * expression still fading in when a morph starts does not jump to solid.
+ */
+export function morphEquation(from: string, to: string): Animation {
+  return (marks, along) => {
+    const leaving = marks.filter((mark) => touches(mark.id, from));
+    const arriving = marks.filter((mark) => touches(mark.id, to));
+    if (leaving.length === 0 || arriving.length === 0) return marks;
+
+    const changed = new Map<string, Mark>();
+    for (const [left, right] of matchGlyphs(leaving, arriving).pairs) {
+      changed.set(left.id, { ...left, path: lerpPath(left.path, right.path, along) });
+      changed.set(right.id, { ...right, opacity: 0 });
+    }
+    const faded = (mark: Mark, to: number) => ({ ...mark, opacity: (mark.opacity ?? 1) * to });
+    for (const mark of leaving) if (!changed.has(mark.id)) changed.set(mark.id, faded(mark, 1 - along));
+    for (const mark of arriving) if (!changed.has(mark.id)) changed.set(mark.id, faded(mark, along));
+
+    return marks.map((mark) => changed.get(mark.id) ?? mark);
+  };
 }
 
 /** A mark's own opacity walked to a value, for a figure that wants a thing dimmed

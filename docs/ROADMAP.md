@@ -168,15 +168,33 @@ occurrence once rather than pairing both to the same partner.
 leaves the other `x` behind. Three tokens against the same three moved gives 2 pairs, since pairing
 the third would cross another pair. The suite is 372 tests in 741 ms, against 364 in 745 ms.
 
-**2. The animation that walks one expression into the other.** It takes the name of the expression
-being left and the name of the one being arrived at. A paired glyph walks its path into its
-partner's and fades as its partner arrives. An unpaired glyph on the left fades out and one on the
-right fades in. Both expressions are in the list at every fraction, so the count does not move.
+**2. Done. The animation that walks one expression into the other.** It takes the name of the expression
+being left and the name of the one being arrived at. Both expressions are in the list at every
+fraction, so the count does not move.
 
-*Measures:* the mark count is the same at every fraction of the span and at both ends. At 0 every
-mark of the left expression is at the opacity it was written with and every mark of the right is at
-nothing, and at 1 the reverse. A paired glyph at 0.5 sits between the two, measured as the distance
-from its start and its end being within a part in a thousand of half the distance between them.
+**A paired glyph is drawn once rather than cross-faded**, which is a correction to the line this step
+replaced. Cross-fading a pair draws both of them through the whole middle of the span, and two copies
+of one letter sitting on each other at half opacity is a ghost rather than a letter. So the glyph
+from the expression being left carries the walk and keeps its own opacity, and its partner stays at
+nothing the whole way. At the end of the span it is standing exactly on its partner, so the picture
+is the expression being arrived at and no swap has to happen at any moment.
+
+An unpaired mark on the left fades out and one on the right fades in, by multiplying the opacity it
+already has rather than by setting one, so an equation that is still fading in when a morph starts
+does not jump to solid.
+
+*Measures:* the mark count is the same at every fraction of the span and at both ends. At 0 the
+expression being left is at the opacity it was written with and every mark of the other is at
+nothing. At 1 the paired glyphs are the ones from the left carrying the right's shapes, the marks
+only the left has are at nothing, and the marks only the right has are at full. A paired glyph at 0.5
+starts half way between the two starts, to within 1e-12.
+
+*Measured:* 15 marks at every fraction of the span and at both ends. At 0 all 7 marks of the
+expression being left are at full and all 8 of the other are at nothing. At 1 each of the 6 paired
+glyphs stands on its partner to within 1e-12, the 1 mark only the left has is at nothing and the 2
+only the right has are at full. At 0.5 a paired glyph starts half way between the two starts to
+within 1e-12, and no mark of the expression being arrived at is drawn at full. A scene already at 0.4
+opacity arrives at 0.4 rather than at 1. The suite is 379 tests in 740 ms, against 372 in 741 ms.
 
 **3. The flat demo morphs at the stationary point.** The reading currently draws
 `\frac{dy}{dx} = 2x` at every time. It becomes `\frac{dy}{dx} = 0` while the walk is held at the
@@ -196,7 +214,8 @@ because the ids it already stores are what the matching reads.
 - `npm test`, `npm run type-check` and `npm run build` all pass.
 - The matching gives the pair counts above, and pairs each occurrence of a repeated glyph once.
 - The morph holds the mark count still across its whole span.
-- A paired glyph is half way between its two places at half way through.
+- A paired glyph is half way between its two places at half way through, and is drawn once rather
+  than as two copies at half opacity.
 - The flat demo morphs at the stationary point, and `npm run demos` leaves the committed files
   unchanged.
 - `index.ts` exports the matching, the animation and their types, and nothing reaches a file inside
