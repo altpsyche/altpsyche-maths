@@ -40,18 +40,19 @@ import {
 } from '../index.js';
 
 const ink = { colour: '#1b1b1b' };
-const faint = { colour: '#1b1b1b', width: 0.014 };
-const walker = { colour: '#0369a1', width: 0.014 };
-const drawn = { colour: '#c2410c', width: 0.04 };
+const still = { colour: '#6b7280', width: 0.018 };
+const walker = { colour: '#0369a1', width: 0.018 };
 const wash = { colour: '#fdba74' };
 
-const extent: Extent = { width: 10.8, height: 6 };
+/** Three panels across, and only as tall as they need to be. A frame twice the
+ * height of its own picture is a picture floating in white. */
+const extent: Extent = { width: 10.8, height: 4 };
 
 /** How far apart the three panels stand, which is also how wide each of them
  * is, so the walk reaching the edge of one reaches the edge of its neighbour. */
 const PANEL = 3.6;
 
-const DISC_Y = 0.55;
+const DISC_Y = 0.5;
 const LABEL_Y = -1.35;
 
 /** The still disc and the walking one. The walker is the smaller of the two
@@ -93,9 +94,12 @@ export function sceneAt(apart: number): Node {
       const middle = (at - 1) * PANEL;
       const first = circle(vec2(middle, DISC_Y), BIG);
       const second = circle(vec2(middle + apart, DISC_Y), SMALL);
+      // The answer is shaded and the two discs are outlined over it. Stroking
+      // the answer as well hid both outlines under it, so a reader saw an orange
+      // shape and no longer saw the two discs it came from.
       return group(panel.name, [
-        group('discs', [shape('first', first, { stroke: faint }), shape('second', second, { stroke: walker })]),
-        shape('result', panel.combine(first, second), { fill: wash, stroke: drawn }),
+        shape('result', panel.combine(first, second), { fill: wash }),
+        group('discs', [shape('first', first, { stroke: still }), shape('second', second, { stroke: walker })]),
         text('label', vec2(middle, LABEL_Y), panel.label, 0.3, { fill: ink, align: 'middle' }),
       ]);
     })
@@ -149,27 +153,41 @@ export function timeApart(apart: number): number {
 export const booleans: Figure = {
   extent,
   duration: line.duration,
-  still: timeApart(-0.6),
+  still: timeApart(-0.95),
   tracks: { apart: walk },
   timeline: line,
   scene: (_seconds, values) => sceneAt(values.apart as number),
 };
 
-/** How much wider each frame's slot is than the figure, so a strip of them has
- * white between the frames rather than one panel running into the next. */
+/** How much wider and taller each frame's slot is than the figure, so a sheet of
+ * them has white between the frames rather than one panel running into the
+ * next. */
 export const SLOT = 11.4;
+export const DOWN = 4.4;
 
-/** Several times of one figure side by side, as one list of marks, each frame's
- * marks carried sideways and renamed so no two frames share an id. */
-export function stripMarks(times: readonly number[]): { marks: readonly Mark[]; extent: Extent } {
+/**
+ * Several times of one figure laid out together, as one list of marks, each
+ * frame's marks carried into its own slot and renamed so no two frames share an
+ * id.
+ *
+ * The frames go in rows rather than in one line, because a figure three panels
+ * wide repeated four times across is eleven times wider than it is tall, and at
+ * the width a page gives it each panel comes out too small to read.
+ */
+export function stripMarks(
+  times: readonly number[],
+  columns = times.length
+): { marks: readonly Mark[]; extent: Extent } {
+  const rows = Math.ceil(times.length / columns);
   const marks = times.flatMap((seconds, frame) => {
-    const across = (frame - (times.length - 1) / 2) * SLOT;
-    return moveBy('booleans', vec2(across, 0))(marksAt(booleans, seconds), 1).map((mark) => ({
+    const across = ((frame % columns) - (columns - 1) / 2) * SLOT;
+    const up = ((rows - 1) / 2 - Math.floor(frame / columns)) * DOWN;
+    return moveBy('booleans', vec2(across, up))(marksAt(booleans, seconds), 1).map((mark) => ({
       ...mark,
       id: `at${frame}/${mark.id}`,
     }));
   });
-  return { marks, extent: { width: SLOT * times.length, height: extent.height } };
+  return { marks, extent: { width: SLOT * columns, height: DOWN * rows } };
 }
 
 /** What the timeline is made of, and the four distances the gate reads the

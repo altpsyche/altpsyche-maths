@@ -42,6 +42,10 @@ export interface NumberLineOptions {
   /** Leaves the label at zero out, which is what a second axis crossing here
    * wants, since both would otherwise write the same number in the same place. */
   skipZero?: boolean;
+  /** The number on this line another line crosses it at. The label there is
+   * written below and to the left of the crossing rather than under it, since
+   * under it is where the other line and its head already are. */
+  crossedAt?: number;
 }
 
 /** A head pointing along the line, apex at the end and base back along it. */
@@ -70,16 +74,19 @@ export function numberLine(name: string, scale: Scale, options: NumberLineOption
   const { from: low, to: high } = interval.ordered(scale.units);
   const at = (along: number, off: number): Vec2 => (across ? vec2(along, seat + off) : vec2(seat + off, along));
 
-  // The line stops where a head begins rather than running under it, because a
-  // line drawn to the point shows through a head that is not fully opaque.
-  const parts: Node[] = [shape('line', line(at(low + tip, 0), at(high - tip, 0)), { stroke: options.stroke })];
+  // The line runs the whole of the axis and each head stands beyond its end,
+  // rather than the heads eating into the line. Eating in leaves the outermost
+  // tick standing under a head instead of on the line, and the line still stops
+  // where a head begins, so a head that is not fully opaque has nothing showing
+  // through it.
+  const parts: Node[] = [shape('line', line(at(low, 0), at(high, 0)), { stroke: options.stroke })];
 
   if (tip > 0 && options.fill) {
     const spread = options.spread ?? 0.6;
     parts.push(
       group('tips', [
-        shape('low', head(at(low, 0), at(low + tip, 0), spread), { fill: options.fill }),
-        shape('high', head(at(high, 0), at(high - tip, 0), spread), { fill: options.fill }),
+        shape('low', head(at(low - tip, 0), at(low, 0), spread), { fill: options.fill }),
+        shape('high', head(at(high + tip, 0), at(high, 0), spread), { fill: options.fill }),
       ])
     );
   }
@@ -100,20 +107,25 @@ export function numberLine(name: string, scale: Scale, options: NumberLineOption
   if (options.fill && size > 0) {
     // Placed by an anchor and an alignment and never by how wide the text is,
     // so a long label moves nothing else in the figure.
-    const align = across ? 'middle' : 'end';
-    const baseline = across ? 'hanging' : 'middle';
     const written = marked.filter((tick) => !(options.skipZero && tick.value === 0));
+    const off = half + gap;
     parts.push(
       group(
         'labels',
         written.map((tick) => {
           const along = interval.remap(tick.value, scale.graph, scale.units);
-          return text(tick.label, at(along, -(half + gap)), tick.label, size, {
+          const crossed = options.crossedAt !== undefined && tick.value === options.crossedAt;
+          const anchor = crossed
+            ? across
+              ? vec2(along - off, seat - off)
+              : vec2(seat - off, along - off)
+            : at(along, -off);
+          return text(tick.label, anchor, tick.label, size, {
             fill: options.fill,
             family: options.family,
             weight: options.weight,
-            align,
-            baseline,
+            align: crossed || !across ? 'end' : 'middle',
+            baseline: crossed || across ? 'hanging' : 'middle',
           });
         })
       )
@@ -140,7 +152,12 @@ export function axes(name: string, coords: Coords, options: AxesOptions): GroupN
   const holdsOrigin = interval.holds(coords.x.graph, 0) && interval.holds(coords.y.graph, 0);
   const seat = (scale: Scale) => scaled(scale, interval.clampTo(scale.graph, 0));
   return group(name, [
-    numberLine('x', coords.x, { ...options, at: seat(coords.y), direction: 'across' }),
+    numberLine('x', coords.x, {
+      ...options,
+      at: seat(coords.y),
+      direction: 'across',
+      crossedAt: holdsOrigin ? 0 : undefined,
+    }),
     numberLine('y', coords.y, { ...options, at: seat(coords.x), direction: 'up', skipZero: holdsOrigin }),
   ]);
 }
@@ -154,6 +171,10 @@ export interface NumberPlaneOptions {
   /** How much of the stroke a minor line is drawn with, since a grid a reader
    * notices is a grid competing with the curve on top of it. */
   minorOpacity?: number;
+  /** How wide a minor line is against a major one. A minor line that differs
+   * only in how strong its ink is reads as the same line, so the grid comes out
+   * flat and busy. */
+  minorWidth?: number;
   ticks?: number;
 }
 
@@ -200,7 +221,12 @@ export function numberPlane(name: string, coords: Coords, options: NumberPlaneOp
           group('x', gridLines(coords, step.x / minors, 'x', step.x)),
           group('y', gridLines(coords, step.y / minors, 'y', step.y)),
         ],
-        { style: { stroke: options.stroke, opacity: options.minorOpacity ?? 0.4 } }
+        {
+          style: {
+            stroke: { ...options.stroke, width: options.stroke.width * (options.minorWidth ?? 0.6) },
+            opacity: options.minorOpacity ?? 0.4,
+          },
+        }
       )
     );
   }

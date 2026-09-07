@@ -9,6 +9,19 @@ const up = scaleOf(interval(-1, 9), interval(-2.4, 2.4));
 const ids = (marks: readonly Mark[]) => marks.map((mark) => mark.id);
 const find = (marks: readonly Mark[], id: string) => marks.find((mark) => mark.id === id)!;
 
+describe('a grid', () => {
+  it('draws its minor lines thinner than its major ones, not only fainter', () => {
+    // A minor line that differs only in how strong its ink is reads as the same
+    // line, so the grid comes out flat and busy.
+    const marks = flatten(numberPlane('grid', coordsOf(across, up), { stroke: pen, minors: 4 }));
+    const major = marks.find((mark) => mark.id.startsWith('grid/majors'));
+    const minor = marks.find((mark) => mark.id.startsWith('grid/minors'));
+    if (major?.kind !== 'path' || minor?.kind !== 'path') throw new Error('a grid line is a path');
+    expect(minor.stroke!.width).toBeLessThan(major.stroke!.width);
+    expect(minor.opacity).toBeLessThan(major.opacity ?? 1);
+  });
+});
+
 describe('a number line', () => {
   it('draws its line, a tick at each number and a label under each tick', () => {
     const marks = flatten(numberLine('x', across, { stroke: pen, fill: ink, size: 0.3 }));
@@ -84,14 +97,28 @@ describe('a number line', () => {
     expect(ids(marks)).toContain('y/ticks/0');
   });
 
-  it('stops the line where a head begins, and draws a head at each end', () => {
+  it('runs the line the whole way and stands a head beyond each end', () => {
     const marks = flatten(numberLine('x', across, { stroke: pen, fill: ink, tip: 0.2 }));
     expect(ids(marks)).toContain('x/tips/low');
     expect(ids(marks)).toContain('x/tips/high');
     const drawn = find(marks, 'x/line');
     if (drawn.kind !== 'path') throw new Error('the line is a path');
-    expect(drawn.path[0].start.x).toBeCloseTo(-4.4, 12);
-    expect(drawn.path[0].curves[0].to.x).toBeCloseTo(4.4, 12);
+    expect(drawn.path[0].start.x).toBeCloseTo(-4.6, 12);
+    expect(drawn.path[0].curves[0].to.x).toBeCloseTo(4.6, 12);
+  });
+
+  it('leaves no tick standing under a head', () => {
+    // The heads used to eat 0.2 off each end of the line, which left the
+    // outermost tick under a head rather than on the line.
+    const marks = flatten(numberLine('x', across, { stroke: pen, fill: ink, size: 0.3, tip: 0.2, ticks: 6 }));
+    const drawn = find(marks, 'x/line');
+    if (drawn.kind !== 'path') throw new Error('the line is a path');
+    const ends = { from: drawn.path[0].start.x, to: drawn.path[0].curves[0].to.x };
+    for (const mark of marks) {
+      if (!mark.id.startsWith('x/ticks/') || mark.kind !== 'path') continue;
+      expect(mark.path[0].start.x).toBeGreaterThanOrEqual(ends.from - 1e-12);
+      expect(mark.path[0].start.x).toBeLessThanOrEqual(ends.to + 1e-12);
+    }
   });
 
   it('draws no head without a fill to put in it', () => {
@@ -134,6 +161,35 @@ describe('a number line', () => {
 
 describe('a pair of axes', () => {
   const coords = coordsOf(across, up);
+
+  it('writes the number at the crossing below and to the left of it', () => {
+    // Written under the crossing, it lands on the other line and inside the head
+    // at the end of it. Text is never measured here, so it is moved by the same
+    // offsets the labels already use rather than by how wide the number is.
+    const marks = flatten(axes('axes', coords, { stroke: pen, fill: ink, size: 0.3, tip: 0.18 }));
+    const label = find(marks, 'axes/x/labels/0');
+    const line = find(marks, 'axes/y/line');
+    if (label.kind !== 'text' || line.kind !== 'path') throw new Error('a label is text and a line is a path');
+    expect(label.align).toBe('end');
+    expect(label.baseline).toBe('hanging');
+    expect(label.at.x).toBeLessThan(line.path[0].start.x);
+    const across = find(marks, 'axes/x/line');
+    if (across.kind !== 'path') throw new Error('a line is a path');
+    expect(label.at.y).toBeLessThan(across.path[0].start.y);
+  });
+
+  it('leaves every label clear of the head at the end of the line it crosses', () => {
+    const marks = flatten(axes('axes', coords, { stroke: pen, fill: ink, size: 0.3, tip: 0.18 }));
+    const head = find(marks, 'axes/y/tips/low');
+    if (head.kind !== 'path') throw new Error('a head is a path');
+    const reach = head.path[0].curves.map((piece) => piece.to.x).concat(head.path[0].start.x);
+    const widest = { from: Math.min(...reach), to: Math.max(...reach) };
+    for (const mark of marks) {
+      if (mark.kind !== 'text') continue;
+      const clear = mark.at.x < widest.from || mark.at.x > widest.to;
+      expect(clear, mark.id).toBe(true);
+    }
+  });
 
   it('draws both lines under one group, named x and y', () => {
     const marks = flatten(axes('axes', coords, { stroke: pen, fill: ink, size: 0.3 }));

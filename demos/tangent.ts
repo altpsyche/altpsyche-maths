@@ -68,7 +68,7 @@ import {
 
 const ink = { colour: '#1b1b1b' };
 const pen = { colour: '#1b1b1b', width: 0.02 };
-const faint = { colour: '#1b1b1b', width: 0.012 };
+const faint = { colour: '#b4b9c0', width: 0.012 };
 const drawn = { colour: '#c2410c', width: 0.05 };
 const accent = { colour: '#0369a1', width: 0.035 };
 const wash = { colour: '#fdba74' };
@@ -76,11 +76,17 @@ const lit = '#b45309';
 
 const extent: Extent = { width: 10.8, height: 6 };
 
-/** Nine graph units up against five across, so the parabola is cut where it
- * meets the top of its own axis rather than running off the picture. */
+/**
+ * Nine graph units up against five across, so the parabola is cut where it meets
+ * the top of its own axis rather than running off the picture.
+ *
+ * The graph stops at 1.6 up rather than filling the figure, which leaves a band
+ * across the top for the reading and the rule it is a value of. Written over the
+ * graph instead, both of them sit on live grid lines.
+ */
 export const coords = coordsOf(
   scaleOf(interval(-1, 4), interval(-4.6, 4.6)),
-  scaleOf(interval(-1, 9), interval(-2.4, 2.4))
+  scaleOf(interval(-1, 9), interval(-2.55, 1.6))
 );
 
 export const curve = (x: number) => x * x;
@@ -101,8 +107,9 @@ const moving = await equationFromTex('\\frac{dy}{dx} = 2x');
 /** Where the rules start and the box each is fitted inside. Both are hung from
  * the same left edge, under the reading's own, so the six glyphs they share
  * stand still while the right-hand side walks. Centred instead they would slide
- * sideways by 0.083 as the wider one arrives. */
-const RULE_AT = fractionOf(extent, 0.05, 0.79);
+ * sideways by 0.083 as the wider one arrives. Both sit in the band above the
+ * graph rather than over it. */
+const RULE_AT = fractionOf(extent, 0.02, 0.825);
 const RULE_WIDTH = 1.2;
 const RULE_HEIGHT = 0.6;
 const rule = (name: string, equation: Equation) =>
@@ -138,13 +145,13 @@ export function sceneAt(along: number): Node {
   const point = pointAlong(walkPath, along) ?? START;
   const x = unscaled(coords.x, point.x);
   return group('tangent', [
-    numberPlane('grid', coords, { stroke: faint, minors: 4, minorOpacity: 0.25 }),
+    numberPlane('grid', coords, { stroke: faint, minors: 4, minorOpacity: 0.45 }),
     axes('axes', coords, { stroke: pen, fill: ink, size: 0.26, tip: 0.18 }),
     shape('area', areaUnder(coords, curve, interval(0, x)), { fill: wash }),
     shape('curve', plot(coords, curve), { stroke: drawn }),
     shape('tangent', tangentAt(coords, curve, x, { reach: 1.2 }), { stroke: accent }),
     dot('point', point, 0.08, ink),
-    text('reading', fractionOf(extent, 0.05, 0.9), `slope ${labelFor(slopeOf(curve, x), 0.01)}`, 0.34, {
+    text('reading', fractionOf(extent, 0.02, 0.925), `slope ${labelFor(slopeOf(curve, x), 0.01)}`, 0.34, {
       fill: ink,
     }),
     group('equation', [rule('at-rest', atRest), rule('moving', moving)]),

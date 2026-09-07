@@ -149,41 +149,43 @@ no box test in front of it and the quadratic over piece pairs is not worth remov
 
 #### 0.9.4, the pictures
 
-**Siva's call, from the published README: the pictures read as poor quality.** The audit found why,
-and none of it is the painter. The figure declares an extent of 10.8 by 6 and the graph fills 9.2 by
-4.8 of it, so there is a margin of 0.8 across and 0.6 up. Nothing uses that margin. Every piece of
-text sits inside the graph or straddles its edge, and the grid is drawn in the same ink as the curve.
+**Done.** Three of the six were this package's defaults and three were how a demo laid itself out.
 
-*What is wrong, measured on the still at its own still time.*
+*This package's, measured on the flat demo's still.* The label for 0 was anchored at -2.760 across,
+which is exactly where the y axis stands, and its body ran down into that axis's head between -2.400
+and -2.220 up. It is now written below and to the left of the crossing, at -2.931, moved by the same
+offsets the labels already use rather than by how wide the number is. The axis line ran from -4.420
+to 4.420 while its outermost ticks stood at plus and minus 4.600, so those two ticks stood under a
+head rather than on the line; the line now runs the whole way and each head stands beyond its end.
+A grid's minor lines were the same 0.012 wide as its major ones and differed only in how strong the
+ink was; they are now 0.6 of the width as well.
 
-- **The x axis label for 0 sits on the y axis.** It is anchored at -2.760 across, which is exactly
-  where the y axis line stands, and its body runs down into the y axis arrowhead, which spans -2.400
-  to -2.220 up at that same place.
-- **The typeset rule is drawn over the grid.** Its box runs from -4.860 to -3.660 across and 1.440 to
-  2.040 up, where the graph runs from -4.600 to 4.600 and -2.400 to 2.400. So 0.940 of its 1.200
-  width lies over live grid lines.
-- **The reading straddles the top edge.** It is anchored at 2.400 up, which is the top of the graph
-  exactly, so it sits half in and half out.
-- **The grid's major and minor lines differ in ink alone.** Both are 0.012 wide and both are the ink
-  the curve is drawn in, one at full strength and one at a quarter. A grid drawn as dark as the data
-  competes with it.
-- **The axis line stops 0.180 short of its own outermost ticks**, which leaves those ticks standing
-  under the arrowhead rather than on the line.
-- **The brace's number sits inside the graph**, anchored at 3.340 across and 0.240 up.
+*The demo's own.* The typeset rule sat between 1.440 and 2.040 up where the graph reached 2.400, so
+0.940 of its 1.200 width lay over live grid lines. The reading was anchored at 2.400, the graph's top
+edge exactly. The graph now stops at 1.600 and both sit in the band above it, the rule's glyphs
+between 2.046 and 2.250 and the reading at 2.550. The grid is drawn in grey rather than in the ink
+the curve is drawn in.
 
-*What is a default of this package and what is the demo's own.* The label on the origin, the axis line
-falling short of its ticks, and the weights a grid is drawn at are this package's. Where the rule, the
-reading and the brace's number sit are the demo's. Both are fixed here, and the package's half is
-fixed first so the demo's half is laid out against the corrected defaults.
+*One of the six was not a fault.* The brace's number sits inside the graph because the brace measures
+the curve, and an annotation of a curve belongs on it.
 
-*How it is gated without a browser.* Text is never measured here and that rule does not change, so
-none of these are checked by measuring a word. Each is checked on an anchor or on a style, which are
-numbers already in the mark list. No tick label is anchored within a stated distance of the other
-axis. Every text mark of the demo is anchored outside the graph's own rectangle. An axis line reaches
-its outermost tick. A grid's minor lines are thinner than its major ones rather than only fainter.
+*Shortening the graph changed what it reads.* Half way along the walk the slope reads 3.44 where it
+read 3.52, and a walk driven across x has its widest step 1.65 times its narrowest where it was 1.8,
+both because the curve is less steep in figure units than it was.
 
-*Measures:* the six numbers above, each with what it becomes. The committed pictures are regenerated
-and the byte comparison passes on the new files.
+*The boolean demo was reshaped too.* Its frame was 10.8 by 6 with the picture in the middle third of
+it, and the surface it was written onto was shaped like the other demo rather than like itself. It is
+now 10.8 by 4 on a surface of the same shape. The answer was stroked as well as filled, which hid
+both discs' outlines under it, so a reader saw an orange shape and not the two discs it came from;
+the answer is now shaded and the two discs are outlined over it. Its four frames went in one line,
+eleven times wider than tall, which left each panel too small to read at the width a page gives it;
+they now go in two rows at under three times wider than tall.
+
+*How it is gated, with no browser and nothing measuring text.* No label is anchored inside the head at
+the end of the line it crosses. The label at a crossing is written below and to the left of it. No
+tick stands beyond the ends of its own line. A grid's minor lines are thinner than its major ones.
+The flat demo's reading and every glyph of both its rules sit above the top of the graph, which is a
+number the coords give.
 
 ### Three dimensions and a camera that moves, 0.10.0
 

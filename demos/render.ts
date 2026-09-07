@@ -45,6 +45,8 @@ function stripMarkup(strip: { marks: readonly Mark[]; extent: Extent }): string 
 export const sheets: readonly Sheet[] = [
   { file: 'docs/tangent.svg', markup: () => stillMarkup(tangent, tangent.still) },
   { file: 'docs/tangent-strip.svg', markup: () => stripMarkup(stripMarks(FRAMES)) },
-  { file: 'docs/boolean.svg', markup: () => stillMarkup(booleans, booleans.still) },
-  { file: 'docs/boolean-strip.svg', markup: () => stripMarkup(booleanStripMarks(BOOLEAN_FRAMES)) },
+  // The surface is shaped like the figure rather than like the other demo, or
+  // contain fits it to the width and leaves a band of white above and below.
+  { file: 'docs/boolean.svg', markup: () => stillMarkup(booleans, booleans.still, WIDTH, 400) },
+  { file: 'docs/boolean-strip.svg', markup: () => stripMarkup(booleanStripMarks(BOOLEAN_FRAMES, 2)) },
 ];

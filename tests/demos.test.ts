@@ -172,13 +172,13 @@ describe('the flat demo', () => {
   it('reads a slope that changes as the dot walks', () => {
     expect(reading(at(tangent, 0))).toBe('slope 0.00');
     expect(reading(at(tangent, TIMES.beat))).toBe('slope 0.00');
-    expect(reading(at(tangent, FRAMES[2]))).toBe('slope 3.52');
+    expect(reading(at(tangent, FRAMES[2]))).toBe('slope 3.44');
     expect(reading(at(tangent, TIMES.walkTo))).toBe('slope 6.00');
   });
 
   it('walks at one speed along the curve rather than gathering pace as it steepens', () => {
-    // Driven across x instead, the last step is 1.8 times the first, because a
-    // step in x covers more of the curve where the curve is steep.
+    // Driven across x instead, the widest step is 1.65 times the narrowest,
+    // because a step in x covers more of the curve where the curve is steep.
     const byLength = Array.from({ length: 21 }, (_, step) => pointAlong(walkPath, step / 20)!);
     const byX = Array.from({ length: 21 }, (_, step) => {
       const x = (3 * step) / 20;
@@ -187,7 +187,7 @@ describe('the flat demo', () => {
     const even = gaps(byLength);
     const uneven = gaps(byX);
     expect(Math.max(...even) / Math.min(...even)).toBeLessThan(1.001);
-    expect(Math.max(...uneven) / Math.min(...uneven)).toBeGreaterThan(1.8);
+    expect(Math.max(...uneven) / Math.min(...uneven)).toBeGreaterThan(1.6);
   });
 
   it('keeps the tangent on the dot at every place along the walk', () => {
@@ -209,6 +209,24 @@ describe('the flat demo', () => {
       );
     }
     expect(worst).toBeLessThan(1e-12);
+  });
+
+  it('writes its reading and its rules above the graph rather than over it', () => {
+    // Text is never measured, so nothing here reads a width. The graph's own
+    // top edge is a number the coords give, and every anchor and every glyph of
+    // the two rules is checked against it.
+    const top = pointOf(coords, 4, 9).y;
+    for (const seconds of [TIMES.entrance, TIMES.beat, TIMES.walkTo, durationOf(tangent)]) {
+      for (const mark of at(tangent, seconds)) {
+        if (mark.id === 'tangent/reading') expect(mark.kind === 'text' && mark.at.y).toBeGreaterThan(top);
+        if (!mark.id.startsWith('tangent/equation/') || mark.kind !== 'path') continue;
+        for (const subpath of mark.path) {
+          for (const point of [subpath.start, ...subpath.curves.map((piece) => piece.to)]) {
+            expect(point.y, mark.id).toBeGreaterThan(top);
+          }
+        }
+      }
+    }
   });
 
   it('keeps every mark inside the extent it declares', () => {
@@ -246,7 +264,7 @@ describe('the strip of frames', () => {
     expect(readings.map((mark) => (mark.kind === 'text' ? mark.text : ''))).toEqual([
       'slope 0.00',
       'slope 0.00',
-      'slope 3.52',
+      'slope 3.44',
       'slope 6.00',
     ]);
   });
@@ -369,7 +387,7 @@ describe('the boolean demo', () => {
             : [mark.at];
         for (const point of points) {
           expect(Math.abs(point.x)).toBeLessThanOrEqual(5.4);
-          expect(Math.abs(point.y)).toBeLessThanOrEqual(3);
+          expect(Math.abs(point.y)).toBeLessThanOrEqual(2);
         }
       }
     }

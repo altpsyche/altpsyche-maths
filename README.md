@@ -195,11 +195,11 @@ decides which of those a piece is, by counting how many times the other path win
 `areaOf` says how much a path encloses, in closed form rather than by sampling, which is what every
 claim above is checked against.
 
-<img src="docs/boolean-strip.svg" width="960" alt="Four frames side by side, each showing the three panels, as the small disc walks from clear of the large one, through touching it at one point, through overlapping it, to sitting wholly inside it.">
+<img src="docs/boolean-strip.svg" width="820" alt="Four moments in two rows, each showing the three panels, as the small disc walks from clear of the large one, through touching it at one point, through overlapping it, to sitting wholly inside it.">
 
-Four times of one figure. A small disc walks across a larger one: clear of it, touching it at one
-point, crossing it at two, and wholly inside it. Those are the four cases this kind of code gets
-silently wrong, which is why the demo walks through all of them rather than drawing one.
+Four times of one figure, in two rows. A small disc walks across a larger one: clear of it, touching
+it at one point, crossing it at two, and wholly inside it. Those are the four cases this kind of code
+gets silently wrong, which is why the demo walks through all of them rather than drawing one.
 
 Two shapes that share an edge are combined by which way each of them runs over it. Two paths walking
 a shared stretch the same way have their solid on the same side of it, so the stretch is on the edge
