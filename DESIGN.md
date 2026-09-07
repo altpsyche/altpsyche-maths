@@ -1,7 +1,7 @@
 # @altpsyche/maths
 
 The design of this package: what a figure is, the rule every part of it follows, the line through the
-middle of it, and the seam everything above rests on. It queues nothing. [ROADMAP.md](ROADMAP.md) is
+middle of it, and the seam everything above rests on. It queues nothing. [docs/ROADMAP.md](docs/ROADMAP.md) is
 the only place work is queued.
 
 It was written before the code, so the shape could be argued about while arguing was cheap, and it

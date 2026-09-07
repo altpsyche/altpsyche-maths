@@ -5,12 +5,12 @@ published to npm. Ships from `master`.
 
 **Where things are.** [`DESIGN.md`](DESIGN.md) is the design: what a figure is, the rule every part
 of it follows, the line through the middle of the package, and the seam everything rests on.
-[`ROADMAP.md`](ROADMAP.md) is the plan and the handover. This file is the rules.
+[`docs/ROADMAP.md`](docs/ROADMAP.md) is the plan and the handover. This file is the rules.
 
 **This package has a consumer.** `altpsyche.dev` at `/home/siva/dev/altpsyche-dev` draws every figure
 through it, and a change here reaches that site through a release rather than through an edit over
 there. A feature nothing is waiting to draw is a feature nobody has checked, which is the test
-[`ROADMAP.md`](ROADMAP.md) orders its items by.
+[`docs/ROADMAP.md`](docs/ROADMAP.md) orders its items by.
 
 ## Prose rules
 
@@ -69,7 +69,7 @@ Drop articles, filler, pleasantries, hedging. Fragments fine. No tool-call narra
 tables, no emoji, no long raw log dumps. Quote the shortest decisive line. Technical terms, error
 strings and API names exact.
 
-**Write normal prose in:** commit messages, PR bodies, code comments, `DESIGN.md`, `ROADMAP.md`, the
+**Write normal prose in:** commit messages, PR bodies, code comments, `DESIGN.md`, `docs/ROADMAP.md`, the
 README, and any multi-step sequence where dropped conjunctions would make the order ambiguous.
 
 ## Comments
@@ -102,7 +102,7 @@ or a rule, which belongs in this file.
 
 ## The work
 
-**[`ROADMAP.md`](ROADMAP.md) is the plan and the handover. Read it first.** Nothing else queues work.
+**[`docs/ROADMAP.md`](docs/ROADMAP.md) is the plan and the handover. Read it first.** Nothing else queues work.
 There is no separate handover file and you must not write one.
 
 **A design call is made in the commit that needs it, and the reasoning goes in that commit's body.**
@@ -132,6 +132,10 @@ npm test          vitest, the whole suite
 npm run type-check tsc --noEmit
 npm run build     tsc -p tsconfig.build.json, which is what prepack runs
 ```
+
+**There is no `land` skill and there does not need to be.** Three commands are the whole gate, and a
+skill wrapping them would be a second place the list is written. `/next` is here because a sequence
+is worth stating once; a gate this short is not.
 
 **Every claim this package makes is testable without a browser**, which is the point of the seam:
 values and timing are pure functions, and a figure at a time is a list of marks. So there is no
