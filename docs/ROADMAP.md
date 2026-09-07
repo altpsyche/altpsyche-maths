@@ -181,16 +181,17 @@ apply.
 
 #### The steps
 
-**1. The field, sampled and drawn flat.** `figure/field.ts` holding `vectorField(name, coords, of,
+**1. The field, sampled and drawn flat. Done.** `figure/field.ts` holding `vectorField(name, coords, of,
 options)`, where `of(at)` gives a vector in graph units at a point in graph units. It samples a grid
 over the graph's own range and draws an arrow at each sample, taking `lengthOf(magnitude)` and
 `colourFor(magnitude)` from the author. The count is fixed by the resolution and never by the field, so
 a gate can hold it.
 
-*Measures:* a field over a 9 by 5 grid draws 45 arrows and 90 marks, the same count at every time. Each
-arrow's tip is `pointOf` of its sample plus its own scaled vector, to 1e-12. The longest and shortest
-arrow are the lengths the author's own function gives, to 1e-12. A field whose vector is nothing
-somewhere draws no arrow there rather than an arrow of no length, and the count says which.
+*Measured:* a field over a 9 by 5 grid draws 45 arrows and 90 marks, and holds 90 at each of five
+times a turning field is read at. Every arrow's tip is the mapping of its sample plus its own scaled
+vector exactly, at 0.00e0, and every arrow's length is what the author's own function gives to
+3.33e-16. A field that is nothing over half the graph draws 25 arrows rather than 45, and the sample
+at the middle of the graph is one of the ones missing. The suite went from 540 tests to 549.
 
 **2. The streamline.** `streamlineOf(of, from, options)`, walking Runge-Kutta 4 through the field from
 a seed point and handing back the points in graph units, the way `sectionOf` hands back points in
