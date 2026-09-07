@@ -9,6 +9,7 @@ import {
   centreOf,
   durationOf,
   flatten,
+  frameTimes,
   interval,
   loops,
   plot,
@@ -604,6 +605,13 @@ describe('the rotation demo', () => {
 });
 
 describe('the rotation strip', () => {
+  it('walks its four frames at a fixed step and leaves off the one that repeats', () => {
+    expect(TURN_FRAMES).toEqual(frameTimes(turns, { frames: 4 }));
+    expect(TURN_FRAMES).toEqual([TURN_TIMES.start, TURN_TIMES.quarter, TURN_TIMES.half, TURN_TIMES.threeQuarters]);
+    expect(TURN_FRAMES).not.toContain(TURN);
+    expect(sameMarks(at(turns, TURN_FRAMES[0]), at(turns, TURN))).toBe(true);
+  });
+
   it('carries every frame with no two marks sharing an id', () => {
     const { marks } = turnStripMarks(TURN_FRAMES, 2);
     expect(marks).toHaveLength(8 * TURN_FRAMES.length);

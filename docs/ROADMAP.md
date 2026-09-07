@@ -237,12 +237,14 @@ demo's view is carried 312 across the walk over 78 distinct places, since it hol
 is inside its own reach of the middle of the frame. The two walks add 1.34 seconds to a suite that ran
 in 2.42, which is the cost of the gate.
 
-**3. The rotate demo's strip is a walk.** `demos/rotate.ts` builds its strip from `frameTimes` at 4
+**3. The rotate demo's strip is a walk. Done.** `demos/rotate.ts` builds its strip from `frameTimes` at 4
 frames rather than from four times written out by hand, and `demos/render.ts` reads it the same way.
 
-*Measures:* `docs/rotate-strip.svg` is unchanged, byte for byte, at 8,096 bytes, since a walk of 4
-frames over a 6 second turn lands on the same 0, 1.5, 3 and 4.5 the demo names today. That is the
-whole measurement: the rule the call holds and the times a reader chose by hand are the same times.
+*Measured:* `docs/rotate-strip.svg` is unchanged, byte for byte, at 8,096 bytes with the same checksum
+before and after, since a walk of 4 frames over a 6 second turn lands on the same 0, 1.5, 3 and 4.5 the
+demo named by hand. The gate holds all three claims: the strip's frames are the walk, the walk is the
+quarters, and the whole turn is not among them while `sameMarks` calls it the first frame again. The
+suite went from 588 tests to 589.
 
 **4. The cut.** The version goes to 0.12.0, the README gains the paragraph, the lock file is written
 with `npm install --package-lock-only`, and this entry is deleted.

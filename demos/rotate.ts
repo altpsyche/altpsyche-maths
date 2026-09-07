@@ -22,6 +22,7 @@
  */
 import {
   dot,
+  frameTimes,
   group,
   linear,
   polygon,
@@ -168,9 +169,7 @@ export function stripMarks(
   return { marks, extent: { width: SLOT * columns, height: DOWN * rows } };
 }
 
-/** The quarters of the turn, which is what the gate reads and what the strip
- * shows. The whole turn is left off the strip because it draws the same picture
- * as nothing does, which is the claim rather than a frame worth the room. */
+/** The quarters of the turn, which is what the gate reads. */
 export const TIMES = {
   start: 0,
   quarter: TURN * 0.25,
@@ -179,4 +178,12 @@ export const TIMES = {
   whole: TURN,
 };
 
-export const FRAMES = [TIMES.start, TIMES.quarter, TIMES.half, TIMES.threeQuarters];
+/**
+ * The four frames the strip shows, walked at a fixed step rather than written
+ * out.
+ *
+ * A walk stops strictly before the duration, which is what leaves the whole turn
+ * off the strip: this figure is a loop, so the frame at six seconds draws the
+ * same picture as the frame at nothing.
+ */
+export const FRAMES = frameTimes(turns, { frames: 4 });
