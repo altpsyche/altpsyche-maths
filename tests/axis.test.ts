@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { axes, coordsOf, flatten, interval, numberLine, scaleOf, type Mark } from '../index.js';
+import { axes, coordsOf, flatten, interval, numberLine, numberPlane, scaleOf, type Mark } from '../index.js';
 
 const pen = { colour: '#222', width: 0.02 };
 const ink = { colour: '#222' };
@@ -172,5 +172,87 @@ describe('a pair of axes', () => {
     const shifted = coordsOf(scaleOf(interval(2, 6), interval(-4.6, 4.6)), up);
     const marks = flatten(axes('axes', shifted, { stroke: pen, fill: ink, size: 0.3 }));
     expect(ids(marks)).toContain('axes/y/labels/0');
+  });
+});
+
+describe('the grid behind a graph', () => {
+  const coords = coordsOf(across, up);
+  const faint = { colour: '#ddd', width: 0.01 };
+
+  it('stands a line on every tick of both axes', () => {
+    const marks = flatten(numberPlane('grid', coords, { stroke: faint }));
+    expect(marks).toHaveLength(11);
+    expect(ids(marks)).toEqual([
+      'grid/majors/x/-1',
+      'grid/majors/x/0',
+      'grid/majors/x/1',
+      'grid/majors/x/2',
+      'grid/majors/x/3',
+      'grid/majors/x/4',
+      'grid/majors/y/0',
+      'grid/majors/y/2',
+      'grid/majors/y/4',
+      'grid/majors/y/6',
+      'grid/majors/y/8',
+    ]);
+  });
+
+  it('divides each gap and leaves out the lines a major already stands on', () => {
+    const marks = flatten(numberPlane('grid', coords, { stroke: faint, minors: 4 }));
+    expect(marks).toHaveLength(42);
+    expect(marks.filter((mark) => mark.id.startsWith('grid/minors'))).toHaveLength(31);
+    expect(ids(marks)).not.toContain('grid/minors/x/0');
+    expect(ids(marks)).not.toContain('grid/minors/y/2');
+  });
+
+  it('places a minor line at a value the step is not a round number of', () => {
+    // A quarter step rounded by its own magnitude reaches three quarters as
+    // 0.8, which is a grid line drawn where nothing is.
+    const marks = flatten(numberPlane('grid', coords, { stroke: faint, minors: 4 }));
+    expect(ids(marks)).toContain('grid/minors/x/-0.75');
+    expect(ids(marks)).toContain('grid/minors/x/0.25');
+    expect(ids(marks)).not.toContain('grid/minors/x/-0.8');
+  });
+
+  it('draws the minor lines before the major ones so a major wins where they meet', () => {
+    const marks = flatten(numberPlane('grid', coords, { stroke: faint, minors: 4 }));
+    const places = ids(marks);
+    const lastMinor = places.reduce((last, id, index) => (id.startsWith('grid/minors') ? index : last), -1);
+    const firstMajor = places.findIndex((id) => id.startsWith('grid/majors'));
+    expect(lastMinor).toBeLessThan(firstMajor);
+  });
+
+  it('draws a minor line fainter than a major one', () => {
+    const marks = flatten(numberPlane('grid', coords, { stroke: faint, minors: 4, minorOpacity: 0.25 }));
+    expect(find(marks, 'grid/minors/x/0.25').opacity).toBeCloseTo(0.25, 12);
+    expect(find(marks, 'grid/majors/x/0').opacity).toBeCloseTo(1, 12);
+  });
+
+  it('adds nothing extra below two divisions', () => {
+    expect(flatten(numberPlane('grid', coords, { stroke: faint, minors: 1 }))).toHaveLength(11);
+    expect(flatten(numberPlane('grid', coords, { stroke: faint, minors: 0 }))).toHaveLength(11);
+  });
+
+  it('keeps every line inside the figure units the coords cover', () => {
+    const marks = flatten(numberPlane('grid', coords, { stroke: faint, minors: 4 }));
+    for (const mark of marks) {
+      if (mark.kind !== 'path') throw new Error('a grid line is a path');
+      const points = mark.path.flatMap((subpath) => [subpath.start, ...subpath.curves.map((curve) => curve.to)]);
+      for (const point of points) {
+        expect(interval.holds(across.units, point.x)).toBe(true);
+        expect(interval.holds(up.units, point.y)).toBe(true);
+      }
+    }
+  });
+
+  it('reaches the full height across and the full width up', () => {
+    const marks = flatten(numberPlane('grid', coords, { stroke: faint }));
+    const vertical = find(marks, 'grid/majors/x/0');
+    const horizontal = find(marks, 'grid/majors/y/4');
+    if (vertical.kind !== 'path' || horizontal.kind !== 'path') throw new Error('a grid line is a path');
+    expect(vertical.path[0].start.y).toBeCloseTo(-2.4, 12);
+    expect(vertical.path[0].curves[0].to.y).toBeCloseTo(2.4, 12);
+    expect(horizontal.path[0].start.x).toBeCloseTo(-4.6, 12);
+    expect(horizontal.path[0].curves[0].to.x).toBeCloseTo(4.6, 12);
   });
 });

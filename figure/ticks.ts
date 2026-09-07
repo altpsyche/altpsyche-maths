@@ -81,23 +81,28 @@ export function labelFor(value: number, step: number): string {
 const ON_THE_BOUND = 1e-9;
 
 /**
- * Every tick inside the interval, from its lower bound upward, whichever way
- * round the interval was given.
+ * Every multiple of the step inside the interval, from its lower bound upward,
+ * whichever way round the interval was given.
  *
- * The values are counted as multiples of the step rather than reached by adding
- * the step over and over, because the additions drift and the last tick then
- * misses the bound it sits on.
+ * The values are counted as multiples rather than reached by adding the step
+ * over and over, because the additions drift and the last one then misses the
+ * bound it sits on.
  */
-export function ticksOn(bounds: Interval, about = 6): readonly Tick[] {
-  const step = tickStep(bounds, about);
-  if (step <= 0) return [];
+export function multiplesOn(bounds: Interval, step: number): readonly number[] {
+  if (!(step > 0)) return [];
   const { from, to } = intervalOf.ordered(bounds);
   const slack = step * ON_THE_BOUND;
-  const first = Math.ceil(from / step - ON_THE_BOUND);
-  const decimals = Math.max(0, -Math.floor(Math.log10(step)));
-  const ticks: Tick[] = [];
-  for (let count = first; count * step <= to + slack; count++) {
-    ticks.push({ value: Number((count * step).toFixed(decimals)), label: labelFor(count * step, step) });
+  const values: number[] = [];
+  for (let count = Math.ceil(from / step - ON_THE_BOUND); count * step <= to + slack; count++) {
+    // Twelve digits drops the noise the multiplication leaves in the last few
+    // and shifts no value a step of any size could land on.
+    values.push(Number((count * step).toPrecision(12)));
   }
-  return ticks;
+  return values;
+}
+
+/** Every tick inside the interval, with the number each one shows. */
+export function ticksOn(bounds: Interval, about = 6): readonly Tick[] {
+  const step = tickStep(bounds, about);
+  return multiplesOn(bounds, step).map((value) => ({ value, label: labelFor(value, step) }));
 }

@@ -216,10 +216,14 @@ resumes at the first unticked one.
       and four labels because the zero label is left to the x line. The horizontal line sits at
       -1.92 for a y interval of -1 to 9 and at -2.4, the bottom edge, for one of 2 to 9. Where the
       two do not cross at the origin the y zero label is kept, since nothing else writes it.
-- [ ] **6. `numberPlane`.** The grid: a line at each tick and a fainter line at each division
-      between them. Measurement: the line count for the demo's coords at four divisions, the count
-      with the divisions off, and how many lines fall outside the coords' own intervals, which is
-      none.
+- [x] **6. `numberPlane`.** The grid: a line at each tick and a fainter line at each division
+      between them, minors drawn first so a major wins where the two meet. **Landed.** The demo's
+      coords give 11 lines with the divisions off and 42 at four divisions, of which 31 are minor,
+      and none of the 42 has a point outside the figure units the coords cover. The walk the ticks
+      and the grid now share rounded a value by its own step's magnitude, which put a quarter step's
+      three quarters at 0.8: a grid line drawn where nothing is. It rounds to twelve digits instead,
+      which drops the noise the multiplication leaves and shifts no value a step of any size lands
+      on. No tick ever moved, because a tick's step is always a round number.
 - [ ] **7. `plot`.** A function of one number sampled over an interval into a path, at a fixed count.
       Measurement: the largest distance from the sampled path to the true curve, taken at the midpoint
       of every segment, for the demo's curve and for a sine over two turns, at sixteen, sixty-four and

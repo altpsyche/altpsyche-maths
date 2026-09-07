@@ -11,7 +11,7 @@ import { interval } from '../values/interval.js';
 import { vec2, type Vec2 } from '../values/vec2.js';
 import { line, polygon } from './path.js';
 import { group, shape, text, type GroupNode, type Node } from './node.js';
-import { tickStep, ticksOn } from './ticks.js';
+import { multiplesOn, tickStep, ticksOn } from './ticks.js';
 import { scaled, type Coords, type Scale } from './scale.js';
 import type { Fill, Stroke } from './mark.js';
 
@@ -143,4 +143,73 @@ export function axes(name: string, coords: Coords, options: AxesOptions): GroupN
     numberLine('x', coords.x, { ...options, at: seat(coords.y), direction: 'across' }),
     numberLine('y', coords.y, { ...options, at: seat(coords.x), direction: 'up', skipZero: holdsOrigin }),
   ]);
+}
+
+export interface NumberPlaneOptions {
+  /** The lines standing on the ticks. */
+  stroke: Stroke;
+  /** How many gaps each step is divided into, so one less than this many lines
+   * sit between one tick and the next. Nothing extra is drawn below two. */
+  minors?: number;
+  /** How much of the stroke a minor line is drawn with, since a grid a reader
+   * notices is a grid competing with the curve on top of it. */
+  minorOpacity?: number;
+  ticks?: number;
+}
+
+/** Whether a value is a whole number of steps from zero, which is what tells a
+ * minor line it is standing where a major one already is. */
+function onStep(value: number, step: number): boolean {
+  return Math.abs(value / step - Math.round(value / step)) < 1e-9;
+}
+
+/** Lines of constant x reaching the full height, and of constant y reaching the
+ * full width, at every multiple of the step. */
+function gridLines(coords: Coords, step: number, along: 'x' | 'y', skipping?: number): Node[] {
+  const scale = along === 'x' ? coords.x : coords.y;
+  const other = interval.ordered(along === 'x' ? coords.y.units : coords.x.units);
+  const ends = (at: number): [Vec2, Vec2] =>
+    along === 'x' ? [vec2(at, other.from), vec2(at, other.to)] : [vec2(other.from, at), vec2(other.to, at)];
+  return multiplesOn(scale.graph, step)
+    .filter((value) => !(skipping && onStep(value, skipping)))
+    .map((value) => {
+      const [from, to] = ends(scaled(scale, value));
+      return shape(String(value), line(from, to), {});
+    });
+}
+
+/**
+ * The grid behind a graph: a line standing on each tick of both axes, and
+ * fainter lines dividing the gaps between them.
+ *
+ * The minor lines are drawn first and the major ones over them, so a major line
+ * a minor one lands on is the one a reader sees. The stroke is handed down from
+ * the group rather than set on each line, which is what lets the whole grid fade
+ * as one thing.
+ */
+export function numberPlane(name: string, coords: Coords, options: NumberPlaneOptions): GroupNode {
+  const step = { x: tickStep(coords.x.graph, options.ticks), y: tickStep(coords.y.graph, options.ticks) };
+  const minors = Math.max(1, Math.round(options.minors ?? 1));
+  const parts: Node[] = [];
+
+  if (minors > 1 && step.x > 0 && step.y > 0) {
+    parts.push(
+      group(
+        'minors',
+        [
+          group('x', gridLines(coords, step.x / minors, 'x', step.x)),
+          group('y', gridLines(coords, step.y / minors, 'y', step.y)),
+        ],
+        { style: { stroke: options.stroke, opacity: options.minorOpacity ?? 0.4 } }
+      )
+    );
+  }
+
+  parts.push(
+    group('majors', [group('x', gridLines(coords, step.x, 'x')), group('y', gridLines(coords, step.y, 'y'))], {
+      style: { stroke: options.stroke },
+    })
+  );
+
+  return group(name, parts);
 }
