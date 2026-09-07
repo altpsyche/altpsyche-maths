@@ -45,6 +45,8 @@ export type { Bounds } from './figure/bounds.js';
 export { areaUnder, plot, riemannBars, slopeOf, tangentAt } from './figure/plot.js';
 export type { AreaOptions, BarsOptions, PlotOptions, TangentOptions } from './figure/plot.js';
 export { vectorField } from './figure/field.js';
+export { streamlineOf } from './figure/streamline.js';
+export type { StreamlineOptions } from './figure/streamline.js';
 export type { VectorFieldOptions } from './figure/field.js';
 export { axes, numberLine, numberPlane } from './figure/axis.js';
 export type { AxesOptions, NumberLineOptions, NumberPlaneOptions } from './figure/axis.js';

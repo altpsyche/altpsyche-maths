@@ -193,16 +193,23 @@ vector exactly, at 0.00e0, and every arrow's length is what the author's own fun
 3.33e-16. A field that is nothing over half the graph draws 25 arrows rather than 45, and the sample
 at the middle of the graph is one of the ones missing. The suite went from 540 tests to 549.
 
-**2. The streamline.** `streamlineOf(of, from, options)`, walking Runge-Kutta 4 through the field from
+**2. The streamline. Done.** `streamlineOf(of, from, options)`, walking Runge-Kutta 4 through the field from
 a seed point and handing back the points in graph units, the way `sectionOf` hands back points in
 space. It stops on three rules, each stated where a reader looks for it: the run leaves the region, the
 step count reaches its cap, or the vector is too small to move.
 
-*Measures:* in the field that turns a point about the origin, the streamline is a circle, and its
-radius holds to a measured share of the true one at a stated step. Halving the step divides that error
-by about sixteen, which is what says the integrator is the fourth-order one it is named after and not
-a slip back to Euler. A streamline started outside the region comes back with one point. A streamline
-in a field that is nothing everywhere stops on the third rule rather than running to its cap.
+*Measured:* in the field that turns a point about the origin, a turn walked in 64 steps stays within
+2.48e-7 of the true radius and its far end lands 1.08e-6 from the seed it started at. **The step is an
+arc length rather than a time**, since the field is read as a direction and its magnitude decides
+nothing, which is what keeps the points evenly spaced in a field whose strength changes across the
+picture. That splits the error in two and the two orders differ. Along the curve the error falls by
+15.1 and 15.6 as the step is halved from a turn in 256 steps, which is the fourth order the integrator
+is named for. Across the curve it falls by 31.5, 31.9 and 32.0, because an arc-length step puts the
+leading error along the curve rather than off it. A seed outside the region comes back as one point, a
+field that is nothing everywhere stops at one point rather than at its cap of 500, and a run that
+leaves a region two units wide at a step of 0.1 stops after 11 points. `direction` runs the seed
+backward as well as forward, which is what step 3 needs to draw one curve through the origin. The
+suite went from 549 tests to 560.
 
 **3. The flat demo gains the field.** `demos/tangent.ts` draws the slope field of its own curve behind
 the parabola, arriving with `fadeIn` and sitting under the curve and over the grid. The parabola is the
