@@ -134,6 +134,9 @@ orbiting eye. An extent carries a centre and may be a function of the clock, and
 follows its dot across. The suite went from 479 tests to 540 and the sheet list from six pictures to
 eight.
 
+**The lock file agrees with the manifest again**, and holding it there is one
+`npm install --package-lock-only` in whichever commit bumps a version.
+
 **0.11.0 is next, and it has no step list.** Writing that list is a session on its own and no code is
 touched in it.
 
@@ -171,12 +174,6 @@ whole door with that promise in mind.
   a palette. What it needs is a reader for the forms a figure is actually handed, which is hex and
   `rgb()`, and a refusal for the rest rather than a wrong answer. Found while planning 0.5.0. The
   typesetter's own red is spotted by comparing the string and needs none of this.
-
-- **`package-lock.json` names a version the package left behind.** It says 0.8.0 where
-  `package.json` says 0.10.0, so it has been stale since at least 0.9.0 and nothing reads it: this
-  package has no dependency a consumer installs from the lock, and the gates never touch it. The fix
-  is one `npm install --package-lock-only` in the commit that bumps a version, and what it buys is a
-  reader who can trust the two files agree. Found while cutting 0.10.0.
 
 - **The picture gate is engine-dependent at a rounding boundary.** A coordinate is written to three
   decimal places, so the sine and cosine differences between engines are invisible in the bytes,
