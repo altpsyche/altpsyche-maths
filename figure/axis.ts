@@ -12,7 +12,7 @@ import { vec2, type Vec2 } from '../values/vec2.js';
 import { line, polygon } from './path.js';
 import { group, shape, text, type GroupNode, type Node } from './node.js';
 import { tickStep, ticksOn } from './ticks.js';
-import type { Scale } from './scale.js';
+import { scaled, type Coords, type Scale } from './scale.js';
 import type { Fill, Stroke } from './mark.js';
 
 export interface NumberLineOptions {
@@ -121,4 +121,26 @@ export function numberLine(name: string, scale: Scale, options: NumberLineOption
   }
 
   return group(name, parts);
+}
+
+/** Everything a pair of axes hands to each of its two lines. A figure wanting
+ * the two to differ builds them as two number lines instead, which is what that
+ * call is exported for. */
+export type AxesOptions = Omit<NumberLineOptions, 'at' | 'direction' | 'skipZero'>;
+
+/**
+ * Two number lines under one group, named `x` and `y`, each crossing the other
+ * at that other's zero.
+ *
+ * Where zero is outside an interval the line sits at the near edge of it instead.
+ * An axis drawn at a zero the graph never reaches is an axis off the picture, and
+ * a reader is left with labels along an edge that has no line on it.
+ */
+export function axes(name: string, coords: Coords, options: AxesOptions): GroupNode {
+  const holdsOrigin = interval.holds(coords.x.graph, 0) && interval.holds(coords.y.graph, 0);
+  const seat = (scale: Scale) => scaled(scale, interval.clampTo(scale.graph, 0));
+  return group(name, [
+    numberLine('x', coords.x, { ...options, at: seat(coords.y), direction: 'across' }),
+    numberLine('y', coords.y, { ...options, at: seat(coords.x), direction: 'up', skipZero: holdsOrigin }),
+  ]);
 }

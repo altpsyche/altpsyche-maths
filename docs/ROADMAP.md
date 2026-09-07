@@ -210,10 +210,12 @@ resumes at the first unticked one.
       stands in its place holds the same rule: adding the labels leaves the line and all six ticks
       within 1e-12 of where they were, all nine labels over -2 to 2 share one off-axis coordinate,
       and each label's anchor is on its own tick to 1e-12.
-- [ ] **5. `axes`.** Two number lines under one group, crossing at zero, and at the near edge of the
-      interval where zero is outside it. Measurement: the mark count; and where the horizontal line
-      sits for a y interval of minus one to nine against one of two to nine, where zero is off the
-      picture and an axis drawn at zero would be invisible.
+- [x] **5. `axes`.** Two number lines under one group, named `x` and `y`, crossing at the other
+      axis's zero, and at the near edge of the interval where zero is outside it. **Landed.** The
+      demo's coords give 23 marks, 13 for the x line and 10 for the y, the y line having five ticks
+      and four labels because the zero label is left to the x line. The horizontal line sits at
+      -1.92 for a y interval of -1 to 9 and at -2.4, the bottom edge, for one of 2 to 9. Where the
+      two do not cross at the origin the y zero label is kept, since nothing else writes it.
 - [ ] **6. `numberPlane`.** The grid: a line at each tick and a fainter line at each division
       between them. Measurement: the line count for the demo's coords at four divisions, the count
       with the divisions off, and how many lines fall outside the coords' own intervals, which is

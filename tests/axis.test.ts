@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { flatten, interval, numberLine, scaleOf, type Mark } from '../index.js';
+import { axes, coordsOf, flatten, interval, numberLine, scaleOf, type Mark } from '../index.js';
 
 const pen = { colour: '#222', width: 0.02 };
 const ink = { colour: '#222' };
@@ -129,5 +129,48 @@ describe('a number line', () => {
       if (mark.kind !== 'path' || label.kind !== 'text') throw new Error('a tick is a path and a label is text');
       expect(label.at.x).toBeCloseTo(mark.path[0].start.x, 12);
     }
+  });
+});
+
+describe('a pair of axes', () => {
+  const coords = coordsOf(across, up);
+
+  it('draws both lines under one group, named x and y', () => {
+    const marks = flatten(axes('axes', coords, { stroke: pen, fill: ink, size: 0.3 }));
+    expect(marks).toHaveLength(23);
+    expect(ids(marks).slice(0, 2)).toEqual(['axes/x/line', 'axes/x/ticks/-1']);
+    expect(ids(marks)).toContain('axes/y/line');
+    expect(ids(marks)).toContain('axes/y/ticks/8');
+  });
+
+  it('crosses each line at the other axis zero', () => {
+    const marks = flatten(axes('axes', coords, { stroke: pen }));
+    const horizontal = find(marks, 'axes/x/line');
+    const vertical = find(marks, 'axes/y/line');
+    if (horizontal.kind !== 'path' || vertical.kind !== 'path') throw new Error('a line is a path');
+    expect(horizontal.path[0].start.y).toBeCloseTo(-1.92, 12);
+    expect(vertical.path[0].start.x).toBeCloseTo(-2.76, 12);
+  });
+
+  it('sits at the near edge where the other axis never reaches zero', () => {
+    // A line drawn at a zero the graph never reaches is a line off the picture,
+    // leaving a reader labels along an edge with nothing on it.
+    const high = coordsOf(across, scaleOf(interval(2, 9), interval(-2.4, 2.4)));
+    const marks = flatten(axes('axes', high, { stroke: pen }));
+    const horizontal = find(marks, 'axes/x/line');
+    if (horizontal.kind !== 'path') throw new Error('a line is a path');
+    expect(horizontal.path[0].start.y).toBeCloseTo(-2.4, 12);
+  });
+
+  it('writes the zero label once where both axes reach it', () => {
+    const marks = flatten(axes('axes', coords, { stroke: pen, fill: ink, size: 0.3 }));
+    expect(ids(marks)).toContain('axes/x/labels/0');
+    expect(ids(marks)).not.toContain('axes/y/labels/0');
+  });
+
+  it('keeps the y zero label where the axes do not cross at the origin', () => {
+    const shifted = coordsOf(scaleOf(interval(2, 6), interval(-4.6, 4.6)), up);
+    const marks = flatten(axes('axes', shifted, { stroke: pen, fill: ink, size: 0.3 }));
+    expect(ids(marks)).toContain('axes/y/labels/0');
   });
 });
