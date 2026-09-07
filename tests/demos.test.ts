@@ -42,12 +42,37 @@ describe('the committed pictures', () => {
 });
 
 describe('the flat demo', () => {
-  it('draws the same 93 marks at every time', () => {
-    // Eighty-two the scene writes, of which eight are the equation's glyphs and
-    // its fraction bar, plus the box round the reading and ten rays. Nothing
-    // arrives or leaves part way through, which is what lets one frame be
-    // compared against another at all.
-    for (const seconds of [0, ...FRAMES, durationOf(tangent)]) expect(at(tangent, seconds)).toHaveLength(93);
+  it('draws the same 100 marks at every time', () => {
+    // Eighty-nine the scene writes, of which fifteen are the two rules, plus the
+    // box round the reading and ten rays. Nothing arrives or leaves part way
+    // through, which is what lets one frame be compared against another at all.
+    for (const seconds of [0, ...FRAMES, durationOf(tangent)]) expect(at(tangent, seconds)).toHaveLength(100);
+  });
+
+  it('reads no slope at the stationary point and the rule for one after it', () => {
+    const opacityOf = (seconds: number, id: string) => at(tangent, seconds).find((mark) => mark.id === id)?.opacity ?? 1;
+    // The 0 of the first rule, and the 2 and the x of the second.
+    expect(opacityOf(TIMES.beat, 'tangent/equation/at-rest/6-30')).toBeGreaterThan(0.99);
+    expect(opacityOf(TIMES.beat, 'tangent/equation/moving/6-32')).toBe(0);
+    expect(opacityOf(TIMES.beat, 'tangent/equation/moving/7-1D465')).toBe(0);
+    expect(opacityOf(TIMES.morphTo, 'tangent/equation/at-rest/6-30')).toBe(0);
+    expect(opacityOf(TIMES.morphTo, 'tangent/equation/moving/6-32')).toBeGreaterThan(0.99);
+    expect(opacityOf(TIMES.morphTo, 'tangent/equation/moving/7-1D465')).toBeGreaterThan(0.99);
+  });
+
+  it('holds the glyphs the two rules share still while the right-hand side walks', () => {
+    // Hung from the same left edge rather than centred. Centred, the six they
+    // share would slide sideways as the wider rule arrived.
+    const startOf = (seconds: number, id: string) => {
+      const mark = at(tangent, seconds).find((each) => each.id === id);
+      if (mark?.kind !== 'path') throw new Error(`${id} is a path`);
+      return mark.path[0].start;
+    };
+    for (const glyph of ['0-1D451', '1-1D466', '2-1D451', '3-1D465', '4-rule', '5-3D']) {
+      const id = `tangent/equation/at-rest/${glyph}`;
+      expect(startOf(TIMES.morphTo, id).x, id).toBeCloseTo(startOf(TIMES.beat, id).x, 12);
+      expect(startOf(TIMES.morphTo, id).y, id).toBeCloseTo(startOf(TIMES.beat, id).y, 12);
+    }
   });
 
   it('arrives rather than appearing', () => {
@@ -160,7 +185,7 @@ describe('the flat demo', () => {
 describe('the strip of frames', () => {
   it('carries every frame with no two marks sharing an id', () => {
     const { marks } = stripMarks(FRAMES);
-    expect(marks).toHaveLength(93 * FRAMES.length);
+    expect(marks).toHaveLength(100 * FRAMES.length);
     expect(new Set(marks.map((mark) => mark.id)).size).toBe(marks.length);
   });
 

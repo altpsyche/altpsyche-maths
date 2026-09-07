@@ -215,7 +215,7 @@ typesetter measured into its box. The two expressions placed by their start put 
 within 1e-12 of the same place, against 0.083 apart centred. Naming the middle draws what naming
 nothing draws. The suite is 382 tests in 747 ms, against 379 in 740 ms.
 
-**4. The flat demo morphs at the stationary point.** The reading currently draws
+**4. Done. The flat demo morphs at the stationary point.** The reading currently draws
 `\frac{dy}{dx} = 2x` at every time. It becomes `\frac{dy}{dx} = 0` while the walk is held at the
 stationary point, and morphs into `\frac{dy}{dx} = 2x` as the dot leaves it. This is the step the
 demos gain from, and the expression pair is the one measured above.
@@ -223,6 +223,13 @@ demos gain from, and the expression pair is the one measured above.
 *Measures:* the demo's mark count at every named time, which is 93 now and 93 plus the second
 expression's 7 afterwards. The committed pictures' byte counts, which are 37,265 and 147,624 now.
 The suite's duration, 745 ms over 364 tests now.
+
+*Measured:* the demo draws 100 marks at every named time, against 93. At the beat the `0` of the
+first rule is drawn and the `2` and the `x` of the second are at nothing, and by the end of the morph
+that is the other way round. The six glyphs the two rules share stand in the same place at both ends
+to within 1e-12. The committed still went from 37,265 to 49,971 bytes and the strip from 147,624 to
+203,664, and the strip's second and third frames show the morph in a still. The suite is 384 tests in
+880 ms, against 382 in 747 ms.
 
 **5. The cut.** The version goes to 0.7.0, the README gains the paragraph, and this entry is deleted.
 The website moves after the release rather than before it, and its cached geometry needs no rebuild,

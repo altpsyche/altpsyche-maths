@@ -12,6 +12,11 @@
  *
  * At 0.6.0 the reading gains the rule it comes from, typeset once when this
  * module loads. The number beside it is the same rule with a value put in.
+ *
+ * At 0.7.0 that rule is two rules. It reads nothing for a slope while the dot is
+ * held at the stationary point, and as the dot leaves it the right-hand side
+ * walks into the one that depends on x. Both are in the picture at every time
+ * and the morph moves one onto the other.
  */
 import {
   areaUnder,
@@ -23,6 +28,7 @@ import {
   equationFromTex,
   equationNode,
   fadeIn,
+  morphEquation,
   flash,
   fractionOf,
   growFrom,
@@ -45,6 +51,7 @@ import {
   vec2,
   Timeline,
   at as marksAt,
+  type Equation,
   type Extent,
   type Figure,
   type Mark,
@@ -78,15 +85,27 @@ const walkPath = plot(coords, curve, { over: interval(0, 3) });
 
 const START = pointAlong(walkPath, 0) ?? vec2(0, 0);
 
-/** The rule the reading is a value of, typeset when this module loads rather
- * than at every frame, since the geometry is the same at every time. */
-const slopeRule = await equationFromTex('\\frac{dy}{dx} = 2x');
+/** The rule at the stationary point and the rule everywhere else, typeset when
+ * this module loads rather than at every frame, since the geometry of each is
+ * the same at every time. */
+const atRest = await equationFromTex('\\frac{dy}{dx} = 0');
+const moving = await equationFromTex('\\frac{dy}{dx} = 2x');
 
-/** The equation's middle and the box it is fitted inside. The height is what
- * binds, so it draws 1.14 wide and its left edge sits under the reading's. */
-const RULE_AT = fractionOf(extent, 0.105, 0.79);
+/** Where the rules start and the box each is fitted inside. Both are hung from
+ * the same left edge, under the reading's own, so the six glyphs they share
+ * stand still while the right-hand side walks. Centred instead they would slide
+ * sideways by 0.083 as the wider one arrives. */
+const RULE_AT = fractionOf(extent, 0.05, 0.79);
 const RULE_WIDTH = 1.2;
 const RULE_HEIGHT = 0.6;
+const rule = (name: string, equation: Equation) =>
+  equationNode(name, equation, {
+    at: RULE_AT,
+    align: 'start',
+    width: RULE_WIDTH,
+    height: RULE_HEIGHT,
+    fill: ink,
+  });
 
 /** Every label along the x axis, named after the number it shows, which is what
  * lets them arrive one after another. */
@@ -113,7 +132,7 @@ export function sceneAt(along: number): Node {
     text('reading', fractionOf(extent, 0.05, 0.9), `slope ${labelFor(slopeOf(curve, x), 0.01)}`, 0.34, {
       fill: ink,
     }),
-    equationNode('equation', slopeRule, { at: RULE_AT, width: RULE_WIDTH, height: RULE_HEIGHT, fill: ink }),
+    group('equation', [rule('at-rest', atRest), rule('moving', moving)]),
   ]);
 }
 
@@ -160,7 +179,13 @@ const WALK = 3.6;
 const WALK_FROM = beat.duration;
 const WALK_TO = WALK_FROM + WALK;
 
-const line = beat.wait(WALK).play(flash('tangent/point', { stroke: accent, rays: 10 }), 0.8);
+/** How long the right-hand side takes to walk, which starts as the walk does so
+ * the reading and the rule stop disagreeing about the slope. */
+const MORPH = 0.9;
+
+const morphed = beat.play(morphEquation('tangent/equation/at-rest', 'tangent/equation/moving'), MORPH);
+
+const line = morphed.wait(WALK - MORPH).play(flash('tangent/point', { stroke: accent, rays: 10 }), 0.8);
 
 /** The walk holds at the stationary point until the picture has arrived and been
  * pointed at, then runs to the top of the curve. */
@@ -208,4 +233,10 @@ export const FRAMES = [entrance.duration, beat.duration, WALK_FROM + WALK * 0.5,
 
 /** What the timeline is made of, for a gate that would otherwise have to guess
  * where one part of the story ends and the next begins. */
-export const TIMES = { entrance: entrance.duration, beat: beat.duration, walkFrom: WALK_FROM, walkTo: WALK_TO };
+export const TIMES = {
+  entrance: entrance.duration,
+  beat: beat.duration,
+  walkFrom: WALK_FROM,
+  morphTo: WALK_FROM + MORPH,
+  walkTo: WALK_TO,
+};
