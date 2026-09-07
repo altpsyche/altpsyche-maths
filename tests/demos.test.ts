@@ -42,11 +42,40 @@ describe('the committed pictures', () => {
 });
 
 describe('the flat demo', () => {
-  it('draws the same 100 marks at every time', () => {
-    // Eighty-nine the scene writes, of which fifteen are the two rules, plus the
-    // box round the reading and ten rays. Nothing arrives or leaves part way
-    // through, which is what lets one frame be compared against another at all.
-    for (const seconds of [0, ...FRAMES, durationOf(tangent)]) expect(at(tangent, seconds)).toHaveLength(100);
+  it('draws the same 102 marks at every time', () => {
+    // Ninety-one the scene writes, of which fifteen are the two rules and two
+    // the brace and its number, plus the box round the reading and ten rays.
+    // Nothing arrives or leaves part way through, which is what lets one frame
+    // be compared against another at all.
+    for (const seconds of [0, ...FRAMES, durationOf(tangent)]) expect(at(tangent, seconds)).toHaveLength(102);
+  });
+
+  it('braces the rise at the end and counts up to it', () => {
+    const wordAt = (seconds: number) => {
+      const mark = at(tangent, seconds).find((each) => each.id === 'tangent/rise/word');
+      if (mark?.kind !== 'text') throw new Error('the word is text');
+      return mark;
+    };
+    // Nothing of it shows until the dot has stopped, so the number counting is
+    // not a second clock arguing with the walk.
+    expect(wordAt(TIMES.walkTo).opacity).toBe(0);
+    expect(wordAt(TIMES.braceFrom).text).toBe('0.00');
+    expect(wordAt((TIMES.braceFrom + TIMES.braceTo) / 2).text).not.toBe('9.00');
+    expect(wordAt(TIMES.braceTo).text).toBe('9.00');
+    expect(wordAt(TIMES.braceTo).opacity).toBeGreaterThan(0.99);
+  });
+
+  it('stands its brace on the two points the graph gives', () => {
+    const mark = at(tangent, TIMES.braceTo).find((each) => each.id === 'tangent/rise/brace');
+    if (mark?.kind !== 'path') throw new Error('the brace is a path');
+    const [subpath] = mark.path;
+    const top = pointOf(coords, 3, 9);
+    const foot = pointOf(coords, 3, 0);
+    expect(subpath.start.x).toBeCloseTo(top.x, 12);
+    expect(subpath.start.y).toBeCloseTo(top.y, 12);
+    const end = subpath.curves[subpath.curves.length - 1].to;
+    expect(end.x).toBeCloseTo(foot.x, 12);
+    expect(end.y).toBeCloseTo(foot.y, 12);
   });
 
   it('reads no slope at the stationary point and the rule for one after it', () => {
@@ -185,7 +214,7 @@ describe('the flat demo', () => {
 describe('the strip of frames', () => {
   it('carries every frame with no two marks sharing an id', () => {
     const { marks } = stripMarks(FRAMES);
-    expect(marks).toHaveLength(100 * FRAMES.length);
+    expect(marks).toHaveLength(102 * FRAMES.length);
     expect(new Set(marks.map((mark) => mark.id)).size).toBe(marks.length);
   });
 

@@ -198,7 +198,7 @@ rounding of 1 and 4.500 at a rounding of 0.001, so the decimals are the caller's
 same object it was, a name matching nothing changes nothing, and a name over a group reaches every
 text mark under it. The suite is 403 tests in 936 ms, against 396 in 896 ms.
 
-**4. The flat demo braces the rise and counts it.** After the flash at the top of the curve, a brace
+**4. Done. The flat demo braces the rise and counts it.** After the flash at the top of the curve, a brace
 arrives along the right of the shaded region from the stationary point to the top, and its label
 counts from 0 to the 9 the curve climbed. This is the step the demos gain from, and it is the only
 number in this demo that the clock drives rather than the track.
@@ -207,6 +207,14 @@ number in this demo that the clock drives rather than the track.
 of the count at the moment the brace arrives and 9.00 at the end. The brace's ends sit on the two
 points the graph gives, to within 1e-12. The committed pictures' byte counts, which are 49,971 and
 203,664 now. The suite's duration, 880 ms over 384 tests now.
+
+*Measured:* the demo draws 102 marks at every named time, against 100. The number is at nothing until
+the dot has stopped, reads 0.00 as the brace begins, something else half way, and 9.00 at the end.
+The brace's ends sit on the two points the graph gives to within 1e-12. The strip's last frame is now
+the end rather than the top of the curve, since a strip stopping at the top shows none of this, and
+its four frames read 0.00 hidden, 0.00 hidden, 0.00 hidden and 9.00 shown. The committed still went
+from 49,971 to 50,238 bytes and the strip from 203,664 to 205,222. The suite is 405 tests in 918 ms,
+against 403 in 936 ms.
 
 **5. The cut.** The version goes to 0.8.0, the README gains the paragraph, and this entry is deleted,
 with the boolean operations moved under the items if Siva agrees they leave.

@@ -17,6 +17,11 @@
  * held at the stationary point, and as the dot leaves it the right-hand side
  * walks into the one that depends on x. Both are in the picture at every time
  * and the morph moves one onto the other.
+ *
+ * At 0.8.0 the walk ends with a brace measuring how far the curve climbed, and
+ * its number counts up to that rise. The dot has stopped by then, which is what
+ * lets a number here be driven by the clock: every other one is a value of the
+ * track and two clocks would be free to disagree.
  */
 import {
   areaUnder,
@@ -24,6 +29,8 @@ import {
   circumscribe,
   coordsOf,
   dot,
+  brace,
+  countTo,
   draw,
   equationFromTex,
   equationNode,
@@ -107,6 +114,14 @@ const rule = (name: string, equation: Equation) =>
     fill: ink,
   });
 
+/** How far the curve climbs over the stretch the dot walks, which is what the
+ * brace at the end measures and what its number counts to. */
+const RISE = curve(3);
+
+/** The brace stands on the right of the shaded region, so it is pushed the way
+ * the perpendicular of a downward span points, which is away from the curve. */
+const RISE_DEPTH = 0.3;
+
 /** Every label along the x axis, named after the number it shows, which is what
  * lets them arrive one after another. */
 const acrossLabels = ['-1', '0', '1', '2', '3', '4'].map((label) => `tangent/axes/x/labels/${label}`);
@@ -133,6 +148,13 @@ export function sceneAt(along: number): Node {
       fill: ink,
     }),
     group('equation', [rule('at-rest', atRest), rule('moving', moving)]),
+    brace('rise', pointOf(coords, 3, RISE), pointOf(coords, 3, 0), labelFor(RISE, 0.01), {
+      depth: RISE_DEPTH,
+      padding: 0.28,
+      stroke: pen,
+      fill: ink,
+      size: 0.3,
+    }),
   ]);
 }
 
@@ -185,7 +207,19 @@ const MORPH = 0.9;
 
 const morphed = beat.play(morphEquation('tangent/equation/at-rest', 'tangent/equation/moving'), MORPH);
 
-const line = morphed.wait(WALK - MORPH).play(flash('tangent/point', { stroke: accent, rays: 10 }), 0.8);
+const flashed = morphed.wait(WALK - MORPH).play(flash('tangent/point', { stroke: accent, rays: 10 }), 0.8);
+
+/** The brace draws on while its number counts to the rise, which is one span so
+ * the two cannot end at different moments. */
+const line = flashed.together(
+  [
+    draw('tangent/rise/brace'),
+    fadeIn('tangent/rise/word'),
+    countTo('tangent/rise/word', 0, RISE, (value) => labelFor(value, 0.01)),
+  ],
+  0.9,
+  { after: 0.15 }
+);
 
 /** The walk holds at the stationary point until the picture has arrived and been
  * pointed at, then runs to the top of the curve. */
@@ -228,8 +262,10 @@ export function stripMarks(times: readonly number[]): { marks: readonly Mark[]; 
 }
 
 /** The times the strip shows, which are also the times the gate reads the demo
- * at: the picture arrived, the beat, half way up, and the top. */
-export const FRAMES = [entrance.duration, beat.duration, WALK_FROM + WALK * 0.5, WALK_TO];
+ * at: the picture arrived, the beat, half way up, and the end with the rise
+ * braced. The last is the end rather than the top of the curve, because a strip
+ * that stops at the top shows none of what the last beat adds. */
+export const FRAMES = [entrance.duration, beat.duration, WALK_FROM + WALK * 0.5, line.duration];
 
 /** What the timeline is made of, for a gate that would otherwise have to guess
  * where one part of the story ends and the next begins. */
@@ -239,4 +275,6 @@ export const TIMES = {
   walkFrom: WALK_FROM,
   morphTo: WALK_FROM + MORPH,
   walkTo: WALK_TO,
+  braceFrom: flashed.duration + 0.15,
+  braceTo: line.duration,
 };
