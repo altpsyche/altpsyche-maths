@@ -1,5 +1,31 @@
 import { describe, expect, it } from 'vitest';
-import { clamp, curveFor, easeIn, easeOut, inverseLerp, linear, lerp, mat3, remap, smoothstep, vec2, vec3 } from '@altpsyche/maths';
+import {
+  SAME_TIME,
+  TOLERANCE,
+  circle,
+  clamp,
+  curveCrossings,
+  curveFor,
+  easeIn,
+  easeOut,
+  flattenPath,
+  inverseLerp,
+  linear,
+  lerp,
+  mat3,
+  nearestEdge,
+  pointOn,
+  rect,
+  remap,
+  slopeOn,
+  smoothstep,
+  splitCurve,
+  straight,
+  vec2,
+  vec3,
+  windingAt,
+  withKey,
+} from '@altpsyche/maths';
 
 /**
  * The values half, which has no clock and no screen in it. Every curve is
@@ -137,5 +163,67 @@ describe('mat3', () => {
     expect(mat3.scaleFactor(mat3.scaling(vec2(3, 3)))).toBeCloseTo(3, 10);
     expect(mat3.scaleFactor(mat3.rotation(0.7))).toBeCloseTo(1, 10);
     expect(mat3.scaleFactor(mat3.scaling(vec2(2, 4)))).toBeCloseTo(3, 10);
+  });
+});
+
+describe('what the door hands out on its own', () => {
+  it('states one tolerance that every call taking one falls back to', () => {
+    // Four calls take a tolerance and each is a distance in the picture's own
+    // units, so one number rather than four keeps them agreeing about what
+    // counts as one place.
+    expect(TOLERANCE).toBe(1e-6);
+    const crossings = curveCrossings(
+      vec2(0, 0),
+      straight(vec2(0, 0), vec2(2, 2)),
+      vec2(0, 2),
+      straight(vec2(0, 2), vec2(2, 0)),
+      { tolerance: TOLERANCE }
+    );
+    expect(crossings).toHaveLength(1);
+  });
+
+  it('counts two keys within half a frame as one key', () => {
+    expect(SAME_TIME).toBe(1 / 120);
+    const track = withKey([{ time: 0, value: 1 }], { time: SAME_TIME / 2, value: 5 });
+    expect(track).toHaveLength(1);
+    expect(track[0].value).toBe(5);
+  });
+});
+
+describe('the geometry the door hands out beside the paths', () => {
+  it('cuts one piece into two that draw what the whole drew', () => {
+    const whole = straight(vec2(0, 0), vec2(4, 0));
+    const [head, tail] = splitCurve(vec2(0, 0), whole, 0.25);
+    expect(head.to.x).toBeCloseTo(1, 12);
+    expect(pointOn(vec2(0, 0), head, 0.5).x).toBeCloseTo(0.5, 12);
+    expect(pointOn(head.to, tail, 0.5).x).toBeCloseTo(2.5, 12);
+  });
+
+  it('reads which way a piece is heading', () => {
+    const up = straight(vec2(0, 0), vec2(0, 3));
+    const heading = slopeOn(vec2(0, 0), up, 0.5);
+    expect(heading.x).toBeCloseTo(0, 12);
+    expect(heading.y).toBeGreaterThan(0);
+    const quarter = circle(vec2(0, 0), 1)[0];
+    const start = slopeOn(quarter.start, quarter.curves[0], 0);
+    // Anticlockwise from the positive x axis, so the first quarter leaves
+    // straight up.
+    expect(start.x).toBeCloseTo(0, 12);
+    expect(start.y).toBeGreaterThan(0);
+  });
+
+  it('counts the windings round a point over a flattening made once', () => {
+    const loops = flattenPath(circle(vec2(0, 0), 1));
+    expect(windingAt(loops, vec2(0, 0))).toBe(1);
+    expect(windingAt(loops, vec2(2, 0))).toBe(0);
+  });
+
+  it('says which edge a point sits nearest and which way it runs', () => {
+    const loops = flattenPath(rect(vec2(0, 0), 2, 2));
+    const edge = nearestEdge(loops, vec2(1, 0));
+    expect(edge).not.toBeNull();
+    expect(edge!.gap).toBeLessThan(1e-9);
+    expect(Math.abs(edge!.heading.y)).toBeLessThan(1e-9);
+    expect(nearestEdge([], vec2(0, 0))).toBeNull();
   });
 });

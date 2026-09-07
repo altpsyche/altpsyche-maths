@@ -22,7 +22,8 @@
  * expressions has to be made on.
  *
  * Three things stop the walk instead of being drawn, and each names what it
- * found. They are written up on `refuse` below.
+ * found: a TeX error, a character the font has no outline for, and a macro the
+ * typesetter does not know.
  */
 import { mat3, type Mat3 } from '../values/mat3.js';
 import { vec2, type Vec2 } from '../values/vec2.js';

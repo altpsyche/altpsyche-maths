@@ -13,9 +13,16 @@
  */
 import { vec2, type Vec2 } from '../values/vec2.js';
 import type { Cubic } from './path.js';
+import { TOLERANCE } from './tolerance.js';
 
-/** One place two curves meet, as a fraction along each of them and the point
- * itself. */
+/**
+ * One place two curves meet, as a fraction along each of them and the point.
+ *
+ * The point is read off the first curve. Where the two cross cleanly the second
+ * curve's own fraction lands on the same point to the last few bits, and where
+ * they meet without crossing it can land as far off as the tolerance, since
+ * Newton has no step to take when the two are heading the same way.
+ */
 export interface Crossing {
   readonly alongFirst: number;
   readonly alongSecond: number;
@@ -24,14 +31,12 @@ export interface Crossing {
 
 export interface CrossingOptions {
   /** How close two pieces come before they count as meeting, in the picture's
-   * own units. */
+   * own units. It decides which meetings are told apart rather than how sharp
+   * one is, since Newton's method supplies the sharpness afterwards. */
   readonly tolerance?: number;
 }
 
-/** How close two pieces come before they count as meeting. It decides which
- * meetings are told apart rather than how sharp one is, since Newton's method
- * supplies the sharpness afterwards. */
-const TOLERANCE = 1e-6;
+
 
 /**
  * How many pairs the search may make before it answers with where it had got to.

@@ -24,6 +24,7 @@ import { pointOn, slopeOn, type Cubic, type Path, type Subpath } from './path.js
 import { cutPath, type Cut } from './cut.js';
 import { curveCrossings } from './intersect.js';
 import { flattenPath, nearestEdge, windingAt } from './inside.js';
+import { TOLERANCE } from './tolerance.js';
 
 export interface BooleanOptions {
   /** How close two things come before they count as the same place, in the
@@ -32,7 +33,6 @@ export interface BooleanOptions {
   readonly tolerance?: number;
 }
 
-const TOLERANCE = 1e-6;
 
 /** One piece with the point it starts from, since a piece carries where it ends
  * and not where it began. */

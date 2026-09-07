@@ -10,6 +10,7 @@
 import { splitCurve, type Cubic, type Path, type Subpath } from './path.js';
 import { measurePath } from './length.js';
 import type { Vec2 } from '../values/vec2.js';
+import { TOLERANCE } from './tolerance.js';
 
 /** Where one cut falls: which subpath, which piece of it, and how far along
  * that piece. */
@@ -25,7 +26,6 @@ export interface CutOptions {
   readonly tolerance?: number;
 }
 
-const TOLERANCE = 1e-9;
 
 /** The fractions for one piece, in order, with the ones that would leave a
  * piece of nothing dropped. */

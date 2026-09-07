@@ -149,9 +149,9 @@ export function fadeTo(target: string, opacity: number): Animation {
  * A mark carried through a transform, geometry and weight together.
  *
  * A transform that scales makes the lines inside it thicker and the words
- * bigger, the way it makes everything else bigger, which is what `flatten`
- * already does for a group that scales. Doing less here would leave a shrinking
- * mark with the stroke it started at.
+ * bigger, the way it makes everything else bigger, which is what a group that
+ * scales already does to the marks under it. Doing less here would leave a
+ * shrinking mark with the stroke it started at.
  */
 function carried(mark: Mark, through: Mat3): Mark {
   const scale = mat3.scaleFactor(through);

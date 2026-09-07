@@ -15,6 +15,7 @@
  */
 import { vec2, type Vec2 } from '../values/vec2.js';
 import type { Cubic, Path } from './path.js';
+import { TOLERANCE } from './tolerance.js';
 
 export interface FlattenOptions {
   /** How far a straight run may sit from the curve it stands for, in the
@@ -22,7 +23,6 @@ export interface FlattenOptions {
   readonly tolerance?: number;
 }
 
-const TOLERANCE = 1e-6;
 
 /** How many times a piece may be halved, which a tolerance of zero would
  * otherwise leave unbounded. */
@@ -158,6 +158,10 @@ export function nearestEdge(loops: readonly (readonly Vec2[])[], point: Vec2): E
  *
  * A point sitting on the edge itself has no answer this can be right about, and
  * what comes back for one is whichever side the tolerance put it on.
+ *
+ * The path is flattened again on every call, which is a millisecond every three
+ * points against a path of a hundred pieces. Asking about many points wants the
+ * flattening made once and the count taken against it.
  */
 export function containsPoint(path: Path, point: Vec2, options: FlattenOptions = {}): boolean {
   return windingAt(flattenPath(path, options), point) !== 0;

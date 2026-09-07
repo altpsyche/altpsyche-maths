@@ -148,22 +148,15 @@ no box test in front of it and the quadratic over piece pairs is not worth remov
 
 #### 0.9.3, the small gaps
 
-Seven of them, together, since each is a line or two.
+**Done.** Seven of them, together, since each was a line or two.
 
-- The tolerance is written four times, in `intersect.ts`, `cut.ts`, `inside.ts` and `boolean.ts`, at
-  two different values, with nothing saying how they relate.
-- `splitCurve` and `windingAt` are on the door and no test names either. `SAME_TIME` has been in the
-  same state since before this cycle.
-- A crossing's point is read off the first curve alone, so at a tangency the fraction along the second
-  curve lands up to the tolerance away from it. Nothing says so.
-- `containsPoint` flattens the path again on every call, which is 0.31ms each on a 99-piece path.
-  `windingAt` over one flattening is the way round it and nothing points to it.
-- The README says a coincident stretch is decided by the tolerance. It is not decided, it is wrong,
-  and the line is corrected when 0.9.1 makes it true.
-- Two comments name an identifier, in `animation.ts` and `equation.ts`, against the rule in
-  CLAUDE.md.
-
-*Measures:* one stated tolerance, three exports named by a test, and the four doc lines corrected.
+*Measured:* the tolerance is stated once in `figure/tolerance.ts` and the four calls that take one
+fall back to it, where it was written four times at two different values. Every one of the 111 names
+the door hands out is now named by a test, where three were not. A crossing's point says which curve
+it is read off and how far the other one's fraction can land from it. `containsPoint` says what
+flattening again costs and what to do instead. The README says how a shared edge is combined and what
+a stitch that will not close does, where it said the answer was decided by the tolerance. The two
+comments that named an identifier say the thing instead.
 
 #### 0.9.4, the pictures
 

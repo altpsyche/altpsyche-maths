@@ -201,8 +201,16 @@ Four times of one figure. A small disc walks across a larger one: clear of it, t
 point, crossing it at two, and wholly inside it. Those are the four cases this kind of code gets
 silently wrong, which is why the demo walks through all of them rather than drawing one.
 
-Two edges that lie on top of each other for a stretch have no one answer, and what comes back for
-them is decided by the tolerance rather than by the geometry.
+Two shapes that share an edge are combined by which way each of them runs over it. Two paths walking
+a shared stretch the same way have their solid on the same side of it, so the stretch is on the edge
+of a union and of an overlap and is kept once. Walking it opposite ways puts their solids on opposite
+sides, so the stretch is inside a union and outside an overlap, and a difference keeps the first
+path's copy of it. Two rectangles sharing an edge unite into one rectangle, and a shape combined with
+itself gives itself back.
+
+When the pieces kept will not join into a loop, the operation stops and says how far apart the two
+ends of the run it had are. That happens when an input crosses itself, which these do not take. A
+shape drawn with a gap in it and nothing said about it is the one failure a caller cannot see.
 
 ## The animations
 
