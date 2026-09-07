@@ -28,6 +28,8 @@ export { pathFromData } from './figure/path-data.js';
 export type { Colour, Fill, Mark, PathMark, Stroke, TextMark } from './figure/mark.js';
 export { byAspect, fractionOf, matchingAspect, resolveExtent, viewMatrix } from './figure/extent.js';
 export type { Extent, ExtentChoice, Fit } from './figure/extent.js';
+export { labelFor, tickStep, ticksOn } from './figure/ticks.js';
+export type { Tick } from './figure/ticks.js';
 export { flatten, group, shape, text } from './figure/node.js';
 export type { GroupNode, Node, ShapeNode, Style, TextNode, TextOptions } from './figure/node.js';
 export { fadeIn, fadeOut, fadeTo, draw, morph, moveBy } from './figure/animation.js';

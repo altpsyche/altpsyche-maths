@@ -182,13 +182,16 @@ resumes at the first unticked one.
       through a reversed target, so the test holds it at 1e-12 rather than exactly. A bound above its
       partner maps in reverse rather than erroring, and a source of no width reports the target's
       first bound rather than an infinity.
-- [ ] **2. Ticks on an interval, and their labels.** `figure/ticks.ts`: the step size chosen by
-      Heckbert's nice numbers, which is the published version of the one, two, five and ten rule; the
-      tick values inside an interval; and each tick's own text, formatted from the number of decimals
-      the step has. A tick comes back as its value and its text together, so a caller never re-derives
-      the decimals. Measurement: how many of the labels over zero to one at a step of a fifth carry
-      float noise when formatted the obvious way, against none after; the step and the count chosen
-      for four ranges including one where `from` is above `to` and one of no width.
+- [x] **2. Ticks on an interval, and their labels.** `figure/ticks.ts`: the step size chosen by
+      Heckbert's nice numbers, the tick values inside an interval, and each tick's own text formatted
+      from the number of decimals the step has. A tick comes back as its value and its text together,
+      and the value is rounded to those decimals, so the number drawn and the number placed are the
+      same number. **Landed.** Printed as it stands, one label of six over zero to one and one of six
+      over zero to a half carry float noise, against none after. The published step choice rounds the
+      span before dividing it, which suits a graph free to move its own bounds; over eight ranges,
+      dividing the span as it stands cut the worst count error from four ticks to one. Ticks are
+      counted as multiples of the step rather than reached by repeated addition, which is what keeps
+      the last one on its own bound.
 - [ ] **3. A scale, and the pair of them.** `figure/scale.ts`: `Scale` as a graph interval onto a
       figure-unit interval, `scaled` and `unscaled`, then `Coords` as the two scales together with
       `pointOf(coords, x, y)`. Measurement: where the demo's coords put graph `(0, 0)`, `(4, 9)` and
