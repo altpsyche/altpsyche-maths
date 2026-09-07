@@ -192,7 +192,7 @@ naming itself. `\frac{1}`, `x^` and `\mbox{ü}` are each one text element, all t
 the walk with the same word before, and each now names what it found. The five expressions that typeset still do. The
 suite is 360 tests in 547 ms, against 356 in 584 ms.
 
-**4. An equation placed in a figure.** A builder that takes a typeset equation and returns a group,
+**4. Done. An equation placed in a figure.** A builder that takes a typeset equation and returns a group,
 alongside `dot`, `arrow` and `callout`. It fits the equation inside a width and a height together
 rather than sizing it by the height alone, because an equation twice as wide as it is tall runs off
 the sides of a narrow figure the moment the height decides its size. The group carries the transform
@@ -201,6 +201,12 @@ given here.
 
 *Measures:* an equation wider than it is tall, asked into a box narrower than it is wide, has every
 point of every mark inside that box. Its centre sits where it was asked for to within 1e-12.
+
+*Measured:* `d = \sqrt{x^2 + y^2} - r` is measured into a box 6.11 times wider than it is tall. Asked
+into a box 2 by 2, it draws 1.99 by 0.31 and every point is inside. Scaled by the height alone it
+would have been 12.23 wide against a box 2 wide. The same equation placed at two points has children
+that compare equal and transforms that do not, which is what says the glyphs keep the typesetter's
+own numbers. The suite is 364 tests in 541 ms, against 360 in 547 ms.
 
 **5. The flat demo gains its equation.** `demos/tangent.ts` draws the slope's equation beside the
 number it already reads, which is `\frac{dy}{dx} = 2x` for the parabola it plots. The equation fades

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { equationFromTex, equationMarks } from '@altpsyche/maths';
+import { equationFromTex, equationMarks, equationNode, flatten, vec2 } from '@altpsyche/maths';
 import type { EquationElement, PathMark } from '@altpsyche/maths';
 
 /**
@@ -132,5 +132,69 @@ describe('the three refusals', () => {
 
   it('still draws every expression that typesets', async () => {
     for (const tex of Object.keys(EXPRESSIONS)) await expect(equationFromTex(tex)).resolves.toBeDefined();
+  });
+});
+
+describe('an equation placed in a figure', () => {
+  const placed = async (tex: string, width: number, height: number) => {
+    const marks = flatten(
+      equationNode('label', await equationFromTex(tex), {
+        at: vec2(1, 2),
+        width,
+        height,
+        fill: { colour: '#1b1b1b' },
+      })
+    );
+    const points = marks.flatMap((mark) =>
+      mark.kind === 'path'
+        ? mark.path.flatMap((subpath) => [
+            subpath.start,
+            ...subpath.curves.flatMap((curve) => [curve.control1, curve.control2, curve.to]),
+          ])
+        : [mark.at]
+    );
+    return {
+      marks,
+      left: Math.min(...points.map((point) => point.x)),
+      right: Math.max(...points.map((point) => point.x)),
+      bottom: Math.min(...points.map((point) => point.y)),
+      top: Math.max(...points.map((point) => point.y)),
+    };
+  };
+
+  it('fits inside the width as well as the height', async () => {
+    // Sized by the height alone, an expression this much wider than it is tall
+    // runs off both sides of the box it was asked into.
+    const { left, right, bottom, top } = await placed('d = \\sqrt{x^2 + y^2} - r', 2, 2);
+    expect(right - left).toBeLessThanOrEqual(2);
+    expect(top - bottom).toBeLessThanOrEqual(2);
+    expect(left).toBeGreaterThanOrEqual(0);
+    expect(right).toBeLessThanOrEqual(2);
+  });
+
+  it('centres the box the typesetter measured on the point it was given', async () => {
+    const { left, right, bottom, top } = await placed('\\frac{a}{b} = \\sqrt{2}', 4, 1);
+    // The glyphs sit inside the measured box rather than filling it, so the
+    // centre is checked against the box and the tolerance is the ink's own gap.
+    expect((left + right) / 2).toBeCloseTo(1, 1);
+    expect((bottom + top) / 2).toBeCloseTo(2, 1);
+  });
+
+  it('gives every glyph its own name and the colour it is drawn in', async () => {
+    const { marks } = await placed('x + 1', 4, 1);
+    expect(marks.length).toBeGreaterThan(0);
+    expect(marks.every((mark) => mark.id.startsWith('label/'))).toBe(true);
+    expect(new Set(marks.map((mark) => mark.id)).size).toBe(marks.length);
+    expect(marks.every((mark) => mark.kind === 'path' && mark.fill?.colour === '#1b1b1b')).toBe(true);
+  });
+
+  it('moves as one matrix rather than as moved geometry', async () => {
+    // The glyphs keep the typesetter's own numbers, so the same equation placed
+    // twice differs by the group's transform and by nothing else.
+    const equation = await equationFromTex('x');
+    const here = equationNode('a', equation, { at: vec2(0, 0), width: 1, height: 1, fill: { colour: 'red' } });
+    const there = equationNode('a', equation, { at: vec2(5, 5), width: 1, height: 1, fill: { colour: 'red' } });
+    expect(here.children).toEqual(there.children);
+    expect(here.transform).not.toEqual(there.transform);
   });
 });

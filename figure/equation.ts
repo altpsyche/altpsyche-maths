@@ -25,11 +25,12 @@
  * found. They are written up on `refuse` below.
  */
 import { mat3, type Mat3 } from '../values/mat3.js';
-import { vec2 } from '../values/vec2.js';
+import { vec2, type Vec2 } from '../values/vec2.js';
 import { rect, transformPath, type Path } from './path.js';
+import { group, shape, type GroupNode } from './node.js';
 import { pathFromData } from './path-data.js';
 import { typesetElement, type EquationElement } from './typeset.js';
-import type { PathMark } from './mark.js';
+import type { Fill, PathMark } from './mark.js';
 
 /** Where the typesetter put the expression, in the marks' own units and with y
  * counted upward, so `y` is the bottom edge and `y + height` the top. */
@@ -184,4 +185,39 @@ export function equationMarks(root: EquationElement): Equation {
  * they are always used in. */
 export async function equationFromTex(tex: string): Promise<Equation> {
   return equationMarks(await typesetElement(tex));
+}
+
+export interface EquationOptions {
+  /** Where the middle of the expression sits, in the figure's own units. */
+  readonly at: Vec2;
+  /** The box the expression is fitted inside, in the figure's own units. */
+  readonly width: number;
+  readonly height: number;
+  readonly fill: Fill;
+}
+
+/**
+ * A typeset expression placed in a figure: one shape per glyph, fitted inside a
+ * box and centred on a point.
+ *
+ * It fits inside both measurements rather than being sized by the height alone.
+ * An expression two units wide for every one it is tall runs off the sides of a
+ * narrow figure the moment its height is what decides its size.
+ *
+ * The group carries the transform rather than the geometry, so the glyphs stay
+ * the typesetter's own numbers and moving the expression is one matrix.
+ */
+export function equationNode(name: string, equation: Equation, options: EquationOptions): GroupNode {
+  const { box } = equation;
+  const fit = Math.min(options.width / box.width, options.height / box.height);
+  const centre = vec2(box.x + box.width / 2, box.y + box.height / 2);
+  const transform = mat3.multiply(
+    mat3.translation(options.at),
+    mat3.multiply(mat3.scaling(vec2(fit, fit)), mat3.translation(vec2(-centre.x, -centre.y)))
+  );
+  return group(
+    name,
+    equation.marks.map((mark) => shape(mark.id, mark.path, { fill: options.fill })),
+    { transform }
+  );
 }
