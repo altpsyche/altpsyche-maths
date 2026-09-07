@@ -192,10 +192,13 @@ resumes at the first unticked one.
       dividing the span as it stands cut the worst count error from four ticks to one. Ticks are
       counted as multiples of the step rather than reached by repeated addition, which is what keeps
       the last one on its own bound.
-- [ ] **3. A scale, and the pair of them.** `figure/scale.ts`: `Scale` as a graph interval onto a
+- [x] **3. A scale, and the pair of them.** `figure/scale.ts`: `Scale` as a graph interval onto a
       figure-unit interval, `scaled` and `unscaled`, then `Coords` as the two scales together with
-      `pointOf(coords, x, y)`. Measurement: where the demo's coords put graph `(0, 0)`, `(4, 9)` and
-      one point outside both intervals, and the round trip through `unscaled` over a thousand samples.
+      `pointOf(coords, x, y)`. **Landed.** The demo's coords put graph `(0, 0)` at `(-2.76, -1.92)`,
+      `(4, 9)` at `(4.6, 2.4)` and `(6, -4)` at `(8.28, -3.84)`, which is outside both figure-unit
+      intervals rather than clamped to them. The round trip through `unscaled` over a thousand samples
+      on each axis is worst 1.8e-15. The pair-wise inverse of `pointOf` was written and then dropped:
+      nothing in 0.4.0 draws it, and the done-criteria export list below is one name shorter for it.
 - [ ] **4. `numberLine`.** One drawn axis: the line, a tick at each value, a label under each tick,
       and an optional tip at each end. Measurement: the mark count and the id list for the demo's x
       interval; and the geometry of every mark with a label forty characters long against the same
@@ -248,7 +251,7 @@ resumes at the first unticked one.
 
 - `npm test`, `npm run type-check` and `npm run build` all pass on a clean tree.
 - `index.ts` exports `Interval`, the interval calls, `Tick`, the tick calls, `Scale`, `Coords`,
-  `scaleOf`, `coordsOf`, `scaled`, `unscaled`, `pointOf`, `labelFor`, `numberLine`, `axes`,
+  `scaleOf`, `coordsOf`, `scaled`, `unscaled`, `pointOf`, `labelFor`, `tickStep`, `numberLine`, `axes`,
   `numberPlane`, `plot`, `areaUnder`, `riemannBars`, `tangentAt` and `slopeOf`, and no file under
   `demos/` reaches into the package by any path other than the door.
 - `at(tangent, seconds)` gives the mark counts step 13 quotes, at all four times.
