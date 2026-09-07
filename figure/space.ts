@@ -9,10 +9,11 @@
  */
 import { vec3, type Vec3 } from '../values/vec3.js';
 import type { Vec2 } from '../values/vec2.js';
-import { circle, polygon, polyline } from './path.js';
+import { circle, line, polygon, polyline } from './path.js';
 import { group, shape, text, type GroupNode, type Node, type Style, type TextOptions } from './node.js';
 import { interval, type Interval } from '../values/interval.js';
-import type { Fill, Stroke } from './mark.js';
+import type { Colour, Fill, Stroke } from './mark.js';
+import { arrow, type ArrowOptions } from './annotate.js';
 import type { Camera3 } from './camera.js';
 
 /** A run the eye can see, and whether it is all of what the author gave. */
@@ -149,6 +150,108 @@ export function space(name: string, items: readonly SpaceItem[], camera: Camera3
   const measured = items.map((item) => ({ node: item.node, depth: middleDepth(item.points, camera) }));
   measured.sort((a, b) => b.depth - a.depth);
   return group(name, measured.map((item) => item.node));
+}
+
+export type Arrow3Options = ArrowOptions;
+
+/**
+ * A line between two points in space with a head at the far end.
+ *
+ * The head is a flat triangle at the projected tip rather than a shape in
+ * space, so it stays the size it was given however far off the arrow is and
+ * however steeply it points away. A head built in space turns edge on to the eye
+ * and disappears exactly where the arrow is hardest to read.
+ *
+ * An arrow whose far end is behind the eye is cut at the near plane and drawn
+ * with no head, since the place the head belongs is not on the page.
+ */
+export function arrow3(name: string, from: Vec3, to: Vec3, camera: Camera3, options: Arrow3Options): GroupNode {
+  const start = camera.project(from);
+  const end = camera.project(to);
+  if (!start.inFront && !end.inFront) return group(name, []);
+
+  const cut = () => {
+    const along = crossingAt(start.depth, end.depth, camera.projection.near);
+    return camera.project(vec3.lerp(from, to, along)).at;
+  };
+  if (!end.inFront) return group(name, [shape('shaft', line(start.at, cut()), { stroke: options.stroke })]);
+
+  const tail = start.inFront ? start.at : cut();
+  if (tail.x === end.at.x && tail.y === end.at.y) return group(name, []);
+  return arrow(name, tail, end.at, options);
+}
+
+export type VectorField3Options = ArrowOptions & {
+  /** The box the samples are taken in, nothing to one each way unless named. */
+  over?: { x?: Interval; y?: Interval; z?: Interval };
+  /** How many samples each way. One number is all three. */
+  resolution?: number | { x: number; y: number; z: number };
+  /** How long an arrow is, in the world's own units, from the magnitude of the
+   * vector at its own sample. */
+  lengthOf: (magnitude: number) => number;
+  /** What colour an arrow is, from that same magnitude. */
+  colourFor: (magnitude: number) => Colour;
+};
+
+function gridOf(resolution: number | { x: number; y: number; z: number }): { x: number; y: number; z: number } {
+  return typeof resolution === 'number' ? { x: resolution, y: resolution, z: resolution } : resolution;
+}
+
+/**
+ * A field of vectors sampled over a box in space, drawn as arrows ordered back
+ * to front.
+ *
+ * An arrow is measured in the world's own units rather than the figure's, unlike
+ * the arrows of a flat field, because a length in space is what perspective is
+ * for: a far arrow drawing shorter than a near one of the same magnitude is what
+ * says which is far. Its head is still in figure units, since the head is drawn
+ * on the page.
+ *
+ * A sample sits at the middle of its cell and the count is fixed by the
+ * resolution, so a gate can hold it as the eye moves. A sample whose vector is
+ * nothing draws no arrow there.
+ */
+export function vectorField3(
+  name: string,
+  of: (at: Vec3) => Vec3,
+  camera: Camera3,
+  options: VectorField3Options,
+): GroupNode {
+  const { over = {}, resolution = 6, lengthOf, colourFor, ...rest } = options;
+  const box = {
+    x: interval.ordered(over.x ?? interval(0, 1)),
+    y: interval.ordered(over.y ?? interval(0, 1)),
+    z: interval.ordered(over.z ?? interval(0, 1)),
+  };
+  const steps = gridOf(resolution);
+  const items: SpaceItem[] = [];
+
+  for (let i = 0; i < steps.x; i += 1) {
+    for (let j = 0; j < steps.y; j += 1) {
+      for (let k = 0; k < steps.z; k += 1) {
+        const from = vec3(
+          interval.at(box.x, (i + 0.5) / steps.x),
+          interval.at(box.y, (j + 0.5) / steps.y),
+          interval.at(box.z, (k + 0.5) / steps.z),
+        );
+        const vector = of(from);
+        const magnitude = vec3.magnitude(vector);
+        const length = lengthOf(magnitude);
+        if (!(magnitude > 0) || !Number.isFinite(length) || !(length > 0)) continue;
+
+        const to = vec3.add(from, vec3.scale(vector, length / magnitude));
+        items.push({
+          points: [from, to],
+          node: arrow3(`${i}-${j}-${k}`, from, to, camera, {
+            ...rest,
+            stroke: { ...rest.stroke, colour: colourFor(magnitude) },
+          }),
+        });
+      }
+    }
+  }
+
+  return space(name, items, camera);
 }
 
 export type Surface3Options = {

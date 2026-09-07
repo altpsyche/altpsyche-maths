@@ -226,14 +226,19 @@ them. The mark count goes from 102 to 202 at all six times the gate reads, and t
 808. A ten by five grid takes `docs/tangent-strip.svg` from 203,891 bytes to 282,371, which is the
 282,528 the solid strip already costs, and `docs/tangent.svg` from 50,653 to 69,413.
 
-**4. Arrows and fields in space.** `arrow3(name, from, to, camera, options)` in `figure/space.ts`, a
+**4. Arrows and fields in space. Done.** `arrow3(name, from, to, camera, options)` in `figure/space.ts`, a
 shaft that is a `polyline3` and a head that is a flat triangle at the projected tip, and
 `vectorField3(name, of, camera, options)` sampling a grid in space and putting the arrows through the
 depth sort.
 
-*Measures:* an arrow in space has its tip at the camera's projection of its far point, to 1e-12. A
-field over a 4 by 4 by 3 grid draws 48 arrows, the same count at every pose. An arrow behind the eye
-draws no marks, which is the rule `polyline3` already holds and the head has to hold too.
+*Measured:* an arrow in space has its tip within 1e-12 of the camera's projection of its far point. A
+field over a 4 by 4 by 3 grid draws 48 arrows and 96 marks at each of five poses of the eye. An arrow
+wholly behind the eye draws no marks, an arrow whose far end is behind it draws a cut shaft and no
+head, and an arrow whose tail alone is behind it keeps both. **An arrow in space is measured in the
+world's own units** rather than the figure's, unlike the arrows of a flat field, since a far arrow
+drawing shorter than a near one of the same magnitude is what says which is far; its head stays in
+figure units because the head is drawn on the page. A field that is nothing over half its box draws 24
+arrows rather than 48. The suite went from 564 tests to 573.
 
 **5. The solid demo gains streamlines.** `demos/surface.ts` draws three runs of steepest descent down
 the saddle, each a streamline of the gradient field integrated across the surface and drawn as a

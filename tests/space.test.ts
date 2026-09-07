@@ -3,6 +3,7 @@ import * as door from '@altpsyche/maths';
 import {
   boundsOf,
   boundsOfMarks,
+  arrow3,
   camera3,
   centreOf,
   interval,
@@ -15,6 +16,8 @@ import {
   surface3,
   text3,
   vec3,
+  vectorField3,
+  type Vec3,
 } from '@altpsyche/maths';
 
 /**
@@ -263,5 +266,103 @@ describe('the door', () => {
     ]) {
       expect(typeof (door as Record<string, unknown>)[name], name).not.toBe('undefined');
     }
+  });
+});
+
+describe('arrow3', () => {
+  const pen = { colour: '#111', width: 0.02 };
+
+  it('puts its tip at the camera projection of its far point', () => {
+    const to = vec3(1, 2, -1);
+    const marks = flatten(arrow3('a', vec3(0, 0, 0), to, eye, { stroke: pen }));
+    const head = marks.find((mark) => mark.id === 'a/head');
+    if (head?.kind !== 'path') throw new Error('the head is a path');
+    const wanted = eye.project(to).at;
+    expect(Math.hypot(head.path[0].start.x - wanted.x, head.path[0].start.y - wanted.y)).toBeLessThan(1e-12);
+  });
+
+  it('draws a shaft and a head, each with an id of its own', () => {
+    const marks = flatten(arrow3('a', vec3(0, 0, 0), vec3(1, 0, 0), eye, { stroke: pen }));
+    expect(marks.map((mark) => mark.id)).toEqual(['a/shaft', 'a/head']);
+  });
+
+  it('draws nothing for an arrow wholly behind the eye', () => {
+    expect(flatten(arrow3('a', vec3(0, 0, 9), vec3(1, 0, 9), eye, { stroke: pen }))).toHaveLength(0);
+  });
+
+  it('cuts an arrow whose far end is behind the eye, and drops its head', () => {
+    const marks = flatten(arrow3('a', vec3(0, 0, 0), vec3(0, 0, 9), eye, { stroke: pen }));
+    expect(marks.map((mark) => mark.id)).toEqual(['a/shaft']);
+  });
+
+  it('keeps the head of an arrow whose tail is behind the eye', () => {
+    const marks = flatten(arrow3('a', vec3(0, 0, 9), vec3(0, 1, 0), eye, { stroke: pen }));
+    expect(marks.map((mark) => mark.id)).toEqual(['a/shaft', 'a/head']);
+  });
+});
+
+describe('vectorField3', () => {
+  const pen = { colour: '#111', width: 0.02 };
+  const swirl = (at: Vec3) => vec3(-at.y, at.x, 0.5);
+  const options = {
+    over: { x: interval(-1, 1), y: interval(-1, 1), z: interval(-1, 1) },
+    resolution: { x: 4, y: 4, z: 3 },
+    lengthOf: () => 0.2,
+    colourFor: (magnitude: number) => (magnitude > 1 ? '#f00' : '#00f'),
+    stroke: pen,
+  };
+
+  it('draws one arrow per sample, at every pose the eye takes', () => {
+    for (const angle of [0, 0.7, 1.9, 3.4, 5.2]) {
+      const around = camera3({
+        eye: vec3(5 * Math.cos(angle), 3, 5 * Math.sin(angle)),
+        target: vec3(0, 0, 0),
+        projection: perspective({ fov: Math.PI / 2, height: 10, near: 1 }),
+      });
+      const marks = flatten(vectorField3('field', swirl, around, options));
+      expect(marks.filter((mark) => mark.id.endsWith('/head'))).toHaveLength(48);
+      expect(marks).toHaveLength(96);
+    }
+  });
+
+  it('measures an arrow in the world, so a far one draws shorter than a near one', () => {
+    const along = camera3({
+      eye: vec3(0, 0, 8),
+      target: vec3(0, 0, 0),
+      projection: perspective({ fov: Math.PI / 2, height: 10, near: 1 }),
+    });
+    const level = () => vec3(1, 0, 0);
+    const marks = flatten(
+      vectorField3('field', level, along, { ...options, resolution: { x: 1, y: 1, z: 2 } })
+    );
+    const spans = marks
+      .filter((mark) => mark.id.endsWith('/shaft'))
+      .map((mark) => {
+        if (mark.kind !== 'path') throw new Error('a shaft is a path');
+        const start = mark.path[0].start;
+        const end = mark.path[0].curves[0].to;
+        return { id: mark.id, span: Math.hypot(end.x - start.x, end.y - start.y) };
+      });
+    expect(spans).toHaveLength(2);
+    // The nearer sample is the one at the greater z, which is the second cell.
+    expect(spans[spans.length - 1].span).toBeGreaterThan(spans[0].span);
+  });
+
+  it('orders its arrows back to front', () => {
+    const along = camera3({
+      eye: vec3(0, 0, 8),
+      target: vec3(0, 0, 0),
+      projection: perspective({ fov: Math.PI / 2, height: 10, near: 1 }),
+    });
+    const level = () => vec3(1, 0, 0);
+    const marks = flatten(vectorField3('field', level, along, { ...options, resolution: { x: 1, y: 1, z: 4 } }));
+    const order = marks.filter((mark) => mark.id.endsWith('/shaft')).map((mark) => mark.id);
+    expect(order).toEqual(['field/0-0-0/shaft', 'field/0-0-1/shaft', 'field/0-0-2/shaft', 'field/0-0-3/shaft']);
+  });
+
+  it('draws no arrow where the field is nothing', () => {
+    const half = (at: Vec3) => (at.x < 0 ? vec3(0, 0, 0) : vec3(1, 0, 0));
+    const marks = flatten(vectorField3('field', half, eye, options));
+    expect(marks.filter((mark) => mark.id.endsWith('/head'))).toHaveLength(24);
   });
 });
