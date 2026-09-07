@@ -9,7 +9,7 @@
  */
 import { interval, type Interval } from '../values/interval.js';
 import { pointOn, type Cubic, type Path } from './path.js';
-import type { Vec2 } from '../values/vec2.js';
+import { vec2, type Vec2 } from '../values/vec2.js';
 import type { Mark } from './mark.js';
 
 export interface Bounds {
@@ -119,4 +119,10 @@ export function boundsOfMarks(marks: readonly Mark[]): Bounds | null {
     }
   }
   return settled(box);
+}
+
+/** The middle of a box, which is what a turn or a growth happens about when a
+ * figure names no other point. */
+export function centreOf(bounds: Bounds): Vec2 {
+  return vec2(interval.at(bounds.x, 0.5), interval.at(bounds.y, 0.5));
 }

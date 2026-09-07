@@ -10,12 +10,13 @@
  * Each one is given how far through its own span the clock is, already eased, and
  * hands back the marks as they stand at that fraction.
  */
-import { mat3 } from '../values/mat3.js';
+import { mat3, type Mat3 } from '../values/mat3.js';
 import { vec2, type Vec2 } from '../values/vec2.js';
 import { lerp } from '../values/scalar.js';
 import { transformPath, type Path } from './path.js';
 import { trimPath } from './trim.js';
 import { lerpPath } from './morph.js';
+import { boundsOfMarks, centreOf } from './bounds.js';
 import type { Mark } from './mark.js';
 
 export type Animation = (marks: readonly Mark[], along: number) => readonly Mark[];
@@ -87,4 +88,90 @@ export function morph(target: string, into: Path): Animation {
  * rather than gone. */
 export function fadeTo(target: string, opacity: number): Animation {
   return over(target, (mark, along) => ({ ...mark, opacity: lerp(mark.opacity ?? 1, opacity, along) }));
+}
+
+/**
+ * A mark carried through a transform, geometry and weight together.
+ *
+ * A transform that scales makes the lines inside it thicker and the words
+ * bigger, the way it makes everything else bigger, which is what `flatten`
+ * already does for a group that scales. Doing less here would leave a shrinking
+ * mark with the stroke it started at.
+ */
+function carried(mark: Mark, through: Mat3): Mark {
+  const scale = mat3.scaleFactor(through);
+  if (mark.kind === 'text') {
+    return { ...mark, at: mat3.transformPoint(through, mark.at), size: mark.size * scale };
+  }
+  return {
+    ...mark,
+    path: transformPath(mark.path, through),
+    stroke: mark.stroke ? { ...mark.stroke, width: mark.stroke.width * scale } : undefined,
+  };
+}
+
+export interface AboutOptions {
+  /** The point the change happens about. The middle of the box round the marks
+   * being changed unless a figure names one. */
+  pivot?: Vec2;
+}
+
+/**
+ * A change built round a point the marks themselves decide.
+ *
+ * The pivot is read off the marks as they arrive, which is before this change has
+ * moved them, so it is the same point at every time and a turn of a whole circle
+ * lands where it began. Reading it back off the marks after the change would let
+ * it drift, because the box round a turned shape is not the turned box.
+ */
+function about(
+  target: string,
+  options: AboutOptions,
+  step: (along: number, pivot: Vec2) => Mat3 | null
+): Animation {
+  return (marks, along) => {
+    const touched = marks.filter((mark) => touches(mark.id, target));
+    if (touched.length === 0) return marks;
+    const box = boundsOfMarks(touched);
+    const pivot = options.pivot ?? (box ? centreOf(box) : vec2(0, 0));
+    const through = step(along, pivot);
+    if (through === null) return marks;
+    return marks.map((mark) => (touches(mark.id, target) ? carried(mark, through) : mark));
+  };
+}
+
+/** The transform for a change about a point: back to the origin, the change,
+ * then back where it was. */
+function around(pivot: Vec2, change: Mat3): Mat3 {
+  return mat3.multiply(mat3.multiply(mat3.translation(pivot), change), mat3.translation(vec2.scale(pivot, -1)));
+}
+
+/**
+ * Turned about a point, by an angle in radians.
+ *
+ * A text mark's anchor moves and its words stay upright. A mark carries no
+ * rotation of its own, so turning the words would mean adding one to what both
+ * painters have to do, and a label that stays readable while the thing it names
+ * turns is what a figure wants anyway, which is the same reason a number line
+ * takes a direction rather than being turned on its side.
+ */
+export function rotate(target: string, angle: number, options: AboutOptions = {}): Animation {
+  return about(target, options, (along, pivot) => {
+    const turned = angle * along;
+    return turned === 0 ? null : around(pivot, mat3.rotation(turned));
+  });
+}
+
+export interface ScaleOptions extends AboutOptions {
+  /** What it is scaled by at the start of the span, which is its own size. */
+  from?: number;
+}
+
+/** Grown or shrunk about a point, from one factor to another. */
+export function scale(target: string, to: number, options: ScaleOptions = {}): Animation {
+  const start = options.from ?? 1;
+  return about(target, options, (along, pivot) => {
+    const factor = lerp(start, to, along);
+    return factor === 1 ? null : around(pivot, mat3.scaling(vec2(factor, factor)));
+  });
 }

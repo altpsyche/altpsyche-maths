@@ -141,10 +141,11 @@ with the solid demo at 0.9.0. Nothing else in the eight is homeless: the entranc
 
 **Three things the plan settles rather than asks.**
 
-Rotate and scale leave a text mark alone, the way `morph` already does. A mark carries no rotation
-and adding one is a change to what both painters must do, and a label that stays upright while the
-thing it names turns is what a figure wants anyway, which is the same reason `numberLine` takes a
-direction rather than being turned on its side.
+A turn moves a text mark's anchor and leaves its words upright. A mark carries no rotation and adding
+one is a change to what both painters must do, and a label that stays readable while the thing it
+names turns is what a figure wants anyway, which is the same reason `numberLine` takes a direction
+rather than being turned on its side. A growth does reach a text mark, moving its anchor and its
+size, because both of those are numbers a mark already carries.
 
 An animation that adds marks emits them at every fraction of its span, with nothing showing at either
 end, rather than appending them part way through. A mark that arrives between one frame and the next
@@ -183,12 +184,17 @@ That parser is its own item and is queued below.
       quarter circle 4 parts in ten thousand short of the truth, not better than one part, and the
       count is chosen for the evenness of a walk rather than for the total, which is a ratio the
       shortfall largely cancels out of.
-- [ ] **4. `rotate` and `scale`.** About a pivot, which is the bounds centre of the marks the
-      animation touches unless a figure names one. The pivot is read off the marks as they arrive,
-      which is before this span has turned them, so it is the same point at every time. Measurement:
-      an L-shape turned a full turn lands within 1e-12 of where it began, which a pivot recomputed
-      after the turn would not; a rectangle scaled by two about its centre has twice the width and
-      the same centre to 1e-12; a text mark is untouched.
+- [x] **4. `rotate` and `scale`.** About a pivot, which is the box centre of the marks the animation
+      touches unless a figure names one, read off the marks as they arrive so it is the same point at
+      every fraction. **Landed.** An L turned a whole circle lands 5.4e-16 from where it began, and
+      one of its corners keeps its distance from the pivot to 1.3e-15 of 2.5 across a hundred and one
+      fractions of the span. The plan claimed a pivot read back after the turn would drift and that
+      was not measurable: eight eighth-turns each about a recomputed centre returned to 3.3e-15,
+      because a right angle's symmetry cancels it. What is measurable is that the centre moves at
+      all: an L's box centre goes from (1.5, 2) to (1.5, 1.293) over an eighth turn, so a pivot read
+      back is a different point. A growth by two doubles the box, keeps its centre, and carries a
+      stroke of 0.1 to 0.2 and a word of 0.5 to 1. Both hand back the very marks they were given at
+      a fraction of nothing.
 - [ ] **5. `moveAlong`.** A mark carried along a path at a steady pace. Measurement: twenty places
       along the demo's own curve, worst deviation from even spacing; and the mark sitting on the
       path's two ends exactly at nothing and at one.
@@ -224,7 +230,7 @@ That parser is its own item and is queued below.
 - The eight animations each hand back the marks they were given, to 1e-12, at a fraction of nothing
   and at a fraction of one, except the two that mean to leave something changed.
 - Every animation that adds marks gives the same count at every fraction of its span.
-- No animation touches the text of a mark, since a number that counts is 0.8.0.
+- No animation touches the words a text mark says, since a number that counts is 0.8.0.
 - `at(tangent, seconds)` gives the mark counts step 11 quotes, at all four times.
 - `npm run demos` leaves the working tree clean.
 - The turn test on an L-shape closes to 1e-12.
