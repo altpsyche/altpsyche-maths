@@ -134,7 +134,8 @@ Each is a version above. What follows is what each one covers.
 
 **Found by auditing the whole tree after 0.9.0 was cut.** What the audit found is one severe defect,
 one thing that hides defects, a handful of small gaps, and a picture that reads as poor quality. Each
-is a patch bump, worked in the order below.
+is a patch bump, worked in the order below. 0.9.1 is cut: two pieces covering the same stretch are
+answered by its two ends, and a shared edge is kept by which way the two paths run over it.
 
 **What the audit found sound**, so that a later session does not go looking again. Sixty random pairs
 of shapes with no coincident edges hold both `area(A) + area(B) = area(A or B) + area(A and B)` and
@@ -142,58 +143,6 @@ of shapes with no coincident edges hold both `area(A) + area(B) = area(A or B) +
 answer 4.11e-4 of the closed form, the same share at every one, so nothing there turns on the
 tolerance being an absolute distance. Two 400-piece paths unite in 48ms, so the crossing search needs
 no box test in front of it and the quadratic over piece pairs is not worth removing.
-
-#### 0.9.1, an overlap is read as an overlap
-
-**Two pieces lying on top of each other are answered as a spray of crossings, and the shape that comes
-out is wrong.** `curveCrossings` on two straight pieces covering the same run reports 14 crossings
-where there is one shared stretch. The search's budget stops the halving part way, and the clustering
-cannot join a run the search never walked. Those crossings then cut both paths into slivers and the
-stitch walks the wrong way round.
-
-*What it costs today.* Two rectangles sharing an edge unite to 6 where the answer is 8, and their
-difference is 2 where the answer is 4. Two triangles sharing their diagonal unite to 2 where the
-answer is 4. Two rectangles whose top and bottom edges partly cover each other unite to 7 where the
-answer is 8. A coincident pair also takes 170ms to 240ms, so two 99-piece regions sharing their sides
-take 564ms and a path against itself takes 13.8s.
-
-*It is two commits, as the plan allowed for.*
-
-**Done: the stretch is answered by its two ends.** `sharedStretch` in `figure/intersect.ts` finds it
-from the ends of each curve that lie on the other, checks the run between them still lies on the
-other, and answers with where it starts and where it ends. `nearestPlace` is the coarse sweep and
-Newton that puts a point on a curve.
-
-*Measured:* two straight pieces covering the same run the other way round answered 14 crossings in
-197ms and answer 2 in 1ms, at exactly 0 and 1 along one and 1 and 0 along the other. Two pieces
-sharing half their length answered 1 crossing in 184ms and answer 2 in under 1ms, at 0.5 and 1 along
-one and 0 and 0.5 along the other. A piece against itself answered 1 and answers 2. A path against
-itself took 13.8s and takes 71ms, and two 99-piece regions sharing their sides took 564ms and take
-33ms. A meeting at one point is still left to the halving, since neither end of either curve lies on
-the other there.
-
-*Narrowing windows were tried before Newton and were not sharp enough to be believed.* A point lying
-exactly on the curve still read 1.5e-5 away after six rounds, against a tolerance of 1e-6, so every
-shared stretch was refused.
-
-**Done: the operations keep the right copy of a shared edge.** A piece lying on the other path's own
-edge is decided by which way the two run rather than by which side it is on, since a point on an edge
-is the one place the winding count has no answer for. `nearestEdge` in `figure/inside.ts` says which
-edge a point sits nearest and which way it runs, and `slopeOn` in `figure/path.ts` says which way a
-piece is heading.
-
-*Measured:* two rectangles sharing an edge unite to 8.000000 over one loop where they united to 6,
-differ to 4.000000 where they differed to 2, and overlap in nothing where they overlapped in a loop
-enclosing nothing. Two triangles sharing their diagonal unite to 4.000000 over one loop where they
-united to 2. Two rectangles sharing part of an edge unite to 8.000000 where they united to 7. A
-square against itself unites to 4.000000, overlaps in 4.000000, and differs to nothing over no loops.
-The fuzz over sixty random pairs still holds to 1.776e-15 and its slowest pair is 13ms.
-
-*One thing this does not make empty.* The shaded region under a parabola differed against itself
-encloses 0.000000 where it enclosed -0.123167, but over one loop rather than none. Near the origin
-the parabola lies within the tolerance of its own baseline for 1.26e-3, so that stretch is genuinely
-shared by two pieces of the same path walked opposite ways, and a hairline is the honest answer for a
-boundary that comes that close to itself.
 
 #### 0.9.2, the stitch says when it gave up
 
