@@ -5,6 +5,7 @@ import {
   circumscribe,
   centreOf,
   circle,
+  colourOf,
   coordsOf,
   dot,
   flash,
@@ -309,18 +310,37 @@ describe('a thing indicated', () => {
     expect(at(0.05) - at(0)).toBeLessThan(at(0.3) - at(0.25));
   });
 
-  it('holds a colour for the length of the span and lets it go at the ends', () => {
+  it('reaches a colour at the middle of the span and lets it go at the ends', () => {
     const marks = ring();
     const held = indicate('fig', { colour: '#f00' })(marks, 0.5);
     const ringMark = held[0];
     const word = held[1];
     if (ringMark.kind !== 'path' || word.kind !== 'text') throw new Error('a ring is a path and a word is text');
-    expect(ringMark.stroke?.colour).toBe('#f00');
-    expect(ringMark.fill?.colour).toBe('#f00');
-    expect(word.fill.colour).toBe('#f00');
+    expect(ringMark.stroke?.colour).toBe('rgb(255, 0, 0)');
+    expect(ringMark.fill?.colour).toBe('rgb(255, 0, 0)');
+    expect(word.fill.colour).toBe('rgb(255, 0, 0)');
     const ended = indicate('fig', { colour: '#f00' })(marks, 1)[0];
     if (ended.kind !== 'path') throw new Error('a ring is a path');
     expect(ended.stroke?.colour).toBe('#222');
+  });
+
+  it('walks into the colour rather than swapping to it', () => {
+    const part = indicate('fig', { colour: '#f00' })(ring(), 0.25)[0];
+    if (part.kind !== 'path') throw new Error('a ring is a path');
+    const read = colourOf(part.stroke!.colour)!;
+    // Its own grey is 34 in every channel and the colour it walks to is red, so
+    // part way the red channel has risen and the other two have fallen.
+    expect(read.r).toBeGreaterThan(34);
+    expect(read.r).toBeLessThan(255);
+    expect(read.g).toBeLessThan(34);
+    expect(read.g).toBeGreaterThan(0);
+  });
+
+  it('holds a colour it cannot read at the far end rather than guessing at it', () => {
+    // A named colour is a form nothing here reads, so there is no mix to make.
+    const part = indicate('fig', { colour: 'rebeccapurple' })(ring(), 0.25)[0];
+    if (part.kind !== 'path') throw new Error('a ring is a path');
+    expect(part.stroke?.colour).toBe('rebeccapurple');
   });
 
   it('leaves the colours alone where none is named', () => {

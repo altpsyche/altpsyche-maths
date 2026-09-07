@@ -300,13 +300,16 @@ demo is recompiled by steps 6 and 7 against the renamed door.
   the name; 6,540 lines to 6,569, the two new headers being what grew; the suite holds at 593; all
   eight sheets identical.
 
-- [ ] **4. Two colours walked between.** A reader for hex, in three, four, six and eight digits, and
-  for `rgb()` and `rgba()`, which are the forms a figure is handed. Every other form is refused rather
-  than answered wrongly, since a named CSS colour read as black is a silently wrong picture. `indicate`
-  then eases between two colours instead of swapping them, and the typesetter's own red keeps being
-  spotted by comparing the string, which needs none of this. **Measures:** the forms read and the
-  forms refused, each with a test; `indicate` at half a span before and after, which is a swap today;
-  names at the door from 132 values.
+- [x] **4. Two colours walked between.** `values/colour.ts` reads hex in three, four, six and eight
+  digits and `rgb()` and `rgba()` with commas, spaces or a slash before the alpha, either as numbers
+  or as percentages. Twelve other forms are refused, a named colour and `hsl()` among them, because a
+  named colour read as black is a wrong picture with nothing to say it went wrong. `indicate` walks
+  into its colour from whatever each mark already had, and where either end is a form the reader
+  refuses it holds the far end rather than mixing towards a guess. **Measured:** `indicate` from
+  `#222` towards `#f00` gave `#f00` flat across the whole span and now gives rgb(57, 30, 30) at a
+  tenth, rgb(145, 17, 17) at a quarter and rgb(255, 0, 0) at the middle; the door from 132 values and
+  93 types to 135 and 94; the suite from 593 tests to 608; all eight sheets identical, since no still
+  and no strip frame lands inside the flat demo's own indicate span.
 
 - [ ] **5. The door read, name by name.** No code. `index.ts` exports 132 values and 93 types across
   89 lines, plus whatever step 4 added. For each name the read answers three questions: is it the name

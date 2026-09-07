@@ -14,6 +14,7 @@ import { mat3, type Mat3 } from '../values/mat3.js';
 import { vec2, type Vec2 } from '../values/vec2.js';
 import { lerp } from '../values/scalar.js';
 import { smoothstep } from '../values/ease.js';
+import { lerpColour } from '../values/colour.js';
 import { circle, line, polygon, transformPath, type Path } from './path.js';
 import { trimPath } from './trim.js';
 import { lerpPath } from './morph.js';
@@ -283,6 +284,20 @@ function painted(mark: Mark, colour: Colour): Mark {
   };
 }
 
+/** A mark walked a fraction of the way towards a colour, each of its own colours
+ * from where that colour stands. A colour neither end can be read from is held at
+ * the far end rather than mixed towards a guess. */
+function paintedTowards(mark: Mark, colour: Colour, along: number): Mark {
+  const towards = (from: Colour | undefined) =>
+    from === undefined ? colour : (lerpColour(from, colour, along) ?? colour);
+  if (mark.kind === 'text') return { ...mark, fill: { ...mark.fill, colour: towards(mark.fill.colour) } };
+  return {
+    ...mark,
+    fill: mark.fill ? { ...mark.fill, colour: towards(mark.fill.colour) } : undefined,
+    stroke: mark.stroke ? { ...mark.stroke, colour: towards(mark.stroke.colour) } : undefined,
+  };
+}
+
 export interface IndicateOptions extends AboutOptions {
   /** How big it gets at the middle of the span. */
   factor?: number;
@@ -308,7 +323,10 @@ export function indicate(target: string, options: IndicateOptions = {}): Animati
     const swelled = swell(marks, along);
     if (colour === undefined || along <= 0 || along >= 1) return swelled;
     if (!swelled.some((mark) => touches(mark.id, target))) return swelled;
-    return swelled.map((mark) => (touches(mark.id, target) ? painted(mark, colour) : mark));
+    const towards = thereAndBack(along);
+    return swelled.map((mark) =>
+      touches(mark.id, target) ? paintedTowards(mark, colour, towards) : mark
+    );
   };
 }
 

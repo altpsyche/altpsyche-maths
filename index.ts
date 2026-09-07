@@ -9,6 +9,8 @@
  */
 
 export { clamp, inverseLerp, lerp, remap } from './values/scalar.js';
+export { colourOf, colourText, lerpColour } from './values/colour.js';
+export type { Rgba } from './values/colour.js';
 export { curveFor, easeIn, easeOut, linear, smoothstep } from './values/ease.js';
 export type { Curve } from './values/ease.js';
 export { vec2 } from './values/vec2.js';
