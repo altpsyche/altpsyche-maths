@@ -213,13 +213,18 @@ circle's own 2.7e-4 rather than the flattening's.
 which is the rule the mark is already drawn under, and an edge is counted at its lower end and not
 at its upper one, which is what makes a ray through a corner answer what every other ray answers.
 
-**4. How much a path encloses.** Green's theorem on cubics, which is a closed form rather than a
-sampling, and it is the ground truth every operation below is checked against.
+**4. How much a path encloses.** Done. `areaOf` in `figure/area.ts`, exported.
 
-*Measures:* a circle of radius 1 encloses within 6 parts in ten thousand of pi, which is twice the
-error the cubic circle carries. A square of side 2 encloses 4 to within 1e-12. A ring encloses the
-difference of its two discs. A loop wound the other way encloses the same amount with the opposite
-sign, which is what makes a hole subtract.
+*Measured:* a disc of radius 1 encloses 3.1424723326565074, which is 2.80e-4 of pi away from it and
+inside the 6e-4 the plan allowed. A square of side 2 encloses 4 exactly and one of sides 2 and 5
+encloses 10 exactly. The same square wound the other way encloses -4. A ring of radii 1 and 0.5
+encloses the difference of the two discs to 2e-16. A half disc written as an open arc encloses
+within 2.8e-4 of half of pi.
+
+*The weights were derived rather than looked up.* Integrating a cubic against its own derivative
+leaves six, three, one, three, three and six twentieths over the six pairs of the piece's four
+points. The published closed form that was tried first gave zero for a straight run from (1, 0) to
+(0, 1) where the truth is a half, so it was thrown away.
 
 **5. The three operations.** Split both paths at their crossings, keep the pieces each operation
 wants, and stitch what is kept into loops by joining ends that meet within the tolerance.

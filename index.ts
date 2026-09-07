@@ -25,6 +25,7 @@ export type { Key, Track, TrackValue, Tracks } from './timing/track.js';
 export { arc, circle, line, polygon, polyline, pointCount, pointOn, rect, splitCurve, straight, transformPath } from './figure/path.js';
 export type { Cubic, Path, Subpath } from './figure/path.js';
 export { pathFromData } from './figure/path-data.js';
+export { areaOf } from './figure/area.js';
 export { containsPoint, flattenPath, windingAt } from './figure/inside.js';
 export type { FlattenOptions } from './figure/inside.js';
 export { cutPath } from './figure/cut.js';
