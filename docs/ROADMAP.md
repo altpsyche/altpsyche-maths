@@ -219,13 +219,18 @@ That parser is its own item and is queued below.
       figure of one mark and twelve rays, so nothing arrives or leaves part way through. The rays are
       at an opacity of nothing at both ends and one in the middle, and they reach 0, 2 and 4 figure
       units across at those three fractions for a reach of 2.
-- [ ] **9. `circumscribe`.** A box or an ellipse round a thing's bounds, drawn on and faded.
-      Measurement: the shape's own bounds against the target's plus the padding asked for, to 1e-12,
-      and the mark count the same at every fraction.
-- [ ] **10. `Timeline.stagger`.** A list of changes, each starting a gap after the one before, each
-      running the same length. Measurement: the six spans' start times and the timeline's duration
-      against the hand arithmetic, and the same row written out by hand with `after` giving spans
-      that match to 1e-12.
+- [x] **9. `circumscribe`.** A box or the ellipse through the same four sides, drawn on over the
+      first half of the span and faded over the second, so one span is the whole gesture.
+      **Landed.** Round a ring of radius one at (1, 2) with a padding of 0.5, the shape's own box
+      reads -0.5 to 2.5 across and 0.5 to 3.5 up, which is the target's box plus the padding on every
+      side to 1e-12. Two marks at every fraction, nothing drawn at the beginning, nothing showing at
+      the end, and an opacity of 0.5 three quarters through.
+- [x] **10. `Timeline.stagger`.** A list of changes, each starting a gap after the one before, each
+      running the same length. **Landed.** Six changes of 0.8 at a gap of 0.2 start at 0, 0.2, 0.4,
+      0.6, 0.8 and 1 to 1e-12, and the row runs 1.8, which is one change plus its five gaps. The
+      spans match the same row written out by hand with a negative wait, start and end alike. No gap
+      at all is every change at once, and a negative gap is held at none. Left unsaid the gap is a
+      quarter of each change's own length.
 - [ ] **11. The demo gains an entrance and a beat, and 0.5.0 is cut.** The grid fades in, the axes
       draw on, the labels arrive in a stagger, the dot grows from the origin, the curve draws, and
       the dot is indicated as it crosses the stationary point with the reading circumscribed beside
@@ -236,10 +241,9 @@ That parser is its own item and is queued below.
 **Done criteria, line by line.**
 
 - `npm test`, `npm run type-check` and `npm run build` all pass on a clean tree.
-- `index.ts` exports `boundsOf`, `boundsOfMarks`, `Bounds`, `lengthOf`, `pointAlong`, `rotate`,
-  `scale`,
-  `moveAlong`, `growFrom`, `indicate`, `flash`, `circumscribe`, and `Timeline.stagger` is on the
-  class.
+- `index.ts` exports `boundsOf`, `boundsOfMarks`, `centreOf`, `Bounds`, `lengthOf`, `pointAlong`,
+  `rotate`, `scale`, `moveAlong`, `growFrom`, `indicate`, `flash`, `circumscribe`, and
+  `Timeline.stagger` is on the class.
 - The eight animations each hand back the marks they were given, to 1e-12, at a fraction of nothing
   and at a fraction of one, except the two that mean to leave something changed.
 - Every animation that adds marks gives the same count at every fraction of its span.

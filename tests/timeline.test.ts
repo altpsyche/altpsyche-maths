@@ -6,6 +6,7 @@ import {
   circle,
   draw,
   durationOf,
+  flatten,
   fadeIn,
   fadeOut,
   fadeTo,
@@ -227,5 +228,68 @@ describe('figure', () => {
     const open: Figure = { ...shut, timeline: Timeline.empty().play(moveBy('g', vec2(5, 0)), 2) };
     expect(loops(shut)).toBe(true);
     expect(loops(open)).toBe(false);
+  });
+});
+
+describe('a row of changes staggered', () => {
+  const six = Array.from({ length: 6 }, (_, at) => fadeIn(`fig/part${at}`));
+
+  it('starts each one a gap after the one before', () => {
+    const line = Timeline.empty().stagger(six, 0.8, { gap: 0.2 });
+    // Each start is the one before plus the gap, reached the way play reaches
+    // every start, so the row carries play's own accumulation and lands within
+    // a nanosecond rather than exactly.
+    line.spans.forEach((span, at) => expect(span.from).toBeCloseTo(0.2 * at, 12));
+    expect(line.duration).toBeCloseTo(1.8, 12);
+  });
+
+  it('runs as long as one change plus the gaps between them', () => {
+    // Five gaps between six changes, and the last one still runs its own length.
+    const line = Timeline.empty().stagger(six, 0.8, { gap: 0.2 });
+    expect(line.duration).toBeCloseTo(0.8 + 0.2 * 5, 12);
+  });
+
+  it('is the same list of spans as writing it out by hand', () => {
+    const staggered = Timeline.empty().stagger(six, 0.8, { gap: 0.2 });
+    let byHand = Timeline.empty();
+    six.forEach((animation, at) => {
+      byHand = byHand.play(animation, 0.8, at === 0 ? {} : { after: 0.2 - 0.8 });
+    });
+    expect(staggered.spans.map((span) => span.from)).toEqual(byHand.spans.map((span) => span.from));
+    expect(staggered.spans.map((span) => span.to)).toEqual(byHand.spans.map((span) => span.to));
+    expect(staggered.duration).toBe(byHand.duration);
+  });
+
+  it('leaves a quarter of each change between them where no gap is named', () => {
+    const line = Timeline.empty().stagger(six, 0.8);
+    expect(line.spans[1].from).toBeCloseTo(0.2, 12);
+    expect(line.duration).toBeCloseTo(0.8 + 0.2 * 5, 12);
+  });
+
+  it('is every change at once at no gap at all', () => {
+    const line = Timeline.empty().stagger(six, 0.8, { gap: 0 });
+    expect(new Set(line.spans.map((span) => span.from))).toEqual(new Set([0]));
+    expect(line.duration).toBeCloseTo(0.8, 12);
+  });
+
+  it('never runs a change before the one before it', () => {
+    const line = Timeline.empty().stagger(six, 0.8, { gap: -1 });
+    expect(new Set(line.spans.map((span) => span.from))).toEqual(new Set([0]));
+  });
+
+  it('starts the whole row after a wait a figure asks for', () => {
+    const line = Timeline.empty().play(fadeIn('fig/first'), 0.5).stagger(six, 0.8, { gap: 0.2, after: 0.3 });
+    expect(line.spans[1].from).toBeCloseTo(0.8, 12);
+    expect(line.spans[2].from).toBeCloseTo(1, 12);
+  });
+
+  it('shows each part arriving in turn', () => {
+    const tree = group(
+      'fig',
+      Array.from({ length: 6 }, (_, at) => shape(`part${at}`, circle(vec2(at, 0), 0.2), { fill: { colour: '#222' } }))
+    );
+    const line = Timeline.empty().stagger(six, 0.8, { gap: 0.2 });
+    const shown = line.at(flatten(tree), 0.5).map((mark) => (mark.opacity ?? 1) > 0.01);
+    expect(shown).toEqual([true, true, true, false, false, false]);
   });
 });

@@ -1,6 +1,8 @@
 import { describe, expect, it } from 'vitest';
 import {
+  boundsOf,
   boundsOfMarks,
+  circumscribe,
   centreOf,
   circle,
   coordsOf,
@@ -11,6 +13,7 @@ import {
   growFrom,
   indicate,
   interval,
+  lengthOf,
   moveAlong,
   plot,
   pointAlong,
@@ -380,5 +383,62 @@ describe('a flash', () => {
   it('changes nothing where its target matches nothing', () => {
     const marks = dotted();
     expect(flash('nowhere', { stroke: pen })(marks, 0.5)).toBe(marks);
+  });
+});
+
+describe('a shape drawn round something', () => {
+  const ring = () => flatten(group('fig', [shape('ring', circle(vec2(1, 2), 1), { stroke: pen })]));
+  const drawn = (marks: readonly Mark[]) => marks.find((mark) => mark.id === 'fig/circumscribed')!;
+
+  it('is in the list at every fraction of the span', () => {
+    const counts = [0, 0.25, 0.5, 0.75, 1].map(
+      (along) => circumscribe('fig', { stroke: pen })(ring(), along).length
+    );
+    expect(new Set(counts)).toEqual(new Set([2]));
+  });
+
+  it('is the box round the thing plus the padding it was given', () => {
+    const marks = circumscribe('fig', { stroke: pen, padding: 0.5 })(ring(), 0.5);
+    const mark = drawn(marks);
+    if (mark.kind !== 'path') throw new Error('the shape is a path');
+    const box = boundsOf(mark.path)!;
+    expect(box.x.from).toBeCloseTo(-0.5, 12);
+    expect(box.x.to).toBeCloseTo(2.5, 12);
+    expect(box.y.from).toBeCloseTo(0.5, 12);
+    expect(box.y.to).toBeCloseTo(3.5, 12);
+  });
+
+  it('draws nothing at the beginning and shows nothing at the end', () => {
+    const started = drawn(circumscribe('fig', { stroke: pen })(ring(), 0));
+    if (started.kind !== 'path') throw new Error('the shape is a path');
+    expect(started.path).toEqual([]);
+    expect(drawn(circumscribe('fig', { stroke: pen })(ring(), 1)).opacity).toBe(0);
+  });
+
+  it('draws on over the first half and fades over the second', () => {
+    const lengthAt = (along: number) => {
+      const mark = drawn(circumscribe('fig', { stroke: pen })(ring(), along));
+      if (mark.kind !== 'path') throw new Error('the shape is a path');
+      return lengthOf(mark.path);
+    };
+    expect(lengthAt(0.25)).toBeGreaterThan(0);
+    expect(lengthAt(0.5)).toBeGreaterThan(lengthAt(0.25));
+    expect(lengthAt(0.75)).toBeCloseTo(lengthAt(0.5), 9);
+    expect(drawn(circumscribe('fig', { stroke: pen })(ring(), 0.75)).opacity).toBeCloseTo(0.5, 12);
+  });
+
+  it('draws the ellipse through the same four sides when asked', () => {
+    const marks = circumscribe('fig', { stroke: pen, around: 'ellipse' })(ring(), 0.5);
+    const mark = drawn(marks);
+    if (mark.kind !== 'path') throw new Error('the shape is a path');
+    const box = boundsOf(mark.path)!;
+    expect(box.x.from).toBeCloseTo(0, 12);
+    expect(box.x.to).toBeCloseTo(2, 12);
+    expect(mark.path[0].closed).toBe(true);
+  });
+
+  it('changes nothing where its target matches nothing', () => {
+    const marks = ring();
+    expect(circumscribe('nowhere', { stroke: pen })(marks, 0.5)).toBe(marks);
   });
 });

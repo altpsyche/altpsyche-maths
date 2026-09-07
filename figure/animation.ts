@@ -14,7 +14,7 @@ import { mat3, type Mat3 } from '../values/mat3.js';
 import { vec2, type Vec2 } from '../values/vec2.js';
 import { lerp } from '../values/scalar.js';
 import { smoothstep } from '../values/ease.js';
-import { line, transformPath, type Path } from './path.js';
+import { circle, line, polygon, transformPath, type Path } from './path.js';
 import { trimPath } from './trim.js';
 import { lerpPath } from './morph.js';
 import { pointAlong } from './length.js';
@@ -310,5 +310,56 @@ export function flash(target: string, options: FlashOptions): Animation {
       });
     }
     return [...marks, ...rays];
+  };
+}
+
+export interface CircumscribeOptions {
+  stroke: Stroke;
+  /** A box round the thing, or the ellipse through the same four sides. */
+  around?: 'box' | 'ellipse';
+  /** How far outside the box it sits, in figure units. */
+  padding?: number;
+}
+
+/**
+ * A shape drawn round something and then let go.
+ *
+ * The first half of the span draws it on and the second half fades it, so one
+ * span is the whole gesture rather than two a figure has to line up. The shape
+ * is in the list at every fraction, with nothing drawn at the beginning and
+ * nothing showing at the end, for the reason a flash keeps its rays.
+ */
+export function circumscribe(target: string, options: CircumscribeOptions): Animation {
+  const padding = options.padding ?? 0;
+  return (marks, along) => {
+    const touched = marks.filter((mark) => touches(mark.id, target));
+    if (touched.length === 0) return marks;
+    const box = boundsOfMarks(touched);
+    if (box === null) return marks;
+
+    const centre = centreOf(box);
+    const across = interval.span(box.x) / 2 + padding;
+    const up = interval.span(box.y) / 2 + padding;
+    const whole =
+      (options.around ?? 'box') === 'ellipse'
+        ? transformPath(circle(vec2(0, 0), 1), mat3.multiply(mat3.translation(centre), mat3.scaling(vec2(across, up))))
+        : polygon([
+            vec2(centre.x - across, centre.y - up),
+            vec2(centre.x + across, centre.y - up),
+            vec2(centre.x + across, centre.y + up),
+            vec2(centre.x - across, centre.y + up),
+          ]);
+
+    const drawing = along <= 0.5;
+    return [
+      ...marks,
+      {
+        kind: 'path',
+        id: `${target}/circumscribed`,
+        path: drawing ? trimPath(whole, along * 2) : whole,
+        stroke: options.stroke,
+        opacity: drawing ? 1 : 2 - along * 2,
+      },
+    ];
   };
 }

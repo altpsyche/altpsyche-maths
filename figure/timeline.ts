@@ -25,6 +25,13 @@ export interface PlayOptions {
   after?: number;
 }
 
+export interface StaggerOptions extends PlayOptions {
+  /** Seconds between one change starting and the next. A quarter of each
+   * change's own length unless a figure says otherwise, so a row overlaps rather
+   * than running one at a time. */
+  gap?: number;
+}
+
 /**
  * The ordered list, built by naming one thing after another.
  *
@@ -54,6 +61,23 @@ export class Timeline {
     let built: Timeline = this;
     animations.forEach((animation, at) => {
       built = built.play(animation, seconds, at === 0 ? options : { ...options, after: -seconds });
+    });
+    return built;
+  }
+
+  /**
+   * A row of changes, each starting a gap after the one before and each running
+   * the same length.
+   *
+   * Written out by hand this is one play a change with a negative wait between
+   * them, and getting that arithmetic right at every entry is what a row of six
+   * things arriving one after another used to cost.
+   */
+  stagger(animations: readonly Animation[], seconds: number, options: StaggerOptions = {}): Timeline {
+    const gap = Math.max(0, options.gap ?? seconds / 4);
+    let built: Timeline = this;
+    animations.forEach((animation, at) => {
+      built = built.play(animation, seconds, at === 0 ? options : { ...options, after: gap - seconds });
     });
     return built;
   }
