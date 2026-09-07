@@ -15,6 +15,7 @@ import {
   pointAlong,
   pointOf,
   resolveExtent,
+  sameMarks,
   sampleTrack,
   tangentAt,
   unscaled,
@@ -22,6 +23,17 @@ import {
   type Mark,
 } from '../index.js';
 import { sheets, stillMarkup } from '../demos/render.js';
+import {
+  FRAMES as SOLID_FRAMES,
+  HEIGHT,
+  TIMES as SOLID_TIMES,
+  alongAt,
+  eyeAt,
+  saddle,
+  section,
+  solid,
+  stripMarks as solidStripMarks,
+} from '../demos/surface.js';
 import { FRAMES, TIMES, coords, curve, stripMarks, tangent, walk } from '../demos/tangent.js';
 import {
   FRAMES as TURN_FRAMES,
@@ -64,7 +76,7 @@ describe('the committed pictures', () => {
     }
   });
 
-  it('are all six there', () => {
+  it('are all eight there', () => {
     expect(sheets.map((sheet) => sheet.file)).toEqual([
       'docs/tangent.svg',
       'docs/tangent-strip.svg',
@@ -72,6 +84,8 @@ describe('the committed pictures', () => {
       'docs/boolean-strip.svg',
       'docs/rotate.svg',
       'docs/rotate-strip.svg',
+      'docs/surface.svg',
+      'docs/surface-strip.svg',
     ]);
   });
 });
@@ -566,5 +580,94 @@ describe('the rotation strip', () => {
     const insideFrame = span('at0/turns/given').x.from - span('at0/turns/own').x.to;
     const betweenFrames = span('at1/turns/own').x.from - span('at0/turns/given').x.to;
     expect(betweenFrames).toBeGreaterThan(insideFrame);
+  });
+});
+
+describe('the solid demo', () => {
+  const marksAt = (seconds: number) => at(solid, seconds);
+  const named = [SOLID_TIMES.entrance, SOLID_TIMES.quarter, SOLID_TIMES.half, SOLID_TIMES.round];
+
+  it('draws the same 190 marks at every time', () => {
+    for (const seconds of [0, ...SOLID_FRAMES, SOLID_TIMES.round]) expect(marksAt(seconds)).toHaveLength(190);
+  });
+
+  it('names a surface, a plane, a curve, three axes and a typeset equation', () => {
+    const ids = marksAt(SOLID_TIMES.quarter).map((mark) => mark.id);
+    expect(ids.filter((id) => id.startsWith('solid/body/hill/')).length).toBe(144);
+    expect(ids.filter((id) => id.startsWith('solid/body/pane/')).length).toBe(16);
+    expect(ids.filter((id) => id.startsWith('solid/cut/run')).length).toBe(2);
+    for (const axis of ['x', 'y', 'z']) {
+      expect(ids.some((id) => id.startsWith(`solid/axes/${axis}/line`))).toBe(true);
+      expect(ids.some((id) => id.startsWith(`solid/axes/${axis}/ticks`))).toBe(true);
+    }
+    expect(ids.some((id) => id.startsWith('solid/rule/'))).toBe(true);
+  });
+
+  it('puts every point of the curve on both the surface and the plane', () => {
+    let offSurface = 0;
+    let offPlane = 0;
+    for (const run of section) {
+      for (const point of run) {
+        offSurface = Math.max(offSurface, Math.abs(saddle(point.x, point.y) - point.z));
+        offPlane = Math.max(offPlane, Math.abs(point.z - HEIGHT));
+      }
+    }
+    expect(offSurface).toBeLessThan(0.002);
+    expect(offPlane).toBe(0);
+  });
+
+  it('draws the curve where the camera at that time puts it', () => {
+    for (const seconds of named) {
+      const camera = eyeAt(alongAt(seconds));
+      const mark = marksAt(seconds).find((each) => each.id === 'solid/cut/run0/run');
+      if (mark?.kind !== 'path') throw new Error('the first branch is a path');
+      const placed = camera.project(section[0][0]).at;
+      expect(Math.abs(mark.path[0].start.x - placed.x)).toBeLessThan(1e-12);
+      expect(Math.abs(mark.path[0].start.y - placed.y)).toBeLessThan(1e-12);
+    }
+  });
+
+  it('brings the eye back to where it started after one orbit', () => {
+    // Mark for mark by name rather than in order. Two cells at the same depth
+    // keep the order they were given, and a thousandth of a millionth of a turn
+    // is enough to swap two of them, which says nothing about where the eye is.
+    const before = new Map(marksAt(SOLID_TIMES.entrance).map((mark) => [mark.id, mark]));
+    const after = marksAt(SOLID_TIMES.round);
+    expect(after).toHaveLength(before.size);
+    for (const mark of after) {
+      const was = before.get(mark.id);
+      expect(was, mark.id).toBeDefined();
+      expect(sameMarks([was!], [mark]), mark.id).toBe(true);
+    }
+  });
+
+  it('arrives with the animations the flat demo already uses', () => {
+    const opacityOf = (seconds: number, id: string) =>
+      marksAt(seconds).find((mark) => mark.id === id)?.opacity ?? 1;
+    expect(opacityOf(0, 'solid/body/pane/0-0/run')).toBeCloseTo(0, 12);
+    expect(opacityOf(SOLID_TIMES.entrance, 'solid/body/pane/0-0/run')).toBeCloseTo(1, 12);
+    const undrawn = marksAt(0).find((mark) => mark.id === 'solid/cut/run0/run');
+    const drawn = marksAt(SOLID_TIMES.entrance).find((mark) => mark.id === 'solid/cut/run0/run');
+    if (undrawn?.kind !== 'path' || drawn?.kind !== 'path') throw new Error('both are paths');
+    expect(undrawn.path).toHaveLength(0);
+    expect(drawn.path[0].curves.length).toBeGreaterThan(50);
+  });
+
+  it('keeps the whole picture inside the frame it declares', () => {
+    for (const seconds of named) {
+      const box = boundsOfMarks(marksAt(seconds));
+      expect(Math.abs(box!.x.from)).toBeLessThanOrEqual(5.4);
+      expect(Math.abs(box!.x.to)).toBeLessThanOrEqual(5.4);
+      expect(Math.abs(box!.y.from)).toBeLessThanOrEqual(3);
+      expect(Math.abs(box!.y.to)).toBeLessThanOrEqual(3);
+    }
+  });
+});
+
+describe('the solid strip', () => {
+  it('carries every frame with no two marks sharing an id', () => {
+    const { marks } = solidStripMarks(SOLID_FRAMES, 2);
+    expect(marks).toHaveLength(190 * SOLID_FRAMES.length);
+    expect(new Set(marks.map((mark) => mark.id)).size).toBe(marks.length);
   });
 });

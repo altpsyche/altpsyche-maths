@@ -14,6 +14,7 @@ import {
   stripMarks as booleanStripMarks,
 } from './boolean.js';
 import { FRAMES as TURN_FRAMES, stripMarks as turnStripMarks, turns } from './rotate.js';
+import { FRAMES as SOLID_FRAMES, solid, stripMarks as solidStripMarks } from './surface.js';
 
 /** A hundred pixels to the figure unit, which is the size the README shows and
  * the only place the number matters, since the picture scales from its view box. */
@@ -51,4 +52,6 @@ export const sheets: readonly Sheet[] = [
   { file: 'docs/boolean-strip.svg', markup: () => stripMarkup(booleanStripMarks(BOOLEAN_FRAMES, 2)) },
   { file: 'docs/rotate.svg', markup: () => stillMarkup(turns, turns.still) },
   { file: 'docs/rotate-strip.svg', markup: () => stripMarkup(turnStripMarks(TURN_FRAMES, 2)) },
+  { file: 'docs/surface.svg', markup: () => stillMarkup(solid, solid.still) },
+  { file: 'docs/surface-strip.svg', markup: () => stripMarkup(solidStripMarks(SOLID_FRAMES, 2)) },
 ];

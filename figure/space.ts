@@ -182,14 +182,20 @@ function resolutionOf(resolution: number | { u: number; v: number }): { u: numbe
 }
 
 /**
- * A surface given by a function of two parameters, drawn as a grid of
- * four-cornered cells ordered back to front.
+ * The cells a surface is made of, before they are put in an order.
  *
  * Cells rather than one shape is what makes the depth sort work at all: a surface
  * that folds over itself has no one place in a painting order, and pieces small
  * enough to be flat do.
+ *
+ * A scene holding a surface and a plane that cuts through it has to sort all of
+ * their cells together, since two surfaces sorted apart are two groups and the
+ * second is painted over the first whichever way round they stand. Each cell
+ * carries the name it was given ahead of its own place in the grid, so an
+ * animation can still name a whole surface once its cells are mixed with
+ * another's.
  */
-export function surface3(name: string, of: (u: number, v: number) => Vec3, camera: Camera3, options: Surface3Options): GroupNode {
+export function surfaceCells(name: string, of: (u: number, v: number) => Vec3, camera: Camera3, options: Surface3Options): SpaceItem[] {
   const { u = interval(0, 1), v = interval(0, 1), resolution = 24, shade, light = vec3(0, 0, 1), cull = false, stroke } = options;
   const steps = resolutionOf(resolution);
   const toLight = vec3.normalize(light);
@@ -213,10 +219,18 @@ export function surface3(name: string, of: (u: number, v: number) => Vec3, camer
       const fill = shade((vec3.dot(normal, toLight) + 1) / 2);
       items.push({
         points: corners,
-        node: polyline3(`cell${i}-${j}`, corners, camera, { close: true, fill, stroke }),
+        node: polyline3(`${name}/${i}-${j}`, corners, camera, { close: true, fill, stroke }),
       });
     }
   }
 
-  return space(name, items, camera);
+  return items;
+}
+
+/**
+ * A surface given by a function of two parameters, drawn as a grid of
+ * four-cornered cells ordered back to front.
+ */
+export function surface3(name: string, of: (u: number, v: number) => Vec3, camera: Camera3, options: Surface3Options): GroupNode {
+  return space(name, surfaceCells('cell', of, camera, options), camera);
 }

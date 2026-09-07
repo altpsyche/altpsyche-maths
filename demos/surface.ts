@@ -1,0 +1,234 @@
+/**
+ * The solid demo: a saddle with a level plane cutting through it, and the curve
+ * of the crossing drawn on both.
+ *
+ * Everything here that is not the camera is something the flat demo already uses.
+ * The axes read the same tick list, the equation is typeset the same way, the
+ * plane arrives with `fadeIn` and the curve is drawn on with `draw`, and neither
+ * animation knows that the marks it moves came from points in space. That is the
+ * claim this figure is here to hold: a builder that works in space hands back the
+ * flat nodes the rest of the package already draws.
+ *
+ * The camera is driven by a track rather than by an animation, which is the same
+ * call the flat demo's walk made. A span's eased fraction and a track's value are
+ * unrelated numbers, so a camera on one with a surface on the other would be two
+ * clocks free to disagree.
+ *
+ * The surface and the plane are sorted together rather than one after the other.
+ * Two grids sorted apart are two groups, and the second is painted over the first
+ * whichever way round they stand, which is the one thing a plane cutting through
+ * a surface must not do.
+ */
+import {
+  axes3,
+  camera3,
+  draw,
+  equationFromTex,
+  equationNode,
+  fadeIn,
+  fractionOf,
+  group,
+  interval,
+  moveBy,
+  perspective,
+  polyline3,
+  sampleTrack,
+  sectionOf,
+  space,
+  surfaceCells,
+  vec2,
+  vec3,
+  Timeline,
+  at as marksAt,
+  type Extent,
+  type Figure,
+  type Mark,
+  type Node,
+  type Track,
+} from '../index.js';
+
+const ink = { colour: '#1b1b1b' };
+const pen = { colour: '#1b1b1b', width: 0.014 };
+const cut = { colour: '#c2410c', width: 0.05 };
+const glass = { colour: '#38bdf8', width: 0.008 };
+
+/** Same frame as the other two demos, so the pictures in the README are one
+ * size. */
+const extent: Extent = { width: 10.8, height: 6 };
+
+/** The stretch of each parameter the surface is drawn over. */
+const OVER = interval(-1.5, 1.5);
+
+/** A saddle, because it is the shape a level plane cuts a curve out of rather
+ * than a circle, and a curve with two branches is what says the crossing was
+ * found rather than assumed. */
+export const saddle = (x: number, y: number) => (x * x - y * y) / 2;
+
+const surfaceAt = (u: number, v: number) => vec3(u, v, saddle(u, v));
+
+/** How high the plane sits. At nothing it would cut the saddle in two straight
+ * lines crossing at the middle, which is the one height that says nothing about
+ * the method. */
+export const HEIGHT = 0.35;
+
+const planeAt = (u: number, v: number) => vec3(u, v, HEIGHT);
+
+/** The curve where the two meet, found once rather than at every frame: it is the
+ * same curve at every time and only the camera moves. */
+export const section = sectionOf(surfaceAt, { point: vec3(0, 0, HEIGHT), normal: vec3(0, 0, 1) }, {
+  u: OVER,
+  v: OVER,
+  resolution: 48,
+});
+
+/** How dark a cell of the saddle is drawn, from how squarely it faces the light.
+ * Two greys mixed by hand, since a colour here is text and nothing reads one. */
+function shade(amount: number): { colour: string } {
+  const level = Math.round(150 + 90 * amount);
+  return { colour: `rgb(${level}, ${level - 14}, ${level - 34})` };
+}
+
+/** How many cells each grid is cut into. Enough that the saddle reads as a
+ * curved sheet and few enough that the committed pictures stay small: every cell
+ * is a path in the file, and the strip holds four frames of them. */
+const CELLS = 12;
+const PANES = 4;
+
+/**
+ * How tall the projection's own frame is, in figure units.
+ *
+ * Shorter than the extent on purpose: what fills that frame is the middle of the
+ * picture, and the tips of the axes and their numbers reach past it, so handing
+ * the camera the extent's own height would carry them off the top and bottom.
+ */
+const FRAME = 5;
+
+/** Where the eye sits at a fraction of the orbit: once round the middle, kept at
+ * one height, looking at where the axes cross. */
+export function eyeAt(along: number) {
+  const turn = 2 * Math.PI * along;
+  return camera3({
+    eye: vec3(4.6 * Math.cos(turn), 4.6 * Math.sin(turn), 2.6),
+    target: vec3(0, 0, 0),
+    up: vec3(0, 0, 1),
+    projection: perspective({ fov: Math.PI / 5, height: FRAME, near: 0.2 }),
+  });
+}
+
+/** The equation of the surface, typeset when this module loads rather than at
+ * every frame, since its geometry is the same at every time. */
+const written = await equationFromTex('z = \\frac{x^2 - y^2}{2}');
+
+export function sceneAt(along: number): Node {
+  const camera = eyeAt(along);
+  return group('solid', [
+    space(
+      'body',
+      [
+        ...surfaceCells('hill', surfaceAt, camera, { u: OVER, v: OVER, resolution: CELLS, shade }),
+        ...surfaceCells('pane', planeAt, camera, {
+          u: OVER,
+          v: OVER,
+          resolution: PANES,
+          shade: () => ({ colour: '#e0f2fe' }),
+          stroke: glass,
+        }),
+      ],
+      camera
+    ),
+    group('cut', section.map((run, at) => polyline3(`run${at}`, run, camera, { stroke: cut })), {
+      style: { opacity: 1 },
+    }),
+    axes3('axes', camera, {
+      x: OVER,
+      y: OVER,
+      z: interval(-1.2, 1.2),
+      stroke: pen,
+      fill: ink,
+      size: 0.22,
+      tickLength: 0.08,
+      ticks: 4,
+    }),
+    equationNode('rule', written, {
+      at: fractionOf(extent, 0.02, 0.86),
+      align: 'start',
+      width: 1.6,
+      height: 0.7,
+      fill: ink,
+    }),
+  ]);
+}
+
+/** How long one orbit takes. */
+export const ORBIT = 8;
+
+/** The picture arrives, then the eye goes round once. The plane fades in and the
+ * curve draws on, which is the whole of what this demo has to show about
+ * animations reaching marks in space. */
+const entrance = Timeline.empty()
+  .play(fadeIn('solid/axes'), 0.6)
+  .play(fadeIn('solid/body/hill'), 0.7, { after: -0.3 })
+  .play(fadeIn('solid/rule'), 0.5, { after: -0.3 })
+  .play(fadeIn('solid/body/pane'), 0.7, { after: 0.1 })
+  .play(draw('solid/cut'), 0.9, { after: -0.2 });
+
+const ORBIT_FROM = entrance.duration;
+
+/** The eye goes round at one pace rather than easing at both ends, because a turn
+ * that slowed to a stop and started again would read as a stutter. */
+export const orbit: Track = [
+  { time: 0, value: 0 },
+  { time: ORBIT_FROM, value: 0 },
+  { time: ORBIT_FROM + ORBIT, value: 1 },
+];
+
+const line = entrance.wait(ORBIT);
+
+export const solid: Figure = {
+  extent,
+  scene: (_seconds, values) => sceneAt(values.turn as number),
+  tracks: { turn: orbit },
+  timeline: line,
+  duration: line.duration,
+  still: ORBIT_FROM + ORBIT * 0.18,
+};
+
+/** Where the eye is at a time, for a gate that would otherwise rebuild the track
+ * to find out. */
+export function alongAt(seconds: number): number {
+  return sampleTrack(orbit, seconds) as number;
+}
+
+export const SLOT = 11.4;
+export const DOWN = 6.4;
+
+/** Several times of one figure laid out together, as one list of marks, each
+ * frame carried into its own slot and renamed so no two frames share an id. */
+export function stripMarks(
+  times: readonly number[],
+  columns = times.length
+): { marks: readonly Mark[]; extent: Extent } {
+  const rows = Math.ceil(times.length / columns);
+  const marks = times.flatMap((seconds, frame) => {
+    const across = ((frame % columns) - (columns - 1) / 2) * SLOT;
+    const up = ((rows - 1) / 2 - Math.floor(frame / columns)) * DOWN;
+    return moveBy('solid', vec2(across, up))(marksAt(solid, seconds), 1).map((mark) => ({
+      ...mark,
+      id: `at${frame}/${mark.id}`,
+    }));
+  });
+  return { marks, extent: { width: SLOT * columns, height: DOWN * rows } };
+}
+
+/** What the timeline is made of, for a gate that would otherwise guess where one
+ * part ends and the next begins. */
+export const TIMES = {
+  entrance: ORBIT_FROM,
+  quarter: ORBIT_FROM + ORBIT * 0.25,
+  half: ORBIT_FROM + ORBIT * 0.5,
+  round: ORBIT_FROM + ORBIT,
+};
+
+/** The quarters of the orbit, which is what the strip shows and what the gate
+ * reads. */
+export const FRAMES = [TIMES.entrance, TIMES.quarter, TIMES.half, ORBIT_FROM + ORBIT * 0.75];

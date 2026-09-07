@@ -125,16 +125,18 @@ the motion in a still.
 
 ## Now
 
-**0.10.0 is being worked, and steps 1 to 8 of its ten are landed.** `mat4` is below the line, and
+**0.10.0 is being worked, and steps 1 to 9 of its ten are landed.** `mat4` is below the line, and
 `camera3`, `polyline3`, `dot3`, `text3`, `space`, `surface3`, `axes3`, `sectionOf` and `viewAt` are
 above it. A camera is a value the
 caller holds, a builder that works in space hands back the flat nodes the rest of the package already
 draws, cut where they cross the near plane, `space` orders a list of pieces back to front, and a
 surface is a grid of cells the author's own function shades. An extent carries a centre and may be a
-function of the clock, and the flat demo's view follows its dot across. The suite went from 479 tests to
-531.
+function of the clock, and the flat demo's view follows its dot across. `demos/surface.ts` is the solid
+demo: a saddle, a plane cutting through it, the curve of the crossing, three axes, a typeset equation
+and an orbiting eye. The suite went from 479 tests to 539 and the sheet list from six pictures to
+eight.
 
-**Step 9, the solid demo, is next.** A step is ticked by writing the number its commit measured into
+**Step 10, the cut, is next: the version, the README and this entry's deletion.** A step is ticked by writing the number its commit measured into
 that step rather than by a bare tick, so the first step carrying no measurement is where a session
 resumes.
 
@@ -342,7 +344,7 @@ demo whose writing sits beside the graph rather than above it. The still moved f
 0.85, since at 0.6 the dot is still inside the reach and the picture shows nothing of the following.
 
 
-**9. The solid demo.** `demos/surface.ts`: a surface with a plane cutting through it, the curve of the
+**9. Done. The solid demo.** `demos/surface.ts`: a surface with a plane cutting through it, the curve of the
 intersection drawn on both, three axes, the equation of the surface typeset beside it, and a camera that
 orbits on a track. The animations reach it with no change to any of them, which the demo shows by
 drawing the curve on with `draw` and bringing the plane in with `fadeIn`. Committed as a still and a
@@ -351,6 +353,25 @@ strip like the three demos before it.
 *Measures:* the mark count is the same at every named time. At four named times every point of the
 intersection curve lies on the surface and on the plane, each to a measured tolerance. The orbit returns
 the camera to where it started, so `loops` holds on the figure.
+
+*Measured:* `demos/surface.ts` draws 190 marks at every named time: 144 cells of the saddle, 16 panes
+of the plane, both branches of the crossing curve, three axes with their ticks and numbers, and the
+typeset equation. Every point of the curve lies on the plane exactly and within 4.870e-4 of the surface,
+which is the chord the grid leaves at 48 by 48. At each of four named times every drawn point of the
+curve is the camera's own answer for its point in space, exactly. The picture stays inside the frame at
+every quarter of the orbit. The suite went from 531 tests to 539 and the sheet list from six pictures to
+eight.
+
+*Where the plan was wrong:* `loops` cannot hold on this figure, because the picture arrives and a
+figure that fades a plane in does not draw the same marks at nothing as at the end. What the orbit's
+return is held by instead is a comparison of the marks at the end of the entrance against the marks one
+orbit later, mark for mark by name. By name rather than in order: two cells at the same depth keep the
+order they were given, and a turn short by a thousandth of a millionth is enough to swap two of them.
+
+*The call the step needed:* `surfaceCells` came out of `surface3`, which is now that call wrapped in
+`space`. A surface and a plane that cuts through it have to be sorted together, since two grids sorted
+apart are two groups and the second is painted over the first whichever way round they stand.
+
 
 **10. The cut.** The version goes to 0.10.0, the README gains the paragraph and the solid demo's two
 pictures, the sheet list goes from six to eight, and this entry is deleted.
