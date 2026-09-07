@@ -52,6 +52,7 @@ with it, because `git log` is what keeps a closed plan.
 
 | version | what lands |
 | --- | --- |
+| 0.9.x | The polish cycle, four fixes over what 0.9.0 left |
 | 0.10.0 | Three dimensions, and a camera that moves |
 | 0.11.0 | Vector fields and streamlines |
 | 0.12.0 | Frames out, with no website around it |
@@ -120,13 +121,119 @@ the motion in a still.
 
 ## Now
 
-**0.9.0 is cut, and 0.10.0 is next and has no steps written under it yet.** Planning it is a session
-on its own and no code is touched in that session. It is the largest item on this page, and the one
-where the boundary DESIGN.md draws against the engine has to be restated rather than assumed.
+**0.9.0 is cut, and the 0.9.x cycle polishes what is here before three dimensions start.** Siva's
+call, made after an audit of the whole tree. The four items are written below in the order they are
+worked, each one a patch bump because each one is a fix. Three dimensions wait until the cycle
+closes, and 0.10.0 still has no steps written under it.
 
 ## The items
 
 Each is a version above. What follows is what each one covers.
+
+### The 0.9.x polish cycle
+
+**Found by auditing the whole tree after 0.9.0 was cut.** What the audit found is one severe defect,
+one thing that hides defects, a handful of small gaps, and a picture that reads as poor quality. Each
+is a patch bump, worked in the order below.
+
+**What the audit found sound**, so that a later session does not go looking again. Sixty random pairs
+of shapes with no coincident edges hold both `area(A) + area(B) = area(A or B) + area(A and B)` and
+`difference = A less the overlap` to 1.8e-15. Two circles crossed at every scale from 1e-4 to 1e4
+answer 4.11e-4 of the closed form, the same share at every one, so nothing there turns on the
+tolerance being an absolute distance. Two 400-piece paths unite in 48ms, so the crossing search needs
+no box test in front of it and the quadratic over piece pairs is not worth removing.
+
+#### 0.9.1, an overlap is read as an overlap
+
+**Two pieces lying on top of each other are answered as a spray of crossings, and the shape that comes
+out is wrong.** `curveCrossings` on two straight pieces covering the same run reports 14 crossings
+where there is one shared stretch. The search's budget stops the halving part way, and the clustering
+cannot join a run the search never walked. Those crossings then cut both paths into slivers and the
+stitch walks the wrong way round.
+
+*What it costs today.* Two rectangles sharing an edge unite to 6 where the answer is 8, and their
+difference is 2 where the answer is 4. Two triangles sharing their diagonal unite to 2 where the
+answer is 4. Two rectangles whose top and bottom edges partly cover each other unite to 7 where the
+answer is 8. A coincident pair also takes 170ms to 240ms, so two 99-piece regions sharing their sides
+take 564ms and a path against itself takes 13.8s.
+
+*The steps.* Detect a shared stretch before halving into it: two pieces are read as covering the same
+run when each one's ends lie on the other within the tolerance and the pieces stay within the
+tolerance between them. Answer that stretch by its two ends rather than by what the halving finds
+inside it. Then give the operations a rule for a piece that lies on a piece of the other path, which
+is where this may prove to be two commits rather than one: a shared stretch walked the same way and a
+shared stretch walked opposite ways are kept by different operations, and until the code is written it
+is not certain both fall out of the existing keep rules.
+
+*Measures:* the four areas above become 8, 4, 4 and 8. A coincident pair costs under 1ms rather than
+200ms, and a path against itself under 50ms rather than 13.8s. The fuzz above still holds to 1e-14.
+
+#### 0.9.2, the stitch says when it gave up
+
+**A run of pieces that never closes is handed back as a closed loop, so a caller cannot tell.** The
+union of two rectangles sharing an edge comes back as a subpath whose two ends are 2.0 apart, marked
+closed. That is what turns any failure of the geometry into silence, and it is worth fixing whether or
+not 0.9.1 removes the failure that shows it today.
+
+*Measures:* a stitch that cannot close a run says so rather than answering a shape. The wrong answers
+0.9.1 removes are shown to be caught by this on the tree as it stands before 0.9.1 lands.
+
+#### 0.9.3, the small gaps
+
+Seven of them, together, since each is a line or two.
+
+- The tolerance is written four times, in `intersect.ts`, `cut.ts`, `inside.ts` and `boolean.ts`, at
+  two different values, with nothing saying how they relate.
+- `splitCurve` and `windingAt` are on the door and no test names either. `SAME_TIME` has been in the
+  same state since before this cycle.
+- A crossing's point is read off the first curve alone, so at a tangency the fraction along the second
+  curve lands up to the tolerance away from it. Nothing says so.
+- `containsPoint` flattens the path again on every call, which is 0.31ms each on a 99-piece path.
+  `windingAt` over one flattening is the way round it and nothing points to it.
+- The README says a coincident stretch is decided by the tolerance. It is not decided, it is wrong,
+  and the line is corrected when 0.9.1 makes it true.
+- Two comments name an identifier, in `animation.ts` and `equation.ts`, against the rule in
+  CLAUDE.md.
+
+*Measures:* one stated tolerance, three exports named by a test, and the four doc lines corrected.
+
+#### 0.9.4, the pictures
+
+**Siva's call, from the published README: the pictures read as poor quality.** The audit found why,
+and none of it is the painter. The figure declares an extent of 10.8 by 6 and the graph fills 9.2 by
+4.8 of it, so there is a margin of 0.8 across and 0.6 up. Nothing uses that margin. Every piece of
+text sits inside the graph or straddles its edge, and the grid is drawn in the same ink as the curve.
+
+*What is wrong, measured on the still at its own still time.*
+
+- **The x axis label for 0 sits on the y axis.** It is anchored at -2.760 across, which is exactly
+  where the y axis line stands, and its body runs down into the y axis arrowhead, which spans -2.400
+  to -2.220 up at that same place.
+- **The typeset rule is drawn over the grid.** Its box runs from -4.860 to -3.660 across and 1.440 to
+  2.040 up, where the graph runs from -4.600 to 4.600 and -2.400 to 2.400. So 0.940 of its 1.200
+  width lies over live grid lines.
+- **The reading straddles the top edge.** It is anchored at 2.400 up, which is the top of the graph
+  exactly, so it sits half in and half out.
+- **The grid's major and minor lines differ in ink alone.** Both are 0.012 wide and both are the ink
+  the curve is drawn in, one at full strength and one at a quarter. A grid drawn as dark as the data
+  competes with it.
+- **The axis line stops 0.180 short of its own outermost ticks**, which leaves those ticks standing
+  under the arrowhead rather than on the line.
+- **The brace's number sits inside the graph**, anchored at 3.340 across and 0.240 up.
+
+*What is a default of this package and what is the demo's own.* The label on the origin, the axis line
+falling short of its ticks, and the weights a grid is drawn at are this package's. Where the rule, the
+reading and the brace's number sit are the demo's. Both are fixed here, and the package's half is
+fixed first so the demo's half is laid out against the corrected defaults.
+
+*How it is gated without a browser.* Text is never measured here and that rule does not change, so
+none of these are checked by measuring a word. Each is checked on an anchor or on a style, which are
+numbers already in the mark list. No tick label is anchored within a stated distance of the other
+axis. Every text mark of the demo is anchored outside the graph's own rectangle. An axis line reaches
+its outermost tick. A grid's minor lines are thinner than its major ones rather than only fainter.
+
+*Measures:* the six numbers above, each with what it becomes. The committed pictures are regenerated
+and the byte comparison passes on the new files.
 
 ### Three dimensions and a camera that moves, 0.10.0
 
