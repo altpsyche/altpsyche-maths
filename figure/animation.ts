@@ -125,6 +125,20 @@ export function morphEquation(from: string, to: string): Animation {
   };
 }
 
+/**
+ * A number ticking from one value to another, written into a text mark.
+ *
+ * How the value is written is the caller's, so this holds no opinion about
+ * decimal places: a count of a length and a count of a population want different
+ * rounding and neither is this function's to choose.
+ *
+ * The scene writes the value the count ends at, which is what this writes at the
+ * end of its span, so the two never disagree about what the number settles on.
+ */
+export function countTo(target: string, from: number, to: number, write: (value: number) => string): Animation {
+  return over(target, (mark, along) => (mark.kind === 'text' ? { ...mark, text: write(lerp(from, to, along)) } : mark));
+}
+
 /** A mark's own opacity walked to a value, for a figure that wants a thing dimmed
  * rather than gone. */
 export function fadeTo(target: string, opacity: number): Animation {

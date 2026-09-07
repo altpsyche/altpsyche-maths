@@ -183,7 +183,7 @@ within 1e-12, at all four quarter turns. A label of one character and a label of
 the same point. The group is `rise/brace` and `rise/word`. The suite is 396 tests in 896 ms, against
 392 in 907 ms.
 
-**3. A number that counts.** An animation over a text mark, writing the value it has reached rather
+**3. Done. A number that counts.** An animation over a text mark, writing the value it has reached rather
 than the value it will reach. It takes the two values and how to write one, so the rounding is the
 caller's and this holds no opinion about decimal places. The scene writes the value the count ends
 at, which is what the animation writes at the end of its span, so the two never disagree.
@@ -191,6 +191,12 @@ at, which is what the animation writes at the end of its span, so the two never 
 *Measures:* the text at 0, 0.5 and 1 is the start, the middle and the end written by the format given.
 The mark count does not change. A mark that is not text is left alone. A count over a name that
 matches nothing changes nothing.
+
+*Measured:* a count from 0 to 9 reads 0.00, 4.50 and 9.00. The same half way through reads 5 at a
+rounding of 1 and 4.500 at a rounding of 0.001, so the decimals are the caller's. Counting down from
+9 reads 6.75 a quarter of the way. The mark count does not change, the path mark beside it is the
+same object it was, a name matching nothing changes nothing, and a name over a group reaches every
+text mark under it. The suite is 403 tests in 936 ms, against 396 in 896 ms.
 
 **4. The flat demo braces the rise and counts it.** After the flash at the top of the curve, a brace
 arrives along the right of the shaded region from the stationary point to the top, and its label
