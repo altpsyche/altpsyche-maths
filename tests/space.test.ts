@@ -1,14 +1,17 @@
 import { describe, expect, it } from 'vitest';
 import {
   boundsOf,
+  boundsOfMarks,
   camera3,
   centreOf,
+  interval,
   dot3,
   flatten,
   orthographic,
   perspective,
   polyline3,
   space,
+  surface3,
   text3,
   vec3,
 } from '@altpsyche/maths';
@@ -180,5 +183,62 @@ describe('space', () => {
     expect(sorted.children).toHaveLength(4000);
     expect(sorted.children[0].name).toBe('cell3999');
     expect(sorted.children[3999].name).toBe('cell0');
+  });
+});
+
+describe('surface3', () => {
+  const sphere = (u: number, v: number) =>
+    vec3(Math.sin(v) * Math.cos(u), Math.cos(v), Math.sin(v) * Math.sin(u));
+  const looking = camera3({ eye: vec3(0, 0, 5), target: vec3(0, 0, 0), projection: orthographic() });
+  const ball = (resolution: number, cull: boolean, shades: number[] = []) =>
+    surface3('ball', sphere, looking, {
+      u: interval(0, 2 * Math.PI),
+      v: interval(0, Math.PI),
+      resolution,
+      cull,
+      shade: (amount) => {
+        shades.push(amount);
+        return { colour: 'rgb(0, 0, 0)' };
+      },
+    });
+
+  it('draws a cell for every square of the grid', () => {
+    const drawn = ball(24, false);
+    expect(drawn.children).toHaveLength(576);
+    expect(flatten(drawn)).toHaveLength(576);
+  });
+
+  it('leaves out the cells facing away when it is asked to', () => {
+    // Fewer than half, because an eye five radii off sees less than a
+    // hemisphere of a ball of radius one.
+    expect(ball(24, true).children).toHaveLength(188);
+  });
+
+  it('draws a ball as wide as the ball is', () => {
+    const box = boundsOfMarks(flatten(ball(24, false)));
+    expect(box).not.toBeNull();
+    const across = Math.abs(box!.x.to - box!.x.from);
+    expect(Math.abs(across - 2) / 2).toBeLessThan(1e-12);
+
+    const odd = boundsOfMarks(flatten(ball(25, false)));
+    const short = Math.abs(odd!.x.to - odd!.x.from);
+    expect((2 - short) / 2).toBeLessThan(0.01);
+    expect((2 - short) / 2).toBeGreaterThan(0);
+  });
+
+  it('shades a cell by how squarely it faces the light', () => {
+    const shades: number[] = [];
+    ball(24, false, shades);
+    expect(shades).toHaveLength(576);
+    expect(Math.min(...shades)).toBeLessThan(0.01);
+    expect(Math.max(...shades)).toBeGreaterThan(0.99);
+  });
+
+  it('takes a different count each way', () => {
+    const uneven = surface3('sheet', (u, v) => vec3(u, v, 0), looking, {
+      resolution: { u: 5, v: 3 },
+      shade: () => ({ colour: 'grey' }),
+    });
+    expect(uneven.children).toHaveLength(15);
   });
 });

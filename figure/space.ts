@@ -11,7 +11,8 @@ import { vec3, type Vec3 } from '../values/vec3.js';
 import type { Vec2 } from '../values/vec2.js';
 import { circle, polygon, polyline } from './path.js';
 import { group, shape, text, type GroupNode, type Node, type Style, type TextOptions } from './node.js';
-import type { Fill } from './mark.js';
+import { interval, type Interval } from '../values/interval.js';
+import type { Fill, Stroke } from './mark.js';
 import type { Camera3 } from './camera.js';
 
 /** A run the eye can see, and whether it is all of what the author gave. */
@@ -140,4 +141,74 @@ export function space(name: string, items: readonly SpaceItem[], camera: Camera3
   const measured = items.map((item) => ({ node: item.node, depth: middleDepth(item.points, camera) }));
   measured.sort((a, b) => b.depth - a.depth);
   return group(name, measured.map((item) => item.node));
+}
+
+export type Surface3Options = {
+  /** The run of the first parameter, nothing to one unless named. */
+  u?: Interval;
+  /** The run of the second parameter, nothing to one unless named. */
+  v?: Interval;
+  /** How many cells each way. */
+  resolution?: number | { u: number; v: number };
+  /**
+   * The colour a cell is filled with, given how squarely it faces the light: one
+   * where it faces the light head on, a half where it is edge on, and nothing
+   * where it faces straight away.
+   *
+   * The author supplies this rather than naming two colours to mix, because
+   * mixing two colours means reading them, and a colour here is any CSS colour
+   * written as text with nothing that parses one.
+   */
+  shade: (amount: number) => Fill;
+  /** Which way the light comes from, over the shoulder of an eye on the positive
+   * z axis unless named. */
+  light?: Vec3;
+  /** Whether a cell facing away from the eye is left out. Off by default, because
+   * a count that changes as the camera turns is a count no gate can hold. */
+  cull?: boolean;
+  stroke?: Stroke;
+};
+
+function resolutionOf(resolution: number | { u: number; v: number }): { u: number; v: number } {
+  return typeof resolution === 'number' ? { u: resolution, v: resolution } : resolution;
+}
+
+/**
+ * A surface given by a function of two parameters, drawn as a grid of
+ * four-cornered cells ordered back to front.
+ *
+ * Cells rather than one shape is what makes the depth sort work at all: a surface
+ * that folds over itself has no one place in a painting order, and pieces small
+ * enough to be flat do.
+ */
+export function surface3(name: string, of: (u: number, v: number) => Vec3, camera: Camera3, options: Surface3Options): GroupNode {
+  const { u = interval(0, 1), v = interval(0, 1), resolution = 24, shade, light = vec3(0, 0, 1), cull = false, stroke } = options;
+  const steps = resolutionOf(resolution);
+  const toLight = vec3.normalize(light);
+  const items: SpaceItem[] = [];
+
+  for (let i = 0; i < steps.u; i += 1) {
+    for (let j = 0; j < steps.v; j += 1) {
+      const corners = [
+        of(interval.at(u, i / steps.u), interval.at(v, j / steps.v)),
+        of(interval.at(u, (i + 1) / steps.u), interval.at(v, j / steps.v)),
+        of(interval.at(u, (i + 1) / steps.u), interval.at(v, (j + 1) / steps.v)),
+        of(interval.at(u, i / steps.u), interval.at(v, (j + 1) / steps.v)),
+      ];
+      const normal = vec3.normalize(
+        vec3.cross(vec3.sub(corners[1], corners[0]), vec3.sub(corners[3], corners[0])),
+      );
+      if (cull) {
+        const middle = corners.reduce((sum, corner) => vec3.add(sum, vec3.scale(corner, 1 / 4)), vec3.ZERO);
+        if (vec3.dot(normal, vec3.sub(camera.eye, middle)) <= 0) continue;
+      }
+      const fill = shade((vec3.dot(normal, toLight) + 1) / 2);
+      items.push({
+        points: corners,
+        node: polyline3(`cell${i}-${j}`, corners, camera, { close: true, fill, stroke }),
+      });
+    }
+  }
+
+  return space(name, items, camera);
 }

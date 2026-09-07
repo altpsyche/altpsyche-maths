@@ -125,13 +125,13 @@ the motion in a still.
 
 ## Now
 
-**0.10.0 is being worked, and steps 1 to 4 of its ten are landed.** `mat4` is below the line, and
-`camera3`, `polyline3`, `dot3`, `text3` and `space` are above it. A camera is a value the caller holds,
-a builder that works in space hands back the flat nodes the rest of the package already draws, cut
-where they cross the near plane, and `space` orders a list of pieces back to front. The suite went from
-479 tests to 509.
+**0.10.0 is being worked, and steps 1 to 5 of its ten are landed.** `mat4` is below the line, and
+`camera3`, `polyline3`, `dot3`, `text3`, `space` and `surface3` are above it. A camera is a value the
+caller holds, a builder that works in space hands back the flat nodes the rest of the package already
+draws, cut where they cross the near plane, `space` orders a list of pieces back to front, and a
+surface is a grid of cells the author's own function shades. The suite went from 479 tests to 514.
 
-**Step 5, surfaces, is next.** A step is ticked by writing the number its commit measured into
+**Step 6, three axes, is next.** A step is ticked by writing the number its commit measured into
 that step rather than by a bare tick, so the first step carrying no measurement is where a session
 resumes.
 
@@ -259,7 +259,7 @@ gave them. Sorting 4,000 quads costs 0.32 ms, the median of seven runs after thr
 went from 505 tests to 509 and the door from 99 values above the line to 100.
 
 
-**5. Surfaces.** `surface3(name, of, camera, options)`, where `of(u, v)` gives a point in space, `u` and
+**5. Done. Surfaces.** `surface3(name, of, camera, options)`, where `of(u, v)` gives a point in space, `u` and
 `v` run over intervals, and a resolution says how many cells each way. Each cell is a quad, filled with
 a colour the author's own `shade(amount)` supplies from the cell's facing against a light direction.
 Handing in `shade` rather than mixing two colours here is what keeps this off the colour parser that
@@ -270,6 +270,14 @@ hold.
 *Measures:* a sphere at 24 by 24 draws 576 quads with the option off, and a measured count with it on.
 The widest span of the drawn outline matches the sphere's diameter in figure units to a measured share
 of it. The shades run between the darkest and lightest the author's function gives.
+
+*Measured:* a sphere of radius one at 24 by 24 draws 576 quads with the option off and 188 with it on,
+which is fewer than half because an eye five radii off sees less than a hemisphere. The widest span of
+the outline is the diameter exactly at 24 by 24, where the grid lands on the widest points of the ball,
+and 5.908e-3 of the diameter short of it at 25 by 25, where it does not. The shades run from 0.00532 to
+0.99468, which is the full range less the half cell the grid leaves at each end. The suite went from
+509 tests to 514 and the door from 100 values above the line to 101.
+
 
 **6. Three axes.** `axes3`, three number lines in space with their ticks and their labels, reading
 `ticksOn` and `labelFor` the flat axes already read. A label is flat text at a projected point.
