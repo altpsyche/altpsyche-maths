@@ -135,7 +135,9 @@ Each is a version above. What follows is what each one covers.
 **Found by auditing the whole tree after 0.9.0 was cut.** What the audit found is one severe defect,
 one thing that hides defects, a handful of small gaps, and a picture that reads as poor quality. Each
 is a patch bump, worked in the order below. 0.9.1 is cut: two pieces covering the same stretch are
-answered by its two ends, and a shared edge is kept by which way the two paths run over it.
+answered by its two ends, and a shared edge is kept by which way the two paths run over it. 0.9.2 is
+cut: a stitch that will not close stops, a flattening finer than a million points stops, and the
+crossing search counts the pairs it makes rather than the pairs it looks at.
 
 **What the audit found sound**, so that a later session does not go looking again. Sixty random pairs
 of shapes with no coincident edges hold both `area(A) + area(B) = area(A or B) + area(A and B)` and
@@ -143,26 +145,6 @@ of shapes with no coincident edges hold both `area(A) + area(B) = area(A or B) +
 answer 4.11e-4 of the closed form, the same share at every one, so nothing there turns on the
 tolerance being an absolute distance. Two 400-piece paths unite in 48ms, so the crossing search needs
 no box test in front of it and the quadratic over piece pairs is not worth removing.
-
-#### 0.9.2, a failure that cannot be seen
-
-**Done.** Two of them, both found by asking what a caller sees when this code is wrong.
-
-**A run of pieces that would not close was handed back as a closed loop.** Nothing about the shape
-said so. Now the stitch stops and names how many pieces it had, where the run began and ended, and how
-far apart those are. A path that crosses itself is outside what the operations take, and united with a
-disc it drew a shape with a gap in it and said nothing; it now stops with a run of 3 pieces whose ends
-are 1.5 apart.
-
-**A tolerance finer than the flattening reaches took the machine out of memory.** Halving a piece was
-bounded by a depth of 24, which is sixteen million points for one piece, so a union at a tolerance of
-1e-15 never returned. A whole flattening is now bounded at a million points and refuses past that,
-which it reaches in 295ms. A circle of radius 1 at a tolerance of a millionth wants 4096, so the room
-is a thousandfold.
-
-**The pairs the crossing search makes are counted rather than the pairs it looks at.** Each pair looked
-at makes up to four more, so counting the ones looked at let the pile waiting grow four times faster
-than it drained. The budget is 200000 made, where a near tangency at a millionth wanted 67000.
 
 #### 0.9.3, the small gaps
 
