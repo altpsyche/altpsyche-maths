@@ -199,11 +199,17 @@ resumes at the first unticked one.
       intervals rather than clamped to them. The round trip through `unscaled` over a thousand samples
       on each axis is worst 1.8e-15. The pair-wise inverse of `pointOf` was written and then dropped:
       nothing in 0.4.0 draws it, and the done-criteria export list below is one name shorter for it.
-- [ ] **4. `numberLine`.** One drawn axis: the line, a tick at each value, a label under each tick,
-      and an optional tip at each end. Measurement: the mark count and the id list for the demo's x
-      interval; and the geometry of every mark with a label forty characters long against the same
-      figure with a label one character long, which is DESIGN.md's rule that nothing about a figure's
-      layout may depend on how wide some text is.
+- [x] **4. `numberLine`.** One drawn axis: the line, the ticks under `ticks`, the labels under
+      `labels`, and the tips under `tips`. It takes a direction rather than being rotated into place,
+      because a rotated axis rotates its labels and a reader cannot read those. **Landed.** The demo's
+      x interval gives 13 marks, `x/line` then `x/ticks/-1` through `x/ticks/4` then `x/labels/-1`
+      through `x/labels/4`, so each tick is named after the number it shows and not its place in the
+      list. Without a fill and a size it is 7 marks and writes nothing.
+      **The planned measurement could not be taken and was replaced.** A label forty characters long
+      is not constructible through this surface, since a label's text comes from its own tick. What
+      stands in its place holds the same rule: adding the labels leaves the line and all six ticks
+      within 1e-12 of where they were, all nine labels over -2 to 2 share one off-axis coordinate,
+      and each label's anchor is on its own tick to 1e-12.
 - [ ] **5. `axes`.** Two number lines under one group, crossing at zero, and at the near edge of the
       interval where zero is outside it. Measurement: the mark count; and where the horizontal line
       sits for a y interval of minus one to nine against one of two to nine, where zero is off the
