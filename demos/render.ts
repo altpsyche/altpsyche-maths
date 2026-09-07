@@ -6,13 +6,18 @@
  * them as text, so the picture in the README is regenerated and checked by the
  * same suite everything else is.
  */
-import { at, resolveExtent, svgMarkup, viewMatrix, type Figure } from '../index.js';
-import { FRAMES, SLOT, strip, tangent } from './tangent.js';
+import { at, resolveExtent, svgMarkup, viewMatrix, type Extent, type Figure, type Mark } from '../index.js';
+import { FRAMES, stripMarks, tangent } from './tangent.js';
 
 /** A hundred pixels to the figure unit, which is the size the README shows and
  * the only place the number matters, since the picture scales from its view box. */
 export const WIDTH = 1080;
 export const HEIGHT = 600;
+
+/** One list of marks written out over a surface shaped like the extent it covers. */
+export function markupOf(marks: readonly Mark[], extent: Extent, width: number, height: number): string {
+  return svgMarkup(marks, viewMatrix(extent, 'contain', width, height), width, height);
+}
 
 export function stillMarkup(figure: Figure, seconds: number, width = WIDTH, height = HEIGHT): string {
   const extent = resolveExtent(figure.extent, width / height);
@@ -30,10 +35,11 @@ export const sheets: readonly Sheet[] = [
   {
     file: 'docs/tangent-strip.svg',
     markup: () => {
+      const { marks, extent } = stripMarks(FRAMES);
       // The surface is shaped like the strip's own extent, so contain leaves no
-      // margin above and below the frames.
-      const across = Math.round((SLOT / (HEIGHT / 100)) * HEIGHT) * FRAMES.length;
-      return stillMarkup(strip(FRAMES), 0, across, HEIGHT);
+      // margin above or below the frames.
+      const across = Math.round((extent.width / extent.height) * HEIGHT);
+      return markupOf(marks, extent, across, HEIGHT);
     },
   },
 ];

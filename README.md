@@ -22,6 +22,10 @@ svgMarkup(at(figure, 0.5), viewMatrix(figure.extent, 'contain', 640, 360), 640, 
 
 <img src="docs/tangent.svg" width="720" alt="A parabola on a labelled grid, the region under it shaded to a point on the curve, the tangent at that point drawn, and the slope written as a number.">
 
+The picture arrives rather than appearing. The grid fades, the axes draw on, their labels come in one
+after another, the curve draws, the dot grows out of the origin, and the dot is pointed at where the
+slope is nothing. Then it walks the curve at one speed and flashes at the top.
+
 ```ts
 import { axes, coordsOf, group, interval, numberPlane, plot, scaleOf, shape } from '@altpsyche/maths';
 
@@ -55,8 +59,24 @@ which is what the number in the corner is.
 
 <img src="docs/tangent-strip.svg" width="960" alt="Four frames of the same figure side by side, the point walking up the curve and the shaded region growing behind it.">
 
-Four times of one figure, side by side. A moving picture in a README needs a GIF and this package
-has no encoder, so the strip shows the motion in a still.
+Four times of one figure, side by side: the picture arrived, the beat at the stationary point, half
+way up, and the top. A moving picture in a README needs a GIF and this package has no encoder, so the
+strip shows the motion in a still.
+
+## The animations
+
+`fadeIn`, `fadeOut`, `fadeTo`, `draw`, `morph`, `moveBy`, `rotate`, `scale`, `growFrom`, `moveAlong`,
+`indicate`, `flash` and `circumscribe`. A `Timeline` plays them in order, plays several `together`, or
+`stagger`s a row so its parts arrive one after another.
+
+A turn and a growth happen about a point the marks decide for themselves, which is the middle of the
+box round them. `boundsOf` is that box, worked out from where each piece of the curve turns back on
+itself rather than from the points the curve is written from.
+
+`moveAlong` carries a mark along a path at one speed, measured by the path's length. Even steps in a
+curve's own parameter are uneven steps along the curve: a step covers more of it where the curve is
+moving fast, which on a quarter circle is a 6.9% difference between the longest step and the shortest
+and on the demo's own walk is 82%.
 
 Both pictures are written by `svgMarkup`, which needs no browser, so `npm run demos` regenerates
 them and a test compares the bytes against the committed files.
