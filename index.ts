@@ -72,6 +72,8 @@ export { lengthOf, pointAlong } from './figure/length.js';
 export { trimPath } from './figure/trim.js';
 export { alignPaths, lerpPath } from './figure/morph.js';
 export { at, durationOf, loops, sameMarks, viewAt } from './figure/figure.js';
+export { frameTimes, framesOf } from './figure/frames.js';
+export type { Frame, FrameStep, FramesOptions } from './figure/frames.js';
 export type { Figure, Values } from './figure/figure.js';
 export { pathData, paintSvg, svgElements, svgMarkup } from './paint/svg.js';
 export type { ElementMaker, PaintNode, PaintTarget, SvgElement } from './paint/svg.js';

@@ -209,16 +209,20 @@ strip by hand, and step 3 is what turns that note into a rule the call holds.
 
 #### The steps
 
-**1. The walk.** `figure/frames.ts` holding `Frame`, `frameTimes(figure, options)` and
+**1. The walk. Done.** `figure/frames.ts` holding `Frame`, `frameTimes(figure, options)` and
 `framesOf(figure, options)`, where a frame is its index, its time, its marks and its view, and the
 options carry the width and height the view is built for plus either `fps` or `frames`.
 
-*Measures:* the flat demo at 30 frames a second walks a stated number of frames, the first at 0 and the
-last a stated step short of its 10.25 seconds. The rotate demo, which is a loop of 6 seconds, walks 4
-frames when asked for 4 and never hands back the frame at 6, which `sameMarks` says is its own first
-frame. Every frame's marks are `at` of the figure at that frame's own time and every frame's view is
-`viewAt` at that same time, to 1e-12 on the flat demo whose view moves across. A figure of no duration
-walks one frame rather than none.
+*Measured:* the flat demo at 30 frames a second walks 308 frames, the first at 0 and the last 0.016667
+short of its 10.25 seconds, with every gap 1/30 to 1e-12. The rotate demo, a loop of 6 seconds, walks
+0, 1.5, 3 and 4.5 when asked for 4 frames: none of the three later ones draws its first frame again and
+the frame at 6, which the walk leaves off, is the one `sameMarks` calls its own first. Every frame's
+marks are `at` of the figure at that frame's own time exactly, and every frame's view is `viewAt` at
+that same time to within 1e-12 of all nine parts of the matrix. The flat demo's view is carried 312 across
+its own walk, in the units a 1080 by 600 surface counts in, where a walk resolving the extent once
+would leave it still. A figure of no
+duration walks one frame. Reading one frame of a 300 frame walk builds one scene. The suite went from
+575 tests to 584.
 
 **2. Every frame paints, through both painters.** No new call. A test walks both demos at 30 frames a
 second, paints each frame through `paintCanvas` into a counting context and through `svgMarkup`, and
