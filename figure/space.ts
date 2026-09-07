@@ -10,7 +10,7 @@
 import { vec3, type Vec3 } from '../values/vec3.js';
 import type { Vec2 } from '../values/vec2.js';
 import { circle, polygon, polyline } from './path.js';
-import { group, shape, text, type GroupNode, type Style, type TextOptions } from './node.js';
+import { group, shape, text, type GroupNode, type Node, type Style, type TextOptions } from './node.js';
 import type { Fill } from './mark.js';
 import type { Camera3 } from './camera.js';
 
@@ -103,4 +103,41 @@ export function text3(
 ): GroupNode {
   const seen = camera.project(at);
   return group(name, seen.inFront ? [text('label', seen.at, content, size, options)] : []);
+}
+
+/** A drawn piece and the points in space it was drawn from, which are what say
+ * how far off it is. */
+export type SpaceItem = {
+  points: readonly Vec3[];
+  node: Node;
+};
+
+/**
+ * The mean of a piece's own depths, so a piece is ordered by where its middle is
+ * rather than by whichever corner happens to be nearest.
+ */
+function middleDepth(points: readonly Vec3[], camera: Camera3): number {
+  if (points.length === 0) return 0;
+  let total = 0;
+  for (const point of points) total += camera.project(point).depth;
+  return total / points.length;
+}
+
+/**
+ * A group whose children are ordered back to front, so the near piece is painted
+ * over the far one.
+ *
+ * This is the painter's algorithm, and what it cannot do is worth knowing before
+ * it is used: two pieces that pass through each other, and three that overlap in
+ * a ring, have no one order at all, and no comparison of depths can find one. The
+ * answer for those is smaller pieces, which is why a surface is cut into cells.
+ *
+ * Two pieces at the same depth keep the order the author gave them, since the
+ * sort is stable, and a picture that changed which of two touching faces was on
+ * top between frames would flicker.
+ */
+export function space(name: string, items: readonly SpaceItem[], camera: Camera3): GroupNode {
+  const measured = items.map((item) => ({ node: item.node, depth: middleDepth(item.points, camera) }));
+  measured.sort((a, b) => b.depth - a.depth);
+  return group(name, measured.map((item) => item.node));
 }

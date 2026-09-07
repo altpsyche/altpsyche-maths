@@ -125,12 +125,13 @@ the motion in a still.
 
 ## Now
 
-**0.10.0 is being worked, and steps 1 to 3 of its ten are landed.** `mat4` is below the line, and
-`camera3`, `polyline3`, `dot3` and `text3` are above it. A camera is a value the caller holds, and a
-builder that works in space hands back the flat nodes the rest of the package already draws, cut where
-they cross the near plane. The suite went from 479 tests to 505.
+**0.10.0 is being worked, and steps 1 to 4 of its ten are landed.** `mat4` is below the line, and
+`camera3`, `polyline3`, `dot3`, `text3` and `space` are above it. A camera is a value the caller holds,
+a builder that works in space hands back the flat nodes the rest of the package already draws, cut
+where they cross the near plane, and `space` orders a list of pieces back to front. The suite went from
+479 tests to 509.
 
-**Step 4, the depth sort, is next.** A step is ticked by writing the number its commit measured into
+**Step 5, surfaces, is next.** A step is ticked by writing the number its commit measured into
 that step rather than by a bare tick, so the first step carrying no measurement is where a session
 resumes.
 
@@ -241,7 +242,7 @@ passes the eye and comes back draws two. The suite went from 496 tests to 505 an
 values above the line to 99.
 
 
-**4. The depth sort.** `space(name, items, camera)`, a group whose children are ordered back to front
+**4. Done. The depth sort.** `space(name, items, camera)`, a group whose children are ordered back to front
 so the near piece is painted over the far one. This is the painter's algorithm, named in the comment
 because the name is what a reader can look up, along with what it cannot do: two pieces that pass
 through each other have no one order, and the answer for those is smaller pieces rather than a cleverer
@@ -250,6 +251,13 @@ sort.
 *Measures:* two quads at named depths come out far first at one camera and near first at a camera on the
 other side of them. A quad and a polyline order against each other by the same rule. Sorting 4,000
 pieces costs a measured number of milliseconds, quoted so a later session knows whether it grew.
+
+*Measured:* two quads four units apart come out far first from an eye five units in front of them and
+near first from an eye eight units behind them. A line two units in front of a face orders after it and
+a line two units behind it orders before it. Two pieces at the same depth keep the order the author
+gave them. Sorting 4,000 quads costs 0.32 ms, the median of seven runs after three warm ones. The suite
+went from 505 tests to 509 and the door from 99 values above the line to 100.
+
 
 **5. Surfaces.** `surface3(name, of, camera, options)`, where `of(u, v)` gives a point in space, `u` and
 `v` run over intervals, and a resolution says how many cells each way. Each cell is a quad, filled with

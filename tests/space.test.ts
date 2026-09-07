@@ -8,6 +8,7 @@ import {
   orthographic,
   perspective,
   polyline3,
+  space,
   text3,
   vec3,
 } from '@altpsyche/maths';
@@ -133,5 +134,51 @@ describe('dot3 and text3', () => {
   it('draws neither a dot nor a label behind the eye', () => {
     expect(flatten(dot3('point', vec3(1, 1, 9), 0.1, { colour: 'red' }, eye))).toHaveLength(0);
     expect(flatten(text3('name', vec3(1, 1, 9), 'P', 0.3, eye, { fill: { colour: 'black' } }))).toHaveLength(0);
+  });
+});
+
+describe('space', () => {
+  const quad = (name: string, z: number, camera = eye) => {
+    const points = [vec3(-1, -1, z), vec3(1, -1, z), vec3(1, 1, z), vec3(-1, 1, z)];
+    return { points, node: polyline3(name, points, camera, { close: true, fill: { colour: 'grey' } }) };
+  };
+
+  it('paints the far piece before the near one, whichever side the eye is on', () => {
+    const near = quad('near', 1);
+    const far = quad('far', -3);
+    const front = space('scene', [near, far], eye);
+    expect(front.children.map((child) => child.name)).toEqual(['far', 'near']);
+
+    const behind = camera3({
+      eye: vec3(0, 0, -8),
+      target: vec3(0, 0, 0),
+      projection: perspective({ fov: Math.PI / 2, height: 10, near: 1 }),
+    });
+    const other = space('scene', [near, far], behind);
+    expect(other.children.map((child) => child.name)).toEqual(['near', 'far']);
+  });
+
+  it('orders a line against a face by the same rule', () => {
+    const face = quad('face', 0);
+    const points = [vec3(-2, 0, 2), vec3(2, 0, 2)];
+    const line = { points, node: polyline3('line', points, eye, { stroke: { colour: 'black', width: 0.02 } }) };
+    expect(space('scene', [line, face], eye).children.map((child) => child.name)).toEqual(['face', 'line']);
+    const away = [vec3(-2, 0, -2), vec3(2, 0, -2)];
+    const behind = { points: away, node: polyline3('line', away, eye, { stroke: { colour: 'black', width: 0.02 } }) };
+    expect(space('scene', [behind, face], eye).children.map((child) => child.name)).toEqual(['line', 'face']);
+  });
+
+  it('keeps the order the author gave two pieces at the same depth', () => {
+    const first = quad('first', 0);
+    const second = quad('second', 0);
+    expect(space('scene', [first, second], eye).children.map((child) => child.name)).toEqual(['first', 'second']);
+  });
+
+  it('orders four thousand pieces back to front', () => {
+    const pieces = Array.from({ length: 4000 }, (unused, at) => quad(`cell${at}`, -at / 100));
+    const sorted = space('many', pieces, eye);
+    expect(sorted.children).toHaveLength(4000);
+    expect(sorted.children[0].name).toBe('cell3999');
+    expect(sorted.children[3999].name).toBe('cell0');
   });
 });
