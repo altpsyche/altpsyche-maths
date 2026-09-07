@@ -179,6 +179,56 @@ Both demos complete, the README carrying both, and the public surface frozen. A 
 about `index.ts` not changing under a consumer, so what it needs beyond the features is a read of the
 whole door with that promise in mind.
 
+**It has no step list, so planning it is a session of its own and no code is touched in that session.**
+
+#### What the polish covers, given by Siva
+
+He called this one crucial and named five areas. They are written here rather than left to a session
+to guess, and each one needs the plan to say how it is checked.
+
+**The codebase.** 6,535 lines across `figure`, `values`, `timing` and `paint`. What a read is looking
+for is the same thing said two ways, a name that stopped matching what it does, a comment carrying a
+measurement that is now stale, and a file that grew past what its header claims. `figure/space.ts` and
+`figure/annotate.ts` have both taken new calls three versions running.
+
+**The API.** 132 names come out of `index.ts` across 78 lines. A 1.0.0 says none of them moves under a
+consumer, so the read has to answer, for each one, whether it is the name a caller would guess, whether
+it belongs at the door at all, and whether two of them are the same idea under different names. The
+option bags want the same read: `resolution`, `over`, `within` and `samples` mean nearly the same thing
+in four files and do not all take the same shape.
+
+**The README.** 402 lines, and Siva's word for how it reads now is robotic. It wants a full natural
+overhaul rather than a pass with a comb. Every paragraph opens on a bold lead and closes on a measured
+number, and a reader meeting the twentieth of those has stopped reading. The prose rules in CLAUDE.md
+are the floor and not the ceiling: a rule against brochure language does not by itself make a page
+someone wants to read. What a plan has to decide is who the reader is at each point of the page, since
+the person deciding whether to install this and the person looking up what `sectionOf` does are not the
+same person.
+
+**The images.** Eight sheets, and Siva's word is that they are not enticing. They were each cut to
+prove a feature draws, which is why they look like gates rather than like the pictures the goal at the
+top of this file names. What that means for colour, composition, what a still is chosen to show and
+whether the README's first picture is one of the eight or a new one is the plan's to answer.
+
+**The docs.** DESIGN.md is 242 lines and is the design. There is nothing between it and the README:
+no page a reader lands on to learn what a figure is, no reference for the 132 names, and nothing that
+says what this package refuses to do and why. Whether that gap is filled at 1.0.0, and where it lives
+if it is, is Siva's call rather than a session's.
+
+**What else is in scope** is the two items under "Found while working": the colour reader, which is the
+one thing keeping `indicate` from easing between two colours, and the byte gate's rounding boundary. A
+1.0.0 that freezes the door with a known gap behind it should say so on purpose rather than by
+omission.
+
+#### What the plan has to produce
+
+An ordered list of steps, each one commit-sized and each naming the measurement its commit will quote,
+plus done-criteria checkable line by line. A version is cut against its demos, so a step list that
+never touches one is a version nothing checks, and here the demos are also the images being polished.
+Prose and pictures are the hard half: **the plan has to say what a measurement of "reads better" is**
+before it writes a step that claims it, or every step of the README and the images is an opinion
+signed off by whoever ran it.
+
 ## Found while working, not yet queued
 
 - **Two colours cannot be walked between.** A colour is any CSS colour written as text, and there is
