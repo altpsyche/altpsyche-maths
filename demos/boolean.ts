@@ -35,7 +35,7 @@ import {
   type Node,
   type Path,
   type Track,
-  at as marksAt,
+  marksAt,
   moveBy,
 } from '../index.js';
 

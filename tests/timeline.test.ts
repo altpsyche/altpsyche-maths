@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import {
   Timeline,
   alignPaths,
-  at,
+  marksAt,
   circle,
   draw,
   durationOf,
@@ -14,7 +14,7 @@ import {
   line,
   linear,
   lerpPath,
-  loops,
+  isLoop,
   morph,
   moveBy,
   pointCount,
@@ -100,7 +100,7 @@ describe('alignPaths and lerpPath', () => {
 
 describe('animations', () => {
   it('fades in from nothing and out to nothing', () => {
-    const marks = at({ extent: { width: 1, height: 1 }, scene: oneLine(), still: 0 }, 0);
+    const marks = marksAt({ extent: { width: 1, height: 1 }, scene: oneLine(), still: 0 }, 0);
     expect(fadeIn('g/l')(marks, 0)[0].opacity).toBe(0);
     expect(fadeIn('g/l')(marks, 1)[0].opacity).toBe(1);
     expect(fadeOut('g/l')(marks, 1)[0].opacity).toBe(0);
@@ -108,43 +108,43 @@ describe('animations', () => {
 
   it('keeps a mark already dimmed dim on the way in', () => {
     const dim = group('g', [shape('l', line(vec2(0, 0), vec2(1, 0)), { stroke: pen, opacity: 0.4 })]);
-    const marks = at({ extent: { width: 1, height: 1 }, scene: dim, still: 0 }, 0);
+    const marks = marksAt({ extent: { width: 1, height: 1 }, scene: dim, still: 0 }, 0);
     expect(fadeIn('g/l')(marks, 1)[0].opacity).toBeCloseTo(0.4, 10);
   });
 
   it('reaches a whole group by naming it, and nothing outside it', () => {
     const tree = group('fig', [group('axes', [shape('x', line(vec2(0, 0), vec2(1, 0)), { stroke: pen })]), shape('dot', circle(vec2(0, 0), 1), { fill: ink })]);
-    const marks = at({ extent: { width: 1, height: 1 }, scene: tree, still: 0 }, 0);
+    const marks = marksAt({ extent: { width: 1, height: 1 }, scene: tree, still: 0 }, 0);
     const faded = fadeOut('fig/axes')(marks, 1);
     expect(faded[0].opacity).toBe(0);
     expect(faded[1].opacity).toBe(1);
   });
 
   it('changes nothing for a name that matches nothing', () => {
-    const marks = at({ extent: { width: 1, height: 1 }, scene: oneLine(), still: 0 }, 0);
+    const marks = marksAt({ extent: { width: 1, height: 1 }, scene: oneLine(), still: 0 }, 0);
     expect(fadeOut('nowhere')(marks, 1)).toEqual(marks);
   });
 
   it('moves the geometry rather than carrying an offset beside it', () => {
-    const marks = at({ extent: { width: 1, height: 1 }, scene: oneLine(), still: 0 }, 0);
+    const marks = marksAt({ extent: { width: 1, height: 1 }, scene: oneLine(), still: 0 }, 0);
     expect(only(moveBy('g/l', vec2(4, 0))(marks, 0.5)).path[0].start.x).toBeCloseTo(2, 10);
   });
 
   it('draws a path on and fades text, which has no path to walk', () => {
     const both = group('g', [shape('l', line(vec2(0, 0), vec2(10, 0)), { stroke: pen }), text('t', vec2(0, 0), 'hi', 1, { fill: ink })]);
-    const marks = draw('g')(at({ extent: { width: 1, height: 1 }, scene: both, still: 0 }, 0), 0.5);
+    const marks = draw('g')(marksAt({ extent: { width: 1, height: 1 }, scene: both, still: 0 }, 0), 0.5);
     expect((marks[0] as PathMark).path[0].curves[0].to.x).toBeCloseTo(5, 6);
     expect(marks[1].opacity).toBeCloseTo(0.5, 10);
   });
 
   it('walks one shape into another and lands on it', () => {
-    const marks = at({ extent: { width: 1, height: 1 }, scene: oneLine(), still: 0 }, 0);
+    const marks = marksAt({ extent: { width: 1, height: 1 }, scene: oneLine(), still: 0 }, 0);
     const landed = only(morph('g/l', line(vec2(0, 5), vec2(10, 5)))(marks, 1));
     expect(landed.path[0].start.y).toBeCloseTo(5, 10);
   });
 
   it('dims to a value rather than to nothing', () => {
-    const marks = at({ extent: { width: 1, height: 1 }, scene: oneLine(), still: 0 }, 0);
+    const marks = marksAt({ extent: { width: 1, height: 1 }, scene: oneLine(), still: 0 }, 0);
     expect(fadeTo('g/l', 0.2)(marks, 1)[0].opacity).toBeCloseTo(0.2, 10);
   });
 });
@@ -176,24 +176,24 @@ describe('Timeline', () => {
 
   it('holds a span at nothing before it starts and in full once it is done', () => {
     const figure: Figure = { ...base, timeline: Timeline.empty().wait(1).play(fadeIn('g'), 1) };
-    expect(at(figure, 0)[0].opacity).toBe(0);
-    expect(at(figure, 1.5)[0].opacity).toBeCloseTo(0.5, 10);
-    expect(at(figure, 5)[0].opacity).toBe(1);
+    expect(marksAt(figure, 0)[0].opacity).toBe(0);
+    expect(marksAt(figure, 1.5)[0].opacity).toBeCloseTo(0.5, 10);
+    expect(marksAt(figure, 5)[0].opacity).toBe(1);
   });
 
   it('gives one answer for a time however the clock reached it', () => {
     const figure: Figure = { ...base, timeline: Timeline.empty().play(moveBy('g', vec2(10, 0)), 2, { curve: linear }) };
-    const forwards = at(figure, 1);
-    void at(figure, 1.9);
-    const backwards = at(figure, 1);
+    const forwards = marksAt(figure, 1);
+    void marksAt(figure, 1.9);
+    const backwards = marksAt(figure, 1);
     expect(sameMarks(forwards, backwards)).toBe(true);
   });
 
   it('eases still at both ends unless a figure says otherwise', () => {
     const smooth: Figure = { ...base, timeline: Timeline.empty().play(moveBy('g', vec2(10, 0)), 2) };
     const straight: Figure = { ...base, timeline: Timeline.empty().play(moveBy('g', vec2(10, 0)), 2, { curve: linear }) };
-    expect(only(at(smooth, 0.5)).path[0].start.x).toBeCloseTo(1.5625, 6);
-    expect(only(at(straight, 0.5)).path[0].start.x).toBeCloseTo(2.5, 6);
+    expect(only(marksAt(smooth, 0.5)).path[0].start.x).toBeCloseTo(1.5625, 6);
+    expect(only(marksAt(straight, 0.5)).path[0].start.x).toBeCloseTo(2.5, 6);
   });
 });
 
@@ -206,9 +206,9 @@ describe('figure', () => {
       tracks: { radius: [{ time: 0, value: 1 }, { time: 2, value: 3 }] },
       scene: (_seconds, values) => group('g', [shape('c', circle(vec2(0, 0), values.radius as number), { stroke: pen })]),
     };
-    expect(only(at(figure, 0)).path[0].start.x).toBeCloseTo(1, 10);
-    expect(only(at(figure, 1)).path[0].start.x).toBeCloseTo(2, 10);
-    expect(only(at(figure, 2)).path[0].start.x).toBeCloseTo(3, 10);
+    expect(only(marksAt(figure, 0)).path[0].start.x).toBeCloseTo(1, 10);
+    expect(only(marksAt(figure, 1)).path[0].start.x).toBeCloseTo(2, 10);
+    expect(only(marksAt(figure, 2)).path[0].start.x).toBeCloseTo(3, 10);
   });
 
   it('takes its length from the timeline unless it was given one', () => {
@@ -226,8 +226,8 @@ describe('figure', () => {
       scene: (_s, values) => group('g', [shape('d', circle(vec2(Math.cos(values.turn as number), Math.sin(values.turn as number)), 1), { stroke: pen })]),
     };
     const open: Figure = { ...shut, timeline: Timeline.empty().play(moveBy('g', vec2(5, 0)), 2) };
-    expect(loops(shut)).toBe(true);
-    expect(loops(open)).toBe(false);
+    expect(isLoop(shut)).toBe(true);
+    expect(isLoop(open)).toBe(false);
   });
 });
 

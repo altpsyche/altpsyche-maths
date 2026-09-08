@@ -12,7 +12,7 @@ import { vec2, type Vec2 } from '../values/vec2.js';
 import { line, polygon } from './path.js';
 import { group, shape, text, type GroupNode, type Node } from './node.js';
 import { multiplesOn, tickStep, ticksOn } from './ticks.js';
-import { scaled, type Coords, type Scale } from './scale.js';
+import { toUnits, type Coords, type Scale } from './scale.js';
 import type { Fill, Stroke } from './mark.js';
 
 export interface NumberLineOptions {
@@ -147,7 +147,7 @@ export type AxesOptions = Omit<NumberLineOptions, 'at' | 'direction' | 'skipZero
  */
 export function axes(name: string, coords: Coords, options: AxesOptions): GroupNode {
   const holdsOrigin = interval.holds(coords.x.graph, 0) && interval.holds(coords.y.graph, 0);
-  const seat = (scale: Scale) => scaled(scale, interval.clampTo(scale.graph, 0));
+  const seat = (scale: Scale) => toUnits(scale, interval.clampTo(scale.graph, 0));
   return group(name, [
     numberLine('x', coords.x, {
       ...options,
@@ -191,7 +191,7 @@ function gridLines(coords: Coords, step: number, along: 'x' | 'y', skipping?: nu
   return multiplesOn(scale.graph, step)
     .filter((value) => !(skipping && onStep(value, skipping)))
     .map((value) => {
-      const [from, to] = ends(scaled(scale, value));
+      const [from, to] = ends(toUnits(scale, value));
       return shape(String(value), line(from, to), {});
     });
 }

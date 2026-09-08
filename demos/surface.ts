@@ -40,13 +40,13 @@ import {
   polyline3,
   sampleTrack,
   sectionOf,
-  space,
+  scene3,
   streamlineOf,
   surfaceCells,
   vec2,
   vec3,
   Timeline,
-  at as marksAt,
+  marksAt,
   type Extent,
   type Figure,
   type Mark,
@@ -169,7 +169,7 @@ const written = await equationFromTex('z = \\frac{x^2 - y^2}{2}');
 export function sceneAt(along: number): Node {
   const camera = eyeAt(along);
   return group('solid', [
-    space(
+    scene3(
       'body',
       [
         ...surfaceCells('hill', surfaceAt, camera, { u: OVER, v: OVER, resolution: CELLS, shade }),

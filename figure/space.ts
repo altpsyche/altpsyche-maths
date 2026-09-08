@@ -147,7 +147,7 @@ function middleDepth(points: readonly Vec3[], camera: Camera3): number {
  * sort is stable, and a picture that changed which of two touching faces was on
  * top between frames would flicker.
  */
-export function space(name: string, items: readonly SpaceItem[], camera: Camera3): GroupNode {
+export function scene3(name: string, items: readonly SpaceItem[], camera: Camera3): GroupNode {
   const measured = items.map((item) => ({ node: item.node, depth: middleDepth(item.points, camera) }));
   measured.sort((a, b) => b.depth - a.depth);
   return group(name, measured.map((item) => item.node));

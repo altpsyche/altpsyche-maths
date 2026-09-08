@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { circle, mat3, pathData, pathFromData, pointCount, pointOn, vec2 } from '@altpsyche/maths';
+import { circle, mat3, pathToData, pathFromData, pointCount, pointOn, vec2 } from '@altpsyche/maths';
 import type { Path, Vec2 } from '@altpsyche/maths';
 
 /**
@@ -82,7 +82,7 @@ describe('pathFromData', () => {
   it('round trips a glyph through the painter to a thousandth', () => {
     for (const [name, d] of Object.entries(GLYPHS)) {
       const path = pathFromData(d);
-      const again = pathFromData(pathData(path, mat3.IDENTITY));
+      const again = pathFromData(pathToData(path, mat3.IDENTITY));
       expect(again.length, `${name} subpaths`).toBe(path.length);
       // The painter rounds a coordinate to three places, and a third of an
       // integer distance is what costs the most on the way back.
@@ -107,7 +107,7 @@ describe('pathFromData', () => {
   it('reads a relative run as the absolute one it describes', () => {
     const absolute = pathFromData('M10 10L20 10H30V20C35 20 40 25 40 30S45 40 50 40Q55 45 60 50T70 60Z');
     const relative = pathFromData('m10 10l10 0h10v10c5 0 10 5 10 10s5 10 10 10q5 5 10 10t10 10z');
-    expect(pathData(relative, mat3.IDENTITY)).toBe(pathData(absolute, mat3.IDENTITY));
+    expect(pathToData(relative, mat3.IDENTITY)).toBe(pathToData(absolute, mat3.IDENTITY));
   });
 
   it('takes a second pair under one moveto as a line', () => {
@@ -181,7 +181,7 @@ describe('an arc read out of path data', () => {
   it('turns an ellipse by the angle the string gives, which moves where it bulges', () => {
     const upright = pathFromData('M20 0A20 8 0 0 1 -20 0');
     const turned = pathFromData('M20 0A20 8 90 0 1 -20 0');
-    expect(pathData(turned, mat3.IDENTITY)).not.toBe(pathData(upright, mat3.IDENTITY));
+    expect(pathToData(turned, mat3.IDENTITY)).not.toBe(pathToData(upright, mat3.IDENTITY));
     // The rotation is applied about the arc's own centre, so both still end
     // where the string said.
     expect(turned[0]?.curves.at(-1)?.to.x).toBeCloseTo(-20, 6);

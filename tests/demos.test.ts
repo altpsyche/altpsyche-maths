@@ -3,15 +3,15 @@ import path from 'node:path';
 import { describe, expect, it } from 'vitest';
 import {
   areaOf,
-  at,
+  marksAt,
   boundsOf,
   boundsOfMarks,
   centreOf,
   durationOf,
   flatten,
-  frameTimes,
+  frameTimesOf,
   interval,
-  loops,
+  isLoop,
   plot,
   pointAlong,
   pointOf,
@@ -20,7 +20,7 @@ import {
   sampleTrack,
   streamlineOf,
   tangentAt,
-  unscaled,
+  toGraph,
   vec2,
   type Mark,
 } from '../index.js';
@@ -100,12 +100,12 @@ describe('the flat demo', () => {
     // number, plus the box round the reading and ten rays. Nothing arrives or
     // leaves part way through, which is what lets one frame be compared against
     // another at all.
-    for (const seconds of [0, ...FRAMES, durationOf(tangent)]) expect(at(tangent, seconds)).toHaveLength(202);
+    for (const seconds of [0, ...FRAMES, durationOf(tangent)]) expect(marksAt(tangent, seconds)).toHaveLength(202);
   });
 
   it('braces the rise at the end and counts up to it', () => {
     const wordAt = (seconds: number) => {
-      const mark = at(tangent, seconds).find((each) => each.id === 'tangent/rise/word');
+      const mark = marksAt(tangent, seconds).find((each) => each.id === 'tangent/rise/word');
       if (mark?.kind !== 'text') throw new Error('the word is text');
       return mark;
     };
@@ -119,7 +119,7 @@ describe('the flat demo', () => {
   });
 
   it('stands its brace on the two points the graph gives', () => {
-    const mark = at(tangent, TIMES.braceTo).find((each) => each.id === 'tangent/rise/brace');
+    const mark = marksAt(tangent, TIMES.braceTo).find((each) => each.id === 'tangent/rise/brace');
     if (mark?.kind !== 'path') throw new Error('the brace is a path');
     const [subpath] = mark.path;
     const top = pointOf(coords, 3, 9);
@@ -132,7 +132,7 @@ describe('the flat demo', () => {
   });
 
   it('reads no slope at the stationary point and the rule for one after it', () => {
-    const opacityOf = (seconds: number, id: string) => at(tangent, seconds).find((mark) => mark.id === id)?.opacity ?? 1;
+    const opacityOf = (seconds: number, id: string) => marksAt(tangent, seconds).find((mark) => mark.id === id)?.opacity ?? 1;
     // The 0 of the first rule, and the 2 and the x of the second.
     expect(opacityOf(TIMES.beat, 'tangent/equation/at-rest/6-30')).toBeGreaterThan(0.99);
     expect(opacityOf(TIMES.beat, 'tangent/equation/moving/6-32')).toBe(0);
@@ -148,7 +148,7 @@ describe('the flat demo', () => {
     // middle of the frame rather than against the world, since the view follows
     // the dot and the rule is placed against the frame.
     const startOf = (seconds: number, id: string) => {
-      const mark = at(tangent, seconds).find((each) => each.id === id);
+      const mark = marksAt(tangent, seconds).find((each) => each.id === id);
       if (mark?.kind !== 'path') throw new Error(`${id} is a path`);
       const centre = resolveExtent(tangent.extent, 1.8, seconds).centre ?? vec2(0, 0);
       return vec2(mark.path[0].start.x - centre.x, mark.path[0].start.y - centre.y);
@@ -161,7 +161,7 @@ describe('the flat demo', () => {
   });
 
   it('arrives rather than appearing', () => {
-    const opacityOf = (seconds: number, id: string) => at(tangent, seconds).find((mark) => mark.id === id)?.opacity ?? 1;
+    const opacityOf = (seconds: number, id: string) => marksAt(tangent, seconds).find((mark) => mark.id === id)?.opacity ?? 1;
     expect(opacityOf(0, 'tangent/grid/majors/x/0')).toBeCloseTo(0, 12);
     expect(opacityOf(0, 'tangent/reading')).toBeCloseTo(0, 12);
     expect(opacityOf(TIMES.entrance, 'tangent/grid/majors/x/0')).toBeCloseTo(1, 12);
@@ -172,7 +172,7 @@ describe('the flat demo', () => {
     const row = (seconds: number) =>
       ['-1', '0', '1', '2', '3', '4'].map(
         (label) =>
-          at(tangent, seconds).find((mark) => mark.id === `tangent/axes/x/labels/${label}`)?.opacity ?? 1
+          marksAt(tangent, seconds).find((mark) => mark.id === `tangent/axes/x/labels/${label}`)?.opacity ?? 1
       );
     // Somewhere in the row the six are part way up and no two are equal, which
     // is the whole of what a stagger promises. Scanned for rather than named, so
@@ -196,24 +196,24 @@ describe('the flat demo', () => {
 
   it('boxes its reading at the beat and lets the box go', () => {
     const boxAt = (seconds: number) =>
-      at(tangent, seconds).find((mark) => mark.id === 'tangent/reading/circumscribed')!;
+      marksAt(tangent, seconds).find((mark) => mark.id === 'tangent/reading/circumscribed')!;
     expect(boxAt(TIMES.entrance + 0.7).opacity).toBeGreaterThan(0);
     expect(boxAt(TIMES.beat).opacity).toBe(0);
   });
 
   it('flashes at the top of the curve and nowhere else', () => {
     const raysAt = (seconds: number) =>
-      at(tangent, seconds).filter((mark) => mark.id.includes('/flash/'));
+      marksAt(tangent, seconds).filter((mark) => mark.id.includes('/flash/'));
     expect(raysAt(TIMES.walkTo).every((ray) => ray.opacity === 0)).toBe(true);
     expect(raysAt(TIMES.walkTo + 0.4).some((ray) => (ray.opacity ?? 1) > 0.5)).toBe(true);
     expect(raysAt(durationOf(tangent)).every((ray) => ray.opacity === 0)).toBe(true);
   });
 
   it('reads a slope that changes as the dot walks', () => {
-    expect(reading(at(tangent, 0))).toBe('slope 0.00');
-    expect(reading(at(tangent, TIMES.beat))).toBe('slope 0.00');
-    expect(reading(at(tangent, FRAMES[2]))).toBe('slope 3.44');
-    expect(reading(at(tangent, TIMES.walkTo))).toBe('slope 6.00');
+    expect(reading(marksAt(tangent, 0))).toBe('slope 0.00');
+    expect(reading(marksAt(tangent, TIMES.beat))).toBe('slope 0.00');
+    expect(reading(marksAt(tangent, FRAMES[2]))).toBe('slope 3.44');
+    expect(reading(marksAt(tangent, TIMES.walkTo))).toBe('slope 6.00');
   });
 
   it('walks at one speed along the curve rather than gathering pace as it steepens', () => {
@@ -250,14 +250,14 @@ describe('the flat demo', () => {
   });
 
   it('draws one arrow of its field along the tangent the dot carries', () => {
-    const marks = at(tangent, TIMES.walkTo);
+    const marks = marksAt(tangent, TIMES.walkTo);
     const shafts = marks.filter((mark) => mark.id.startsWith('tangent/field/') && mark.id.endsWith('/shaft'));
     expect(shafts).toHaveLength(50);
     for (const mark of shafts) {
       if (mark.kind !== 'path') throw new Error('a shaft is a path');
       const start = mark.path[0].start;
       const end = mark.path[0].curves[mark.path[0].curves.length - 1].to;
-      const x = unscaled(coords.x, start.x);
+      const x = toGraph(coords.x, start.x);
       const wanted = tangentAt(coords, curve, x, { reach: 1.2 })[0];
       const along = vec2.sub(wanted.curves[0].to, wanted.start);
       const shaft = vec2.sub(end, start);
@@ -271,7 +271,7 @@ describe('the flat demo', () => {
     let worst = 0;
     for (let step = 0; step <= 40; step++) {
       const point = pointAlong(walkPath, step / 40)!;
-      const x = unscaled(coords.x, point.x);
+      const x = toGraph(coords.x, point.x);
       const path = tangentAt(coords, curve, x, { reach: 1.2 });
       if (path.length === 0) continue;
       const from = path[0].start;
@@ -292,7 +292,7 @@ describe('the flat demo', () => {
     // the two rules is checked against it.
     const top = pointOf(coords, 4, 9).y;
     for (const seconds of [TIMES.entrance, TIMES.beat, TIMES.walkTo, durationOf(tangent)]) {
-      for (const mark of at(tangent, seconds)) {
+      for (const mark of marksAt(tangent, seconds)) {
         if (mark.id === 'tangent/reading') expect(mark.kind === 'text' && mark.at.y).toBeGreaterThan(top);
         if (!mark.id.startsWith('tangent/equation/') || mark.kind !== 'path') continue;
         for (const subpath of mark.path) {
@@ -311,7 +311,7 @@ describe('the flat demo', () => {
     const placed = ['tangent/point/disc', 'tangent/reading'];
     for (const seconds of FRAMES) {
       const centre = resolveExtent(tangent.extent, 1.8, seconds).centre ?? vec2(0, 0);
-      for (const mark of at(tangent, seconds)) {
+      for (const mark of marksAt(tangent, seconds)) {
         if (!placed.includes(mark.id) && !mark.id.startsWith('tangent/equation/')) continue;
         const points =
           mark.kind === 'path'
@@ -334,7 +334,7 @@ describe('the flat demo', () => {
     for (let step = 0; step <= 200; step += 1) {
       const seconds = (durationOf(tangent) * step) / 200;
       const centre = resolveExtent(tangent.extent, 1.8, seconds).centre ?? vec2(0, 0);
-      const mark = at(tangent, seconds).find((each) => each.id === 'tangent/point/disc');
+      const mark = marksAt(tangent, seconds).find((each) => each.id === 'tangent/point/disc');
       if (mark?.kind !== 'path') continue;
       const middle = centreOf(boundsOf(mark.path)!);
       followed = Math.max(followed, Math.abs(middle.x - centre.x));
@@ -420,7 +420,7 @@ describe('the boolean demo', () => {
       BOOLEAN_TIMES.walkTo,
       durationOf(booleans),
     ];
-    for (const seconds of times) expect(at(booleans, seconds)).toHaveLength(12);
+    for (const seconds of times) expect(marksAt(booleans, seconds)).toHaveLength(12);
   });
 
   it('encloses what the closed form says at every named distance', () => {
@@ -443,9 +443,9 @@ describe('the boolean demo', () => {
     // Once from outside and once from within, which are the two distances where
     // the discs meet at one point rather than crossing at two.
     for (const seconds of [BOOLEAN_TIMES.touching, BOOLEAN_TIMES.slipping]) {
-      const before = at(booleans, seconds - 0.01);
-      const during = at(booleans, seconds);
-      const after = at(booleans, seconds + 0.01);
+      const before = marksAt(booleans, seconds - 0.01);
+      const during = marksAt(booleans, seconds);
+      const after = marksAt(booleans, seconds + 0.01);
       expect(during).toHaveLength(before.length);
       expect(during).toHaveLength(after.length);
     }
@@ -453,7 +453,7 @@ describe('the boolean demo', () => {
 
   it('leaves the overlap empty until the discs meet and empty again after they part', () => {
     const overlapAt = (seconds: number) => {
-      const mark = at(booleans, seconds).find((each) => each.id === 'booleans/overlap/result');
+      const mark = marksAt(booleans, seconds).find((each) => each.id === 'booleans/overlap/result');
       if (mark?.kind !== 'path') throw new Error('the result is a path');
       return mark.path;
     };
@@ -463,7 +463,7 @@ describe('the boolean demo', () => {
   });
 
   it('takes a hole out of the middle when one disc sits wholly inside the other', () => {
-    const mark = at(booleans, BOOLEAN_TIMES.inside).find((each) => each.id === 'booleans/difference/result');
+    const mark = marksAt(booleans, BOOLEAN_TIMES.inside).find((each) => each.id === 'booleans/difference/result');
     if (mark?.kind !== 'path') throw new Error('the result is a path');
     expect(mark.path).toHaveLength(2);
     expect(areaOf(mark.path)).toBeGreaterThan(0);
@@ -471,7 +471,7 @@ describe('the boolean demo', () => {
 
   it('arrives rather than appearing', () => {
     const opacityOf = (seconds: number, id: string) =>
-      at(booleans, seconds).find((mark) => mark.id === id)?.opacity ?? 1;
+      marksAt(booleans, seconds).find((mark) => mark.id === id)?.opacity ?? 1;
     expect(opacityOf(0, 'booleans/union/discs/first')).toBeCloseTo(0, 12);
     expect(opacityOf(0, 'booleans/overlap/result')).toBeCloseTo(0, 12);
     expect(opacityOf(BOOLEAN_TIMES.entrance, 'booleans/union/discs/first')).toBeCloseTo(1, 12);
@@ -480,7 +480,7 @@ describe('the boolean demo', () => {
 
   it('keeps every mark inside the extent it declares', () => {
     for (const seconds of BOOLEAN_FRAMES) {
-      for (const mark of at(booleans, seconds)) {
+      for (const mark of marksAt(booleans, seconds)) {
         const points =
           mark.kind === 'path'
             ? mark.path.flatMap((subpath) => [subpath.start, ...subpath.curves.map((piece) => piece.to)])
@@ -512,13 +512,13 @@ describe('the boolean strip', () => {
 
 describe('the rotation demo', () => {
   const corners = (seconds: number, panel: string) => {
-    const mark = at(turns, seconds).find((each) => each.id === `turns/${panel}/rider/ell`);
+    const mark = marksAt(turns, seconds).find((each) => each.id === `turns/${panel}/rider/ell`);
     if (mark?.kind !== 'path') throw new Error('the shape is a path');
     const subpath = mark.path[0];
     return [subpath.start, ...subpath.curves.slice(0, -1).map((piece) => piece.to)];
   };
   const word = (seconds: number, panel: string) => {
-    const mark = at(turns, seconds).find((each) => each.id === `turns/${panel}/rider/word`);
+    const mark = marksAt(turns, seconds).find((each) => each.id === `turns/${panel}/rider/word`);
     if (mark?.kind !== 'text') throw new Error('the rider is text');
     return mark;
   };
@@ -527,12 +527,12 @@ describe('the rotation demo', () => {
     // Two panels of four: the pivot, the shape, the word riding with it, and the
     // words underneath. Nothing arrives or leaves, which is what lets one frame
     // be compared against another.
-    for (const seconds of [0, ...TURN_FRAMES, TURN]) expect(at(turns, seconds)).toHaveLength(8);
+    for (const seconds of [0, ...TURN_FRAMES, TURN]) expect(marksAt(turns, seconds)).toHaveLength(8);
   });
 
   it('lands where it began after the whole turn, which is why it declares a loop', () => {
     expect(turns.loop).toBe(true);
-    expect(loops(turns, 1e-9)).toBe(true);
+    expect(isLoop(turns, 1e-9)).toBe(true);
   });
 
   it('turns the left panel about the middle of the box round it', () => {
@@ -582,7 +582,7 @@ describe('the rotation demo', () => {
     // A rotation's scale factor is one, where a growth's is the factor it grew
     // by, so a turned outline keeps the width the figure asked for.
     const width = (seconds: number) => {
-      const mark = at(turns, seconds).find((each) => each.id === 'turns/own/rider/ell');
+      const mark = marksAt(turns, seconds).find((each) => each.id === 'turns/own/rider/ell');
       return mark?.kind === 'path' ? mark.stroke?.width : undefined;
     };
     for (const seconds of [0, ...TURN_FRAMES, TURN]) expect(width(seconds)).toBe(0.04);
@@ -590,7 +590,7 @@ describe('the rotation demo', () => {
 
   it('keeps every mark inside the frame it declares', () => {
     for (const seconds of [0, ...TURN_FRAMES, TURN]) {
-      for (const mark of at(turns, seconds)) {
+      for (const mark of marksAt(turns, seconds)) {
         const points =
           mark.kind === 'path'
             ? mark.path.flatMap((subpath) => [subpath.start, ...subpath.curves.map((piece) => piece.to)])
@@ -606,10 +606,10 @@ describe('the rotation demo', () => {
 
 describe('the rotation strip', () => {
   it('walks its four frames at a fixed step and leaves off the one that repeats', () => {
-    expect(TURN_FRAMES).toEqual(frameTimes(turns, { frames: 4 }));
+    expect(TURN_FRAMES).toEqual(frameTimesOf(turns, { frames: 4 }));
     expect(TURN_FRAMES).toEqual([TURN_TIMES.start, TURN_TIMES.quarter, TURN_TIMES.half, TURN_TIMES.threeQuarters]);
     expect(TURN_FRAMES).not.toContain(TURN);
-    expect(sameMarks(at(turns, TURN_FRAMES[0]), at(turns, TURN))).toBe(true);
+    expect(sameMarks(marksAt(turns, TURN_FRAMES[0]), marksAt(turns, TURN))).toBe(true);
   });
 
   it('carries every frame with no two marks sharing an id', () => {
@@ -630,14 +630,14 @@ describe('the rotation strip', () => {
 });
 
 describe('the solid demo', () => {
-  const marksAt = (seconds: number) => at(solid, seconds);
+  const solidAt = (seconds: number) => marksAt(solid, seconds);
   const named = [SOLID_TIMES.entrance, SOLID_TIMES.quarter, SOLID_TIMES.half, SOLID_TIMES.round];
 
   it('draws the same 265 marks at every time', () => {
     // A hundred and forty-four cells of saddle, sixteen panes of glass, the
     // field's thirty-six arrows at two marks each, three runs of descent and the
     // two branches of the cut, with the axes and the rule making up the rest.
-    for (const seconds of [0, ...SOLID_FRAMES, SOLID_TIMES.round]) expect(marksAt(seconds)).toHaveLength(265);
+    for (const seconds of [0, ...SOLID_FRAMES, SOLID_TIMES.round]) expect(solidAt(seconds)).toHaveLength(265);
   });
 
   it('runs its three descents down the saddle and never off it', () => {
@@ -651,7 +651,7 @@ describe('the solid demo', () => {
   });
 
   it('names a surface, a plane, a curve, a field, three runs and three axes', () => {
-    const ids = marksAt(SOLID_TIMES.quarter).map((mark) => mark.id);
+    const ids = solidAt(SOLID_TIMES.quarter).map((mark) => mark.id);
     expect(ids.filter((id) => id.startsWith('solid/body/hill/')).length).toBe(144);
     expect(ids.filter((id) => id.startsWith('solid/body/pane/')).length).toBe(16);
     expect(ids.filter((id) => id.startsWith('solid/body/flow/')).length).toBe(72);
@@ -680,7 +680,7 @@ describe('the solid demo', () => {
   it('draws the curve where the camera at that time puts it', () => {
     for (const seconds of named) {
       const camera = eyeAt(alongAt(seconds));
-      const mark = marksAt(seconds).find((each) => each.id === 'solid/cut/run0/run');
+      const mark = solidAt(seconds).find((each) => each.id === 'solid/cut/run0/run');
       if (mark?.kind !== 'path') throw new Error('the first branch is a path');
       const placed = camera.project(section[0][0]).at;
       expect(Math.abs(mark.path[0].start.x - placed.x)).toBeLessThan(1e-12);
@@ -692,8 +692,8 @@ describe('the solid demo', () => {
     // Mark for mark by name rather than in order. Two cells at the same depth
     // keep the order they were given, and a thousandth of a millionth of a turn
     // is enough to swap two of them, which says nothing about where the eye is.
-    const before = new Map(marksAt(SOLID_TIMES.entrance).map((mark) => [mark.id, mark]));
-    const after = marksAt(SOLID_TIMES.round);
+    const before = new Map(solidAt(SOLID_TIMES.entrance).map((mark) => [mark.id, mark]));
+    const after = solidAt(SOLID_TIMES.round);
     expect(after).toHaveLength(before.size);
     for (const mark of after) {
       const was = before.get(mark.id);
@@ -704,11 +704,11 @@ describe('the solid demo', () => {
 
   it('arrives with the animations the flat demo already uses', () => {
     const opacityOf = (seconds: number, id: string) =>
-      marksAt(seconds).find((mark) => mark.id === id)?.opacity ?? 1;
+      solidAt(seconds).find((mark) => mark.id === id)?.opacity ?? 1;
     expect(opacityOf(0, 'solid/body/pane/0-0/run')).toBeCloseTo(0, 12);
     expect(opacityOf(SOLID_TIMES.entrance, 'solid/body/pane/0-0/run')).toBeCloseTo(1, 12);
-    const undrawn = marksAt(0).find((mark) => mark.id === 'solid/cut/run0/run');
-    const drawn = marksAt(SOLID_TIMES.entrance).find((mark) => mark.id === 'solid/cut/run0/run');
+    const undrawn = solidAt(0).find((mark) => mark.id === 'solid/cut/run0/run');
+    const drawn = solidAt(SOLID_TIMES.entrance).find((mark) => mark.id === 'solid/cut/run0/run');
     if (undrawn?.kind !== 'path' || drawn?.kind !== 'path') throw new Error('both are paths');
     expect(undrawn.path).toHaveLength(0);
     expect(drawn.path[0].curves.length).toBeGreaterThan(50);
@@ -716,7 +716,7 @@ describe('the solid demo', () => {
 
   it('keeps the whole picture inside the frame it declares', () => {
     for (const seconds of named) {
-      const box = boundsOfMarks(marksAt(seconds));
+      const box = boundsOfMarks(solidAt(seconds));
       expect(Math.abs(box!.x.from)).toBeLessThanOrEqual(5.4);
       expect(Math.abs(box!.x.to)).toBeLessThanOrEqual(5.4);
       expect(Math.abs(box!.y.from)).toBeLessThanOrEqual(3);

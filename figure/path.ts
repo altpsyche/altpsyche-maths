@@ -151,7 +151,7 @@ export function pointOn(from: Vec2, curve: Cubic, along: number): Vec2 {
 
 /** Which way a piece is heading at a fraction along it, which is the derivative
  * of a cubic and so a quadratic over the gaps between neighbouring points. */
-export function slopeOn(from: Vec2, curve: Cubic, along: number): Vec2 {
+export function tangentOn(from: Vec2, curve: Cubic, along: number): Vec2 {
   const u = 1 - along;
   const a = 3 * u * u;
   const b = 6 * u * along;

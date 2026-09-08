@@ -124,7 +124,7 @@ export function windingAt(loops: readonly (readonly Vec2[])[], point: Vec2): num
 
 /** The nearest straight run of a flattening to a point: how far off it is, and
  * which way that run goes. */
-export interface Edge {
+export interface FlatEdge {
   readonly gap: number;
   readonly heading: Vec2;
 }
@@ -136,8 +136,8 @@ export interface Edge {
  * near it, which the winding count cannot answer because a point on the edge
  * itself is the one place the count has no answer for.
  */
-export function nearestEdge(loops: readonly (readonly Vec2[])[], point: Vec2): Edge | null {
-  let nearest: Edge | null = null;
+export function nearestEdge(loops: readonly (readonly Vec2[])[], point: Vec2): FlatEdge | null {
+  let nearest: FlatEdge | null = null;
   for (const loop of loops) {
     for (let at = 1; at < loop.length; at++) {
       const from = loop[at - 1];

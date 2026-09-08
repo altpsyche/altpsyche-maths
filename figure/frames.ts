@@ -10,7 +10,7 @@
  * sixty frames a second is six hundred frames of every mark it draws, and a
  * recorder encodes a frame and throws it away.
  */
-import { at, durationOf, viewAt, type Figure } from './figure.js';
+import { marksAt, durationOf, viewAt, type Figure } from './figure.js';
 import type { Mark } from './mark.js';
 import type { Mat3 } from '../values/mat3.js';
 
@@ -50,7 +50,7 @@ export type FramesOptions = FrameStep & {
  * A figure with no duration is one frame, since a picture that never moves still
  * has a picture.
  */
-export function frameTimes(figure: Figure, step: FrameStep): number[] {
+export function frameTimesOf(figure: Figure, step: FrameStep): number[] {
   const duration = durationOf(figure);
   const count =
     step.fps === undefined
@@ -62,13 +62,13 @@ export function frameTimes(figure: Figure, step: FrameStep): number[] {
 
 /** A figure walked at a fixed step, a frame at a time. */
 export function* framesOf(figure: Figure, options: FramesOptions): Generator<Frame> {
-  const times = frameTimes(figure, options as FrameStep);
+  const times = frameTimesOf(figure, options as FrameStep);
   for (let index = 0; index < times.length; index += 1) {
     const seconds = times[index];
     yield {
       index,
       seconds,
-      marks: at(figure, seconds),
+      marks: marksAt(figure, seconds),
       view: viewAt(figure, seconds, options.width, options.height),
     };
   }

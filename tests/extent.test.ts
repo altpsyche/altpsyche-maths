@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { at, byAspect, fractionOf, group, mat3, resolveExtent, vec2, viewAt, viewMatrix } from '@altpsyche/maths';
+import { marksAt, byAspect, fractionOf, group, mat3, resolveExtent, vec2, viewAt, viewMatrix } from '@altpsyche/maths';
 import type { Figure } from '@altpsyche/maths';
 
 /**
@@ -101,7 +101,7 @@ describe('a view that moves', () => {
       scene: group('nothing', []),
       still: 0,
     };
-    expect(at(figure, 2)).toHaveLength(0);
+    expect(marksAt(figure, 2)).toHaveLength(0);
     const early = viewAt(figure, 0, 160, 160);
     const later = viewAt(figure, 2, 160, 160);
     const seen = (matrix: typeof early) => mat3.transformPoint(matrix, vec2(2, 0)).x;

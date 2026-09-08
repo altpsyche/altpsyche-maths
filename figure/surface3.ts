@@ -10,7 +10,7 @@ import { vec3, type Vec3 } from '../values/vec3.js';
 import type { Fill, Stroke } from './mark.js';
 import type { Camera3 } from './camera.js';
 import { cornersOf, stepsOf } from './grid.js';
-import { polyline3, space, type SpaceItem } from './space.js';
+import { polyline3, scene3, type SpaceItem } from './space.js';
 import type { GroupNode } from './node.js';
 
 export type Surface3Options = {
@@ -86,5 +86,5 @@ export function surfaceCells(name: string, of: (u: number, v: number) => Vec3, c
  * four-cornered cells ordered back to front.
  */
 export function surface3(name: string, of: (u: number, v: number) => Vec3, camera: Camera3, options: Surface3Options): GroupNode {
-  return space(name, surfaceCells('cell', of, camera, options), camera);
+  return scene3(name, surfaceCells('cell', of, camera, options), camera);
 }

@@ -24,13 +24,13 @@ export function scaleOf(graph: Interval, units: Interval): Scale {
 }
 
 /** A number on the axis, as a place in the figure's own units. */
-export function scaled(scale: Scale, value: number): number {
+export function toUnits(scale: Scale, value: number): number {
   return interval.remap(value, scale.graph, scale.units);
 }
 
 /** A place in the figure's own units, as a number on the axis, which is what a
  * reader pointing at the picture is asking for. */
-export function unscaled(scale: Scale, place: number): number {
+export function toGraph(scale: Scale, place: number): number {
   return interval.remap(place, scale.units, scale.graph);
 }
 
@@ -45,5 +45,5 @@ export function coordsOf(x: Scale, y: Scale): Coords {
 
 /** A pair of graph numbers as a point in the figure's own units. */
 export function pointOf(coords: Coords, x: number, y: number): Vec2 {
-  return vec2(scaled(coords.x, x), scaled(coords.y, y));
+  return vec2(toUnits(coords.x, x), toUnits(coords.y, y));
 }

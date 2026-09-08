@@ -344,9 +344,21 @@ demo is recompiled by steps 6 and 7 against the renamed door.
 
   **Measured:** 229 names read, 2 marked remove, 10 marked rename, 217 marked keep.
 
-- [ ] **6. The door verdict applied.** Every rename and removal in one commit, because a rename split
-  across two commits leaves the door disagreeing with the file it points at. **Measures:** names at
-  the door before and after; all eight sheets regenerate to identical bytes; the three gates pass.
+- [x] **6. The door verdict applied.** All ten renames and both removals, taken by Siva. What the
+  work turned up is that four demos already wrote `at as marksAt` at their own import and one test
+  had named its local helper `marksAt` too, so the name the read arrived at is the name the author
+  had already reached for five times over. Renaming `at` by its word is not safe: it is the English
+  word in a test's name, a parameter in eight files, a hole in a template and a method on the
+  timeline, so each rename went into the import list and into call position only, in the files that
+  take that name from the door and do not shadow it. Four sites were left to hand: two shadowed
+  locals, a template hole and a door test naming its own exports as strings. **Measured:** the door
+  from 135 values and 94 types to 135 and 92; twelve names moved across 32 files, 196 lines each way
+  and nothing in the diff but the renames; the suite holds at 608 tests; all eight sheets identical.
+
+  **Import lists are out of alphabetical order where a rename moved a name**, which a first pass
+  tried to fix and which put 253 lines of reordering into a commit about names. It is a second
+  finding and it is not queued: nothing reads those lists but a person, and the tree has never held
+  them to an order.
 
 - [ ] **7. The option bags take one shape.** Four names mean sampling density today, `resolution` in
   `space.ts` twice and `section.ts` and `field.ts`, and `samples` in `plot.ts`, in three different

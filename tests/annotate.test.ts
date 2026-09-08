@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { arrow, at, callout, dot, flatten, fractionOf, group, matchingAspect, mat3, resolveExtent, vec2, viewMatrix } from '@altpsyche/maths';
+import { arrow, marksAt, callout, dot, flatten, fractionOf, group, matchingAspect, mat3, resolveExtent, vec2, viewMatrix } from '@altpsyche/maths';
 import type { Mark, PathMark } from '@altpsyche/maths';
 
 /**
@@ -110,7 +110,7 @@ describe('placement over something else', () => {
         still: 0,
         scene: group('fig', [callout('ring', fractionOf(extent, 0.62, 0.55), fractionOf(extent, 0.85, 0.8), 'photon ring', { stroke: pen, fill: ink, size: 0.12 })]),
       };
-      const word = at(figure, 0).find((mark) => mark.id === 'fig/ring/word');
+      const word = marksAt(figure, 0).find((mark) => mark.id === 'fig/ring/word');
       if (!word || word.kind !== 'text') throw new Error('no word');
       const point = mat3.transformPoint(view, word.at);
       return { across: point.x / width, up: point.y / height };

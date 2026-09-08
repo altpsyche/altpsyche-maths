@@ -60,11 +60,11 @@ import {
   slopeOf,
   tangentAt,
   text,
-  unscaled,
+  toGraph,
   vec2,
   vectorField,
   Timeline,
-  at as marksAt,
+  marksAt,
   type Equation,
   type Extent,
   type Figure,
@@ -198,7 +198,7 @@ const acrossLabels = ['-1', '0', '1', '2', '3', '4'].map((label) => `tangent/axe
 export function sceneAt(along: number): Node {
   const point = pointAlong(walkPath, along) ?? START;
   const frame = frameAt(point);
-  const x = unscaled(coords.x, point.x);
+  const x = toGraph(coords.x, point.x);
   return group('tangent', [
     numberPlane('grid', coords, { stroke: faint, minors: 4, minorOpacity: 0.45 }),
     axes('axes', coords, { stroke: pen, fill: ink, size: 0.26, tip: 0.18 }),

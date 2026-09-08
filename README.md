@@ -6,7 +6,7 @@ A **figure** is a picture that moves and explains itself. Asking one for a time 
 flat list of **marks**, and a **painter** turns marks into something a reader can see.
 
 ```ts
-import { Timeline, at, circle, draw, group, shape, svgMarkup, vec2, viewMatrix } from '@altpsyche/maths';
+import { Timeline, circle, draw, group, marksAt, shape, svgMarkup, vec2, viewMatrix } from '@altpsyche/maths';
 
 const figure = {
   extent: { width: 16, height: 9 },
@@ -15,7 +15,7 @@ const figure = {
   timeline: Timeline.empty().play(draw('fig/ring'), 1),
 };
 
-svgMarkup(at(figure, 0.5), viewMatrix(figure.extent, 'contain', 640, 360), 640, 360);
+svgMarkup(marksAt(figure, 0.5), viewMatrix(figure.extent, 'contain', 640, 360), 640, 360);
 ```
 
 ## Axes and a plotted function
@@ -238,7 +238,7 @@ length, and a rotation stretches nothing, where `scale` stretches by the factor 
 <img src="docs/rotate-strip.svg" width="820" alt="Four frames in two rows, each showing both panels, at nothing, a quarter, a half and three quarters of the way round.">
 
 The quarters of the turn. The whole turn is left off the strip because it draws the picture that
-nothing draws: this is the first figure here to declare itself a loop, and `loops(figure)` is the gate
+nothing draws: this is the first figure here to declare itself a loop, and `isLoop(figure)` is the gate
 behind that flag, comparing the marks at the duration against the marks at zero.
 
 ## A surface in space
@@ -252,7 +252,7 @@ points in space and hand back the same flat nodes everything else here draws, so
 reach a mark in space with no change to either of them. Nothing in the marks, the tree, the flattening
 or the two painters knows that space exists.
 
-`space(name, items, camera)` puts the pieces in the order they are painted, near over far. That is
+`scene3(name, items, camera)` puts the pieces in the order they are painted, near over far. That is
 the painter's algorithm, and what it cannot do is worth knowing before it is used: two pieces that
 pass through each other have no one order at all. The answer for those is smaller pieces, which is why
 `surfaceCells` cuts a surface into a grid and why the saddle and the pane above are sorted together
@@ -338,7 +338,7 @@ all eight and a test compares the bytes against the committed files.
 
 ## What it is built on
 
-**A figure at a time is data.** `at(figure, seconds)` is the whole public surface, and it is a
+**A figure at a time is data.** `marksAt(figure, seconds)` is the whole public surface, and it is a
 pure function: ask for four seconds and it gives the picture at four seconds whatever it gave
 before. A page playing forward, a reader dragging a scrub bar backwards and a recorder walking
 a fixed step are three consumers of one answer.
@@ -370,7 +370,7 @@ the flat demo's view is carried 312 across its own walk, in the units a 1080 by 
 
 Frames come back one at a time rather than as a list. Ten seconds at sixty frames a second is six
 hundred frames of every mark a figure draws, and a recorder encodes a frame and throws it away.
-`frameTimes` answers the times up front, since a recorder showing a reader how far along it is needs
+`frameTimesOf` answers the times up front, since a recorder showing a reader how far along it is needs
 the total before it has drawn anything.
 
 The step is given as a rate or as a count, and the two are different questions. A recorder knows how

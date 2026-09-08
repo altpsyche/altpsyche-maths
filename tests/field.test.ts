@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { at, coordsOf, flatten, interval, pointOf, scaleOf, vec2, vectorField } from '@altpsyche/maths';
+import { marksAt, coordsOf, flatten, interval, pointOf, scaleOf, vec2, vectorField } from '@altpsyche/maths';
 import type { Mark, PathMark, Vec2 } from '@altpsyche/maths';
 
 /**
@@ -53,7 +53,7 @@ describe('vectorField', () => {
       scene: (seconds: number) =>
         vectorField('field', COORDS, (place) => vec2(2 + Math.cos(seconds) + place.y * place.y, Math.sin(seconds) + place.x), options),
     };
-    for (const seconds of [0, 0.37, 1.2, 2.5, 4]) expect(at(turning, seconds)).toHaveLength(90);
+    for (const seconds of [0, 0.37, 1.2, 2.5, 4]) expect(marksAt(turning, seconds)).toHaveLength(90);
   });
 
   it('samples the middle of each cell, so the grid is inside the graph', () => {

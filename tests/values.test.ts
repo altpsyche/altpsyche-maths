@@ -18,7 +18,7 @@ import {
   pointOn,
   rect,
   remap,
-  slopeOn,
+  tangentOn,
   smoothstep,
   splitCurve,
   straight,
@@ -320,11 +320,11 @@ describe('the geometry the door hands out beside the paths', () => {
 
   it('reads which way a piece is heading', () => {
     const up = straight(vec2(0, 0), vec2(0, 3));
-    const heading = slopeOn(vec2(0, 0), up, 0.5);
+    const heading = tangentOn(vec2(0, 0), up, 0.5);
     expect(heading.x).toBeCloseTo(0, 12);
     expect(heading.y).toBeGreaterThan(0);
     const quarter = circle(vec2(0, 0), 1)[0];
-    const start = slopeOn(quarter.start, quarter.curves[0], 0);
+    const start = tangentOn(quarter.start, quarter.curves[0], 0);
     // Anticlockwise from the positive x axis, so the first quarter leaves
     // straight up.
     expect(start.x).toBeCloseTo(0, 12);

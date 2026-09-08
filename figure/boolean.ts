@@ -20,7 +20,7 @@
  * outside an overlap, and a difference keeps the first path's copy of it.
  */
 import { vec2, type Vec2 } from '../values/vec2.js';
-import { pointOn, slopeOn, type Cubic, type Path, type Subpath } from './path.js';
+import { pointOn, tangentOn, type Cubic, type Path, type Subpath } from './path.js';
 import { cutPath, type Cut } from './cut.js';
 import { curveCrossings } from './intersect.js';
 import { flattenPath, nearestEdge, windingAt } from './inside.js';
@@ -190,7 +190,7 @@ function sidesAgainst(
     const middle = pointOn(piece.from, piece.curve, 0.5);
     const edge = nearestEdge(other, middle);
     if (edge && edge.gap <= tolerance) {
-      return vec2.dot(slopeOn(piece.from, piece.curve, 0.5), edge.heading) >= 0 ? 'along' : 'against';
+      return vec2.dot(tangentOn(piece.from, piece.curve, 0.5), edge.heading) >= 0 ? 'along' : 'against';
     }
     return windingAt(other, middle) !== 0 ? 'inside' : 'outside';
   });

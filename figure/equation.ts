@@ -141,7 +141,7 @@ function boxOf(svg: EquationElement): EquationBox {
   return { x, y: -(y + height), width, height };
 }
 
-export function equationMarks(root: EquationElement): Equation {
+export function equationOf(root: EquationElement): Equation {
   const svg = svgOf(root);
   const marks: PathMark[] = [];
 
@@ -185,7 +185,7 @@ export function equationMarks(root: EquationElement): Equation {
 /** One expression typeset and read, which is the two halves above in the order
  * they are always used in. */
 export async function equationFromTex(tex: string): Promise<Equation> {
-  return equationMarks(await typesetElement(tex));
+  return equationOf(await typesetElement(tex));
 }
 
 export interface EquationOptions {

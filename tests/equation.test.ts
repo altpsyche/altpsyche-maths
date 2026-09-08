@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { equationFromTex, equationMarks, equationNode, flatten, matchGlyphs, vec2 } from '@altpsyche/maths';
+import { equationFromTex, equationOf, equationNode, flatten, matchGlyphs, vec2 } from '@altpsyche/maths';
 import type { EquationElement, PathMark } from '@altpsyche/maths';
 
 /**
@@ -76,7 +76,7 @@ describe('the walk into marks', () => {
       element('g', { transform: 'translate(3,4)' }, [element('rect', { x: '0', y: '0', width: '2', height: '2' })]),
       { transform: 'scale(2,2)' }
     );
-    const { marks } = equationMarks(tree);
+    const { marks } = equationOf(tree);
     // Scaled by the outer group and moved by the inner one, then turned over,
     // so the top edge of the rectangle is the lower y.
     expect(marks[0]?.path[0]?.start).toEqual({ x: 6, y: -8 });
@@ -84,19 +84,19 @@ describe('the walk into marks', () => {
   });
 
   it('refuses a transform it does not apply and an element it does not draw', () => {
-    expect(() => equationMarks(around(element('path', { d: 'M0 0' }), { transform: 'rotate(10)' }))).toThrow(
+    expect(() => equationOf(around(element('path', { d: 'M0 0' }), { transform: 'rotate(10)' }))).toThrow(
       /asks for "rotate", which this does not apply/
     );
-    expect(() => equationMarks(around(element('use', { href: '#a' })))).toThrow(
+    expect(() => equationOf(around(element('use', { href: '#a' })))).toThrow(
       /holds a "use" element, which this does not draw/
     );
   });
 
   it('refuses an svg whose viewBox is not four numbers and a tree with no svg at all', () => {
-    expect(() => equationMarks(element('svg', { viewBox: '0 -10 20' }, []))).toThrow(
+    expect(() => equationOf(element('svg', { viewBox: '0 -10 20' }, []))).toThrow(
       /viewBox="0 -10 20", which is not four numbers/
     );
-    expect(() => equationMarks(element('div', {}, []))).toThrow(/returned no svg element/);
+    expect(() => equationOf(element('div', {}, []))).toThrow(/returned no svg element/);
   });
 
   it('measures the expression into a box wider than one glyph and taller than none', async () => {

@@ -17,7 +17,7 @@
  */
 import { interval, type Interval } from '../values/interval.js';
 import { vec2 } from '../values/vec2.js';
-import { pointOf, scaled, type Coords } from './scale.js';
+import { pointOf, toUnits, type Coords } from './scale.js';
 import { group, shape, type GroupNode } from './node.js';
 import type { Fill, Stroke } from './mark.js';
 import { line, polygon, straight, type Cubic, type Path, type Subpath } from './path.js';
@@ -193,7 +193,7 @@ export function areaUnder(
   over: Interval,
   options: AreaOptions = {}
 ): Path {
-  const foot = scaled(coords.y, interval.clampTo(coords.y.graph, options.baseline ?? 0));
+  const foot = toUnits(coords.y, interval.clampTo(coords.y.graph, options.baseline ?? 0));
   return plot(coords, of, { ...options, over }).map((top) => {
     const last = top.curves.length > 0 ? top.curves[top.curves.length - 1].to : top.start;
     const under = vec2(last.x, foot);

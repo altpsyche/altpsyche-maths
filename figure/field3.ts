@@ -11,7 +11,7 @@ import type { Colour } from './mark.js';
 import type { ArrowOptions } from './annotate.js';
 import type { Camera3 } from './camera.js';
 import { stepsOf } from './grid.js';
-import { arrow3, space, type SpaceItem } from './space.js';
+import { arrow3, scene3, type SpaceItem } from './space.js';
 import type { GroupNode } from './node.js';
 
 export type VectorField3Options = ArrowOptions & {
@@ -90,5 +90,5 @@ export function vectorField3(
   camera: Camera3,
   options: VectorField3Options,
 ): GroupNode {
-  return space(name, fieldArrows3('arrow', of, camera, options), camera);
+  return scene3(name, fieldArrows3('arrow', of, camera, options), camera);
 }

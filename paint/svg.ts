@@ -28,7 +28,7 @@ export interface SvgElement {
 
 /** The `d` attribute: a move to the start, a cubic per segment, and a close
  * where the subpath joins back. */
-export function pathData(path: Path, view: Mat3): string {
+export function pathToData(path: Path, view: Mat3): string {
   const parts: string[] = [];
   for (const subpath of path) {
     const start = mat3.transformPoint(view, subpath.start);
@@ -47,7 +47,7 @@ export function pathData(path: Path, view: Mat3): string {
 function pathElement(mark: PathMark, view: Mat3, scale: number): SvgElement {
   const attributes: Record<string, string> = {
     'data-mark': mark.id,
-    d: pathData(mark.path, view),
+    d: pathToData(mark.path, view),
     fill: mark.fill ? mark.fill.colour : 'none',
   };
   if (mark.fill?.rule === 'evenodd') attributes['fill-rule'] = 'evenodd';

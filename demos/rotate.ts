@@ -22,7 +22,7 @@
  */
 import {
   dot,
-  frameTimes,
+  frameTimesOf,
   group,
   linear,
   polygon,
@@ -31,7 +31,7 @@ import {
   text,
   vec2,
   Timeline,
-  at as marksAt,
+  marksAt,
   moveBy,
   type Extent,
   type Figure,
@@ -186,4 +186,4 @@ export const TIMES = {
  * off the strip: this figure is a loop, so the frame at six seconds draws the
  * same picture as the frame at nothing.
  */
-export const FRAMES = frameTimes(turns, { frames: 4 });
+export const FRAMES = frameTimesOf(turns, { frames: 4 });

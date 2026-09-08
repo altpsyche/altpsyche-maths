@@ -1,13 +1,13 @@
 import { describe, expect, it } from 'vitest';
 import {
-  at,
+  marksAt,
   circle,
   group,
   line,
   mat3,
   paintCanvas,
   paintSvg,
-  pathData,
+  pathToData,
   shape,
   svgElements,
   svgMarkup,
@@ -40,7 +40,7 @@ const fixture: Figure = {
   ]),
 };
 
-const marks = at(fixture, 0);
+const marks = marksAt(fixture, 0);
 
 /** A context that writes down what it was told rather than drawing, which is the
  * only way to read a painter's output without a browser. */
@@ -90,14 +90,14 @@ function canvasGeometry(recorder: Recorder, index: number): number[] {
 
 describe('svg', () => {
   it('writes a move, a cubic per segment, and a close where the shape joins', () => {
-    const d = pathData(circle(vec2(0, 0), 1), mat3.IDENTITY);
+    const d = pathToData(circle(vec2(0, 0), 1), mat3.IDENTITY);
     expect(d.startsWith('M1 0')).toBe(true);
     expect(d.match(/C/g)).toHaveLength(4);
     expect(d.endsWith('Z')).toBe(true);
   });
 
   it('leaves an open path unclosed', () => {
-    expect(pathData(line(vec2(0, 0), vec2(1, 1)), mat3.IDENTITY).includes('Z')).toBe(false);
+    expect(pathToData(line(vec2(0, 0), vec2(1, 1)), mat3.IDENTITY).includes('Z')).toBe(false);
   });
 
   it('writes no fill as the word rather than as nothing', () => {
@@ -133,7 +133,7 @@ describe('svg', () => {
   });
 
   it('rounds a coordinate rather than writing every bit of a double', () => {
-    expect(pathData(line(vec2(1 / 3, 0), vec2(1, 0)), mat3.IDENTITY)).toBe('M0.333 0C0.556 0 0.778 0 1 0');
+    expect(pathToData(line(vec2(1 / 3, 0), vec2(1, 0)), mat3.IDENTITY)).toBe('M0.333 0C0.556 0 0.778 0 1 0');
   });
 
   it('puts the marks into an element that is already there, replacing what was in it', () => {
@@ -200,7 +200,7 @@ describe('canvas', () => {
   });
 
   it('clears the dash for a mark that asked for none', () => {
-    const plain = at({ ...fixture, scene: group('g', [shape('l', line(vec2(0, 0), vec2(1, 0)), { stroke: pen })]) }, 0);
+    const plain = marksAt({ ...fixture, scene: group('g', [shape('l', line(vec2(0, 0), vec2(1, 0)), { stroke: pen })]) }, 0);
     const recorder = new Recorder();
     paintCanvas(recorder, plain, view);
     expect(recorder.calls.find((call) => call.name === 'setLineDash')?.args[0]).toBe('');

@@ -20,14 +20,14 @@ import type { Mark } from './mark.js';
  * is what lets geometry follow a number rather than only be moved about: a
  * radius that is keyed makes a circle that is genuinely a different circle each
  * frame. */
-export type Values = Record<string, TrackValue>;
+export type TrackValues = Record<string, TrackValue>;
 
 export interface Figure {
   /** How much of the world the figure shows, in its own units. */
   extent: ExtentChoice;
   fit?: Fit;
   /** The tree, either fixed or rebuilt from the clock and the sampled values. */
-  scene: Node | ((seconds: number, values: Values) => Node);
+  scene: Node | ((seconds: number, values: TrackValues) => Node);
   tracks?: Tracks;
   timeline?: Timeline;
   /** Overrides the timeline's own length, for a figure that should hold after
@@ -50,7 +50,7 @@ export function durationOf(figure: Figure): number {
 }
 
 /** The marks a figure shows at a time. */
-export function at(figure: Figure, seconds: number): readonly Mark[] {
+export function marksAt(figure: Figure, seconds: number): readonly Mark[] {
   const values = figure.tracks ? sampleTracks(figure.tracks, seconds) : {};
   const tree = typeof figure.scene === 'function' ? figure.scene(seconds, values) : figure.scene;
   const marks = flatten(tree);
@@ -74,9 +74,9 @@ export function viewAt(figure: Figure, seconds: number, width: number, height: n
  * behind that flag. The comparison is by tolerance rather than exactly, because
  * the sine and cosine a figure is built from are not specified to the last bit
  * and differ between engines. */
-export function loops(figure: Figure, tolerance = 1e-6): boolean {
-  const start = at(figure, 0);
-  const end = at(figure, durationOf(figure));
+export function isLoop(figure: Figure, tolerance = 1e-6): boolean {
+  const start = marksAt(figure, 0);
+  const end = marksAt(figure, durationOf(figure));
   return sameMarks(start, end, tolerance);
 }
 
