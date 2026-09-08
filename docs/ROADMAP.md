@@ -835,8 +835,23 @@ format a recorder reads a file, which is also what lets one run without a page a
   ladder was frozen. A demo drawing quadratics as SVG checks the arithmetic and not whether the output
   is the shape a shader wants, and only the painter says. The engine's stencil gap below was found by
   reading its source rather than by building anything, and a throwaway spike of the painter would
-  have found it in an hour. **A spike is worth its own session whenever the renderer work returns**,
-  and it touches nothing that ships.
+  have found it in an hour.
+
+  **The spike is a session of its own and it goes after 1.6.0**, which is a scheduling answer rather
+  than a preference. An engine gap costs a release in that repository before this one can use it, and
+  the fifty-five commits of 1.x and 2.0.0 are the only slack that lead time has: a gap found after
+  2.5.0 is found with none. Earlier than 1.6.0 is no better, since 1.3.0, 1.4.0 and 1.6.0 each change
+  what a `Mark` is and a spike paints marks, so a spike in front of them measures something that will
+  not exist. **What it touches is nothing that ships**, and it does not add the engine to this
+  manifest: it links that package in a scratch tree or as a development dependency that leaves with
+  the spike.
+
+  **The dependency is added in one commit and it is the first `await import('@altpsyche/engine')` in
+  the GPU painter, at 2.6.0.** A manifest entry nothing loads is what the rule at the top of
+  `CLAUDE.md` exists to prevent. What the dynamic import defers is the load and not the download, so
+  from 2.6.0 a consumer who never draws on a GPU still fetches that package's bytes and never parses
+  them, which is the trade one install is worth and is why the engine having no runtime dependencies
+  of its own matters.
 
 - **The engine cannot count a winding number, and a GPU fill needs one.** `StencilMode` there is a
   boolean mask: `mark` replaces every bit where it draws, `inside` keeps what compares equal, and
@@ -844,6 +859,16 @@ format a recorder reads a file, which is also what lets one run without a page a
   cancelling, which is the whole of how Loop and Blinn's fill decides an interior. **It is filed in
   that repository as its item 2**, argued on its own merits, and the painter waits on it whenever it
   returns.
+
+- **A decision falls due at 2.6.0 and it is Siva's.** Pin an exact version of `@altpsyche/engine` and
+  take the churn by hand, or wait for that package to reach 1.0.0 before the painter starts. A 2.0.0
+  with a frozen door cannot promise stability through a dependency below 1.0.0, where a minor may
+  break anything, which is the same argument that produced the clean break.
+
+- **An engine sitting idle costs its baseline.** That repository's numbers expire rather than hold: a
+  pair of them read 514 tests over 34 files until they were re-taken at 864 over 73. Months with no
+  session there means the baseline any item is measured against is re-taken before the first item can
+  be worked, and that is a session too.
 
 - **A 1.0.0 package depends on a 0.3.0 one.** This package has promised its door does not change
   under a consumer, and `@altpsyche/engine` is below 1.0.0, where a minor may break anything. The
