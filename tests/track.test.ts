@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import { keyAt, sampleTrack, sampleTracks, withKey, withoutKey } from '@altpsyche/maths';
-import type { Track } from '@altpsyche/maths';
+import { curveNamed, keyAt, sampleTrack, sampleTracks, withKey, withoutKey } from '@altpsyche/maths';
+import type { CurveName, Track } from '@altpsyche/maths';
 
 /**
  * The curve between two keys and the order the keys are held in. Both halves are
@@ -43,6 +43,64 @@ describe('sampleTrack', () => {
 
   it('is still at both ends where both keys are smooth', () => {
     expect(sampleTrack(between(true, true), 1)).toBeCloseTo(0.5, 10);
+    expect(sampleTrack(between(true, true), 0.5)).toBeCloseTo(0.15625, 10);
+  });
+
+  it('walks the curve the earlier key names rather than the flat pairing', () => {
+    const names: CurveName[] = [
+      'linear',
+      'easeIn',
+      'easeOut',
+      'smoothstep',
+      'overshoot',
+      'thereAndBack',
+    ];
+    for (const name of names) {
+      const track: Track = [
+        { time: 0, value: 0, smooth: true, curve: name },
+        { time: 2, value: 1, smooth: true },
+      ];
+      // The eleventh input is the later key's own time, where the track holds
+      // that key's value and reads no curve, which is the one place a curve's
+      // value at one and the track's disagree.
+      for (let step = 0; step <= 10; step++) {
+        const along = step / 10;
+        const want = step === 10 ? 1 : curveNamed(name)(along);
+        expect(sampleTrack(track, along * 2)).toBeCloseTo(want, 10);
+      }
+    }
+  });
+
+  it('passes the later value and returns to it where the key names the overshoot', () => {
+    const track: Track = [
+      { time: 0, value: 0, curve: 'overshoot' },
+      { time: 2, value: 10 },
+    ];
+    expect(sampleTrack(track, 2 * 0.580103)).toBeCloseTo(11.00004, 4);
+    expect(sampleTrack(track, 2)).toBe(10);
+  });
+
+  it('is back at the earlier value at the later key where the key names the there-and-back', () => {
+    const track: Track = [
+      { time: 0, value: 3, curve: 'thereAndBack' },
+      { time: 2, value: 7 },
+    ];
+    expect(sampleTrack(track, 1)).toBeCloseTo(7, 10);
+    expect(sampleTrack(track, 1.999)).toBeCloseTo(3, 4);
+  });
+
+  it('reads the name on the key the segment leaves, so two segments pace differently', () => {
+    const track: Track = [
+      { time: 0, value: 0, curve: 'linear' },
+      { time: 2, value: 1, curve: 'easeIn', smooth: true },
+      { time: 4, value: 2 },
+    ];
+    expect(sampleTrack(track, 1)).toBeCloseTo(0.5, 10);
+    expect(sampleTrack(track, 3)).toBeCloseTo(1.25, 10);
+  });
+
+  it('falls back to the flat pairing for a key naming nothing', () => {
+    expect(sampleTrack(between(false, false), 1)).toBeCloseTo(0.5, 10);
     expect(sampleTrack(between(true, true), 0.5)).toBeCloseTo(0.15625, 10);
   });
 

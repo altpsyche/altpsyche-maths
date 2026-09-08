@@ -479,10 +479,21 @@ flat and nothing more, so a track cannot name its own curve and no figure can ov
   and the suite from 652 tests to 658. The eight sheets are byte-identical, since no demo names a
   curve yet and step 3 is where they do.
 
-- [ ] **2. A key names its own curve.** A `Key` carries a curve rather than only a flat flag, and
+- [x] **2. A key names its own curve.** A `Key` carries a curve rather than only a flat flag, and
   `curveFor` stays the answer for a key that does not. **Measures:** a track keyed with each curve
   sampled at eleven times against the curve's own values; every existing track's samples unchanged
   within tolerance.
+
+  **Landed.** `Key.curve` is a `CurveName` and never a `Curve`, since a key is already data a file
+  can hold and a closure on it would take that away. The name on the earlier key of a pair wins,
+  because a curve says how the value leaves a key rather than how it arrives, so a key can be left
+  along one shape and arrived at along another. `curveOf` is the one place the choice is made and it
+  falls through to `curveFor` for a key naming nothing. Each of the six curves keyed on a segment
+  reads its own value at eleven times to ten decimal places, and the eleventh is the later key's own
+  time, where the track holds that key's value and reads no curve. A track keyed `overshoot` from 0
+  to 10 reads 11.00004 at 0.580103 of its span and 10 at its end, and one keyed `thereAndBack` from
+  3 to 7 reads 7 at its midpoint and 3 again at its end. The suite went from 658 tests to 663, the
+  door is unchanged at 240 since a field is not a name, and the eight sheets are byte-identical.
 
 - [ ] **3. The demos pace themselves.** Every entry that should not settle names its curve, and the
   flat demo's eleven-entry entrance staggers where it now overlaps by hand. **Measures:** entries

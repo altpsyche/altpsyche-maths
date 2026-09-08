@@ -6,11 +6,12 @@
  * screen and a picture being recorded used to be two answers to that question in
  * two places, which is how a preview and a recording drift apart.
  *
- * A key is flat where it is marked smooth, so two keys give four curves. That is
- * the whole of the shape, and the rest of this file is holding the keys in the
- * order the sampler reads them.
+ * A key is flat where it is marked smooth, so two keys give four curves. A key
+ * naming a curve gets that one instead, which is how a value overshoots or comes
+ * back: neither shape can be deduced from a pair of flat flags. The rest of this
+ * file is holding the keys in the order the sampler reads them.
  */
-import { curveFor } from '../values/ease.js';
+import { curveFor, curveNamed, type Curve, type CurveName } from '../values/ease.js';
 
 /** What a key can hold. A boolean is here because a control can be a switch,
  * and a list because a control can be a vector or a colour. */
@@ -22,6 +23,10 @@ export interface Key {
   value: TrackValue;
   /** Whether the curve is flat here, which eases the segments either side. */
   smooth?: boolean;
+  /** The curve the value leaves this key along, which overrides the pair of flat
+   * flags. It is a name and never a function, so a track stays data a file can
+   * hold. */
+  curve?: CurveName;
 }
 
 /** One value's keys, in the order the sampler reads them, which is the order
@@ -53,6 +58,18 @@ function walked(from: TrackValue, to: TrackValue, along: number): TrackValue {
 }
 
 /**
+ * The curve a segment is walked along.
+ *
+ * The name on the earlier key wins, since a curve describes how the value leaves
+ * a key rather than how it arrives, so one key can be left along one shape and
+ * arrived at along another.
+ */
+function curveOf(from: Key, to: Key): Curve {
+  if (from.curve !== undefined) return curveNamed(from.curve);
+  return curveFor(from.smooth === true, to.smooth === true);
+}
+
+/**
  * What a track is worth at a time, or null where it has no keys.
  *
  * Outside the keys the nearest one holds, so a track never invents a value
@@ -71,7 +88,7 @@ export function sampleTrack(track: Track, seconds: number): TrackValue | null {
     if (seconds > to.time) continue;
     const span = to.time - from.time;
     if (span <= 0) return to.value;
-    const along = curveFor(from.smooth === true, to.smooth === true)((seconds - from.time) / span);
+    const along = curveOf(from, to)((seconds - from.time) / span);
     return walked(from.value, to.value, along);
   }
   return last.value;

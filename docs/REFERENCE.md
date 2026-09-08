@@ -168,6 +168,8 @@ A track is one value's keys over time. A control panel writes tracks and a figur
   - `time` — seconds into the clip. A key past the clip's end is never reached.
   - `value` — the `TrackValue` held there.
   - `smooth` — whether the curve is flat here, which eases the segments either side.
+  - `curve` — a `CurveName` the value leaves this key along, which overrides the pair of flat flags.
+    It is a name and never a function, so a track stays data a file can hold.
 - `Track` — one value's keys, in the order the sampler reads them.
 - `Tracks` — every track by name, keyed by whatever the caller keys.
 - `SAME_TIME` — how close two times count as one instant, which is half a frame at sixty a second.
