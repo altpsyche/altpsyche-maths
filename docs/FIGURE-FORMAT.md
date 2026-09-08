@@ -502,14 +502,25 @@ release away and has a document of its own.
   frame-1 tangent, thinning that tapered stroke by a tenth of a pixel on the mean, which is the
   outliner's own instability and is filed; the suite from 785 to 787.
 
-- [ ] **2. The expression form, and the evaluator for it.** The closed vocabulary above, as a type
-  and a function that evaluates one against a set of track values. **It is an expression over a point
-  and not only over a track value**, which is a requirement rather than a preference: the same
-  vocabulary then carries a curve of one number, a parametric curve, a field of a place, a surface of
-  two numbers and a pointwise map of a shape, where a form designed for a scalar first and widened
-  afterwards is a major of the format's own version. **Measures:** each form evaluated against the
-  TypeScript it replaces at ten inputs; a form over a point evaluated at ten places; a form naming an
-  unknown function refused with a sentence that names it.
+- [x] **2. The expression form, and the evaluator for it.** `Expression` is a literal, a track, a
+  bound variable, a point, a member, arithmetic, a comparison, a choice or a call, and
+  `evaluate(expression, bindings)` is what reads one. `EXPRESSION_FUNCTIONS` is the published set of
+  thirty-four names. **It is an expression over a point and not only over a track value**, which is a
+  requirement rather than a preference: the same vocabulary then carries a curve of one number, a
+  parametric curve, a field of a place, a surface of two numbers and a pointwise map of a shape, where
+  a form designed for a scalar first and widened afterwards is a major of the format's own version.
+  **Measured:** all thirty-four functions and all four operators and all six comparisons answer what
+  the TypeScript answers at ten inputs, the operators and comparisons over all hundred pairs of them;
+  a complex square, a complex exponential and a Möbius map each read at ten places; an unknown name
+  refused with the sentence naming it, and so are a wrong argument count, a place where a number
+  belongs, a choice made on a number, a missing track, a missing variable and a list-valued track; the
+  door from 266 names to 274 and the suite from 787 to 808.
+
+  **What the set leaves out and where it arrives.** A call taking geometry is not in it: `pointAlong`,
+  `lengthOf` and `slopeOf` all take a path, and a path has no written form until step 3.2, so they
+  join the set there. `labelFor` is not in it either and never will be, because a drawn string is a
+  template with holes and a hole carries the precision it is written with, which leaves the
+  vocabulary over numbers and points alone.
 
   **What the point form buys and what it still refuses.** Manim applies any Python function to every
   point of a shape, which is `Homotopy`, `PhaseFlow` and `ApplyPointwiseFunction`, and a closed

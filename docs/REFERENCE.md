@@ -183,6 +183,41 @@ A track is one value's keys over time. A control panel writes tracks and a figur
 - `keyAt(track, seconds)` — the key sitting at a time, which is what a control reads to draw its
   button as set rather than empty.
 
+## Expressions
+
+An expression is a parameter a figure computes rather than states, written as data. The vocabulary is
+closed and published, so a renderer implements a fixed list rather than a language, and a form outside
+it is refused with a sentence naming what was asked for. The tree is over numbers and over points,
+which is what lets one vocabulary carry a curve of one number, a field of a place, a surface of two
+numbers and a pointwise map of a shape.
+
+- `Expression` — one node of the tree. A bare number or boolean is a literal; every other form is a
+  record with a `kind`.
+  - `track` — a track's value at the time being drawn, by `name`.
+  - `variable` — a bound value by `name`: the x of a curve, the place a field is read at, the two
+    numbers of a surface.
+  - `point` — a place from its two members, `x` and `y`.
+  - `member` — the `x` or the `y` of a place.
+  - `arithmetic` — `+`, `-`, `*` or `/` over two numbers. Places are combined by the point calls
+    instead, since dividing one place by another means nothing.
+  - `compare` — `<`, `<=`, `>`, `>=`, `=` or `!=`, giving a true or false. Two places compare by both
+    members.
+  - `choice` — the `then` where `when` is true and the `otherwise` where it is false. Only the side
+    taken is evaluated.
+  - `call` — one of the published functions by `name`, with its `arguments`.
+- `ExpressionValue` — what an expression evaluates to: a number, a true or false, or a place. A
+  list-valued track has no form here and is named rather than read as its first number.
+- `Variables` — the bound values by name.
+- `Bindings` — what the names stand for: the `tracks` sampled at the time being drawn and the
+  `variables` bound for the place being evaluated.
+- `Arithmetic` — the four operators.
+- `Comparison` — the six comparisons.
+- `EXPRESSION_FUNCTIONS` — every function an expression may name, sorted. The set is versioned the way
+  the node set is.
+- `evaluate(expression, bindings)` — the value an expression has for a set of tracks and variables.
+  Division by nothing is left as the infinity the arithmetic gives, so a field sampled at a pole reads
+  as a pole.
+
 ## Paths
 
 - `Path` — a list of subpaths.
