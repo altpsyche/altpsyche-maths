@@ -230,6 +230,10 @@ above is hard. The axis measures it: 0.02 figure units in a window 5.6 units acr
 0.184314 asks for 3,761. **A painter wanting a smooth edge cannot ask the frame for it** and has to
 draw into a multisampled texture of its own and name it in `present`, which is two resources and a
 copy rather than one pass. The SVG painter has the browser's own antialiasing and pays nothing for it.
+**The same rule takes the blend with it**, and there the engine refuses by name rather than staying
+quiet: `targets` is where a blend lives, and a pipeline naming one gets `the pass on pipeline 0 writes
+1 colours and attaches none`. So the 65 marks of the flat demo's still that sit below full opacity all
+drew opaque.
 
 **Gap 6: a plain `TextMark` cannot be drawn on a card at all, and an equation can only be drawn with
 a stencil.** The engine has textures and samplers, so a glyph atlas is expressible, and it has no text
@@ -240,6 +244,20 @@ an equation arrives from `typesetElement` as 8 filled paths that read as 333 cur
 painter's text is two problems and not one.** A label waits on 2.3.0's outlines for plain text, and an
 equation waits on the same counted winding an annulus waits on, since 4 of the 8 glyphs of
 `a^2 + b^2 = e^0` carry a hole.
+
+**Gap 7: the frame description names no scissor and no viewport.** `FrameGraph`, `PassSpec` and
+`DrawSpec` carry neither, and the word scissor appears nowhere in that tree except in its own roadmap,
+which assumes a rectangle clip is one. So a `Mark.clip`, which 1.6.0 made a rectangle precisely
+because a box is the scissor test every device already has, cannot be asked for at all. **35 of the
+flat demo's 181 marks at its still time carry a clip**, and the 23 of those that are paths were
+refused.
+
+**Gap 8, and this one is this package's rather than the engine's.** A mark's colour is a CSS colour
+string. All 43 colours the painter read at the flat demo's still time are `var(--name, #rrggbb)`, and
+a shader wants four numbers, so the painter took the hex out of the fallback and a custom property
+without one would have to be resolved against the document. **This belongs to 2.0.0 rather than to a
+batch for the engine**, since the format is where a colour's written form is decided and a figure
+read by a renderer in another language cannot carry a CSS custom property.
 
 **The known stencil gap, re-measured rather than re-found.** `StencilMode` is `'mark' | 'inside'` and
 its own comment says what each is: `mark` leaves the reference behind everywhere it draws, and
@@ -318,8 +336,30 @@ it.
   rule bites, and `typesetElement('a^2 + b^2 = e^0')` gives 8 outlines of which 4 carry a hole the
   winding rule decides.
 
-- [ ] **5. The flat demo at its still time.** As many of its 146 own marks as the painter draws.
-  **Measures:** how many draw, which refuse, and the reason each refusal gives.
+- [x] **5. The flat demo at its still time.** As many of its own marks as the painter draws.
+  **Measures:** how many draw, which refuse, and the reason each refusal gives. **Read on
+  2026-09-09.** **The count in this step said 146 and the tree says 181**, which is what the demo
+  holds at its still time of 7.86: 157 paths and 24 text, over an extent of 10.8 by 6 written into
+  1080 by 600 pixels at the hundred pixels to the unit the sheets use.
+  **117 marks drew and 53 were refused, and 11 more have no area at all.** The 117 are 38 fills and 79
+  strokes, which came to 2,915 triangles of 8,745 vertices and 209,880 geometry bytes, submitted as 1
+  pass and 1 draw. The 11 are `tangent/rise/brace`, which holds no subpath, and the ten
+  `tangent/point/flash/N`, whose runs are of no length at opacity 0, and the SVG painter draws nothing
+  for them either, so they are not a gap.
+  **The 53 refusals, by reason.** 24 are text marks, which carry a family and no outline. 23 carry a
+  clip, which the frame description cannot express. 5 are fills that leave a hole the nonzero winding
+  rule decides. 1 is a fill carrying a gradient, against one flat tint a vertex.
+  **What drew is the demo and what is missing is the refusals.** The grid, both axes with their arrow
+  tips, the vector field, the area under the curve, the curve, the tangent, the point and the typeset
+  equation are all in the picture. No tick label and no title is, and the lens panel is an opaque
+  black rectangle whose contents were the clipped marks.
+  **65 marks sit below full opacity and every one drew opaque.** Asking for a blend is refused by name:
+  a `targets` entry carrying `src-alpha` over `one-minus-src-alpha` gives `the pass on pipeline 0
+  writes 1 colours and attaches none`, twice, because `targets` is where a blend lives and naming it
+  makes the pass attach its own textures rather than the frame's.
+  **The painter also had to read a colour, and a mark's colour is not a number.** All 43 colours that
+  reached a shader are of the form `var(--name, #rrggbb)`, so the painter took the hex out of the
+  fallback. A custom property with no fallback would have to be resolved against the document.
 
 - [ ] **6. The findings, batched.** **Measures:** one entry per gap in this file with the reading that
   found it, and one batch to the engine's roadmap, each argued on that package's own merits rather
@@ -502,8 +542,7 @@ README that plays a video on load is a README nobody can read.
 scheduling argument is that its window is the slack of 1.x and 2.0.0, and 1.x is spent, so what is
 left is 2.0.0's twenty-nine commits. Its steps are the section in front of the ladder.
 
-**The spike's first four steps are read, the seam holds, and a filled path and a stroke are right to
-the pixel while text is not drawable at all.** One
+**The spike's first five steps are read, and the flat demo draws.** One
 triangle drew through the one door on a `blackwell` adapter, at 1 pass and 1 draw, with 34,634 of an
 expected 34,656 pixels filled. Then a disc of radius 1 from this package's own `circle`, flattened
 and fan-triangulated, drew with its edge at +2.7340 parts in ten thousand of the true radius at the
@@ -512,19 +551,27 @@ read in a window where one pixel spans 0.0781 parts. Then the demo's own x axis 
 round cap, whose drawn edge tracks the polygon `outlinePath` writes within half a pixel everywhere and
 lands exactly on its vertices.
 
-**Six gaps have come out of it so far**, each written under the step that found it with its reading.
-Nothing at the door joins a selection to a renderer. A canvas the engine drew cannot be read. Every
-`probe()` leaves two canvases pinned over the top-left corner of the page. A draw naming a vertex
-count binds no geometry while `resolve` and `cost` both pass the description. A pass drawing the frame
-the reader sees keeps one sample of each pixel, so a 2.857-pixel stroke drew as 2. And a plain
-`TextMark` cannot be drawn at all, while an equation can be drawn only with a stencil. **The known
-stencil gap is re-measured**: `StencilMode` is `'mark' | 'inside'` and neither counts, so an annulus
-drew as a solid disc, 33.4 per cent too much area, and nothing refused it because nothing could be
-asked for.
+**Eight gaps have come out of it**, each written under the step that found it with its reading. Nothing
+at the door joins a selection to a renderer. A canvas the engine drew cannot be read. Every `probe()`
+leaves two canvases pinned over the top-left corner of the page. A draw naming a vertex count binds no
+geometry while `resolve` and `cost` both pass the description. A pass drawing the frame the reader sees
+keeps one sample of each pixel and can name no blend. A plain `TextMark` cannot be drawn at all, and an
+equation only with a stencil. The frame description names no scissor and no viewport, so a rectangle
+clip cannot be asked for. And a mark's colour is a CSS colour string rather than four numbers, which is
+this package's gap rather than the engine's. **The known stencil gap is re-measured**: `StencilMode` is
+`'mark' | 'inside'` and neither counts, so an annulus drew as a solid disc, 33.4 per cent too much
+area, and nothing refused it because nothing could be asked for.
 
-**Two of the six are one gap wearing two hats, and it is the winding number.** An annulus, a letter
+**Two of the eight are one gap wearing two hats, and it is the winding number.** An annulus, a letter
 with a counter and every glyph of an equation all want the same counted stencil, which is the engine's
 item 2. That is the reading that decides how much of 2.6.0 can be built before that item lands.
+
+**What the whole flat demo says.** 117 of its 181 marks at its still time drew, as 2,915 triangles in
+one pass and one draw, and the picture is recognisably the demo: the grid, both axes with their arrow
+tips, the vector field, the area, the curve, the tangent, the point and the typeset equation. 53 were
+refused and 11 more have no area at all. **So the painter's shape is settled and what is left is the
+seven gaps in front of it**, five of them the engine's, one the format's, and one already filed there
+as its item 2.
 
 **The second gap is what the remaining steps work around.** Every pixel reading above came from a
 screenshot of the canvas, because the engine's own `readPixels` is a backend method and the backends
