@@ -7,35 +7,35 @@
  * own, because a mark takes a colour as text and the choosing is the author's,
  * so this sits with the demos rather than behind the door.
  *
- * The number beside each is its contrast against the white the sheets are drawn
- * on. Anything a reader has to read a value or a label off stands above 4.5,
- * which is what the guidelines ask of text, and the rest are washes and fields
- * that carry no reading of their own.
+ * Each is measured against the white the sheets are drawn on. Anything a reader
+ * has to read a value or a label off clears the contrast the guidelines ask of
+ * text, and the rest are washes and fields that carry no reading of their own.
+ * A test holds both halves.
  */
 
-/** Every line a reader reads a number or a word off. 17.22 to one. */
+/** Every line a reader reads a number or a word off. */
 export const INK = '#1b1b1b';
-/** The grid behind a graph, which has to be seen without being looked at. 1.97 to one. */
+/** The grid behind a graph, which has to be seen without being looked at. */
 export const MIST = '#b4b9c0';
-/** A shape that stands still while another moves across it. 4.83 to one. */
+/** A shape that stands still while another moves across it. */
 export const SLATE = '#6b7280';
-/** The curve a picture is about, and the cut where two surfaces meet. 5.18 to one. */
+/** The curve a picture is about, and the cut where two surfaces meet. */
 export const EMBER = '#c2410c';
-/** What a thing turns while it is being pointed at. 5.02 to one. */
+/** What a thing turns while it is being pointed at. */
 export const AMBER = '#b45309';
-/** A region under a curve or inside a shape, which sits behind everything. 1.69 to one. */
+/** A region under a curve or inside a shape, which sits behind everything. */
 export const PEACH = '#fdba74';
-/** The moving thing, and the arrows of a field. 5.93 to one. */
+/** The moving thing, and the arrows of a field. */
 export const DEEP = '#0369a1';
-/** The edge of a pane of glass in space. 2.14 to one. */
+/** The edge of a pane of glass in space. */
 export const SKY = '#38bdf8';
-/** A field arrow where the field is gentle. 1.49 to one. */
+/** A field arrow where the field is gentle. */
 export const HAZE = '#bfd7e6';
-/** A field arrow where the field is steep. 2.30 to one. */
+/** A field arrow where the field is steep. */
 export const STEEL = '#7fb2cc';
-/** The face of a pane of glass. 1.15 to one. */
+/** The face of a pane of glass. */
 export const FROST = '#e0f2fe';
-/** A run of steepest descent. 5.02 to one. */
+/** A run of steepest descent. */
 export const MOSS = '#15803d';
 
 /**

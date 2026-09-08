@@ -7,6 +7,7 @@ import {
   boundsOf,
   boundsOfMarks,
   centreOf,
+  colourOf,
   durationOf,
   flatten,
   frameTimesOf,
@@ -37,7 +38,21 @@ import {
   solid,
   stripMarks as solidStripMarks,
 } from '../demos/surface.js';
-import { FRAMES, TIMES, coords, curve, slopeField, stripMarks, tangent, walk } from '../demos/tangent.js';
+import { FIELD, FRAMES, TIMES, coords, curve, slopeField, stripMarks, tangent, walk } from '../demos/tangent.js';
+import {
+  AMBER,
+  DEEP,
+  EMBER,
+  FROST,
+  HAZE,
+  INK,
+  MIST,
+  MOSS,
+  PEACH,
+  SKY,
+  SLATE,
+  STEEL,
+} from '../demos/palette.js';
 import {
   FRAMES as TURN_FRAMES,
   GIVEN,
@@ -52,6 +67,7 @@ import {
 import {
   BIG,
   FRAMES as BOOLEAN_FRAMES,
+  REACH,
   SMALL,
   TIMES as BOOLEAN_TIMES,
   booleans,
@@ -447,6 +463,12 @@ describe('the boolean demo', () => {
     for (const seconds of times) expect(marksAt(booleans, seconds)).toHaveLength(12);
   });
 
+  it('ends its walk with the two discs clear of each other', () => {
+    // The walk exists to take the operations through no crossing, one crossing,
+    // two crossings and containment, and the first of those needs a gap.
+    expect(REACH - (BIG + SMALL)).toBeCloseTo(0.18, 12);
+  });
+
   it('encloses what the closed form says at every named distance', () => {
     const distances = [-1.44, -(BIG + SMALL), -0.9, -(BIG - SMALL), 0, 0.9, BIG + SMALL];
     for (const apart of distances) {
@@ -754,5 +776,43 @@ describe('the solid strip', () => {
     const { marks } = solidStripMarks(SOLID_FRAMES, 2);
     expect(marks).toHaveLength(265 * SOLID_FRAMES.length);
     expect(new Set(marks.map((mark) => mark.id)).size).toBe(marks.length);
+  });
+});
+
+describe("the flat demo's field", () => {
+  it('samples on cells that come out nearly square', () => {
+    // Arrows on tall thin cells read as a comb rather than as a field.
+    const across = interval.span(coords.x.units) / FIELD.x;
+    const up = interval.span(coords.y.units) / FIELD.y;
+    expect(across / up).toBeGreaterThan(1);
+    expect(across / up).toBeLessThan(1.11);
+  });
+});
+
+describe("the demos' palette", () => {
+  // The contrast of a colour against the white the sheets are drawn on, by the
+  // sRGB relative luminance the guidelines define.
+  const contrast = (colour: string) => {
+    const read = colourOf(colour)!;
+    const channel = (value: number) => {
+      const share = value / 255;
+      return share <= 0.03928 ? share / 12.92 : ((share + 0.055) / 1.055) ** 2.4;
+    };
+    const luminance = 0.2126 * channel(read.r) + 0.7152 * channel(read.g) + 0.0722 * channel(read.b);
+    return 1.05 / (luminance + 0.05);
+  };
+
+  it('gives every colour a reader reads off the contrast text is asked for', () => {
+    for (const colour of [INK, SLATE, EMBER, AMBER, DEEP, MOSS]) {
+      expect(contrast(colour)).toBeGreaterThan(4.5);
+    }
+    expect(contrast(INK)).toBeCloseTo(17.22, 2);
+  });
+
+  it('keeps every wash below it, so nothing carries a reading it cannot hold', () => {
+    for (const colour of [MIST, PEACH, SKY, HAZE, STEEL, FROST]) {
+      expect(contrast(colour)).toBeLessThan(4.5);
+      expect(contrast(colour)).toBeGreaterThan(1.1);
+    }
   });
 });

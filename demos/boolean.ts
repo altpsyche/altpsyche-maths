@@ -64,8 +64,8 @@ export const BIG = 0.9;
 export const SMALL = 0.36;
 
 /** How far the walker's centre travels either side of the still disc's. At the
- * ends of that it is clear of the still disc with 0.18 to spare, and on the way
- * it passes the two distances where the discs touch at exactly one point. */
+ * ends of that the two discs are clear of each other, and on the way it passes
+ * the two distances where they touch at exactly one point. */
 export const REACH = 1.44;
 
 /** The two distances where the discs meet at one point rather than crossing:
@@ -95,9 +95,8 @@ export function sceneAt(apart: number): Node {
       const middle = (at - 1) * PANEL;
       const first = circle(vec2(middle, DISC_Y), BIG);
       const second = circle(vec2(middle + apart, DISC_Y), SMALL);
-      // The answer is shaded and the two discs are outlined over it. Stroking
-      // the answer as well hid both outlines under it, so a reader saw an orange
-      // shape and no longer saw the two discs it came from.
+      // The answer is shaded and the two discs are outlined over it. Stroking the
+      // answer as well hid both outlines, leaving a shape with no discs behind it.
       return group(panel.name, [
         shape('result', panel.combine(first, second), { fill: wash }),
         group('discs', [shape('first', first, { stroke: still }), shape('second', second, { stroke: walker })]),

@@ -137,9 +137,9 @@ export const curve = (x: number) => x * x;
  */
 export const slopeField = (at: Vec2) => vec2(1, slopeOf(curve, at.x));
 
-/** How many arrows across and up. Ten by five leaves the cells nearly square on
- * the figure, since the graph is 9.2 figure units wide and 4.15 tall. */
-const FIELD = { x: 10, y: 5 };
+/** How many arrows across and up, chosen so a cell comes out nearly square in
+ * figure units rather than tall and thin. */
+export const FIELD = { x: 10, y: 5 };
 
 /** How long an arrow is, in figure units, against the magnitude of the vector
  * there. It settles towards a third of a figure unit as the curve steepens
@@ -163,8 +163,8 @@ const moving = await equationFromTex('\\frac{dy}{dx} = 2x');
 /** Where the rules start and the box each is fitted inside. Both are hung from
  * the same left edge, under the reading's own, so the six glyphs they share
  * stand still while the right-hand side walks. Centred instead they would slide
- * sideways by 0.083 as the wider one arrives. Both sit in the band above the
- * graph rather than over it. */
+ * sideways as the wider one arrives. Both sit in the band above the graph
+ * rather than over it. */
 const RULE_WIDTH = 1.2;
 const RULE_HEIGHT = 0.6;
 const rule = (name: string, equation: Equation, frame: Extent) =>
