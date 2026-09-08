@@ -13,7 +13,7 @@
 import { mat3, type Mat3 } from '../values/mat3.js';
 import { vec2, type Vec2 } from '../values/vec2.js';
 import { lerp } from '../values/scalar.js';
-import { smoothstep } from '../values/ease.js';
+import { thereAndBack } from '../values/ease.js';
 import { lerpColour } from '../values/colour.js';
 import { circle, line, polygon, transformPath, type Path } from './path.js';
 import { trimPath } from './trim.js';
@@ -262,16 +262,6 @@ export function moveAlong(target: string, path: Path): Animation {
  */
 export function growFrom(target: string, from?: Vec2): Animation {
   return scale(target, 1, { from: 0, pivot: from });
-}
-
-/**
- * Out and back over a span, flat at the beginning, the peak and the end.
- *
- * Each half is the smoothstep the tracks and the timeline already pace changes
- * with, so a pulse leaves from rest, turns without a corner, and settles.
- */
-function thereAndBack(along: number): number {
-  return along < 0.5 ? smoothstep(along * 2) : smoothstep(2 - along * 2);
 }
 
 /** A mark's own colours replaced, fill and stroke together. */
