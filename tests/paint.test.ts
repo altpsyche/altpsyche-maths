@@ -150,6 +150,7 @@ describe('svg', () => {
           setAttribute: (name: string, value: string) => { record.attributes[name] = value; },
           set textContent(value: string | null) { record.text = value; },
           get textContent() { return record.text; },
+          append: () => {},
         };
       },
     };
@@ -197,6 +198,7 @@ describe('svg', () => {
     interface DocumentElement {
       setAttribute(name: string, value: string): void;
       textContent: string | null;
+      append(...nodes: (DocumentElement | string)[]): void;
       replaceChildren(...nodes: (DocumentElement | string)[]): void;
     }
 
@@ -205,6 +207,7 @@ describe('svg', () => {
       return {
         setAttribute: () => {},
         textContent: null,
+        append: () => {},
         replaceChildren: (...nodes) => { children = nodes; },
         get count() { return children.length; },
       } as DocumentElement & { count: number };

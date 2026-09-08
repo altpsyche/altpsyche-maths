@@ -894,9 +894,11 @@ picture in a recording are the same picture.
   every frame and almost every attribute would be rewritten anyway.
 - `PaintTarget` — what `paintSvg` draws into: anything with `replaceChildren`.
 - `ElementMaker` — what it builds elements with: anything with `createElementNS`.
-- `PaintNode` — what those two hand back and take: anything with `setAttribute` and `textContent`, and
-  an `append` where it has one. A gradient's stops go inside the element naming them, so a stand-in
-  without `append` draws every mark and no gradient.
+- `PaintNode` — what those two hand back and take: anything with `setAttribute`, `textContent` and
+  `append`. A gradient's stops and a clip's rectangle each go inside the element naming them, and
+  `append` is required rather than optional because a clip path holding no rectangle clips away
+  everything that references it: a target that could not hold a child would lose every clipped mark
+  rather than lose an effect on one.
 - `pathToData(path, view)` — the `d` attribute for a path: a move to the start, a cubic per segment,
   and a close where the subpath joins back.
 - `paintCanvas(context, marks, view)` — every mark painted onto a canvas context, in order. Each is

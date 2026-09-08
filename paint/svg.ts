@@ -350,10 +350,14 @@ const SVG_NAMESPACE = 'http://www.w3.org/2000/svg';
 export interface PaintNode {
   setAttribute(name: string, value: string): void;
   textContent: string | null;
-  /** What a gradient's stops are put inside. It is optional because a stand-in
-   * written before gradients existed is still a stand-in, and a target without
-   * it draws every mark and no gradient. */
-  append?(...nodes: unknown[]): void;
+  /**
+   * What a gradient's stops and a clip's rectangle are put inside.
+   *
+   * It is required rather than optional: a `<clipPath>` holding no `<rect>`
+   * clips away everything that references it, so a target that could not hold a
+   * child would lose every clipped mark rather than lose an effect on one.
+   */
+  append(...nodes: unknown[]): void;
 }
 
 export interface PaintTarget<Made extends PaintNode = PaintNode> {
@@ -384,7 +388,7 @@ export function paintSvg<Made extends PaintNode>(
   const made = (element: SvgElement): Made => {
     const node = maker.createElementNS(SVG_NAMESPACE, element.tag);
     for (const [name, value] of Object.entries(element.attributes)) node.setAttribute(name, value);
-    if (element.children) for (const child of element.children) node.append?.(made(child));
+    if (element.children) for (const child of element.children) node.append(made(child));
     else if (element.text !== undefined) node.textContent = element.text;
     return node;
   };

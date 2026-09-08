@@ -7,6 +7,7 @@ import {
   line,
   mat3,
   paintCanvas,
+  paintSvg,
   shape,
   svgElements,
   text,
@@ -14,6 +15,7 @@ import {
   viewMatrix,
   type CanvasLike,
   type Mark,
+  type PaintNode,
   type SvgElement,
 } from '@altpsyche/maths';
 
@@ -108,9 +110,10 @@ const numbersIn = (d: string): number[] => (d.match(/-?\d+(\.\d+)?/g) ?? []).map
 
 const ids = (marks: readonly Mark[]) => marks.map((mark) => mark.id);
 
-describe('a clip on a mark', () => {
-  const half = shape('disc', circle(vec2(4, 0), 2), { fill: ink, clip: box });
+/** A disc of radius 2 at (4, 0), which is half outside the box. */
+const half = shape('disc', circle(vec2(4, 0), 2), { fill: ink, clip: box });
 
+describe('a clip on a mark', () => {
   it('leaves the geometry of a mark half outside it alone', () => {
     const clipped = flatten(half);
     const bare = flatten(shape('disc', circle(vec2(4, 0), 2), { fill: ink }));
@@ -233,6 +236,37 @@ describe('a clip a group hands down', () => {
     // The disc lands at 11 across, which the clip would hold had it moved by the
     // same ten and does not.
     expect(flatten(moved('disc'))).toEqual([]);
+  });
+});
+
+describe('a clip painted into a document', () => {
+  it('puts the rectangle inside the element naming it, which is what a target has to be able to do', () => {
+    // A clip path holding no rectangle clips away everything referencing it, so a
+    // target that could not hold a child would lose the mark rather than lose an
+    // effect on it. That is why `append` is required rather than optional.
+    const made: Array<{ tag: string; attributes: Record<string, string>; inside: string[] }> = [];
+    const maker = {
+      createElementNS: (_namespace: string, tag: string): PaintNode => {
+        const record = { tag, attributes: {} as Record<string, string>, inside: [] as string[] };
+        made.push(record);
+        return {
+          setAttribute: (name: string, value: string) => {
+            record.attributes[name] = value;
+          },
+          textContent: null,
+          append: (...nodes: unknown[]) => {
+            for (const node of nodes) record.inside.push((node as { tag: string }).tag);
+          },
+          tag,
+        } as PaintNode & { tag: string };
+      },
+    };
+    paintSvg({ replaceChildren: () => {} }, flatten(half), view, maker);
+    expect(made.map((node) => node.tag)).toEqual(['defs', 'clipPath', 'rect', 'path']);
+    expect(made[0].inside).toEqual(['clipPath']);
+    expect(made[1].inside).toEqual(['rect']);
+    expect(made[2].attributes).toEqual({ x: '100', y: '30', width: '40', height: '40' });
+    expect(made[3].attributes['clip-path']).toBe('url(#clip-100-30-40-40)');
   });
 });
 
