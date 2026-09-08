@@ -165,7 +165,6 @@ three more are written past those because a session should not rediscover them.
 
 | version | what lands | what it changes | steps | cut against | depends on | plan |
 | --- | --- | --- | --- | --- | --- | --- |
-| 1.4.0 | gradients, as stops along an axis in the mark's own units | what a `Fill` may be | 5 | the flat demo's shaded region and the solid demo's plane | nothing outside this package | written |
 | 1.5.0 | the view as a timeline entry, so a camera move is sequenced with the action | the shape of `Figure` | 4 | both demos' views, moved against their own entrances | nothing outside this package | written |
 | 1.6.0 | a rectangular clip, and the inset it makes possible | what a `Mark` may ask for | 4 | the flat demo's inset on its tangent point | nothing outside this package | written |
 | 2.0.0 | the figure format | every builder's shape, and the door | 28 | all four demos read from files, and the nine sheets | MathJax, which is already a dependency | written, in [`FIGURE-FORMAT.md`](FIGURE-FORMAT.md) |
@@ -290,11 +289,12 @@ it, and out the far side. That walk is what makes the demo a gate rather than an
 takes the operation through no crossing, one crossing, two crossings and containment, which are the
 four cases this kind of code gets silently wrong.
 
-**Which demo each of the look versions is cut against.** 1.4.0 is the flat demo's shaded region and
-the solid demo's plane, which holds to Siva's rule that a feature reaches a flat picture and a solid
-one. 1.3.0 held to it with the flat demo's tangent and the solid demo's three runs of descent.
-1.1.0 held to it too and reached all four, since every one of them writes text and none of them
-named a font.
+**Which demo each of the look versions is cut against.** 1.5.0 is both demos' views, moved against
+their own entrances, and 1.6.0 is the flat demo's inset on its tangent point, which holds to Siva's
+rule that a feature reaches a flat picture and a solid one. 1.4.0 held to it with the flat demo's
+shaded region and the solid demo's plane, and 1.3.0 with the flat demo's tangent and the solid demo's
+three runs of descent. 1.1.0 held to it too and reached all four, since every one of them writes text
+and none of them named a font.
 
 **A version is not cut until its demos draw.** The measurement is the demo's own marks: a count at
 named times, compared by tolerance, which is the gate DESIGN.md describes and which needs no browser.
@@ -308,6 +308,61 @@ the motion in a still. 2.5.0 is the version that ends that, and the strips stay 
 README that plays a video on load is a README nobody can read.
 
 ## Now
+
+**1.4.0 is cut, and a fill may be a run of colours along an axis.** Five steps closed it. A
+`Gradient` is two points and a list of `Stop`s, each a colour and an offset from nothing at the start
+of the axis to one at its end. `Fill.colour` is still one string and the gradient sits beside it,
+because a contrast reading and anything else needing a single colour has to have one. The axis is in
+the mark's own units, so it goes through every transform the geometry does: a group that scales by 3
+and moves by (5, 1) takes an axis from (0, 0)-(2, 0) to (5, 1)-(11, 1), and a quarter turn takes one
+lying along x to lying along y, to 1e-12. The stops are untouched by all of it, since a stop is a
+share of the axis rather than a place.
+
+**Both painters name a gradient the way their own surface names one.** A sheet carries one `<defs>`
+in front of its marks holding a `<linearGradient>` of `<stop>`s for each, written in the units
+painted into, which is what `userSpaceOnUse` means, and the mark's `fill` is `url(#id)`. A canvas
+takes an object built from the context, so `CanvasLike` gained an optional `createLinearGradient` and
+`CanvasGradientLike` is what it hands back. Given one three-stop wash both produce (0, `#012`),
+(0.5, `#345`) and (1, `#678`) in that order. A context with no `createLinearGradient` paints the
+single colour and builds nothing, which is what keeps a stand-in written before gradients a stand-in.
+
+**An id is the mark's own id with every character an id may not carry written as its own code point
+between dashes, a dash included.** Nothing is dropped and nothing is folded together, so two mark ids
+that differ cannot arrive at one id: `fig/a/b` and `fig/a-b` become `fig-2f-a-2f-b` and
+`fig-2f-a-2d-b`. The document's own prefix makes an id unique across a page, so the same disc drawn
+twice under `one-` and `two-` gives `one-disc` and `two-disc`. A three-stop gradient costs a sheet
+249 bytes, 206 to 455 on a disc drawn alone.
+
+**The demos wash a region and a pane.** The flat demo's region under the parabola runs `peach` at the
+top of the graph to `cream` at the x axis, on an axis that is the graph's whole vertical run rather
+than the height of the region at the time it is drawn, so the colour at a given height is the same at
+every time: (-2.76, 1.6)-(-2.76, -2.135) at every named time. Fitted to the region it would be one
+point at the start of the walk, where the region has no height, and a gradient whose two ends are one
+point paints nothing on a canvas.
+
+**The solid demo's pane runs `glaze` along the edge nearest the eye to `frost` along the edge
+furthest from it**, on the pane's own recession, which is the horizontal direction from the eye to
+the middle of the pane. Built from the nearest and furthest projected corners it jumped every time
+the orbit crossed a diagonal, since the pane is square and two corners sit at one depth there. The
+eye looks at where the axes cross with z up, so the projected axis is straight up the page everywhere
+in the orbit and what the orbit changes is its length: (0, -0.876)-(0, 1.25) where the pane recedes
+over an edge and (0, -1.742)-(0, 1.491) a quarter turn on, over its own diagonal. All sixteen cells
+carry that one axis, which is what makes them read as one sheet of glass rather than sixteen tiles.
+
+**Against their own grounds the four stop colours are `peach` at 1.686 and 2.545, `cream` at 1.273
+and 1.330, `glaze` at 1.580 and 1.872, and `frost` at 1.147 and 1.277.** Every one is under the 4.5
+contrast text is asked for and three of the four clear 1.2. `frost` light is 1.147 and was before
+this version, which is why the palette's own floor is 1.1: the face of a pane of glass is the one
+wash meant to barely tint the page.
+
+**Four sheets grew for the gradients they draw and four for the two custom properties they carry and
+never paint.** `docs/tangent.svg` went 62081 to 62387 bytes, `docs/tangent-strip.svg` 250543 to
+251632, `docs/surface.svg` 92609 to 97166 and `docs/surface-strip.svg` 372676 to 391601. The other
+four grew by 64 bytes each, since a sheet carries the whole theme. Mark counts are unchanged at 144
+and 245.
+
+**The door went from 247 names to 252 and the suite from 701 tests to 722 over 44 files.** Every
+done-criterion was verified line by line in the commit that cut it.
 
 **1.3.0 is cut, and a stroke's width may change along its length.** Five steps closed it. A `Taper`
 is the width where a path starts, the width where it ends, and the `CurveName` the width leaves the
@@ -511,131 +566,11 @@ and `difference = A less the overlap` to 1.776e-15. Two circles crossed at every
 tolerance being an absolute distance. Two 400-piece paths unite in 48ms, so the crossing search needs
 no box test in front of it and the quadratic over piece pairs is not worth removing.
 
-
 ## The items
 
-Each is a version above. What follows is what each one covers. The four of the 1.x band carry a step
+Each is a version above. What follows is what each one covers. The three of the 1.x band carry a step
 list and the eight of the 2.x band do not, because writing one is a session of its own and the band
 is behind 2.0.0.
-
-### 1.4.0 Gradients
-
-**Refused until now, and the reason was corrected at 1.0.0.** Both painters draw a gradient. What
-refused it is that `Colour` is a string and a gradient is not, so it wants a shape of value the marks
-do not have, an id unique across every figure on a page, and a rule for how it is measured. The SVG
-painter also has no `<defs>` element at all today.
-
-**The pictures waiting for it.** The flat demo's shaded region under the parabola sits at one flat
-wash and should fade as it falls away from the curve. The solid demo's plane is one flat `FROST` fill
-and should fade toward its far edge, which is what makes a pane read as glass.
-
-- [x] **1. A fill that is a gradient.** `Fill.colour` stays a string and a gradient is a second shape
-  of fill: stops, each a colour and an offset, along an axis given in the mark's own units.
-  **Measures:** the stops read back off a mark in the order they were given; the door from the 247
-  names 1.3.0 left it at.
-
-  **Landed.** A `Gradient` is two points and a list of `Stop`s, each a colour and an offset from
-  nothing at the start of the axis to one at its end. `Fill.colour` is still one string and the
-  gradient sits beside it, because a contrast reading and anything else needing a single colour has
-  to have one. The three stops of a wash read back off a mark at 0, 0.5 and 1 in the order they were
-  written, through the tree and through a transform.
-
-  **The axis is in the mark's own units, so it goes through every transform the geometry does.** A
-  group that scales by 3 and moves by (5, 1) takes an axis from (0, 0)–(2, 0) to (5, 1)–(11, 1). A
-  quarter turn by `rotate` takes it from lying along x to lying along y, to 1e-12. `scale` by 2 about
-  a disc's own middle holds the end that is at the middle and takes the far end from 2 to 4. The
-  stops are untouched by all of it, since a stop is a share of the axis rather than a place. Text
-  takes a fill too, and its axis is carried the same way.
-
-  Neither painter draws a gradient yet, which is steps 2 and 3, so every sheet is byte-identical. The
-  door went from 247 names to 251 and the suite from 701 tests to 709 over 44 files.
-
-- [x] **2. The SVG painter's `<defs>`, and an id nothing collides with.** A gradient's id is built
-  from the mark's own id, which is already stable frame to frame and unique inside a figure, and the
-  document's own prefix makes it unique across a page. **Measures:** two figures in one document each
-  with a gradient, drawn with no repeated id; the bytes a sheet grows by.
-
-  **Landed.** A sheet that names a gradient carries one `<defs>` in front of its marks, holding a
-  `<linearGradient>` of `<stop>`s for each, and the mark's `fill` is `url(#id)`. The axis is written
-  in the units painted into, which is what `userSpaceOnUse` means, so the same view that moved the
-  geometry moves the axis. The same disc drawn twice with the prefixes `one-` and `two-` gives the
-  ids `one-disc` and `two-disc`, and the two together hold no repeated id.
-
-  **The id is the mark's own id with every character an id may not carry written as its own code
-  point between dashes, a dash included.** Nothing is dropped and nothing is folded together, so two
-  mark ids that differ cannot arrive at one id: `fig/a/b` and `fig/a-b` become `fig-2f-a-2f-b` and
-  `fig-2f-a-2d-b`. A three-stop gradient costs a sheet 249 bytes, 206 to 455 on a disc drawn alone.
-
-  `SvgElement` gained `children`, so both writers put the stops inside the element naming them, and
-  `PaintNode` gained an optional `append` for the same reason. It is optional because a stand-in
-  written before gradients existed is still one, and a target without it draws every mark and no
-  gradient. The suite went from 709 tests to 716, the door is unchanged at 251 since an option is
-  not a name, and the eight sheets are byte-identical.
-
-- [x] **3. The canvas painter's gradient.** `createLinearGradient` with the same stops in the same
-  order, held by the recorded calls on a `CanvasLike` rather than by a pixel, since a claim about
-  what a device draws needs a device. **Measures:** the recorded stops against the mark's, colour for
-  colour and offset for offset.
-
-  **Landed.** A canvas takes a gradient as an object built from the context, so `CanvasLike` gained
-  an optional `createLinearGradient` and `CanvasGradientLike` is what it hands back. The recorded
-  calls for a three-stop wash are one gradient on the axis (0, 0)–(2, 0) carrying (0, `#012`),
-  (0.5, `#345`) and (1, `#678`) in that order, and the fill is that object rather than the `#345`
-  beside it. A context with no `createLinearGradient` paints the single colour and builds nothing,
-  which is what keeps a stand-in written before gradients a stand-in.
-
-  The door went from 251 names to 252 and the suite from 716 tests to 720. The eight sheets are
-  byte-identical.
-
-- [x] **4. The demos use one.** The flat demo's region and the solid demo's plane. **Measures:** both
-  sheets re-committed with their bytes quoted; every reading over the gradient still between 1.2:1
-  and 4.5:1 against both grounds, which is the wash band 0.13.0 holds.
-
-  **Landed.** The flat demo's region under the parabola runs `peach` at the top of the graph to
-  `cream` at the x axis, and the solid demo's pane runs `glaze` along the edge nearest the eye to
-  `frost` along the edge furthest from it. Two colours were added to the palette for the two pale and
-  deep ends, since a fade needs a second colour and no existing wash was free.
-
-  **The region's axis is the graph's whole vertical run rather than the height of the region at the
-  time it is drawn**, so the colour at a given height is the same at every time. Fitted to the region
-  it would be one point at the start of the walk, where the region has no height, and a gradient
-  whose two ends are one point paints nothing on a canvas. The axis reads back at (-2.76, 1.6)-(-2.76,
-  -2.135) in figure units at every named time.
-
-  **The pane's axis is the pane's own recession, which is the horizontal direction from the eye to
-  the middle of the pane**, and it reaches from one edge to the other along that direction. Built
-  from the nearest and furthest corners instead it jumped every time the orbit crossed a diagonal,
-  since the pane is square and two corners sit at one depth there. The eye looks at where the axes
-  cross with z up, so the projected axis is straight up the page at every place in the orbit and what
-  the orbit changes is its length: (0, -0.876)-(0, 1.25) where the pane recedes over an edge and (0,
-  -1.742)-(0, 1.491) a quarter turn on, where it recedes over its own diagonal. All sixteen cells of
-  the pane carry that one axis, which is what makes them read as one sheet of glass.
-
-  **The four stop colours against their own grounds** are `peach` at 1.686 and 2.545, `cream` at
-  1.273 and 1.330, `glaze` at 1.580 and 1.872, and `frost` at 1.147 and 1.277. Three of the four
-  clear 1.2 on both grounds and every one is under 4.5. `frost` light is 1.147 and was before this
-  step, which is the floor the palette's own test holds at 1.1 rather than at 1.2: the face of a pane
-  of glass is the one wash meant to barely tint the page.
-
-  A sheet's `fill` of `url(#id)` names an element of the sheet itself, so the gate that forbade a
-  sheet fetching anything was narrowed from every `url(` to one not followed by a fragment. All eight
-  sheets grew. The four that draw a gradient are `docs/tangent.svg` from 62081 to 62387 bytes,
-  `docs/tangent-strip.svg` from 250543 to 251632, `docs/surface.svg` from 92609 to 97166 and
-  `docs/surface-strip.svg` from 372676 to 391601. The other four grew by 64 bytes each, which is what
-  the two new custom properties cost a sheet that never paints them, since a sheet carries the whole
-  theme. The suite went from 720 tests to 722 and the door is unchanged at 252 names.
-
-- [ ] **5. Cut 1.4.0.** **Measures:** the three gates; the eight sheets identical after
-  `npm run demos`; the door and the suite from 247 names and 701 tests.
-
-#### Done-criteria
-
-- A fill is a colour or a gradient, and a gradient is stops along an axis in the mark's own units.
-- Two figures with a gradient in one document draw with no repeated id.
-- Both painters are given the same mark and produce the same stops in the same order.
-- The flat demo's region and the solid demo's plane are gradients, both sheets are re-committed, and
-  every reading over them stays inside the wash band on both grounds.
-- The three gates pass and the lock file agrees with the manifest.
 
 ### 1.5.0 The view as a timeline entry
 
