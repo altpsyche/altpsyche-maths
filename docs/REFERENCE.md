@@ -824,7 +824,11 @@ picture in a recording are the same picture.
 - `paintCanvas(context, marks, view)` — every mark painted onto a canvas context, in order. Each is
   wrapped in a save and a restore, so a mark that sets an opacity or a dash cannot leak it into the
   mark after it.
-- `CanvasLike` — the part of a canvas context this package uses, so a recorder can hand in its own.
+- `CanvasLike` — the part of a canvas context this package uses, so a recorder can hand in its own. Its
+  `createLinearGradient` is optional, and a context without one paints every mark in its single
+  colour.
+- `CanvasGradientLike` — what a canvas hands back for a gradient: anything with `addColorStop`. A
+  canvas takes a gradient as an object built from the context rather than as a value written out.
 
 ## Annotations
 

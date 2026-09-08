@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { flatten, group, mat3, rotate, scale, shape, svgMarkup, text, transformFill, vec2, circle, marksAt, Timeline, linear } from '@altpsyche/maths';
+import { flatten, group, mat3, paintCanvas, rotate, scale, shape, svgMarkup, text, transformFill, vec2, circle, marksAt, Timeline, linear } from '@altpsyche/maths';
 import type { Figure, Fill, Gradient, Mark } from '@altpsyche/maths';
 
 /**
@@ -92,6 +92,81 @@ describe('a gradient written as SVG', () => {
     const ids = [...svgMarkup(marks, mat3.IDENTITY, 10, 10).matchAll(/ id="([^"]*)"/g)].map((match) => match[1]);
     expect(ids).toEqual(['fig-2f-a-2f-b', 'fig-2f-a-2d-b']);
     expect(new Set(ids).size).toBe(2);
+  });
+});
+
+describe('a gradient painted onto a canvas', () => {
+  /** A context that writes down the gradients it was asked to build and the
+   * stops they were given, since a claim about what a device draws needs a
+   * device and this claim is about what the painter asked for. */
+  class Recorder {
+    readonly built: Array<{ axis: number[]; stops: Array<[number, string]> }> = [];
+    fillStyle: unknown = '';
+    strokeStyle: unknown = '';
+    globalAlpha = 1;
+    lineWidth = 1;
+    lineCap = 'butt' as const;
+    lineJoin = 'miter' as const;
+    lineDashOffset = 0;
+    font = '';
+    textAlign = 'start' as const;
+    textBaseline = 'alphabetic' as const;
+    filled: unknown[] = [];
+    createLinearGradient(x0: number, y0: number, x1: number, y1: number) {
+      const made = { axis: [x0, y0, x1, y1], stops: [] as Array<[number, string]> };
+      this.built.push(made);
+      return { addColorStop: (offset: number, colour: string) => made.stops.push([offset, colour]) };
+    }
+    save() {}
+    restore() {}
+    beginPath() {}
+    moveTo() {}
+    bezierCurveTo() {}
+    closePath() {}
+    fill() {
+      this.filled.push(this.fillStyle);
+    }
+    stroke() {}
+    fillText() {}
+    setLineDash() {}
+  }
+
+  const painted = () => {
+    const recorder = new Recorder();
+    paintCanvas(recorder, flatten(shape('disc', circle(vec2(0, 0), 1), { fill: washed })), mat3.IDENTITY);
+    return recorder;
+  };
+
+  it('builds one gradient and gives it the mark’s stops in the order they were given', () => {
+    const recorder = painted();
+    expect(recorder.built).toHaveLength(1);
+    expect(recorder.built[0].stops).toEqual([
+      [0, '#012'],
+      [0.5, '#345'],
+      [1, '#678'],
+    ]);
+  });
+
+  it('places its axis where the view puts the geometry', () => {
+    expect(painted().built[0].axis).toEqual([0, 0, 2, 0]);
+  });
+
+  it('fills with the gradient it built rather than with the colour beside it', () => {
+    const recorder = painted();
+    expect(recorder.filled).toHaveLength(1);
+    expect(recorder.filled[0]).not.toBe('#345');
+  });
+
+  it('paints the one colour where a context cannot build a gradient at all', () => {
+    class Older extends Recorder {
+      // A stand-in written before gradients existed, which is what the optional
+      // call on the context is there for.
+      override createLinearGradient = undefined as unknown as Recorder['createLinearGradient'];
+    }
+    const older = new Older();
+    paintCanvas(older, flatten(shape('disc', circle(vec2(0, 0), 1), { fill: washed })), mat3.IDENTITY);
+    expect(older.filled).toEqual(['#345']);
+    expect(older.built).toEqual([]);
   });
 });
 

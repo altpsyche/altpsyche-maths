@@ -572,10 +572,20 @@ and should fade toward its far edge, which is what makes a pane read as glass.
   gradient. The suite went from 709 tests to 716, the door is unchanged at 251 since an option is
   not a name, and the eight sheets are byte-identical.
 
-- [ ] **3. The canvas painter's gradient.** `createLinearGradient` with the same stops in the same
+- [x] **3. The canvas painter's gradient.** `createLinearGradient` with the same stops in the same
   order, held by the recorded calls on a `CanvasLike` rather than by a pixel, since a claim about
   what a device draws needs a device. **Measures:** the recorded stops against the mark's, colour for
   colour and offset for offset.
+
+  **Landed.** A canvas takes a gradient as an object built from the context, so `CanvasLike` gained
+  an optional `createLinearGradient` and `CanvasGradientLike` is what it hands back. The recorded
+  calls for a three-stop wash are one gradient on the axis (0, 0)–(2, 0) carrying (0, `#012`),
+  (0.5, `#345`) and (1, `#678`) in that order, and the fill is that object rather than the `#345`
+  beside it. A context with no `createLinearGradient` paints the single colour and builds nothing,
+  which is what keeps a stand-in written before gradients a stand-in.
+
+  The door went from 251 names to 252 and the suite from 716 tests to 720. The eight sheets are
+  byte-identical.
 
 - [ ] **4. The demos use one.** The flat demo's region and the solid demo's plane. **Measures:** both
   sheets re-committed with their bytes quoted; every reading over the gradient still between 1.2:1

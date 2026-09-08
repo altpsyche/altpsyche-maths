@@ -11,7 +11,7 @@
  * the view turns the y axis over.
  */
 import { mat3, type Mat3 } from '../values/mat3.js';
-import type { Mark, PathMark, TextMark } from '../figure/mark.js';
+import type { Fill, Mark, PathMark, TextMark } from '../figure/mark.js';
 import type { Path } from '../figure/path.js';
 import { outlinedMarks } from '../figure/outline.js';
 import { widestWidth } from '../figure/width.js';
@@ -25,7 +25,16 @@ import { widestWidth } from '../figure/width.js';
  * gradient and a pattern there, and a narrower type here would refuse the very
  * thing this is meant to be handed.
  */
+/** What a canvas hands back for a gradient, which is an object built from the
+ * context and filled with stops rather than a value written out. */
+export interface CanvasGradientLike {
+  addColorStop(offset: number, colour: string): void;
+}
+
 export interface CanvasLike {
+  /** It is optional because a stand-in written before gradients existed is still
+   * a stand-in, and a context without it paints every mark in its one colour. */
+  createLinearGradient?(x0: number, y0: number, x1: number, y1: number): CanvasGradientLike;
   save(): void;
   restore(): void;
   beginPath(): void;
@@ -66,10 +75,27 @@ function tracePath(context: CanvasLike, path: Path, view: Mat3): void {
   }
 }
 
+/**
+ * What a fill is painted with: a gradient built from the context where it has
+ * stops, and its one colour otherwise.
+ *
+ * The axis is transformed by the view before the gradient is built, since the
+ * geometry it belongs to is painted through the same view, and a canvas gradient
+ * is placed in the units it is painted in.
+ */
+function fillPaint(context: CanvasLike, fill: Fill, view: Mat3): unknown {
+  if (!fill.gradient || !context.createLinearGradient) return fill.colour;
+  const from = mat3.transformPoint(view, fill.gradient.from);
+  const to = mat3.transformPoint(view, fill.gradient.to);
+  const made = context.createLinearGradient(from.x, from.y, to.x, to.y);
+  for (const stop of fill.gradient.stops) made.addColorStop(stop.offset, stop.colour);
+  return made;
+}
+
 function paintPath(context: CanvasLike, mark: PathMark, view: Mat3, scale: number): void {
   tracePath(context, mark.path, view);
   if (mark.fill) {
-    context.fillStyle = mark.fill.colour;
+    context.fillStyle = fillPaint(context, mark.fill, view);
     context.fill(mark.fill.rule ?? 'nonzero');
   }
   if (mark.stroke) {
@@ -91,7 +117,7 @@ function paintText(context: CanvasLike, mark: TextMark, view: Mat3, scale: numbe
   context.font = `${weight}${mark.size * scale}px ${mark.family}`;
   context.textAlign = ALIGNMENT[mark.align ?? 'start'];
   context.textBaseline = mark.baseline ?? 'alphabetic';
-  context.fillStyle = mark.fill.colour;
+  context.fillStyle = fillPaint(context, mark.fill, view);
   context.fillText(mark.text, at.x, at.y);
 }
 

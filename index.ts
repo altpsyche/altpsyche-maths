@@ -90,7 +90,7 @@ export type { Figure, TrackValues } from './figure/figure.js';
 export { paintSvg, pathToData, svgElements, svgMarkup } from './paint/svg.js';
 export type { ElementMaker, PaintNode, PaintTarget, SvgColour, SvgElement, SvgMarkupOptions, SvgTheme } from './paint/svg.js';
 export { paintCanvas } from './paint/canvas.js';
-export type { CanvasLike } from './paint/canvas.js';
+export type { CanvasGradientLike, CanvasLike } from './paint/canvas.js';
 export { arrow, brace, bracePath, callout, dot } from './figure/annotate.js';
 export type { ArrowOptions, BraceOptions, BracedOptions, CalloutOptions } from './figure/annotate.js';
 export { typesetElement } from './figure/typeset.js';
