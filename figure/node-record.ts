@@ -35,6 +35,8 @@ import { arrow, brace, callout, dot } from './annotate.js';
 import { axes, numberLine, numberPlane, type AxesOptions, type NumberLineOptions, type NumberPlaneOptions } from './axis.js';
 import { riemannBars, type BarsOptions } from './plot.js';
 import { equationNode, type Equation, type EquationOptions } from './equation.js';
+import { vectorField, type VectorFieldOptions } from './field.js';
+import type { Colour } from './mark.js';
 import type { Coords, Scale } from './scale.js';
 import type { Fill, Stroke } from './mark.js';
 import { evaluate, type Bindings, type Expression } from './expression.js';
@@ -219,6 +221,46 @@ export interface EquationRecord {
   readonly options: EquationRecordOptions;
 }
 
+/**
+ * What colour a thing read off a magnitude takes.
+ *
+ * A bare colour is a constant, which keeps the common case one value. A `bands`
+ * choice is a first colour and a list of thresholds, each with the colour that
+ * holds above it, read in order so the last threshold a magnitude clears is the
+ * one that decides. The expression form is over numbers and points and has no
+ * colour, which is why this is a form of its own rather than an expression.
+ */
+export type ColourChoice =
+  | Colour
+  | {
+      readonly kind: 'bands';
+      readonly first: Colour;
+      readonly then: readonly { readonly above: Expression; readonly colour: Colour }[];
+    };
+
+/**
+ * What a field takes beyond its coordinates and the field itself.
+ *
+ * An arrow's length is an expression of the bound variable `magnitude`, which
+ * already spells the three forms a field wants: a constant is a literal, a
+ * saturating length is arithmetic, and a threshold is a choice on a comparison.
+ * Its colour is a `ColourChoice` because the vocabulary has no colour.
+ */
+export interface FieldRecordOptions extends Omit<VectorFieldOptions, 'lengthOf' | 'colourFor'> {
+  readonly lengthOf: Expression;
+  readonly colourFor: ColourChoice;
+}
+
+export interface VectorFieldRecord {
+  readonly kind: 'vectorField';
+  readonly name: string;
+  readonly coords: Coords;
+  /** The field, as an expression of the bound variable `at`, which is the place
+   * being sampled, giving the vector there. */
+  readonly of: Expression;
+  readonly options: FieldRecordOptions;
+}
+
 export type NodeRecord =
   | ShapeRecord
   | TextRecord
@@ -231,7 +273,8 @@ export type NodeRecord =
   | AxesRecord
   | NumberPlaneRecord
   | RiemannBarsRecord
-  | EquationRecord;
+  | EquationRecord
+  | VectorFieldRecord;
 
 function nameOfValue(value: number | boolean | Vec2): string {
   if (typeof value === 'number') return 'a number';
@@ -273,6 +316,42 @@ function pointOf(expression: Expression, bindings: Bindings, what: string): Vec2
   const value = evaluate(expression, bindings);
   if (typeof value !== 'object') throw new Error(`${what} is a point and was given ${nameOfValue(value)}`);
   return value;
+}
+
+/** One value bound under a name for the reading of an inner expression, so a
+ * field sampled at a place and an arrow sized off a magnitude each read their
+ * own variable without the outer bindings being rebuilt per name. */
+const binding = (bindings: Bindings, name: string, value: number | Vec2): Bindings => ({
+  ...bindings,
+  variables: { ...bindings.variables, [name]: value },
+});
+
+/** The field as the function `vectorField` samples, from an expression of the
+ * bound variable `at`. */
+const fieldOf = (expression: Expression, bindings: Bindings) => (at: Vec2): Vec2 =>
+  pointOf(expression, binding(bindings, 'at', at), 'a field');
+
+/** An arrow's length from an expression of the bound variable `magnitude`. */
+const lengthFrom = (expression: Expression, bindings: Bindings) => (magnitude: number): number =>
+  numberOf(expression, binding(bindings, 'magnitude', magnitude), "an arrow's length");
+
+/**
+ * An arrow's colour from a choice.
+ *
+ * The bands are walked in order rather than searched, so the last threshold a
+ * magnitude clears is the one that decides and a list written out of order still
+ * has one answer.
+ */
+function colourFrom(choice: ColourChoice, bindings: Bindings) {
+  if (typeof choice === 'string') return () => choice;
+  return (magnitude: number): Colour => {
+    const inner = binding(bindings, 'magnitude', magnitude);
+    let colour = choice.first;
+    for (const band of choice.then) {
+      if (magnitude > numberOf(band.above, inner, "a colour band's threshold")) colour = band.colour;
+    }
+    return colour;
+  };
 }
 
 /** An optional parameter read where it is given and left out where it is not, so
@@ -347,6 +426,12 @@ export function resolveNode(record: NodeRecord, bindings: Bindings = {}): Node {
       return equationNode(record.name, record.equation, {
         ...record.options,
         at: pointOf(record.options.at, bindings, "an equation's place"),
+      });
+    case 'vectorField':
+      return vectorField(record.name, record.coords, fieldOf(record.of, bindings), {
+        ...record.options,
+        lengthOf: lengthFrom(record.options.lengthOf, bindings),
+        colourFor: colourFrom(record.options.colourFor, bindings),
       });
     case 'numberLine':
       return numberLine(record.name, record.scale, record.options);

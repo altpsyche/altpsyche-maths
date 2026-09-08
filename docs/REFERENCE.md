@@ -542,9 +542,20 @@ functions, which is what lets the same tree survive being written to a file and 
   glyphs.
 - `EquationRecordOptions` — what `equationNode` takes, with `at` as an expression, since a figure may
   hang an expression off a frame that moves. The box it is fitted inside is layout.
+- `VectorFieldRecord` — a `kind` of `vectorField`, a `name`, its `coords`, the field as `of`, and its
+  `options`. The field is an expression of the bound variable `at`, which is the place being sampled,
+  giving the vector there.
+- `FieldRecordOptions` — what `vectorField` takes, with `lengthOf` as an expression of the bound
+  variable `magnitude` and `colourFor` as a `ColourChoice`. The expression form already spells the
+  three lengths a field wants: a constant is a literal, a saturating length is arithmetic, and a
+  threshold is a choice on a comparison.
+- `ColourChoice` — what colour a thing read off a magnitude takes. A bare colour is a constant. A
+  `bands` choice is a `first` colour and a list of `then` entries, each an `above` threshold and the
+  `colour` that holds above it, read in order so the last threshold a magnitude clears decides. It is
+  a form of its own rather than an expression because the expression vocabulary has no colour.
 - `NodeRecord` — a `ShapeRecord`, a `TextRecord`, a `GroupRecord`, a `DotRecord`, an `ArrowRecord`, a
   `BraceRecord`, a `CalloutRecord`, a `NumberLineRecord`, an `AxesRecord`, a `NumberPlaneRecord`, a
-  `RiemannBarsRecord` or an `EquationRecord`. Every kind resolves through its own call, so a brace's curls, an arrow's head
+  `RiemannBarsRecord`, an `EquationRecord` or a `VectorFieldRecord`. Every kind resolves through its own call, so a brace's curls, an arrow's head
   and an axis's tick list are each one piece of arithmetic with one set of gates over it. A graph
   frame's options are the values those calls already take rather than expressions: a frame is the
   furniture a figure draws its moving parts on, and widening a number to an expression later costs a

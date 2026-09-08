@@ -456,8 +456,11 @@ its brace both draw from records. Step 3.6 added `numberLine`, `axes`, `numberPl
 `riemannBars`, so the flat demo's whole frame draws from records: 42 marks of grid and 27 of axes.
 Step 3.7 added `equationNode`, and an `Equation` stays resolved geometry rather than TeX a renderer
 typesets, so the flat demo's two rules draw glyph for glyph from records at 32,936 and 42,224 bytes
-written out. The door is 300 names and the suite is 870 tests over 55 files. **Step 3.8 is what runs
-next**, which is `vectorField`, whose field is an expression of a place.
+written out. Step 3.8 added `vectorField`, whose field is an expression of a place and whose arrow
+length is an expression of a magnitude, with `ColourChoice` for the one thing the expression
+vocabulary has no form for. The door is 303 names and the suite is 877 tests over 56 files. **Step
+3.9 is what runs next**, which is the camera as a `Camera3Choice` rather than a closure, and it is
+also where composition and camera lands.
 
 **Two things fall due before the format freezes and both are Siva's**, which are
 whether a `Mark` may be a raster image, due by step 3 where the node vocabulary lands, and the

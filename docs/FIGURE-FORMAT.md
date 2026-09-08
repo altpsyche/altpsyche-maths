@@ -665,10 +665,23 @@ release away and has a document of its own.
     typeset rules carries 75 kilobytes of glyph outlines, where the TeX behind them is 34 characters.
     What buys it is that no renderer needs a typesetter and no two machines disagree about a glyph.
 
-  - [ ] **3.8 The field node.** `vectorField`, whose field is an expression of a place, with
-    `lengthOf` and `colourFor` as named forms: a constant, a threshold and a saturating length.
-    **Measures:** the flat demo's slope field, arrow for arrow within tolerance; the saturating form
-    against `0.34·m / (0.6 + m)` at ten magnitudes.
+  - [x] **3.8 The field node.** `vectorField` is a form of `NodeRecord` whose field is an expression
+    of the bound variable `at`, the place being sampled, giving the vector there.
+    **`lengthOf` needs no named forms and the plan was wrong to give it any**, because the expression
+    form already spells all three: a constant is a literal, a saturating length is arithmetic, and a
+    threshold is a choice on a comparison. So it is an expression of the bound variable `magnitude`.
+    **`colourFor` does need a form of its own**, since the expression vocabulary is over numbers and
+    points and has no colour. `ColourChoice` is a bare colour or a `bands` choice, a first colour and
+    a list of thresholds each with the colour above it, walked in order so the last threshold a
+    magnitude clears is the one that decides.
+    **Measured:** the flat demo's slope field, all 42 of its arrow marks at 7 by 3 samples, mark for
+    mark within a tolerance of 1e-6, and every one of them the colour the demo gives it, which is two
+    colours across the field; the saturating length against `0.34·m / (0.6 + m)` at ten magnitudes,
+    each as a single arrow beside the same field built from the TypeScript closures; a bare colour
+    giving one colour across the whole field; three bands read at 0.5, 3 and 9 giving the first, the
+    second and the third; a field whose vector follows a track reading as different at 1 and at -1; a
+    field that reads as a number refused with the sentence naming it; the suite from 870 to 877 and
+    the door from 300 names to 303.
 
   - [ ] **3.9 The camera as parameters rather than a closure.** A figure stores a `Camera3Choice` and
     the resolver builds the `Camera3`, since the built one carries `project` and its `Projection`

@@ -235,8 +235,8 @@ export const FIELD = { x: 7, y: 3 };
 /** How wide a field arrow's shaft is and how long its head is, in figure units.
  * A head four times the shaft, which is what an arrow takes when nothing says,
  * came to 4.4 pixels at the width the README shows the sheet. */
-const FIELD_WIDTH = 0.03;
-const FIELD_HEAD = 0.16;
+export const FIELD_WIDTH = 0.03;
+export const FIELD_HEAD = 0.16;
 
 /** How long an arrow is, in figure units, against the magnitude of the vector
  * there. It settles towards a third of a figure unit as the curve steepens

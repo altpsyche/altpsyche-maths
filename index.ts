@@ -66,6 +66,7 @@ export type {
   BraceRecordOptions,
   CalloutRecord,
   CalloutRecordOptions,
+  ColourChoice,
   DotRecord,
   EquationRecord,
   EquationRecordOptions,
@@ -74,11 +75,13 @@ export type {
   NumberLineRecord,
   NumberPlaneRecord,
   RiemannBarsRecord,
+  FieldRecordOptions,
   ShapeRecord,
   TextContent,
   TextHole,
   TextRecord,
   TextTemplate,
+  VectorFieldRecord,
 } from './figure/node-record.js';
 export { areaUnder, plot, riemannBars, slopeOf, tangentAt } from './figure/plot.js';
 export type { AreaOptions, BarsOptions, PlotOptions, TangentOptions } from './figure/plot.js';
