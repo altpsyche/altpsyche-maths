@@ -529,10 +529,26 @@ painter also has no `<defs>` element at all today.
 wash and should fade as it falls away from the curve. The solid demo's plane is one flat `FROST` fill
 and should fade toward its far edge, which is what makes a pane read as glass.
 
-- [ ] **1. A fill that is a gradient.** `Fill.colour` stays a string and a gradient is a second shape
+- [x] **1. A fill that is a gradient.** `Fill.colour` stays a string and a gradient is a second shape
   of fill: stops, each a colour and an offset, along an axis given in the mark's own units.
   **Measures:** the stops read back off a mark in the order they were given; the door from the 247
   names 1.3.0 left it at.
+
+  **Landed.** A `Gradient` is two points and a list of `Stop`s, each a colour and an offset from
+  nothing at the start of the axis to one at its end. `Fill.colour` is still one string and the
+  gradient sits beside it, because a contrast reading and anything else needing a single colour has
+  to have one. The three stops of a wash read back off a mark at 0, 0.5 and 1 in the order they were
+  written, through the tree and through a transform.
+
+  **The axis is in the mark's own units, so it goes through every transform the geometry does.** A
+  group that scales by 3 and moves by (5, 1) takes an axis from (0, 0)–(2, 0) to (5, 1)–(11, 1). A
+  quarter turn by `rotate` takes it from lying along x to lying along y, to 1e-12. `scale` by 2 about
+  a disc's own middle holds the end that is at the middle and takes the far end from 2 to 4. The
+  stops are untouched by all of it, since a stop is a share of the axis rather than a place. Text
+  takes a fill too, and its axis is carried the same way.
+
+  Neither painter draws a gradient yet, which is steps 2 and 3, so every sheet is byte-identical. The
+  door went from 247 names to 251 and the suite from 701 tests to 709 over 44 files.
 
 - [ ] **2. The SVG painter's `<defs>`, and an id nothing collides with.** A gradient's id is built
   from the mark's own id, which is already stable frame to frame and unique inside a figure, and the

@@ -21,6 +21,7 @@ import { lerpPath } from './morph.js';
 import { matchGlyphs } from './equation-match.js';
 import { pointAlong } from './length.js';
 import { scaledWidth } from './width.js';
+import { transformFill } from './gradient.js';
 import { boundsOfMarks, centreOf } from './bounds.js';
 import { interval } from '../values/interval.js';
 import type { Colour, Mark, Stroke } from './mark.js';
@@ -158,11 +159,17 @@ export function fadeTo(target: string, opacity: number): Animation {
 function carried(mark: Mark, through: Mat3): Mark {
   const scale = mat3.scaleFactor(through);
   if (mark.kind === 'text') {
-    return { ...mark, at: mat3.transformPoint(through, mark.at), size: mark.size * scale };
+    return {
+      ...mark,
+      at: mat3.transformPoint(through, mark.at),
+      size: mark.size * scale,
+      fill: transformFill(mark.fill, through),
+    };
   }
   return {
     ...mark,
     path: transformPath(mark.path, through),
+    fill: mark.fill ? transformFill(mark.fill, through) : undefined,
     stroke: mark.stroke ? { ...mark.stroke, width: scaledWidth(mark.stroke.width, scale) } : undefined,
   };
 }

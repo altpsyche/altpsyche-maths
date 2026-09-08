@@ -11,6 +11,7 @@ import { transformPath } from './path.js';
 import type { Path } from './path.js';
 import { vec2, type Vec2 } from '../values/vec2.js';
 import { scaledWidth } from './width.js';
+import { transformFill } from './gradient.js';
 import type { Fill, Mark, Stroke } from './mark.js';
 
 /** What a group hands down and a child may override. */
@@ -132,7 +133,7 @@ function walk(node: Node, prefix: string, transform: Mat3, style: Style, into: M
       kind: 'path',
       id,
       path: transformPath(node.path, transform),
-      fill: settled.fill,
+      fill: settled.fill ? transformFill(settled.fill, transform) : undefined,
       stroke: settled.stroke ? { ...settled.stroke, width: scaledWidth(settled.stroke.width, scale) } : undefined,
       opacity,
     });
@@ -156,7 +157,7 @@ function walk(node: Node, prefix: string, transform: Mat3, style: Style, into: M
       weight: settled.weight,
       align: node.align,
       baseline: node.baseline,
-      fill,
+      fill: transformFill(fill, transform),
       opacity,
     });
   });

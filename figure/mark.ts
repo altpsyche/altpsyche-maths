@@ -58,8 +58,37 @@ export interface Stroke {
   dashOffset?: number;
 }
 
-export interface Fill {
+/** One colour of a gradient and where along its axis that colour sits, from
+ * nothing at the start of the axis to one at its end. */
+export interface Stop {
+  offset: number;
   colour: Colour;
+}
+
+/**
+ * A run of colours along a straight axis, given as two points in the mark's own
+ * units.
+ *
+ * The axis is a pair of points rather than an angle and a length, because both
+ * painters take it that way: an SVG element carries the two ends and a canvas
+ * context is handed them as four numbers. Being in the mark's own units is what
+ * lets a group's transform carry the axis with the shape it fills.
+ */
+export interface Gradient {
+  from: Vec2;
+  to: Vec2;
+  /** In the order they are painted, from the start of the axis to its end. */
+  stops: readonly Stop[];
+}
+
+export interface Fill {
+  /** The one colour this fill has, which is what anything needing a single
+   * colour reads, a contrast reading included. */
+  colour: Colour;
+  /** The stops this fill is painted with, where it is painted with more than one
+   * colour. A fill carrying one is drawn as the gradient rather than as the
+   * colour beside it. */
+  gradient?: Gradient;
   /** How a shape that crosses itself decides what is inside. Both painters
    * carry both answers under different names. */
   rule?: 'nonzero' | 'evenodd';

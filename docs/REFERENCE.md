@@ -207,6 +207,10 @@ A track is one value's keys over time. A control panel writes tracks and a figur
   Casteljau's construction.
 - `transformPath(path, m)` — every point of a path moved by a transform, which is how a group's
   transform reaches the geometry rather than being carried alongside it.
+- `transformFill(fill, m)` — a fill through a transform, which is its gradient's axis and nothing
+  else. A fill of one colour is handed back as it stands.
+- `transformGradient(gradient, m)` — a gradient's two ends through a transform, its stops untouched,
+  since a stop is a share of the axis rather than a place.
 - `pointCount(path)` — how many points a path holds, which is what two paths have to agree on before
   one can be walked into the other.
 - `pathFromData(d)` — the path an SVG `d` attribute describes. Both cases of every command are read,
@@ -306,8 +310,19 @@ A mark is what a painter draws. It may request only what both painters implement
 
 - `Colour` — a colour as text, which is any colour a CSS author can write.
 - `Fill` — how an inside is painted.
-  - `colour` — the colour.
+  - `colour` — the one colour this fill has, which is what anything needing a single colour reads, a
+    contrast reading included.
+  - `gradient` — the stops this fill is painted with, where it is painted with more than one colour.
+    A fill carrying one is drawn as the gradient rather than as the colour beside it.
   - `rule` — `nonzero` or `evenodd`, how a shape that crosses itself decides what is inside.
+- `Gradient` — a run of colours along a straight axis. The axis is a pair of points rather than an
+  angle and a length, because both painters take it that way, and it is in the mark's own units, which
+  is what lets a group's transform carry it with the shape it fills.
+  - `from`, `to` — the two ends of the axis.
+  - `stops` — the colours, in the order they are painted.
+- `Stop` — one colour of a gradient and where along the axis it sits.
+  - `offset` — nothing at the start of the axis to one at its end.
+  - `colour` — the colour.
 - `Stroke` — how a line is painted.
   - `colour` — the colour.
   - `width` — one number in figure units, so a line reads the same weight at every size the figure is
