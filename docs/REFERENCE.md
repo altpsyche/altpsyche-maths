@@ -553,9 +553,23 @@ functions, which is what lets the same tree survive being written to a file and 
   `bands` choice is a `first` colour and a list of `then` entries, each an `above` threshold and the
   `colour` that holds above it, read in order so the last threshold a magnitude clears decides. It is
   a form of its own rather than an expression because the expression vocabulary has no colour.
+- `Polyline3Record` — a `kind` of `polyline3`, a `name`, its `points` as `Point3Record`s, its `camera`
+  and its `options`.
+- `Dot3Record` — a `kind` of `dot3`, a `name`, an `at`, a `radius`, a `fill` and its `camera`.
+- `Text3Record` — a `kind` of `text3`, a `name`, an `at`, a `content`, a `size`, its `camera` and its
+  `options`.
+- `Arrow3Record` — a `kind` of `arrow3`, a `name`, a `from`, a `to`, its `camera` and its `options`,
+  which are an arrow's.
+- `Scene3Record` — a `kind` of `scene3`, a `name`, its `items` and its `camera`.
+- `SpaceItemRecord` — one piece of a scene in space: the `points` its depth is measured from, and the
+  `node` drawn for it. A scene sorts its pieces by the mean of their own depths, so the points are
+  what order a piece rather than anything the node carries.
+- `Axes3Record` — a `kind` of `axes3`, a `name`, its `camera` and its `options`.
 - `NodeRecord` — a `ShapeRecord`, a `TextRecord`, a `GroupRecord`, a `DotRecord`, an `ArrowRecord`, a
   `BraceRecord`, a `CalloutRecord`, a `NumberLineRecord`, an `AxesRecord`, a `NumberPlaneRecord`, a
-  `RiemannBarsRecord`, an `EquationRecord` or a `VectorFieldRecord`. Every kind resolves through its own call, so a brace's curls, an arrow's head
+  `RiemannBarsRecord`, an `EquationRecord`, a `VectorFieldRecord`, a `Polyline3Record`, a
+  `Dot3Record`, a `Text3Record`, an `Arrow3Record`, a `Scene3Record` or an `Axes3Record`. Each space
+  kind carries its own camera, the way its call takes one. Every kind resolves through its own call, so a brace's curls, an arrow's head
   and an axis's tick list are each one piece of arithmetic with one set of gates over it. A graph
   frame's options are the values those calls already take rather than expressions: a frame is the
   furniture a figure draws its moving parts on, and widening a number to an expression later costs a

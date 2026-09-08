@@ -465,8 +465,13 @@ the built one does. The door is 309 names and the suite is 884 tests over 57 fil
 **Step 3.9b is a look and it is Siva's**, which is the held beat the solid demo's orbit gains at the
 face of the saddle: it changes a published demo's pacing and the sheets it draws, where every other
 step of this plan holds them byte for byte. What is wanted is the seconds the beat holds and where in
-the orbit it sits. **Step 3.10 is what a session runs next**, which is `polyline3`, `dot3`, `text3`,
-`arrow3`, `scene3` and `axes3`.
+the orbit it sits.
+
+Step 3.10 added `polyline3`, `dot3`, `text3`, `arrow3`, `scene3` and `axes3`, so the solid demo's
+axes, its three runs of descent and its crossing curve all draw from records at each of the four times
+its strip draws. The door is 316 names and the suite is 894 tests over 58 files. **Step 3.11 is what a
+session runs next**, which is `surface3`, `surfaceCells`, `fieldArrows3` and `vectorField3`, with
+`sectionOf` and `streamlineOf` as the point producers they are.
 
 **Two things fall due before the format freezes and both are Siva's**, which are
 whether a `Mark` may be a raster image, due by step 3 where the node vocabulary lands, and the

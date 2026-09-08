@@ -709,9 +709,25 @@ release away and has a document of its own.
     is the seconds the beat holds and where in the orbit it sits. **Step 7 carries the other half**,
     which is the extent as data.
 
-  - [ ] **3.10 The space nodes.** `polyline3`, `dot3`, `text3`, `arrow3`, `scene3` and `axes3`.
-    **Measures:** the solid demo's axes and polylines at its named times; `dot3`, `text3` and
-    `arrow3` against their calls, since no demo draws one.
+  - [x] **3.10 The space nodes.** `polyline3`, `dot3`, `text3`, `arrow3`, `scene3` and `axes3` are
+    forms of `NodeRecord`, each carrying its places as `Point3Record`s and its own `Camera3Record`,
+    the way its call takes one. A `SpaceItemRecord` is the points a piece's depth is measured from
+    and the node drawn for it, so `scene3` still sorts by the mean of a piece's own depths.
+    **A figure repeating one camera per space node is a cost step 5 should look at**, since a file has
+    no way to share a value and the solid demo names six space nodes off one camera. In TypeScript the
+    same record is passed to each, so the cost shows only when a figure is written out.
+    **`scene3`'s items are written-out pieces alone until step 3.11**, which adds `surfaceCells` and
+    `fieldArrows3` as producers of many items. Widening the list's element type then is
+    reader-compatible, so nothing written against this stops reading.
+    **Measured:** the solid demo's axes, all 22 of their marks, at each of the four times its strip
+    draws, mark for mark within a tolerance of 1e-6; its three runs of descent and the two runs of its
+    crossing curve at those same times; the axes reading as different a half-orbit apart, which is
+    what says the camera turns; `dot3`, `text3`, `arrow3` and `scene3` against their calls, since no
+    demo names one directly; a dot six times the eye's own place out, which is behind the eye, drawing
+    nothing from both the record and the call; a label in space written from a template as `z = 0.30`;
+    a scene of two pieces drawn furthest first rather than in the order written; a place in space
+    whose z reads as a point refused with the sentence naming it; the suite from 884 to 894 and the
+    door from 309 names to 316.
 
   - [ ] **3.11 The surfaces and the space fields.** `surface3`, `surfaceCells`, `fieldArrows3` and
     `vectorField3`, with `shade` as a ramp through a band, and `sectionOf` and `streamlineOf` as the

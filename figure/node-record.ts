@@ -36,6 +36,9 @@ import { axes, numberLine, numberPlane, type AxesOptions, type NumberLineOptions
 import { riemannBars, type BarsOptions } from './plot.js';
 import { equationNode, type Equation, type EquationOptions } from './equation.js';
 import { vectorField, type VectorFieldOptions } from './field.js';
+import { arrow3, dot3, polyline3, scene3, text3, type Arrow3Options, type Polyline3Options, type SpaceItem, type Text3Options } from './space.js';
+import { axes3, type Axes3Options } from './axis3.js';
+import { resolveCamera, resolvePoint3, type Camera3Record, type Point3Record } from './camera-record.js';
 import type { Colour } from './mark.js';
 import type { Coords, Scale } from './scale.js';
 import type { Fill, Stroke } from './mark.js';
@@ -261,6 +264,68 @@ export interface VectorFieldRecord {
   readonly options: FieldRecordOptions;
 }
 
+/**
+ * One piece of a scene in space: the places its depth is measured from, and the
+ * node drawn for it.
+ *
+ * A scene sorts its pieces by the mean of their own depths, so the points are
+ * what order the piece rather than anything the node carries.
+ */
+export interface SpaceItemRecord {
+  readonly points: readonly Point3Record[];
+  readonly node: NodeRecord;
+}
+
+export interface Polyline3Record {
+  readonly kind: 'polyline3';
+  readonly name: string;
+  readonly points: readonly Point3Record[];
+  readonly camera: Camera3Record;
+  readonly options?: Polyline3Options;
+}
+
+export interface Dot3Record {
+  readonly kind: 'dot3';
+  readonly name: string;
+  readonly at: Point3Record;
+  readonly radius: Expression;
+  readonly fill: Fill;
+  readonly camera: Camera3Record;
+}
+
+export interface Text3Record {
+  readonly kind: 'text3';
+  readonly name: string;
+  readonly at: Point3Record;
+  readonly content: TextContent;
+  readonly size: number;
+  readonly camera: Camera3Record;
+  readonly options?: Text3Options;
+}
+
+export interface Arrow3Record {
+  readonly kind: 'arrow3';
+  readonly name: string;
+  readonly from: Point3Record;
+  readonly to: Point3Record;
+  readonly camera: Camera3Record;
+  readonly options: ArrowRecordOptions;
+}
+
+export interface Scene3Record {
+  readonly kind: 'scene3';
+  readonly name: string;
+  readonly items: readonly SpaceItemRecord[];
+  readonly camera: Camera3Record;
+}
+
+export interface Axes3Record {
+  readonly kind: 'axes3';
+  readonly name: string;
+  readonly camera: Camera3Record;
+  readonly options: Axes3Options;
+}
+
 export type NodeRecord =
   | ShapeRecord
   | TextRecord
@@ -274,7 +339,13 @@ export type NodeRecord =
   | NumberPlaneRecord
   | RiemannBarsRecord
   | EquationRecord
-  | VectorFieldRecord;
+  | VectorFieldRecord
+  | Polyline3Record
+  | Dot3Record
+  | Text3Record
+  | Arrow3Record
+  | Scene3Record
+  | Axes3Record;
 
 function nameOfValue(value: number | boolean | Vec2): string {
   if (typeof value === 'number') return 'a number';
@@ -427,6 +498,56 @@ export function resolveNode(record: NodeRecord, bindings: Bindings = {}): Node {
         ...record.options,
         at: pointOf(record.options.at, bindings, "an equation's place"),
       });
+    case 'polyline3':
+      return polyline3(
+        record.name,
+        record.points.map((point) => resolvePoint3(point, bindings, 'a point of a run in space')),
+        resolveCamera(record.camera, bindings),
+        record.options
+      );
+    case 'dot3':
+      return dot3(
+        record.name,
+        resolvePoint3(record.at, bindings, "a dot's place in space"),
+        numberOf(record.radius, bindings, "a dot's radius"),
+        record.fill,
+        resolveCamera(record.camera, bindings)
+      );
+    case 'text3':
+      return text3(
+        record.name,
+        resolvePoint3(record.at, bindings, 'where a label in space stands'),
+        writeTemplate(record.content, bindings),
+        record.size,
+        resolveCamera(record.camera, bindings),
+        record.options
+      );
+    case 'arrow3':
+      return arrow3(
+        record.name,
+        resolvePoint3(record.from, bindings, "an arrow's start in space"),
+        resolvePoint3(record.to, bindings, "an arrow's end in space"),
+        resolveCamera(record.camera, bindings),
+        {
+          stroke: record.options.stroke,
+          fill: record.options.fill,
+          head: maybe(record.options.head, bindings, "an arrow's head"),
+          spread: maybe(record.options.spread, bindings, "an arrow's spread"),
+        }
+      );
+    case 'scene3':
+      return scene3(
+        record.name,
+        record.items.map(
+          (item): SpaceItem => ({
+            points: item.points.map((point) => resolvePoint3(point, bindings, 'a point of a piece in space')),
+            node: resolveNode(item.node, bindings),
+          })
+        ),
+        resolveCamera(record.camera, bindings)
+      );
+    case 'axes3':
+      return axes3(record.name, resolveCamera(record.camera, bindings), record.options);
     case 'vectorField':
       return vectorField(record.name, record.coords, fieldOf(record.of, bindings), {
         ...record.options,

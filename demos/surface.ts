@@ -118,7 +118,7 @@ const LENS_ACROSS = interval.span(LENS.x);
 const LENS_UP = interval.span(LENS.y);
 
 /** The stretch of each parameter the surface is drawn over. */
-const OVER = interval(-1.5, 1.5);
+export const OVER = interval(-1.5, 1.5);
 
 /** A saddle, because it is the shape a level plane cuts a curve out of rather
  * than a circle, and a curve with two branches is what says the crossing was
@@ -277,7 +277,7 @@ export function eyeAt(along: number) {
 
 /** The sizes this figure's text takes, from the numbers on its axes, which are
  * the smallest text it draws. */
-const TEXT = textScale(0.22);
+export const TEXT = textScale(0.22);
 
 /** The equation of the surface, typeset when this module loads rather than at
  * every frame, since its geometry is the same at every time. */
