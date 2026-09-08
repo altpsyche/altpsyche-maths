@@ -30,6 +30,26 @@ marksAt(figure, 0);
 again and you get the same thing. A page playing forward, a reader dragging a scrub bar backwards
 and a recorder walking a fixed step all read one answer.
 
+## The names the examples share
+
+The examples on this page build on each other, and they all draw with the four styles below, the one
+path and the one canvas context. A **style** is a fill, a stroke, or both. The colours are the
+author's: this package holds no palette and reads none from the page.
+
+```ts
+import { circle, vec2 } from '@altpsyche/maths';
+import type { CanvasLike, Fill, Path, Stroke } from '@altpsyche/maths';
+
+const ink: Fill = { colour: '#1b1b1b' };
+const pen: Stroke = { colour: '#1b1b1b', width: 0.04 };
+const faint: Stroke = { colour: '#b4b9c0', width: 0.02 };
+const drawn: Stroke = { colour: '#c2410c', width: 0.05 };
+const path: Path = circle(vec2(0, 0), 3);
+
+// The two-dimensional context of a canvas you hold, which a recorder paints into.
+declare const context: CanvasLike;
+```
+
 ## Figure units and the extent
 
 A figure is measured in its own units. The **extent** says how many units wide and tall the picture
@@ -473,8 +493,8 @@ Nothing here writes a file. What a consumer does with a painted frame is the con
 ## What this refuses
 
 **A mark may only ask for what both painters can do.** There are no filters, no blend modes and no
-clipping. A figure reaching for something only SVG has would look right on a page and lose it without
-a word in a recording.
+clipping. A figure reaching for something only SVG has would look right on a page and lose it
+without a word in a recording.
 
 **A colour is flat.** There are no gradients either, and that one is not the rule above. Both
 painters draw a gradient: SVG names one with an element carrying an id, and a canvas names one with
