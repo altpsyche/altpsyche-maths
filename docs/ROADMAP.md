@@ -165,7 +165,6 @@ three more are written past those because a session should not rediscover them.
 
 | version | what lands | what it changes | steps | cut against | depends on | plan |
 | --- | --- | --- | --- | --- | --- | --- |
-| 1.6.0 | a rectangular clip, and the inset it makes possible | what a `Mark` may ask for | 4 | the flat demo's inset on its tangent point | nothing outside this package | written |
 | 2.0.0 | the figure format | every builder's shape, and the door | 28 | all four demos read from files, and the nine sheets | MathJax, which is already a dependency | written, in [`FIGURE-FORMAT.md`](FIGURE-FORMAT.md) |
 | 2.1.0 | the curves and surfaces a figure can name: parametric, polar, implicit, and the solids | adds kinds | to plan | a phase portrait, which the flat demo's field cannot express | nothing outside this package | to plan |
 | 2.2.0 | matrices and tables, and a matrix applied to a grid | adds kinds | to plan | a grid under a linear map, which nothing here can draw | nothing outside this package | to plan |
@@ -288,8 +287,9 @@ it, and out the far side. That walk is what makes the demo a gate rather than an
 takes the operation through no crossing, one crossing, two crossings and containment, which are the
 four cases this kind of code gets silently wrong.
 
-**Which demo each of the look versions is cut against.** 1.6.0 is the flat demo's inset on its
-tangent point, which holds to Siva's rule that a feature reaches a flat picture and a solid one.
+**Which demo each of the look versions was cut against.** Siva's rule is that a feature reaches a
+flat picture and a solid one. 1.6.0 held to it with the flat demo's inset on its tangent point, and
+the solid demo carries none because that figure has four per cent of margin and no room for a panel.
 1.5.0 held to it with the flat demo's follow and the solid demo's push in on its crossing, 1.4.0 with
 the flat demo's shaded region and the solid demo's plane, and 1.3.0 with the flat demo's tangent and
 the solid demo's three runs of descent. 1.1.0 held to it too and reached all four, since every one of
@@ -307,6 +307,62 @@ the motion in a still. 2.5.0 is the version that ends that, and the strips stay 
 README that plays a video on load is a README nobody can read.
 
 ## Now
+
+**1.6.0 is cut, and a mark may be drawn inside a rectangle.** Four steps and a fifth found while
+working closed it. A clip is a rectangle and no other shape: a path clip needs a winding number
+counted, which is a stencil on a card, where a box is the scissor test every device already has. Both
+painters write it, `<clipPath>` holding a `<rect>` and `rect` then `clip` on a context, and the same
+box (0, -2) to (4, 2) at ten units across per figure unit reads x 100, y 30, width 40, height 40 in
+each.
+
+**The clip is in the figure's own units rather than the mark's, which is the one place a mark departs
+from carrying its geometry through every transform above it.** A transform that turns takes a
+rectangle to a shape with corners off the axes, so a clip that rode the transform down would be a
+rectangle only until a group turned. A group under a clip of (0, -2) to (4, 2) holding a translation
+of ten across draws nothing: the disc it holds lands at 11 across, which the clip would hold had it
+moved by the same ten. A clip inside a clip is the box both hold, so (0, 4) inside (2, 8) leaves
+(2, 4), and two clips that miss each other leave nothing under them.
+
+**A shape whose whole reach falls outside its clip is left out of the list, and a text mark is not.**
+The reach counts half a stroke width past the geometry: a line at 4.4 across, 0.4 outside a clip
+ending at 4, stays at a width of 1 and is dropped at a width of 0.5. A text mark reaches only as far
+as its own anchor here, since how wide some text is depends on which fonts the machine has, so
+dropping one on an anchor outside the clip would cut a line whose letters run back inside on the
+machine that has the font. That is the one done-criterion the item met differently from the way it
+was written, and the cost is an invisible copy of each text mark inside an inset.
+
+**An inset is a second view of the same figure, magnified into a rectangle of its own frame**, which
+is `ZoomedScene` in Manim and what the clip was added for. It reads the marks the figure has already
+built rather than building the tree again, and the same scene flattened under the inset's own matrix
+agrees with it to 1e-12 mark for mark. `insetMatrix` has no flip, unlike `viewMatrix`, because both
+rectangles are in the figure's own units and count upward the same way. Its own view is one
+`ViewChange` applied in full at every time, so a `followView` on a dot reads (8, 3) with a width of 1
+at -6, 0 and 3.5 along a walk, with no span and no easing: an inset that eased into following would
+show the wrong part of the picture while it caught up.
+
+**A view entry naming a mark reads the figure's own marks rather than the whole list.** An inset's
+copy carries an id ending in the mark's own, so `touches` matched both and a `followView` was handed
+the box round the mark and its magnified copy together. `ownMarks` is the list before the insets.
+
+**The flat demo's panel is 2.8 by 1.26 at (1.9, 1.62) and shows 1.4 by 0.63, so it magnifies by
+exactly 2.** It sits in the band above the graph and right of the reading and the rule, which is the
+one part of that figure nothing else draws in, and its right edge stands at 4.7 because the view
+follows the dot and the frame's own right edge comes in to 4.78 at the start of the walk. The panel
+arrives with the grid, since an inset's marks carry the opacity of the marks they copy and a panel
+arriving later would leave that arrival hanging over the band with no ground behind it. It is painted
+in the sheet's own ground, so ink inside it reads 17.22:1 on white and 15.87:1 on #0d1117, the same
+either side of its edge, and `Inset.hides` keeps the inset from magnifying its own border and
+painting a picture of itself.
+
+**A clip is one element per rectangle rather than one per mark**, which was found by rendering the
+demo. A gradient is named per mark because two marks rarely share an axis, where every mark of an
+inset is cut to the one rectangle: the still went from 35 clip elements and 87452 bytes to 1 element
+and 80701, and the strip from 354135 to 324852 with 4, one per frame since each frame's window has
+moved. A clip id is the rectangle's own four numbers, since numbering them in order is shorter and is
+not stable when a mark leaves the list.
+
+**The door went from 261 names to 266 and the suite from 747 tests to 782 over 47 files.** Every
+done-criterion was verified line by line in the commit that cut it.
 
 **1.5.0 is cut, and the view is a timeline entry.** Three steps and a plan correction closed it. A
 view that moved was a function of the clock written on the figure, so it sat outside the order
@@ -649,84 +705,8 @@ no box test in front of it and the quadratic over piece pairs is not worth remov
 
 ## The items
 
-Each is a version above. What follows is what each one covers. The one of the 1.x band carries a step
-list and the eight of the 2.x band do not, because writing one is a session of its own and the band
-is behind 2.0.0.
-
-### 1.6.0 The rectangular clip
-
-**`figure/mark.ts` refuses clipping and the reason it gives is the cost rather than the capability.**
-Both painters clip, `clipPath` and `clip()`, and the header's rule is that adding one means adding it
-to both in the same change. What a clip makes possible is the inset: a second view of the same figure
-in a corner of the frame, magnifying what the eye should be on, which is `ZoomedScene` in Manim.
-
-**The clip is a rectangle and nothing else.** An arbitrary path clip is a scissor test no GPU
-refuses only while the shape is a box; a path needs a stencil, and `@altpsyche/engine` cannot count a
-winding number, which is filed there as its item 2. So a rectangle is drawable by all three painters
-and a path is drawable by two, and the rule in `mark.ts` is what keeps the difference from reaching a
-figure.
-
-- [x] **1. A clip on a mark, and both painters honouring it.** A rectangle in the figure's own units.
-  A `Mark` carries an optional `clip`, which is a `Bounds`, and a group hands one down and takes the
-  box both hold where one sits inside another. **Measured:** the clip (0, -2) to (4, 2) at a view of
-  ten units across per figure unit is x 100, y 30, width 40, height 40 in both painters, written by
-  SVG as one `<clipPath>` holding one `<rect>` in the sheet's own `<defs>` and by the canvas painter
-  as `beginPath`, `rect`, `clip` after its `save`; a disc half outside its clip writes the same `d`
-  numbers as the same disc unclipped; a clip costs a sheet 153 bytes, 233 to 386 on a disc drawn
-  alone; (0, 4) inside (2, 8) leaves (2, 4) and two clips that miss leave nothing under them; 747
-  tests over 45 files to 763 over 46, and the door unchanged at 261 names.
-
-  **A text mark outside its clip stays in the list, which the step did not say.** A text mark reaches
-  only as far as its own anchor, since how wide some text is depends on which fonts the machine has,
-  so dropping one on an anchor outside the clip would cut a line whose letters run back inside on the
-  machine that has the font. What is dropped is a shape whose whole reach, half a stroke width
-  included, falls outside.
-
-- [x] **2. The inset.** `Figure.insets` is a list of `Inset`, each one an extent it shows, a
-  rectangle of the frame it draws into, a fit and one `ViewChange` applied in full at every time.
-  **Measured:** the same scene flattened under the inset's own matrix agrees with the inset's marks
-  to 1e-12 mark for mark, which reaches them through the tree rather than through the marks; two
-  units across and one up drawn into a box of four by four magnify by 2 containing and 4 covering,
-  with no flip, so a unit above the middle lands two above rather than two below; a clip of (0, 1) by
-  (-4, 5) magnified by two about (1, 0.5) becomes (6, 8) by (-8.5, 9.5) and is cut back to the
-  rectangle's (1, 5); `followView` on a dot reads (8, 3) with a width of 1 at -6, 0 and 3.5 along a
-  walk; 763 tests over 46 files to 779 over 47, and the door from 261 names to 266.
-
-  **A view entry naming a mark read the inset's copy of it as well, which the wiring found.** An
-  inset's copy carries an id ending in the mark's own, so `touches` matched both and a `followView`
-  was handed the box round the mark and its magnified copy together. `ownMarks` is the list before
-  the insets and `extentAt` folds over that.
-
-- [x] **3. The flat demo carries one.** A panel 2.8 by 1.26 at (1.9, 1.62) showing 1.4 by 0.63 of the
-  picture, so the magnification is exactly 2, following the dot. **Measured:** docs/tangent.svg 62387
-  bytes and 144 marks to 87452 bytes and 146 marks with an inset of between 32 and 40, and
-  docs/tangent-strip.svg 251632 to 354135; the strip is 726 marks, four frames of 146 and 142 between
-  the four insets; the panel is painted in the sheet's own ground, so ink inside it reads 17.22:1 on
-  white and 15.87:1 on #0d1117, the same either side of its edge; the other six sheets gain 34 bytes
-  each for the `--ground` property and draw the same marks; 779 tests over 47 files to 780.
-
-  **Three things the step did not name were needed.** `Inset.hides`, because the panel's ground and
-  border are the figure's own marks and an inset over them paints a picture of itself. The strip has
-  to carry each frame's clip into its slot, since a slot is a second frame rather than a place inside
-  one. And the gate holding every label inside the frame now holds a clipped mark's rectangle there
-  instead of its text box, because an inset shows a fragment of a label on purpose.
-
-- [ ] **3.5. One clip element per rectangle rather than per mark.** The SVG painter names a clip the
-  way it names a gradient, which is one element per mark, and an inset gives every one of its marks
-  the same rectangle. **Measures:** the `<clipPath>` count in docs/tangent.svg, 35 today, and the
-  sheet's bytes at 87452.
-
-- [ ] **4. Cut 1.6.0.** **Measures:** the three gates; the eight sheets identical after
-  `npm run demos`; the door and the suite from wherever 1.5.0 left them.
-
-#### Done-criteria
-
-- A mark may carry a rectangular clip and both painters write it, and no other shape of clip exists.
-- A mark wholly outside its clip is left out of the list rather than drawn.
-- An inset draws the same marks as the figure read through the inset's own extent.
-- The flat demo carries an inset, its sheet is re-committed, and every reading in it holds the
-  contrast band.
-- The three gates pass and the lock file agrees with the manifest.
+Each is a version above. What follows is what each one covers. None of the eight of the 2.x band
+carries a step list, because writing one is a session of its own and the band is behind 2.0.0.
 
 ### 2.0.0 The figure format
 
@@ -904,8 +884,8 @@ format a recorder reads a file, which is also what lets one run without a page a
   reading its source rather than by building anything, and a throwaway spike of the painter would
   have found it in an hour.
 
-  **The spike is a session of its own and it goes after 1.6.0**, which is a scheduling answer rather
-  than a preference. An engine gap costs a release in that repository before this one can use it, and
+  **The spike is a session of its own and it goes after 1.6.0, which is cut, so it is due now.** That
+  is a scheduling answer rather than a preference. An engine gap costs a release in that repository before this one can use it, and
   the fifty-five commits of 1.x and 2.0.0 are the only slack that lead time has: a gap found after
   2.5.0 is found with none. Earlier than 1.6.0 is no better, since 1.3.0, 1.4.0 and 1.6.0 each change
   what a `Mark` is and a spike paints marks, so a spike in front of them measures something that will
