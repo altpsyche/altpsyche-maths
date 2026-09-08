@@ -174,6 +174,18 @@ is left is **Siva reading the README, the guide and the pictures once and saying
 step 16 is one commit: the version to 1.0.0, `npm install --package-lock-only` in the same commit,
 and `npm publish` asked for rather than assumed.
 
+**The four prose surfaces were rewritten in one register, which is Siva's call and not a step.** He
+read the pages, rejected the tone twice, and named the model: Eric Lengyel. Definitions first, third
+person, the standard name for anything that has one, and every number with the expression behind it.
+CLAUDE.md's voice brief carries the rule. The README is 179 lines, the guide 544, the reference 793
+and DESIGN.md 387, all four at a sentence mean between 15.0 and 16.6 with none over 30, no banned
+phrases and no second person. The guide's seventeen code blocks still compile in order and the
+reference gate still holds 227 entries against 227 names.
+
+**Step 16's last criterion is Siva reading those four pages once and saying so**, and the pages
+changed under it after this rewrite, so that read is of the current text rather than of what was
+there before.
+
 **Four findings landed on the way through steps 14 and 15**, each in its own commit. `indicate` walks
 into a colour and two comments still said it swaps. Gradients are refused for a reason three files
 stated wrongly, since both painters draw one. The demos' comments were never held to the rules the
