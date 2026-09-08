@@ -339,6 +339,9 @@ Each is a version above. What follows is what each one covers.
 
 ### The figure format, and it is planned before anything is worked
 
+**[`FIGURE-FORMAT.md`](FIGURE-FORMAT.md) is the shape this is built to**, and it is one of three
+documents of that name, one in each repository the change crosses.
+
 **This is the next session and it is a planning session.** No code is touched in it. What it produces
 is the format written down, the questions below answered, and a step list Siva reads before anything
 lands.
