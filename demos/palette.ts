@@ -70,14 +70,58 @@ export const FROST = painted('frost');
 export const MOSS = painted('moss');
 
 /**
+ * How many steps the surface's shading is cut into.
+ *
+ * A cell's colour is computed from how squarely it faces the light, so it cannot
+ * be named and cannot ride a custom property. Cut into steps it can: twelve
+ * names carry the ramp and every cell paints one of them. The saddle draws 144
+ * cells and used 16 distinct colours before this, so twelve steps lose nothing a
+ * reader could see.
+ */
+const SHADES = 12;
+
+/**
+ * The ramp a surface is shaded along, darkest first.
+ *
+ * Each ground carries its own hue as well as its own levels. On white the ramp
+ * is warm, from a level of 133 to 246 offset by nothing, minus fourteen and
+ * minus thirty-four, so a lit surface separates from the blue of a pane by hue.
+ * On the dark ground it is slate, from 42 to 129 offset by minus eighteen, minus
+ * six and plus ten, where a warm surface read as bronze against the page.
+ *
+ * Every step of both is a wash: none clears 4.4:1 against the ground it is drawn
+ * on and none falls under 1.2:1 of it, which leaves the two ends 3.15 and 3.19
+ * of contrast apart.
+ */
+const RAMP = {
+  light: { from: 133, to: 246, offset: [0, -14, -34] },
+  dark: { from: 42, to: 129, offset: [-18, -6, 10] },
+};
+
+function ramped(ground: 'light' | 'dark', step: number): string {
+  const { from, to, offset } = RAMP[ground];
+  const level = Math.round(from + ((to - from) * step) / (SHADES - 1));
+  const channel = (shift: number) => Math.max(0, Math.min(255, level + shift));
+  return `#${offset.map((shift) => channel(shift).toString(16).padStart(2, '0')).join('')}`;
+}
+
+/** The ramp as theme entries, one per step, which is what lets a surface follow
+ * the ground it is read on the way every other colour does. */
+export const SHADE_THEME: Record<string, { light: string; dark: string }> = Object.fromEntries(
+  Array.from({ length: SHADES }, (_, step) => [
+    `shade${step}`,
+    { light: ramped('light', step), dark: ramped('dark', step) },
+  ])
+);
+
+/**
  * How dark a cell of a surface is drawn, from how squarely it faces the light.
  *
- * The ramp is warm rather than grey, so a cell facing away reads as shadow on
- * the same surface rather than as a different material. It runs from 150 to 240,
- * which keeps the darkest cell above the ground and the lightest below the
- * white, so neither end of the surface disappears.
+ * The amount is the author's, one where the cell faces the light head on and
+ * nothing where it faces straight away, and this puts it on the nearest step of
+ * the ramp.
  */
 export function shadeOf(amount: number): { colour: string } {
-  const level = Math.round(150 + 90 * amount);
-  return { colour: `rgb(${level}, ${level - 14}, ${level - 34})` };
+  const step = Math.max(0, Math.min(SHADES - 1, Math.round(amount * (SHADES - 1))));
+  return { colour: `var(--shade${step}, ${SHADE_THEME[`shade${step}`].light})` };
 }

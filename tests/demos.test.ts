@@ -51,6 +51,7 @@ import {
   MIST,
   MOSS,
   PEACH,
+  SHADE_THEME,
   SKY,
   SLATE,
   STEEL,
@@ -894,6 +895,28 @@ describe("the demos' palette", () => {
     const capForLight = 1.05 / 4.5 - 0.05;
     const floorForDark = 4.5 * (0.005483 + 0.05) - 0.05;
     expect(capForLight).toBeLessThan(floorForDark);
+  });
+
+  it('keeps every step of the surface ramp a wash on both grounds', () => {
+    // A cell of a surface carries no reading, so every step stays clear of the
+    // contrast text is asked for and clear of the ground it is drawn on.
+    for (const ground of ['light', 'dark'] as const) {
+      const steps = Object.values(SHADE_THEME).map((step) => contrast(step[ground], GROUND[ground]));
+      expect(Math.max(...steps)).toBeLessThan(4.5);
+      expect(Math.min(...steps)).toBeGreaterThan(1.2);
+      expect(Math.max(...steps) - Math.min(...steps)).toBeGreaterThan(3.1);
+    }
+  });
+
+  it('spreads the saddle over every step of that ramp', () => {
+    // A light with a positive z can never reach the far end of its own ramp on a
+    // surface drawn over a plane, so the demo reads its amount against the band
+    // its own normals cover. Eight of the twelve steps were reached without it.
+    const painted = marksAt(solid, solid.still)
+      .filter((mark) => mark.id.startsWith('solid/body/hill'))
+      .map((mark) => (mark.kind === 'path' ? mark.fill?.colour : undefined));
+    const reached = new Set(painted.map((colour) => /--(shade\d+)/.exec(colour ?? '')?.[1]));
+    expect(reached.size).toBe(Object.keys(SHADE_THEME).length);
   });
 
   it('paints every colour as a variable falling back to its light value', () => {

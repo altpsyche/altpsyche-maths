@@ -7,7 +7,7 @@
  * same suite everything else is.
  */
 import { marksAt, svgMarkup, viewAt, viewMatrix, type Extent, type Figure, type Mark } from '../index.js';
-import { THEME } from './palette.js';
+import { SHADE_THEME, THEME } from './palette.js';
 import { FRAMES, stripMarks, tangent } from './tangent.js';
 import {
   FRAMES as BOOLEAN_FRAMES,
@@ -34,6 +34,10 @@ export const PAGE_FLOOR = 14;
 export const SHOWN_AT = 720;
 export const SHOWN_AT_STRIP = 820;
 
+/** Every colour a sheet is written with: the named ones and the steps of the
+ * surface's own ramp, which follows the ground the way the rest do. */
+const SHEET_THEME = { ...THEME, ...SHADE_THEME };
+
 /** The floor in written units, from the floor on the page and how far the sheet
  * is scaled to reach the width it is shown at. */
 function writtenFloor(width: number, shownAt: number): number {
@@ -49,14 +53,14 @@ export function markupOf(
   shownAt = SHOWN_AT
 ): string {
   return svgMarkup(marks, viewMatrix(extent, 'contain', width, height), width, height, {
-    theme: THEME,
+    theme: SHEET_THEME,
     minTextSize: writtenFloor(width, shownAt),
   });
 }
 
 export function stillMarkup(figure: Figure, seconds: number, width = WIDTH, height = HEIGHT): string {
   return svgMarkup(marksAt(figure, seconds), viewAt(figure, seconds, width, height), width, height, {
-    theme: THEME,
+    theme: SHEET_THEME,
     minTextSize: writtenFloor(width, SHOWN_AT),
   });
 }

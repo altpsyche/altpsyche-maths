@@ -160,7 +160,7 @@ eight.
 **The lock file agrees with the manifest again**, and holding it there is one
 `npm install --package-lock-only` in whichever commit bumps a version.
 
-**0.13.0 is being worked and five of its eight steps are ticked.** Siva read the eight sheets and
+**0.13.0 is being worked and six of its eleven steps are ticked.** Siva read the eight sheets and
 rejected them, so 1.0.0 waits behind it: the cut's last criterion is Siva reading the README, the
 guide and the pictures, and the pictures are being redrawn.
 
@@ -171,8 +171,9 @@ reaching it. The six colours a reader takes a value off went from 1.10:1 through
 luminance a colour needs to clear 4.5:1 on white is 0.183333 or less and on `#0d1117` is 0.199675 or
 more. The suite went from 618 tests to 620 and the door from 227 names to 229.
 
-**The next session starts at step 6**, which is the surface, and it carries the one call that is
-Siva's.
+**The next session starts at step 7.** Siva made the one call this version had, the dark ramp's hue,
+and answered it with slate. He also put three defects of the solid sheet into this version rather
+than after it, which are steps 7, 8 and 9, so the plan is eleven steps rather than eight.
 
 **1.0.0 is being worked and sixteen of its seventeen steps are ticked.** The library is 6,794 lines,
 the door is 227 names, the suite is 618 tests over 40 files, and the four prose surfaces are a 175
@@ -378,18 +379,52 @@ name to the door, and 0.13.0 lands before the surface is frozen at 1.0.0 for tha
   graph's edge holds the grid and the field still between the last two frames and took that pair from
   14.9% to 7.9%. The two sheets went from 72,475 and 293,072 bytes to 71,616 and 292,197.
 
-- [ ] **6. The surface lit so its depth reads, and its axes named.** `shadeOf` covers a contrast range
-  of 2.19 against white, from 3.46:1 to 1.27:1. The three axes carry tick numbers and no names, the
-  descent runs meet in a vertical spike at the centre, and the crossing curve disappears behind the
-  surface at the back. **Measures:** the contrast range of the shading from 2.19; the lightest cell
-  from 1.27:1 against its ground; the axis names from none to three.
+- [x] **6. The surface lit so its depth reads.** **The nominal range of the ramp was never the
+  number.** `shadeOf` ran a level from 150 to 240, which is 3.46:1 to 1.27:1 against white, but the
+  saddle only reached 216 to 239 of it: 144 cells took 16 near-identical colours and the shading
+  covered a contrast range of 0.32. The cause is the light. It came straight down the z axis, which
+  is nearly parallel to every normal a surface drawn over a plane has, so the whole saddle faced it
+  alike and the amount spanned 0.264. Over the shoulder at `(-0.4, -0.6, 0.7)` the same normals span
+  0.653.
 
-- [ ] **7. A field drawn as a field.** The flat sheet samples 50 arrows and the solid one 36, and at
+  **A computed colour can ride a custom property once it is cut into steps.** Twelve steps carry the
+  ramp, a cell paints one of them by name, and the surface follows the ground like every other
+  colour. The saddle used 16 colours before and uses all twelve steps now.
+
+  **A light with a positive z cannot reach the far end of its own ramp**, so the demo reads its
+  amount against the band its own normals cover, 0.346 to 1, rather than against nothing to one.
+  Without that the saddle reached eight of the twelve steps and the light ramp's used range was 1.35
+  where the ramp itself offers 3.15.
+
+  **Each ground carries its own hue, which was Siva's call and the answer is slate.** On white the
+  ramp is warm, 133 to 246 offset by nothing, minus fourteen and minus thirty-four. On `#0d1117` it
+  is slate, 42 to 129 offset by minus eighteen, minus six and plus ten, since a warm surface read as
+  bronze against the page. Both were rendered and put in front of him. Every step of both is a wash,
+  none over 4.4:1 of its ground and none under 1.2:1, leaving the ends 3.15 and 3.19 apart. The
+  shading's used range went from 0.32 to 2.75 against white. The suite went from 625 tests to 627.
+
+- [ ] **7. The three axes named.** The axes of both solid sheets carry tick numbers and no names, so
+  nothing in the picture says which way is x. `axes3` gains a way to name an axis at its far end,
+  which adds a field to `Axes3Options` at the door. **Measures:** the axis names from none to three;
+  the door from 229 names.
+
+- [ ] **8. The descent run's curl.** One of the three runs of steepest descent makes a small loop
+  near the origin on both solid sheets, which reads as an artifact rather than as a run down a
+  saddle. The cause is not diagnosed: the seed at `(0.5, -0.04)` starts near the y axis, where the
+  field this saddle gives is `(-x, y)` and the run turns hard. **Measures:** the greatest turn
+  between two steps of a run, from its value today.
+
+- [ ] **9. The typeset rule placed against its picture.** All four tangent and surface sheets put the
+  equation in the top-left corner with a column of white between it and the graph it describes.
+  **Measures:** the share of the frame between the rule and the drawn bounds, from its value on the
+  four sheets.
+
+- [ ] **10. A field drawn as a field.** The flat sheet samples 50 arrows and the solid one 36, and at
   the width the README shows them neither draws a head. **Measures:** the arrow count from 50 and 36;
   the drawn head from none to its size on the page; the two field colours from HAZE 1.49:1 and STEEL
   2.30:1 against white.
 
-- [ ] **8. The stills re-timed, and every sheet measured again.** Coverage replaced by a number an
+- [ ] **11. The stills re-timed, and every sheet measured again.** Coverage replaced by a number an
   empty frame fails, since `rotate.svg` passes 65.0% while drawing inside the upper third of its
   frame. All eight read again on that number and on on-page text, and the picture the README opens on
   decided on the readings rather than kept. **Measures:** the replacement number for all eight
@@ -405,9 +440,11 @@ name to the door, and 0.13.0 lands before the surface is frozen at 1.0.0 for tha
 - Every caption names the operation with the standard name for it.
 - No two frames of a strip move fewer marks between them than the floor step 4 sets.
 - No drawn geometry falls outside the view box on any sheet.
-- The surface's shading covers a contrast range wider than 2.19, and its lightest cell stands clear
-  of the ground it is drawn on.
+- The surface's shading covers a used contrast range wider than 2.19, every step of its ramp is a
+  wash on both grounds, and the saddle reaches every step.
 - The three axes of the solid sheets carry names.
+- No run of steepest descent turns back on itself.
+- No sheet leaves a column of the frame empty between the typeset rule and the picture it describes.
 - Every field arrow draws a head at the width the README shows it.
 - Every sheet is measured on the number step 8 sets, and the README opens on the sheet that reads
   best on it.

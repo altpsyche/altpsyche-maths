@@ -143,6 +143,32 @@ const PANES = 4;
  */
 const FRAME = 5;
 
+/**
+ * Which way the light comes from, over the shoulder and to one side.
+ *
+ * Straight down the z axis is nearly parallel to every normal this saddle has,
+ * so it lit the whole surface alike: the shading covered a contrast range of
+ * 0.32 against white and the sheet read as one flat sheet of card. Off to one
+ * side the same ramp covers 2.93.
+ */
+const LIGHT = vec3(-0.4, -0.6, 0.7);
+
+/**
+ * The narrowest and widest this saddle faces the light, from its own normals
+ * under `LIGHT` over the region it is drawn on.
+ *
+ * Every normal of a surface drawn over a plane has a positive z, so a light with
+ * a positive z can never reach the far end of its own ramp and the band a
+ * surface uses is a part of it. The ramp is spread over this band, so the twelve
+ * steps of it are twelve steps of this saddle rather than the eight the raw
+ * amount reached.
+ */
+const FACING = interval(0.346, 1);
+
+/** The shading of a cell, its amount read against the band this saddle uses
+ * rather than against the whole of nothing to one. */
+const shadeSpread = (amount: number) => shadeOf(interval.remap(amount, FACING, interval(0, 1)));
+
 /** Where the eye sits at a fraction of the orbit: once round the middle, kept at
  * one height, looking at where the axes cross. */
 export function eyeAt(along: number) {
@@ -165,7 +191,12 @@ export function sceneAt(along: number): Node {
     scene3(
       'body',
       [
-        ...surfaceCells('hill', surfaceAt, camera, { over: { u: OVER, v: OVER }, resolution: CELLS, shade: shadeOf }),
+        ...surfaceCells('hill', surfaceAt, camera, {
+          over: { u: OVER, v: OVER },
+          resolution: CELLS,
+          shade: shadeSpread,
+          light: LIGHT,
+        }),
         ...surfaceCells('pane', planeAt, camera, {
           over: { u: OVER, v: OVER },
           resolution: PANES,
