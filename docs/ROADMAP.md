@@ -150,8 +150,10 @@ all.
 
 ## The version ladder
 
-**Every item gets its own minor version, then 1.0.0 is the polish.** Siva's plan, and the release
-convention this repository already follows makes each one a minor bump. A version is cut when its
+**Every item gets its own minor version.** Siva's plan, and the release convention this repository
+already follows makes each one a minor bump. 1.0.0 was the polish of the 0.x band and is published;
+what polishes the 1.x band is the section above this one, and it gates the release rather than taking
+a version. A version is cut when its
 demos draw, not when its code compiles. A version that is cut leaves this table and its item goes
 with it, because `git log` is what keeps a closed plan.
 
@@ -229,7 +231,75 @@ Now section and `git log` are what keep it.
 **The reading behind each of the four is below and in `git log`**, so none of them is rediscovered
 from nothing when it returns.
 
-**What queues work is the table above, the found list below, and whatever the consumer asks for.**
+**What queues work is the table above, the polish section in front of it, the found list below, and
+whatever the consumer asks for.**
+
+## The 1.x polish, which gates the release rather than the ladder
+
+**Nothing since 1.0.0 is published.** `npm view @altpsyche/maths version` answers 1.0.0, and 1.1.0
+through 1.6.0 are bumped in this tree and nowhere else, with thirty-six commits unpushed and no tags.
+The consumer reads `^0.6.0` and holds 0.6.0, so ten feature versions have never been drawn by the
+thing this package exists to draw for. **Siva publishes at the end of the 1.x cycle, after the items
+below**, which is what makes them a gate on the release rather than a version of their own.
+
+**This earns no version bump.** Eight of the nine are documentation, and the ninth tightens an
+interface 1.6.0 never shipped, so the version stays at 1.6.0 and these commits complete it. A found
+list entry that is a fix would be a patch; a claim that was already false is not.
+
+**One demo was skipped in the whole of 1.x and it is the solid demo's inset.** The flat and the solid
+demo both carry the taper of 1.3.0, the gradient of 1.4.0 and a view entry of 1.5.0. The boolean and
+the rotate demo carry none of the three, which is the exception those two were given rather than a
+gap: each exists for an operation that has no picture in a graph or on a surface.
+
+- [ ] **1. What a mark may ask for, said once and correctly.** `DESIGN.md` says a clip path is
+  something a canvas "either lacks or supports partially" and that the mark vocabulary refuses it,
+  which 1.6.0 made false, and it names neither the clip nor the inset. **Measures:** every refusal in
+  `DESIGN.md`, the README and the guide naming the same set, which is filters and blend modes; the
+  clip and the inset each described where the design describes the seam.
+
+- [ ] **2. A target with no `append` cannot silently lose a mark.** `PaintNode.append` is optional and
+  its reason is the gradient: a target without it draws every mark and no gradient. A `<clipPath>`
+  holding no `<rect>` clips away everything that references it, so the same target loses every
+  clipped mark instead. `CanvasLike.clip` was made required for this reason and the SVG side was not.
+  **Measures:** the interface with `append` required; a clipped mark painted into a stand-in
+  document, its `<clipPath>` holding its `<rect>`.
+
+- [ ] **3. The guide teaches the view forms, the clip and the inset.** It mentions `taper` five times
+  and `gradient` three and names `moveView`, `followView`, `frameView`, the clip and the inset zero
+  times, so 1.5.0 and 1.6.0 landed with a reference entry and no page. **Measures:** the guide's
+  section count from 19; each of the five names appearing in it; the reference gate still holding
+  every door name to one entry.
+
+- [ ] **4. The format plan's stale facts.** Its inventory still says the extent is a function of the
+  clock and the flat demo holds its dot within 1.2 figure units, which 1.5.0 found wrong and corrected
+  in step 7 alone; this file says 1.2 in its own demo section as well. It counts nine sheets where
+  there are eight, four look versions in front of the format where six went, and quotes a door of 230
+  names and a suite of 637 tests. **Measures:** each of the six numbers against what the tree reads
+  today, which is eight sheets, six versions, 266 names and 782 tests.
+
+- [ ] **5. An inset is a thing the format has no step for.** Step 6 carries the timeline as data and
+  step 7 the extent, and nothing carries `Figure.insets`, so step 8 could not write the flat demo out
+  as a file with the panel it draws. **Measures:** the step written with the measurement it will
+  quote, and the twenty-eight count and the value-type inventory corrected to match.
+
+- [ ] **6. The solid demo carries an inset.** Everything it draws fits inside 7.872 by 6.155 against
+  a declared 8.2 by 6.4, four per cent of margin, so a panel crops something and what moves out of
+  the way is what 1.5.0 already walks away for the camera push. **Measures:** the sheet's bytes and
+  mark count re-committed; every text mark and every panel inside the frame at each named time; the
+  crossing curve visible inside the panel at the half turn.
+
+- [ ] **7. Verify and hand the release over.** **Measures:** the three gates; the eight sheets
+  identical after `npm run demos`; every claim in `DESIGN.md`, the README, the guide and the
+  reference read against the tree; the door and the suite quoted for Siva to publish against.
+
+#### Done-criteria
+
+- No document in this tree says a mark may not be clipped, and no document says a colour is flat.
+- A painter target that cannot hold a child is refused by the type rather than losing marks.
+- The guide names every form 1.5.0 and 1.6.0 added.
+- The format plan quotes no number the tree contradicts, and it carries a step for insets.
+- The solid demo draws an inset, its sheet is re-committed, and its readings hold the contrast band.
+- The three gates pass and the tree is clean, so publishing is one command Siva runs.
 
 ## The two demos, which are what a version is cut against
 
@@ -307,6 +377,12 @@ the motion in a still. 2.5.0 is the version that ends that, and the strips stay 
 README that plays a video on load is a README nobody can read.
 
 ## Now
+
+**The 1.x band is complete in this tree and published nowhere.** An audit on 2026-09-08 read the
+whole band against the tree and found nine things, which are the section above the demos. Six
+versions of features have never been drawn by the consumer, which is the test this file orders its
+items by, so the polish is a gate on the release rather than a version of its own. Siva publishes when
+it closes.
 
 **1.6.0 is cut, and a mark may be drawn inside a rectangle.** Four steps and a fifth found while
 working closed it. A clip is a rectangle and no other shape: a path clip needs a winding number
