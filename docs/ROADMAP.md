@@ -159,11 +159,26 @@ eight.
 **The lock file agrees with the manifest again**, and holding it there is one
 `npm install --package-lock-only` in whichever commit bumps a version.
 
-**1.0.0 is being worked and fifteen of its sixteen steps are ticked.** The tree is 6,569 lines, the
-door is 227 names, the suite is 614 tests, the README is 96 lines, and there is a guide and a
-reference. DESIGN.md is read against the tree and the byte gate's boundary is written down in it.
-What is left is cutting the version, which is Siva's to publish. **The next session starts at step
-16.**
+**1.0.0 is being worked and fifteen of its sixteen steps are ticked.** The tree is 6,794 lines, the
+door is 227 names, the suite is 618 tests over 40 files, and the four prose surfaces are a 101 line
+README, a 513 line guide, a 793 line reference and a 245 line DESIGN.md. **The next session starts at
+step 16, and it is short.**
+
+**Every done-criterion below is verified but one, and that one is Siva's.** The three gates pass, the
+lock file agrees with the manifest, `npm run demos` leaves all eight sheets byte for byte as
+committed, the reference has 227 entries against 227 names with a gate holding them equal, the
+README and the guide read at a sentence mean of 13.7 and 13.7 words with none over 30, the guide's
+seventeen code blocks compile in order, no comment in the tree carries a measurement nothing asserts,
+no inline comment run is longer than two lines, and DESIGN.md carries none of the banned phrases. What
+is left is **Siva reading the README, the guide and the pictures once and saying so**. On his word,
+step 16 is one commit: the version to 1.0.0, `npm install --package-lock-only` in the same commit,
+and `npm publish` asked for rather than assumed.
+
+**Four findings landed on the way through steps 14 and 15**, each in its own commit. `indicate` walks
+into a colour and two comments still said it swaps. Gradients are refused for a reason three files
+stated wrongly, since both painters draw one. The demos' comments were never held to the rules the
+library's are, and five measurements in them are assertions now. The guide's examples used six names
+it never defined.
 
 **What the 0.9.x audit found sound**, so that a later session does not go looking again. Sixty random
 pairs of shapes with no coincident edges hold both `area(A) + area(B) = area(A or B) + area(A and B)`
