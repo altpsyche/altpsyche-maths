@@ -378,12 +378,21 @@ closures without redesigning every builder.
   is written, producing the format rather than closures, in which case a consumer sees little change.
   That is the goal and it needs checking rather than assuming.
 
-#### The cheapest thing that answers most of it
+#### That was done, and the six questions are answered
 
-**Express `demos/tangent.ts` as data, on paper, before designing anything.** It is the figure with the
-computed scene, the track that drives arc length, the typeset rule that walks into another, the brace
-and the counting number. A format that carries that one figure carries most of them, and a format that
-cannot is answered in an afternoon rather than in a version.
+**`demos/tangent.ts` was written out as data by hand on 2026-09-08**, before anything was designed,
+and it answered the questions above. "A function" turned out to be three problems wearing one word,
+and only the smallest needs the format to grow anything: geometry-making functions do not survive
+serialisation and do not need to, geometry-reading functions should take geometry instead, and what
+is left is a handful of operations over a track value. The three hard problems, the counted scope of
+twenty-two node builders and twelve animation kinds, and a six-step list with its done-criteria are
+all in [`FIGURE-FORMAT.md`](FIGURE-FORMAT.md).
+
+**The measurement runs through every step and it is what makes this checkable: a figure as data draws
+mark for mark what the TypeScript figure draws, compared by tolerance.** The demos are already the
+conformance suite.
+
+**Nothing is signed off.** Siva reads the plan before a line is written.
 
 ## Found while working, not yet queued
 

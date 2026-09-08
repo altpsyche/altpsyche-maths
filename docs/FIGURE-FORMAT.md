@@ -111,40 +111,112 @@ is not one. A conformance suite, which is described below.
 The seam this package was built on absorbs the whole change without moving, which is the strongest
 evidence available that it was drawn in the right place.
 
-## The three hard problems
+## What expressing the flat demo as data found
 
-These are not details. Each one can change the size of the work by a large factor, and the planning
-session answers them before anything is built.
+`demos/tangent.ts` was written out as data by hand on 2026-09-08, before anything was designed. It
+carries every hard case: a scene computed from a track, a curve passed as a function, a field
+sampled from a function, a typeset rule that walks into another, a string built from a computed
+number, and a view that follows a dot. What it found is that **"a function" is three different
+problems wearing one word**, and only the smallest of the three needs the format to grow anything.
 
-### A function as a parameter
+### Functions that make fixed geometry, which do not need to survive
 
-`plot` takes `(x: number) => number`. `vectorField` takes a function from a place to a vector.
-`surface3` takes a function of two parameters. None of them serialises.
+`curve` is `(x: number) => x * x`. It reaches the picture only through `plot(coords, curve, over)`,
+and what `plot` hands back is a path of cubics. `slopeField` reaches it only through `vectorField`,
+which samples it on a grid and hands back arrows.
 
-Three answers exist. The format carries sampled points, which is simple and large and cannot be
-re-sampled at another resolution. The format names a family of functions with coefficients, which is
-compact and covers polynomials and trigonometry and refuses everything else. Or the format carries a
-small expression language, which covers everything and means every renderer implements an
-interpreter.
+**Neither function has to serialise. The geometry it produced has to.** An author writes the function
+in TypeScript, and the format carries cubics. What is lost is re-sampling at another resolution, and
+a curve whose own shape is driven by a track. The flat demo needs neither.
 
-**Nothing is decided here and this decides the size of everything.**
+### Functions that read fixed geometry, which should take geometry instead
 
-### A scene that computes
+`slopeOf(curve, x)`, `areaUnder(coords, curve, interval)` and `tangentAt(coords, curve, x)` each take
+the curve as a function today and sample it. Every one of them can take the plotted path instead and
+work from its own cubics, which is exact rather than sampled.
 
-`demos/tangent.ts` walks a path by its own length, recovers the graph x from the point it lands on,
-and builds the tree from that. The roadmap defends this as the right design, because it makes the
-dot, the tangent and the reading one number rather than three clocks free to disagree.
+**That is a better design whether or not the format ever ships**, and it is the change that removes
+functions from the middle of a figure. It is the bulk of the work and it can land on its own.
 
-The format admits no computation. So either a node takes a length fraction directly and does the
-recovery itself, or that figure is expressed another way. **This is the case that decides whether the
-format is workable**, which is why it is answered first and on paper.
+### Scalars a track drives, which are the only place an expression is needed
 
-### Where text's geometry is settled
+What is left in the flat demo after the first two tiers is small enough to list: `pointAlong` of a
+path at a fraction, reading `.x` off a point, `clamp`, arithmetic, one comparison with a choice, and
+`labelFor` to turn a number into a string.
 
-A label's place depends on font metrics, and those differ between platforms. Two renderers disagree
-about where a label sits unless the format pins the metrics or a figure carries text already
-resolved. This is the failure Lottie has never fully closed, and it is worth reading how before
-choosing.
+So the format needs **a closed expression form and not a language**. A parameter is one of: a
+literal, a reference to a track, a bound variable, an arithmetic combination, a comparison with a
+choice, a member of a value, or a call to one of the pure functions this package publishes. The set
+of callable functions is named and versioned the way the node set is, so every renderer implements a
+fixed vocabulary rather than an interpreter for an open language.
+
+### What each of the three hard problems turned out to be
+
+**A function as a parameter is answered and it does not reach the format.** The first two tiers
+remove every one of them.
+
+**A scene that computes is answered by the expression form**, and it is a handful of operations
+rather than arbitrary code. The flat demo's own defence still holds: the dot, the tangent and the
+reading stay one number, because they read one track through one expression.
+
+**Text metrics are half answered.** A typeset rule is already geometry, since MathJax hands back SVG
+paths, so an equation bakes and no renderer needs MathJax to draw one. A plain text mark still
+carries a string and a size, and where its glyphs land is the renderer's. The format should let a
+text mark carry resolved outlines as well, so a figure that must look identical everywhere can say so.
+
+## The scope, counted
+
+**Twenty-two node builders** on the door and **twelve animation kinds**. Each becomes a named thing
+with parameters. That count is the size of the vocabulary and it is the first honest number this plan
+has had.
+
+## The steps
+
+Each is commit-sized and names what its commit will measure. **The measurement is the same throughout
+and it is the reason this plan is checkable: a figure as data draws mark for mark what the TypeScript
+figure draws, compared by tolerance.** The demos are already the conformance suite.
+
+- [ ] **1. The readers take geometry rather than functions.** `slopeOf`, `areaUnder` and `tangentAt`
+  work from a plotted path's own cubics. **Measures:** every demo's marks unchanged within tolerance
+  at its named times; the slope read off a path against the closed-form derivative of `x²` at five
+  places; the suite from 637.
+
+- [ ] **2. The expression form, and the evaluator for it.** The closed vocabulary above, as a type
+  and a function that evaluates one against a set of track values. **Measures:** each form evaluated
+  against the TypeScript it replaces at ten inputs; a form naming an unknown function refused with a
+  sentence that names it.
+
+- [ ] **3. The node vocabulary.** All twenty-two builders described as records with parameters, and a
+  resolver from a record to the nodes that exist now. The authoring calls keep their names and their
+  arguments and return records. **Measures:** every demo built through records drawing the same marks
+  as it draws today, within tolerance, at its named times.
+
+- [ ] **4. The animation vocabulary.** All twelve kinds as records with parameters, and a resolver
+  each. **Measures:** every demo's timeline through records drawing the same marks at the same times.
+
+- [ ] **5. The file: a serialiser, a reader, a validator and a version.** **Measures:** each demo
+  written out, read back, and drawing marks identical within tolerance; a figure of a later version
+  refused; a malformed figure refused with the field named; the bytes of each demo as data.
+
+- [ ] **6. The demos are the conformance suite.** The gate reads each figure from its file rather
+  than from its module. **Measures:** the whole suite green with every demo loaded as data; the byte
+  gate on all nine sheets unchanged.
+
+#### Done-criteria
+
+- Every demo is a file, and reading it draws marks identical within tolerance to the module it
+  replaced, at every named time.
+- No builder takes a function, and no figure holds a closure.
+- The expression vocabulary is closed, published, and refuses a name it does not know.
+- The format carries a version, an old figure keeps rendering, and a validator names the field that
+  is wrong.
+- The reference has an entry per name at the door and the gate holds them equal.
+- `npm test`, `npm run type-check` and `npm run build` pass, and the lock file agrees with the
+  manifest.
+
+**What is not in these steps and is deliberately left out.** A curve whose shape a track drives, since
+nothing draws one. Re-sampling geometry at another resolution, for the same reason. An editor, a
+native renderer and video out, each of which reads the format and none of which is this work.
 
 ## Conformance
 
