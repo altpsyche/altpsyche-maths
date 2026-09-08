@@ -461,16 +461,26 @@ demo is recompiled by steps 6 and 7 against the renamed door.
   four surfaces named with one reader each; nine of fifteen README sections sharing one shape today;
   about 300 of 402 lines moving to the guide rather than being rewritten.
 
-- [ ] **12. The guide written.** The page a new reader lands on: what a figure is, what a mark is,
-  what a painter does with one, and how to draw and move a first picture. It teaches in the order a
-  reader needs rather than in the order the package is built, and every technical word gets its
-  everyday meaning where it first appears. **It lands before the README**, which the plan had the
-  other way round: the README's rewrite links to the guide, so writing the README first leaves a
-  commit whose page points at a file that is not there. The cost of this order is that the material
-  stands in both pages for one commit, which is visible and harmless where a dangling link is not.
-  **Measures:** the same sentence and paragraph numbers the README is held to; the count of terms
-  defined before first use, which has to be all of them; every code block in it compiles under
-  `tsconfig.demos.json`.
+- [x] **12. The guide written.** `docs/GUIDE.md` is 467 lines in seventeen sections, teaching in the
+  order a reader needs: a figure and a mark, figure units, painting, nodes and names, paths, graphs,
+  moving a picture, tracks, a view that follows, annotations, equations, combining shapes, fields,
+  space, frames out, and what the package refuses. It carries the four stills. It landed before the
+  README, since the README's rewrite links to it.
+
+  **Two of the guide's own examples were wrong and the compile check found them.** A track's key is
+  `{ time, value, smooth }` and the guide had written `{ seconds, value, curve }`, which is a shape
+  nothing here takes. Two blocks also used a call they had not imported. Every one of the sixteen
+  blocks compiles now, each wrapped with the locals a fragment implies.
+
+  **The floor's rule about section shape is a README rule and does not hold here.** Nine of the
+  guide's seventeen sections are prose, code, prose, and that is what a page read section by section
+  wants. Varying it to satisfy a count written for a page read top to bottom would make it worse.
+
+  **Measured:** 467 lines; 199 sentences at a mean of 13.8 words against the README's 24.7 and none
+  over 30 against 46 of 148; 78 paragraphs at a mean of 34.8 words against 66.5; no banned phrase;
+  22 technical words defined in bold and every one of them defined where it first appears, which
+  four rounds of checking took, since a term glossed pages after a plain use of it is the defect this
+  measures; sixteen of sixteen code blocks compile.
 
 - [ ] **13. The README written.** A full rewrite against the step 11 outline rather than a pass with a
   comb, and it sells rather than teaches. **Measures:** sentence mean from 24.7 words and the count
