@@ -98,12 +98,12 @@ export function writeTemplate(content: TextContent, bindings: Bindings = {}): st
 /**
  * A record walked into the node it describes.
  *
- * The bindings reach the text holes and nothing else, because the holes are the
- * only expressions a node record carries. Everything else in a record is already
- * a value, so resolving a fixed tree needs no bindings at all.
+ * The bindings reach the text holes and the parameters of every path, which is
+ * every expression a node record carries. A tree of literals needs no bindings
+ * at all.
  */
 export function resolveNode(record: NodeRecord, bindings: Bindings = {}): Node {
-  if (record.kind === 'shape') return shape(record.name, resolvePath(record.path), record.style);
+  if (record.kind === 'shape') return shape(record.name, resolvePath(record.path, bindings), record.style);
   if (record.kind === 'text') {
     return text(record.name, record.at, writeTemplate(record.content, bindings), record.size, record.options);
   }

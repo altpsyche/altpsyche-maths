@@ -191,8 +191,8 @@ it is refused with a sentence naming what was asked for. The tree is over number
 which is what lets one vocabulary carry a curve of one number, a field of a place, a surface of two
 numbers and a pointwise map of a shape.
 
-- `Expression` — one node of the tree. A bare number or boolean is a literal; every other form is a
-  record with a `kind`.
+- `Expression` — one node of the tree. A bare number, boolean or point is a literal; every other form
+  is a record with a `kind`, which is what tells a literal place from the `point` form.
   - `track` — a track's value at the time being drawn, by `name`.
   - `variable` — a bound value by `name`: the x of a curve, the place a field is read at, the two
     numbers of a surface.
@@ -529,11 +529,13 @@ functions, which is what lets the same tree survive being written to a file and 
   own precision. A hole naming an index the list has no entry for is refused, and so is a hole whose
   expression is a place or a true or false.
 - `resolveNode(record, bindings)` — the record walked into the node it describes. The bindings reach
-  the text holes and nothing else, since the holes are the only expressions a node record carries.
+  the text holes and the parameters of every path, which is every expression a node record carries.
 - `PathRecord` — one path written as data, either a named form with its parameters or its cubics. A
   figure chooses between the two per path rather than by a rule: a named form is shorter and says what
-  the shape is, and cubics carry a shape no named form describes. `straight` has no form here, since
-  it hands back one `Cubic` rather than a path.
+  the shape is, and cubics carry a shape no named form describes. Every parameter is an `Expression`,
+  so a shape a track drives is the same form as a shape that stands still, and a bare number and a
+  bare point are literals. `straight` has no form here, since it hands back one `Cubic` rather than a
+  path.
   - `line` — `from` and `to`.
   - `polyline` — `points`, as an open run of straight segments.
   - `polygon` — `points`, closed.
@@ -543,8 +545,15 @@ functions, which is what lets the same tree survive being written to a file and 
   - `data` — `d`, the path data of an SVG `d` attribute.
   - `cubics` — `subpaths`, the path itself, since a subpath is a point, a list of cubics and whether it
     closes and is already data.
-- `resolvePath(record)` — the geometry a path record names. A form outside the set is refused with a
-  sentence naming what was asked for, since a figure read from a file carries whatever the file says.
+  - `union`, `intersection` and `difference` — `first` and `second` as records, and a `tolerance`. The
+    operation is a form here rather than geometry a figure carries, because the answer's cubics are
+    none of the operands' and a disc walking through another changes the answer every frame. The
+    tolerance is a plain number, since nothing a figure animates changes how close two things come
+    before they count as one place.
+- `resolvePath(record, bindings)` — the geometry a path record names, with its parameters read against
+  the tracks and variables. A form outside the set is refused with a sentence naming what was asked
+  for, since a figure read from a file carries whatever the file says, and so is a place where a number
+  belongs or a number where a place belongs.
 
 ## Text sizes
 

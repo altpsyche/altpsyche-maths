@@ -445,9 +445,12 @@ the thirty-four names of `EXPRESSION_FUNCTIONS`, holding a complex square, a com
 a Möbius map. Step 3.1 published the node record and `resolveNode`, and the rotation demo built from
 records draws its eight marks at each of the four times its strip draws. Step 3.2 gave a path its
 written form: `PathRecord` is one of six named shapes, the path data of an SVG `d` attribute, or a
-path written out as cubics, and the rotation demo's two panels are records top to bottom. The door is
-285 names and the suite is 830 tests over 50 files. **Step 3.3 is what runs next**, which is
-`unionOf`, `intersectionOf` and `differenceOf` as records over two path records.
+path written out as cubics, and the rotation demo's two panels are records top to bottom. Step 3.3
+added `union`, `intersection` and `difference` as forms over two path records, and made every path
+parameter an expression, so the boolean demo's twelve marks draw through records at each of its seven
+named times with its walking disc read off a track. The door is 285 names and the suite is 838 tests
+over 51 files. **Step 3.4 is what runs next**, which is `plot`, `areaUnder` and `tangentAt` as
+records whose curve is an expression, and `bracePath`.
 
 **Two things fall due before the format freezes and both are Siva's**, which are
 whether a `Mark` may be a raster image, due by step 3 where the node vocabulary lands, and the

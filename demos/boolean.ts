@@ -56,14 +56,14 @@ const extent: Extent = { width: 10.8, height: 3 };
 
 /** How far apart the three panels stand, which is also how wide each of them
  * is, so the walk reaching the edge of one reaches the edge of its neighbour. */
-const PANEL = 3.6;
+export const PANEL = 3.6;
 
-const DISC_Y = 0.5;
-const LABEL_Y = -1.35;
+export const DISC_Y = 0.5;
+export const LABEL_Y = -1.35;
 
 /** The sizes this figure's text takes, pinned by the panel names, since each one
  * names a drawn shape and this figure draws no tick to pin the scale by. */
-const TEXT = textScale(0.3 / TEXT_RATIO);
+export const TEXT = textScale(0.3 / TEXT_RATIO);
 
 /** The still disc and the walking one. The walker is the smaller of the two
  * because a disc the same size can never sit wholly inside another, and

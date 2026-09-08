@@ -45,12 +45,15 @@ export type Comparison = '<' | '<=' | '>' | '>=' | '=' | '!=';
 /**
  * One node of the tree.
  *
- * A bare number or boolean is a literal, which keeps the common case one value
- * rather than a record wrapping one value.
+ * A bare number, boolean or point is a literal, which keeps the common case one
+ * value rather than a record wrapping one value. A point is told from the record
+ * forms by carrying no `kind`, so a fixed place in a figure is written the way
+ * every other fixed place in this package is.
  */
 export type Expression =
   | number
   | boolean
+  | Vec2
   | { readonly kind: 'track'; readonly name: string }
   | { readonly kind: 'variable'; readonly name: string }
   | { readonly kind: 'point'; readonly x: Expression; readonly y: Expression }
@@ -247,6 +250,7 @@ function compared(operator: Comparison, left: ExpressionValue, right: Expression
  */
 export function evaluate(expression: Expression, bindings: Bindings = {}): ExpressionValue {
   if (typeof expression === 'number' || typeof expression === 'boolean') return expression;
+  if (!('kind' in expression)) return expression;
 
   switch (expression.kind) {
     case 'track': {

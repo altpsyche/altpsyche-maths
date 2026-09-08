@@ -30,6 +30,11 @@ describe('an expression over numbers', () => {
     expect(evaluate(true)).toBe(true);
   });
 
+  it('reads a bare point as a literal place, told from the record forms by carrying no kind', () => {
+    expect(evaluate(vec2(2, -1))).toEqual({ x: 2, y: -1 });
+    expect(evaluate({ kind: 'member', of: vec2(2, -1), name: 'y' })).toBe(-1);
+  });
+
   it('reads a track at the time it was sampled for', () => {
     expect(evaluate({ kind: 'track', name: 's' }, { tracks: { s: 0.4 } })).toBe(0.4);
   });

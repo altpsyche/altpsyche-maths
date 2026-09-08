@@ -572,13 +572,26 @@ release away and has a document of its own.
     draws; a form the set has no entry for is refused with the sentence naming it; the suite from 822
     to 830 and the door from 283 names to 285.
 
-  - [ ] **3.3 The boolean operations as records.** `unionOf`, `intersectionOf` and `differenceOf` as
-    records over two path records, since the answer's cubics are not the operands' and a walking disc
-    changes the answer every frame. The other seven operations get no written form, because each runs
-    inside an animation or inside the resolver and a figure never names one. **Measures:** the boolean
-    demo's twelve marks at each of its seven named times, mark for mark within tolerance, through
-    records rather than calls; the four cases its walk takes the operation through, no crossing, one
-    crossing, two crossings and containment.
+  - [x] **3.3 The boolean operations as records.** `union`, `intersection` and `difference` are forms
+    of `PathRecord` over two path records, since the answer's cubics are not the operands' and a
+    walking disc changes the answer every frame. The other seven operations get no written form,
+    because each runs inside an animation or inside the resolver and a figure never names one.
+    **The walking disc is also what made every path parameter an expression**, which is the clause
+    above read as the requirement it is: step 3.2 left the parameters as values, and a form written
+    for a value and widened afterwards is the trap step 2 named. So a path parameter is an
+    `Expression` and `resolvePath` takes bindings. **A bare point is now a literal place**, told from
+    the `point` form by carrying no `kind`, which is what keeps a fixed parameter written as itself
+    rather than as a record of two numbers. A boolean operation's tolerance stays a plain number,
+    since nothing a figure animates changes how close two things come before they count as one place.
+    **Measured:** the boolean demo's twelve marks at each of its seven named times, mark for mark
+    within a tolerance of 1e-6, through records whose walking disc is a track read through an
+    arithmetic expression; the three results alone at the four cases its walk takes the operation
+    through, clear of each other, touching at one point, crossing at two, and one wholly inside the
+    other; a union of two discs reading as two loops clear of a crossing and one loop crossing and
+    contained; a radius spelled as one plus two against a radius of three, within tolerance; three
+    refusals naming what was asked for, a place where a radius belongs, a number where a centre
+    belongs, and a number among a polygon's points; the suite from 830 to 838 and the door unchanged
+    at 285, since both names were already published at step 3.2.
 
   - [ ] **3.4 The graph path producers.** `plot`, `areaUnder` and `tangentAt` as records whose curve
     is an expression, and `bracePath`. Step 1 has already made the readers take geometry, so the
