@@ -160,20 +160,29 @@ eight.
 **The lock file agrees with the manifest again**, and holding it there is one
 `npm install --package-lock-only` in whichever commit bumps a version.
 
-**0.13.0 is being worked and nine of its eleven steps are ticked.** Siva read the eight sheets and
-rejected them, so 1.0.0 waits behind it: the cut's last criterion is Siva reading the README, the
-guide and the pictures, and the pictures are being redrawn.
+**0.13.0 has all eleven steps ticked and every done-criterion but one verified.** The three gates
+pass at 631 tests over 40 files, `npm run demos` leaves all eight sheets byte for byte as committed,
+and the lock file agrees with the manifest at 0.12.0. **What is left is Siva reading the eight sheets
+once and saying so**, and on his word the cut is one commit: the version to 0.13.0 and
+`npm install --package-lock-only` in the same one, with `npm publish` asked for rather than assumed.
 
 **A sheet reads on a dark page as of step 1.** Every colour is painted as `var(--name, light)` and
 `svgMarkup` writes the theme as a `<style>` element, which works through an `<img>` with no page CSS
 reaching it. The six colours a reader takes a value off went from 1.10:1 through 3.91:1 against
 `#0d1117` to 15.87:1 through 6.75:1, and are unchanged on white. A value per ground is forced: the
 luminance a colour needs to clear 4.5:1 on white is 0.183333 or less and on `#0d1117` is 0.199675 or
-more. The suite went from 618 tests to 620 and the door from 227 names to 229.
+more. The door went from 227 names to 229 and the reference with it.
 
-**The next session starts at step 9**, which steps 9 and 11 were rewritten into: one piece of work about the frame a still is written into, and the last of this version. Siva made the one call this version had, the dark ramp's hue,
-and answered it with slate. He also put three defects of the solid sheet into this version rather
-than after it, which are steps 7, 8 and 9, so the plan is eleven steps rather than eight.
+**A still is written into a frame its own extent shapes as of steps 9 and 11**, which landed as one
+commit because the frame was what both were about. Coverage on the box round the marks is a number an
+empty frame passes, and the share of cells no mark's ink reaches replaces it. The eight sheets went
+from 21.2%, 17.1%, 67.4%, 56.5%, 81.8%, 76.3%, 59.5% and 50.4% bare to 21.2%, 17.1%, 60.1%, 56.5%,
+71.5%, 72.3%, 46.1% and 43.2%, the gate holds every one under four fifths, and the README opens on
+`tangent.svg` because at 21.2% it is the fullest of the eight by 25 points.
+
+**Siva made the one call this version had, the dark ramp's hue, and answered it with slate.** He also
+put three defects of the solid sheet into this version rather than after it, which are steps 7, 8 and
+9, so the plan is eleven steps rather than eight.
 
 **1.0.0 is being worked and sixteen of its seventeen steps are ticked.** The library is 6,794 lines,
 the door is 227 names, the suite is 618 tests over 40 files, and the four prose surfaces are a 175
@@ -426,20 +435,21 @@ name to the door, and 0.13.0 lands before the surface is frozen at 1.0.0 for tha
   0.600. The runs are shorter for it, 35, 35 and 28 points where they were 47, 47 and 36. The suite
   went from 628 tests to 630.
 
-- [ ] **9. The frame each still is written into.** **The premise was wrong for three sheets of the
+- [x] **9. The frame each still is written into.** **The premise was wrong for three sheets of the
   four and the measurement said so.** On `tangent.svg` the rule stands at x 25 to 134 inside a
   picture that spans 0 to 956, so it sits in the band above the graph that the demo leaves for it
   rather than in a column of its own. Both strips read the same way, since each holds four frames.
-  Only `surface.svg` has the column: its rule spans x 23 to 178 and its picture 272 to 882, so 8.7%
-  of the frame stands between them and the whole of the left margin below the rule is empty.
+  Only `surface.svg` had the column: its rule spanned x 23 to 178 and its picture 272 to 882.
 
-  **The cause is the frame rather than the placement, and it is step 11's own subject.** A
-  perspective projection of a saddle comes out roughly square, so a picture 610 wide sits in a frame
-  1080 wide and the rule in the left margin is what fills the rest. The sheet reads 71.0% covered
-  only because the rule stretches the bounds to x 23: the bounds are 860 wide where the picture is
-  610. That is the same flaw step 11 is there to fix, so the two are one piece of work and the frame
-  is what it changes. **Measures:** the share of the frame no mark covers, on all four stills; the
-  width of the surface sheet from 1080 against a picture 610 wide.
+  **The cause was the frame rather than the placement, and it was step 11's own subject**, so the
+  two landed as one commit. A still's frame follows its own extent at a hundred pixels to the figure
+  unit now, and three extents are cut to what their figure reaches: the surface to 8.2 by 6.4 with
+  the rule lifted into the band above the picture, the boolean to 10.8 by 3, and the rotation to 9
+  by 5.8 centred on (0.67, -0.1). The eight view boxes went from 1080x600, 1069x600, 1080x400,
+  1555x600, 1080x600, 1273x600, 1080x600 and 1069x600 to 1080x600, 1069x600, 1080x300, 1555x600,
+  900x580, 1273x600, 820x640 and 776x600, so the surface sheet went from 1080 wide round a picture
+  610 wide to 820 wide. The four stills went from 21.2%, 67.4%, 81.8% and 59.5% of the frame bare to
+  21.2%, 60.1%, 71.5% and 46.1%.
 
 - [x] **10. A field drawn as a field.** **Both fields drew heads all along and the plan was wrong to
   say otherwise.** What they drew was heads nobody could see: four times the shaft's width, which is
@@ -460,14 +470,24 @@ name to the door, and 0.13.0 lands before the surface is frozen at 1.0.0 for tha
   shafts went from 0.018 and 0.01 figure units to 0.03 and 0.022. The flat figure went from 202 marks
   to 144 and the solid from 268 to 244. The suite is 630 tests before and after.
 
-- [ ] **11. The stills re-timed, and every sheet measured again.** Coverage on bounds is a number an
-  empty frame passes, and two sheets now show how: `rotate.svg` reads 65.0% while drawing inside the
-  upper third of its frame, and `surface.svg` reads 71.0% with bounds 860 wide round a picture 610
-  wide, because a label in a corner stretches the bounds past the picture. What replaces it is the
-  share of the frame no mark covers. All eight are read again on that and on on-page text, and the
-  picture the README opens on is decided on the readings rather than kept. **Measures:** the
-  replacement number for all eight against the eight coverage figures above; the sheet the README
-  opens on.
+- [x] **11. The stills re-timed, and every sheet measured again.** **No still needed re-timing and
+  every frame did**, which is why this landed as one commit with step 9. Coverage on the box round
+  the marks is a number an empty frame passes: a word in each far corner stretches the box over the
+  whole frame while nothing is drawn between them, which is how `rotate.svg` read 65.0% covered while
+  drawing in the upper third of its frame and `surface.svg` read 71.0% with bounds 860 wide round a
+  picture 610 wide.
+
+  What replaces it is the share of cells no mark's ink reaches, over a grid twelve cells down the
+  frame, with fills decided by the nonzero winding rule and strokes by walking the flattened path.
+  `demos/cover.ts` holds it and adds no name to the door. On that reading the eight sheets went from
+  21.2%, 17.1%, 67.4%, 56.5%, 81.8%, 76.3%, 59.5% and 50.4% bare to 21.2%, 17.1%, 60.1%, 56.5%,
+  71.5%, 72.3%, 46.1% and 43.2%. **The gate holds every sheet under four fifths**, which the old
+  gate at half the frame passed at 81.8%, and the emptiest sheet now reads 72.3%.
+
+  On-page text on the four stills went from 17.33, 20.0, 17.33 and 14.67 pixels to 17.33, 20.0, 20.8
+  and 19.32, since a narrower frame is scaled less to reach the width the README shows it at. **The
+  README opens on `tangent.svg`**, which the readings confirm rather than change: at 21.2% bare it is
+  the fullest of the eight by 25 points. The suite went from 630 tests to 631.
 
 #### Done-criteria
 
