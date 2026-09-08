@@ -865,12 +865,6 @@ format a recorder reads a file, which is also what lets one run without a page a
 
 ## Found while working, not yet queued
 
-- **The guide's Restrictions section still says a colour is flat and there are no gradients**, which
-  1.4.0 made false and did not correct. `docs/GUIDE.md` carries a paragraph arguing that a gradient
-  would be a kind of value the marks do not carry, and `Fill.gradient` has carried one since 1.4.0.
-  The clipping claim beside it was corrected when the clip landed. Fixing the paragraph is a
-  documentation commit of its own.
-
 - **All four of the things that look worse than 3Blue1Brown are queued now**, which is Siva's call of
   2026-09-08 and the reason the ladder above is no longer empty. Motion and pacing was 1.2.0 and is
   cut, typography and labels was 1.1.0 and is cut, composition and camera is done-criteria on the format's
