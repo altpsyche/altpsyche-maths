@@ -697,10 +697,24 @@ figure.
   was handed the box round the mark and its magnified copy together. `ownMarks` is the list before
   the insets and `extentAt` folds over that.
 
-- [ ] **3. The flat demo carries one.** An inset magnifying the tangent point while the dot walks.
-  **Measures:** the sheet's bytes and mark count re-committed; every reading in the inset against the
-  ground still between 4.5:1 and the top of the reading band, which is what 0.13.0 holds the six
-  reading colours to.
+- [x] **3. The flat demo carries one.** A panel 2.8 by 1.26 at (1.9, 1.62) showing 1.4 by 0.63 of the
+  picture, so the magnification is exactly 2, following the dot. **Measured:** docs/tangent.svg 62387
+  bytes and 144 marks to 87452 bytes and 146 marks with an inset of between 32 and 40, and
+  docs/tangent-strip.svg 251632 to 354135; the strip is 726 marks, four frames of 146 and 142 between
+  the four insets; the panel is painted in the sheet's own ground, so ink inside it reads 17.22:1 on
+  white and 15.87:1 on #0d1117, the same either side of its edge; the other six sheets gain 34 bytes
+  each for the `--ground` property and draw the same marks; 779 tests over 47 files to 780.
+
+  **Three things the step did not name were needed.** `Inset.hides`, because the panel's ground and
+  border are the figure's own marks and an inset over them paints a picture of itself. The strip has
+  to carry each frame's clip into its slot, since a slot is a second frame rather than a place inside
+  one. And the gate holding every label inside the frame now holds a clipped mark's rectangle there
+  instead of its text box, because an inset shows a fragment of a label on purpose.
+
+- [ ] **3.5. One clip element per rectangle rather than per mark.** The SVG painter names a clip the
+  way it names a gradient, which is one element per mark, and an inset gives every one of its marks
+  the same rectangle. **Measures:** the `<clipPath>` count in docs/tangent.svg, 35 today, and the
+  sheet's bytes at 87452.
 
 - [ ] **4. Cut 1.6.0.** **Measures:** the three gates; the eight sheets identical after
   `npm run demos`; the door and the suite from wherever 1.5.0 left them.
