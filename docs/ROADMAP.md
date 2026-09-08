@@ -52,7 +52,6 @@ with it, because `git log` is what keeps a closed plan.
 
 | version | what lands |
 | --- | --- |
-| 0.13.0 | The eight sheets readable on a dark ground and worth looking at |
 | 1.0.0 | The two demos complete, the README, the surface frozen |
 
 **One place in the order is worth defending.** A camera that moves rides with three dimensions
@@ -160,38 +159,33 @@ eight.
 **The lock file agrees with the manifest again**, and holding it there is one
 `npm install --package-lock-only` in whichever commit bumps a version.
 
-**0.13.0 has all eleven steps ticked and every done-criterion but one verified.** The three gates
-pass at 631 tests over 40 files, `npm run demos` leaves all eight sheets byte for byte as committed,
-and the lock file agrees with the manifest at 0.12.0. **What is left is Siva reading the eight sheets
-once and saying so**, and on his word the cut is one commit: the version to 0.13.0 and
-`npm install --package-lock-only` in the same one, with `npm publish` asked for rather than assumed.
+**0.13.0 is cut, and the eight sheets read on a dark page and are worth looking at.** Every colour is
+painted as `var(--name, light)` and `svgMarkup` writes the theme as a `<style>` element, so a sheet
+follows the reader's colour scheme through an `<img>` with no page CSS reaching it. A value per
+ground is forced rather than chosen: to clear 4.5:1 the luminance a colour needs is 0.183333 or less
+on white and 0.199675 or more on `#0d1117`, a gap no single value fits. The six reading colours read
+17.22:1 through 4.83:1 on white and 15.87:1 through 6.75:1 on the dark ground, and the twelve washes
+stay between 1.2:1 and 4.5:1 on both. The door went from 227 names to 229.
 
-**A sheet reads on a dark page as of step 1.** Every colour is painted as `var(--name, light)` and
-`svgMarkup` writes the theme as a `<style>` element, which works through an `<img>` with no page CSS
-reaching it. The six colours a reader takes a value off went from 1.10:1 through 3.91:1 against
-`#0d1117` to 15.87:1 through 6.75:1, and are unchanged on white. A value per ground is forced: the
-luminance a colour needs to clear 4.5:1 on white is 0.183333 or less and on `#0d1117` is 0.199675 or
-more. The door went from 227 names to 229 and the reference with it.
+**A still is written into a frame its own extent shapes**, at a hundred pixels to the figure unit.
+Coverage read on the box round the marks is a number an empty frame passes, since a word in each far
+corner stretches the box over the whole frame, and the share of cells no mark's ink reaches replaces
+it. The eight sheets went from 21.2%, 17.1%, 67.4%, 56.5%, 81.8%, 76.3%, 59.5% and 50.4% bare to
+21.2%, 17.1%, 60.1%, 56.5%, 71.5%, 72.3%, 46.1% and 43.2%. The suite went from 618 tests to 631 and
+the four stills draw text at 17.33, 20.0, 20.8 and 19.32 pixels on the page.
 
-**A still is written into a frame its own extent shapes as of steps 9 and 11**, which landed as one
-commit because the frame was what both were about. Coverage on the box round the marks is a number an
-empty frame passes, and the share of cells no mark's ink reaches replaces it. The eight sheets went
-from 21.2%, 17.1%, 67.4%, 56.5%, 81.8%, 76.3%, 59.5% and 50.4% bare to 21.2%, 17.1%, 60.1%, 56.5%,
-71.5%, 72.3%, 46.1% and 43.2%, the gate holds every one under four fifths, and the README opens on
-`tangent.svg` because at 21.2% it is the fullest of the eight by 25 points.
+**Two of 1.0.0's done-criteria need a call before step 17**, both found while cutting 0.13.0 and both
+written into the found list below. The sheet the README opens on no longer clears both readings, and
+the rotation strip draws its frames at two thirds the width the other three do.
 
-**Siva made the one call this version had, the dark ramp's hue, and answered it with slate.** He also
-put three defects of the solid sheet into this version rather than after it, which are steps 7, 8 and
-9, so the plan is eleven steps rather than eight.
-
-**1.0.0 is being worked and sixteen of its seventeen steps are ticked.** The library is 6,794 lines,
-the door is 227 names, the suite is 618 tests over 40 files, and the four prose surfaces are a 175
-line README, a 544 line guide, a 792 line reference and a 387 line DESIGN.md. **The next session
-starts at step 17, and it is short.**
+**1.0.0 is being worked and sixteen of its seventeen steps are ticked.** The door is 229 names, the
+suite is 631 tests over 40 files, and the four prose surfaces are a 175 line README, a 544 line
+guide, a 792 line reference and a 387 line DESIGN.md. **The next session starts at step 17**, which
+is one commit once the two open criteria above are answered.
 
 **Every done-criterion below is verified but one, and that one is Siva's.** The three gates pass, the
 lock file agrees with the manifest, `npm run demos` leaves all eight sheets byte for byte as
-committed, the reference has 227 entries against 227 names with a gate holding them equal, the
+committed, the reference has 229 entries against 229 names with a gate holding them equal, the
 README and the guide read at a sentence mean of 16.6 and 15.1 words with none over 30, the guide's
 seventeen code blocks compile in order, no comment in the tree carries a measurement nothing asserts,
 no inline comment run is longer than two lines, and DESIGN.md carries none of the banned phrases. What
@@ -226,292 +220,6 @@ no box test in front of it and the quadratic over piece pairs is not worth remov
 ## The items
 
 Each is a version above. What follows is what each one covers.
-
-### The pictures, 0.13.0
-
-**A sheet is one figure written out as SVG, and there are eight of them.** Siva read all eight and
-rejected them. What he named is five faults. They look unfinished, they are ugly, the two solid
-sheets are the worst of them and are not readable, the vector fields read as noise rather than as
-fields, and every sheet is drawn for a white ground and breaks on a dark one.
-
-#### What the eight sheets measure today
-
-**Coverage is the share of the frame the drawn bounds cover**: `tangent-strip` 93.4%, `tangent`
-80.0%, `surface-strip` 79.3%, `boolean-strip` 75.9%, `surface` 71.0%, `rotate-strip` 65.5%,
-`rotate` 65.0%, `boolean` 59.9%. **On-page text is the smallest labelled glyph at the width the
-README shows the sheet**: `boolean` 20.0px, `tangent` and `rotate` 17.3px, `surface` 14.7px, and the
-four strips at 10.8, 9.4, 7.9 and 7.6px.
-
-**Coverage does not measure emptiness, which is why a sheet can pass it and still look empty.**
-`rotate.svg` reads 65.0% covered and draws two shapes inside the upper third of a frame 1080 by 600.
-The bounds are stretched by a caption at y=575 and a word at y=181 while the picture between them
-stays small. Step 8 replaces the number with one an empty frame fails.
-
-**Twelve colours are written against one ground.** `demos/palette.ts` says so in its own header: each
-is measured against the white the sheets are drawn on. Six of the twelve carry a reading a reader
-takes a value or a word off, and all six clear 4.5:1 against white at INK 17.22:1, DEEP 5.93:1, EMBER
-5.18:1, MOSS and AMBER 5.02:1 and SLATE 4.83:1. Against GitHub's dark ground `#0d1117` none of the
-six clears it: INK falls to 1.10:1, SLATE to 3.91:1, AMBER and MOSS to 3.77:1, EMBER to 3.65:1 and
-DEEP to 3.19:1. `paint/svg.ts` writes each colour into the mark as a literal `fill`, so nothing on
-the page can correct it.
-
-**The saddle reads as cardboard because its shading covers a contrast range of 2.19.** `shadeOf` runs
-a level from 150 to 240 in a warm ramp, which against white is 3.46:1 for a cell facing away and
-1.27:1 for one facing the light. The lightest cell sits 1.27:1 from the ground it is drawn on, so the
-near edge of the surface is nearly the page.
-
-#### The mechanism for a dark ground is measured rather than chosen
-
-**A `<style>` block inside the SVG carrying `@media (prefers-color-scheme: dark)` works through an
-`<img>`.** Measured in Chromium with `--blink-settings=preferredColorScheme`: the same file draws
-`#f0f0f0` text under the dark scheme and `#1b1b1b` under the light one, from one file with no page CSS
-reaching it. This is also what `paint/svg.ts` already promises in its own header, that a figure
-follows a theme with nothing watching.
-
-**What is not measured here is GitHub's sanitizer**, which is what serves the README's sheets and may
-strip a `<style>` element. Step 1 measures that first. The fallback is `<picture>` with a `<source>`
-per scheme, which GitHub documents, and it doubles the sheets from eight to sixteen and the byte gate
-with them.
-
-#### The one call that is Siva's
-
-**Whether the dark sheet keeps the warm surface ramp or takes a cool one**, and whether a dark sheet
-is a second palette chosen for that ground or the light palette lightened. Step 1 lands a mechanism
-and a light palette unchanged, then puts both versions of the surface sheet in front of Siva. Nothing
-after step 1 depends on the answer.
-
-#### The steps
-
-**The order is not free.** The ground lands first, because the palette it settles is what every later
-step picks a colour from. The text size lands before the frames are re-timed, since step 8 measures
-the text of the frames step 4 chose. The stills are re-measured last, because every step before it
-changes the bytes of a sheet.
-
-**Every step changes a sheet, since the demos are what this version is.** Steps 1, 2 and 6 also add a
-name to the door, and 0.13.0 lands before the surface is frozen at 1.0.0 for that reason.
-
-- [x] **1. The ground a sheet is drawn on.** A colour is painted as `var(--name, light)` and
-  `svgMarkup` writes the theme as a `<style>` element, the light ground on `:root` and the dark one
-  behind `prefers-color-scheme`. No class was needed and no colour is read to theme it, so the rule
-  that a colour is text is unchanged. **A value per ground is forced rather than chosen**: to clear
-  4.5:1 against white a colour needs a relative luminance of 0.183333 or less, and to clear it
-  against `#0d1117` it needs 0.199675 or more, a gap of 0.016341 that no single value fits. The
-  six reading colours went from 1.10:1, 3.19:1, 3.65:1, 3.77:1, 3.77:1 and 3.91:1 on `#0d1117` to
-  15.87:1, 8.43:1, 6.75:1, 8.69:1, 8.40:1 and 7.41:1, and are unchanged on white at 17.22:1 through
-  4.83:1. The six washes read 1.28:1 through 3.52:1 on the dark ground, inside the band the light
-  ones hold. The sheets stayed at eight and grew from 69,413, 277,410, 2,807, 13,466, 1,877, 8,097,
-  89,891 and 365,165 bytes to 72,474, 288,367, 3,395, 14,531, 2,436, 9,046, 92,075 and 372,614. The
-  door went from 227 names to 229 and the reference with it, and the suite from 618 tests to 620.
-
-  **GitHub's sanitizer is still unmeasured and it does not gate the step.** The colour inside each
-  `var()` is the light value, so a sheet whose `<style>` element is stripped draws exactly what it
-  drew before this step. The `<picture>` fallback is not needed and the sheets stay at eight.
-
-  **`lerpColour` reads the colour a `var()` falls back to**, which `colourOf` still refuses. Without
-  it every themed mark would have been held at the far end of an `indicate` rather than eased,
-  because `paintedTowards` reads the mark's own colour and `demos/tangent.ts` indicates its dot. The
-  mix runs through the light value on both grounds, so a themed colour cross-faded on a dark page
-  starts from its light end.
-
-  **The surface ramp cannot ride a custom property, which is step 6's to settle.** `shadeOf` computes
-  a colour for each of 2,304 cells from how squarely it faces the light, so there is no name to
-  theme. The saddle is the light ramp on both grounds and reads as a lit slab on the dark one. A
-  wash takes no reading off it, so what it needs is separation from both grounds rather than 4.5:1
-  against either, and a ramp inside the middle of the range clears that.
-
-- [x] **2. A text size that holds against the frame.** The floor belongs to the write rather than to
-  the mark, since `tangent` is written as a still and as a strip frame and one figure cannot carry two
-  floors. `svgMarkup` and `paintSvg` take a `minTextSize` in the units they paint into, and every text
-  size is multiplied by the one factor that brings the smallest of them to it. **Raising each size on
-  its own to the floor was wrong and was measured wrong**: it took `tangent-strip`'s 12.188 and 15.938
-  written units to 18.251 alike, flattening two sizes into one. The lift keeps them at 18.251 and
-  23.873. The four strips went from 9.4px, 10.8px, 7.6px and 7.9px on the page to 14.0px each, and the
-  four stills are untouched at 17.3px, 20.0px, 17.3px and 14.7px, since a floor of 14 sits under the
-  14.7 the tightest still already drew. The door went from 229 names to 229, the option being a field
-  on a type already there, and the suite from 620 tests to 622.
-
-  **The lift makes two captions collide, which is why step 3 follows it.** `rotate-strip` draws
-  "about its own middle" and "about a point it is given" in one frame and they now run together, and
-  `surface-strip`'s tick numbers crowd their own axis. Text is never measured here, so nothing can
-  know a caption's width, and the fix is a shorter caption rather than a smaller glyph.
-
-- [x] **3. The rotation's placeholder word, and every caption.** The word riding the shape was the
-  literal string `label`, twice in `rotate.svg` and eight times in `rotate-strip.svg`, and it is
-  `upright` now, which is what the mark is there to show. The three boolean captions read "either
-  one", "both at once" and "first without second" and read `union`, `intersection` and `difference`
-  now, which are the standard names. The two rotation captions went from "about its own middle" and
-  "about a point it is given" to "about its centre" and "about a given point", **which is what
-  cleared the collision step 2 made**: the two no longer run together in a strip frame. The panel's
-  `label` field went with the change, since a caption that is the operation's standard name is the
-  name the marks are already grouped under, and `overlap` became `intersection` in three mark ids the
-  suite reads. A gate holds no sheet carrying the placeholder, and the suite went from 622 tests to
-  623.
-
-- [x] **4. The frames a strip shows.** **The flat strip drew one frame twice.** Its first two times
-  were the start and the end of the beat, and nothing moves during the beat, so the two rasterised to
-  a root-mean-square difference of 0 and the suite's own expectation held "slope 0.00" twice. The
-  four times are the arrived picture and two moments of the walk and the braced reading now, which
-  read 0.00, 1.59, 4.98 and 6.00, and the closest pair rose from 0 to 6,308.74 and from 0.5% of marks
-  moved to 14.9%.
-
-  **The solid strip repeated itself for a reason the plan's measurement could not see.** Every pair
-  of its frames differed in 94.7% of marks, yet frames 0 and 2 rasterised 2,501.39 apart and frames 1
-  and 3 3,355.49 apart where every other pair sat near 8,000. The cause is a symmetry: the saddle is
-  unchanged by a half turn about the z axis, since `(x, y)` and `(-x, -y)` give the same height, so
-  the four quarters of an orbit are two pairs of the same shape. The four eyes sit at 0.03, 0.11,
-  0.19 and 0.27 of the orbit now, inside a quarter turn, and the closest pair went from 2,501.39 to
-  6,631.70.
-
-  **The share of marks that moved is not the measurement for a camera and the gate says so.** Two
-  gates landed instead: no two frames of any strip agree on more than nine tenths of their marks,
-  which is what caught the flat strip, and no two eyes of the solid strip are a half turn apart, with
-  the saddle's own invariance asserted beside it. The suite went from 623 tests to 625.
-
-- [x] **5. The curve clipped to its frame.** **The premise was half wrong and the measurement said
-  so.** `tangent-strip` had nothing outside its view box at all: the parabola ends where it is
-  plotted, at three across and nine up, rather than being cut. `tangent.svg` had 65 of its 3,421
-  drawn points outside, 1.90%, and every one of them at the left edge.
-
-  **What was outside was the graph's own left side.** The grid's major at minus one and its minor at
-  minus three quarters, the left end of every horizontal grid line, the x axis line, its low arrow
-  head at 10 points of 10, the tick at minus one, five field arrow shafts and 16 of the curve's 232
-  points. The cause is the followed view: the frame's middle travelled to 1.56 figure units where the
-  graph's own margin allows 0.62, which is the frame's half-width of 5.4 less the graph's 4.6 less
-  the 0.18 the axis reaches past its last tick. The follow stops there now and the sheet has 0 of
-  3,421 points outside.
-
-  **The trade is the dot sitting further from the middle and it is worth naming.** Its greatest
-  distance from the middle of the frame went from 1.2 figure units to 2.14, and from the middle of
-  the world it is unchanged at 2.76. The view's travel across went from 312 written units to 124 and
-  its distinct places over a walk at thirty frames a second from 78 to 21. Step 4's floor for how
-  much a strip's closest pair must move went from a tenth to a twentieth, since a view stopped at the
-  graph's edge holds the grid and the field still between the last two frames and took that pair from
-  14.9% to 7.9%. The two sheets went from 72,475 and 293,072 bytes to 71,616 and 292,197.
-
-- [x] **6. The surface lit so its depth reads.** **The nominal range of the ramp was never the
-  number.** `shadeOf` ran a level from 150 to 240, which is 3.46:1 to 1.27:1 against white, but the
-  saddle only reached 216 to 239 of it: 144 cells took 16 near-identical colours and the shading
-  covered a contrast range of 0.32. The cause is the light. It came straight down the z axis, which
-  is nearly parallel to every normal a surface drawn over a plane has, so the whole saddle faced it
-  alike and the amount spanned 0.264. Over the shoulder at `(-0.4, -0.6, 0.7)` the same normals span
-  0.653.
-
-  **A computed colour can ride a custom property once it is cut into steps.** Twelve steps carry the
-  ramp, a cell paints one of them by name, and the surface follows the ground like every other
-  colour. The saddle used 16 colours before and uses all twelve steps now.
-
-  **A light with a positive z cannot reach the far end of its own ramp**, so the demo reads its
-  amount against the band its own normals cover, 0.346 to 1, rather than against nothing to one.
-  Without that the saddle reached eight of the twelve steps and the light ramp's used range was 1.35
-  where the ramp itself offers 3.15.
-
-  **Each ground carries its own hue, which was Siva's call and the answer is slate.** On white the
-  ramp is warm, 133 to 246 offset by nothing, minus fourteen and minus thirty-four. On `#0d1117` it
-  is slate, 42 to 129 offset by minus eighteen, minus six and plus ten, since a warm surface read as
-  bronze against the page. Both were rendered and put in front of him. Every step of both is a wash,
-  none over 4.4:1 of its ground and none under 1.2:1, leaving the ends 3.15 and 3.19 apart. The
-  shading's used range went from 0.32 to 2.75 against white. The suite went from 625 tests to 627.
-
-- [x] **7. The three axes named.** `Axes3Options` gains `names`, and an axis it names writes that
-  name past its own far end under `name`, leaning the way the label of the last tick leans and set
-  clear of it by the label's own size so the two are not written over each other. The solid sheets
-  went from no names to three, and the door is unchanged at 229 names, since `Axes3Options` was
-  already there and gained a field. The solid figure went from 265 marks to 268 and the strip from
-  1,060 to 1,072, and a walk of it paints 10 pieces of text where it painted 7. The suite went from
-  627 tests to 628.
-
-- [x] **8. The descent run's curl.** **Nothing was wrong with any one run.** The worst turn between
-  two steps of the three was 13.5 degrees and the field's magnitude along them never fell below
-  0.202, so the integration was sound and the curl was not an artifact of it. What made the curl is
-  three runs in one place: seeded a twentieth off the x axis at `(1.3, 0.06)`, `(-1.3, 0.06)` and
-  `(0.5, -0.04)`, all three swept the region round the middle and came within 0.106 of each other,
-  one of them passing 0.202 from the middle itself. Projected onto the saddle three curves that
-  close read as one tangle.
-
-  **The field is nothing at the middle and every run bends hardest near it**, which is why a seed
-  near an axis is a seed that crowds. Three tenths off, at `(1.3, 0.3)`, `(-1.3, 0.3)` and
-  `(0.6, -0.3)`, the closest two runs hold 0.528 apart and the nearest any comes to the middle is
-  0.600. The worst turn fell from 13.5 degrees to 4.7 and the smallest magnitude rose from 0.202 to
-  0.600. The runs are shorter for it, 35, 35 and 28 points where they were 47, 47 and 36. The suite
-  went from 628 tests to 630.
-
-- [x] **9. The frame each still is written into.** **The premise was wrong for three sheets of the
-  four and the measurement said so.** On `tangent.svg` the rule stands at x 25 to 134 inside a
-  picture that spans 0 to 956, so it sits in the band above the graph that the demo leaves for it
-  rather than in a column of its own. Both strips read the same way, since each holds four frames.
-  Only `surface.svg` had the column: its rule spanned x 23 to 178 and its picture 272 to 882.
-
-  **The cause was the frame rather than the placement, and it was step 11's own subject**, so the
-  two landed as one commit. A still's frame follows its own extent at a hundred pixels to the figure
-  unit now, and three extents are cut to what their figure reaches: the surface to 8.2 by 6.4 with
-  the rule lifted into the band above the picture, the boolean to 10.8 by 3, and the rotation to 9
-  by 5.8 centred on (0.67, -0.1). The eight view boxes went from 1080x600, 1069x600, 1080x400,
-  1555x600, 1080x600, 1273x600, 1080x600 and 1069x600 to 1080x600, 1069x600, 1080x300, 1555x600,
-  900x580, 1273x600, 820x640 and 776x600, so the surface sheet went from 1080 wide round a picture
-  610 wide to 820 wide. The four stills went from 21.2%, 67.4%, 81.8% and 59.5% of the frame bare to
-  21.2%, 60.1%, 71.5% and 46.1%.
-
-- [x] **10. A field drawn as a field.** **Both fields drew heads all along and the plan was wrong to
-  say otherwise.** What they drew was heads nobody could see: four times the shaft's width, which is
-  what an arrow takes when nothing says, came to 4.43 to 5.01 pixels on the flat sheet and 2.48 to
-  2.78 on the solid one at the width the README shows them. A head of 0.16 figure units on the flat
-  sheet and 0.13 on the solid one draws 9.81 to 11.14 and 6.12 to 9.05 pixels.
-
-  **Fifty arrows over a graph that already carries a grid, a curve, a shaded region, a tangent and a
-  dot is the noise rather than the field.** The flat sheet samples 21 now and the solid one 25, of
-  which 24 draw: the sample at the middle of a five by five grid sits on the origin, where this
-  field is nothing and an arrow of no length is no mark. **Seven across by four up was tried first
-  and was wrong**, since it puts the cells at 1.267 of square where the rule is 1.11, and that rule
-  was itself only half written: it read the cells as wider than tall and passed nothing taller than
-  wide. Seven by three holds 1.053.
-
-  The two field colours went from HAZE 1.49:1 and STEEL 2.30:1 against white to 2.53:1 and 3.49:1,
-  and on the dark ground from 2.21:1 and 3.52:1 to 2.79:1 and 3.53:1, all four still washes. The
-  shafts went from 0.018 and 0.01 figure units to 0.03 and 0.022. The flat figure went from 202 marks
-  to 144 and the solid from 268 to 244. The suite is 630 tests before and after.
-
-- [x] **11. The stills re-timed, and every sheet measured again.** **No still needed re-timing and
-  every frame did**, which is why this landed as one commit with step 9. Coverage on the box round
-  the marks is a number an empty frame passes: a word in each far corner stretches the box over the
-  whole frame while nothing is drawn between them, which is how `rotate.svg` read 65.0% covered while
-  drawing in the upper third of its frame and `surface.svg` read 71.0% with bounds 860 wide round a
-  picture 610 wide.
-
-  What replaces it is the share of cells no mark's ink reaches, over a grid twelve cells down the
-  frame, with fills decided by the nonzero winding rule and strokes by walking the flattened path.
-  `demos/cover.ts` holds it and adds no name to the door. On that reading the eight sheets went from
-  21.2%, 17.1%, 67.4%, 56.5%, 81.8%, 76.3%, 59.5% and 50.4% bare to 21.2%, 17.1%, 60.1%, 56.5%,
-  71.5%, 72.3%, 46.1% and 43.2%. **The gate holds every sheet under four fifths**, which the old
-  gate at half the frame passed at 81.8%, and the emptiest sheet now reads 72.3%.
-
-  On-page text on the four stills went from 17.33, 20.0, 17.33 and 14.67 pixels to 17.33, 20.0, 20.8
-  and 19.32, since a narrower frame is scaled less to reach the width the README shows it at. **The
-  README opens on `tangent.svg`**, which the readings confirm rather than change: at 21.2% bare it is
-  the fullest of the eight by 25 points. The suite went from 630 tests to 631.
-
-#### Done-criteria
-
-- Every colour a reader takes a value or a word off clears 4.5:1 against the white ground and against
-  `#0d1117`, and a test in the suite holds both.
-- A sheet in the README is legible under the dark scheme, measured the way step 1 measured it.
-- No sheet draws a labelled glyph smaller than the floor step 2 sets, and no still falls below 14.7px.
-- No sheet carries the string `label`, and a gate says so.
-- Every caption names the operation with the standard name for it.
-- No two frames of a strip move fewer marks between them than the floor step 4 sets.
-- No drawn geometry falls outside the view box on any sheet.
-- The surface's shading covers a used contrast range wider than 2.19, every step of its ramp is a
-  wash on both grounds, and the saddle reaches every step.
-- The three axes of the solid sheets carry names.
-- No run of steepest descent turns back on itself.
-- No still leaves more of its frame uncovered than the number step 11 sets, measured on what marks
-  cover rather than on the box round them.
-- Every field arrow draws a head at the width the README shows it.
-- Every sheet is measured on the number step 8 sets, and the README opens on the sheet that reads
-  best on it.
-- `npm test`, `npm run type-check` and `npm run build` pass, and the lock file agrees with the
-  manifest.
-- `npm run demos` regenerates every sheet byte for byte as committed.
-- Siva has read the eight sheets once and said so.
 
 ### The polish, 1.0.0
 
@@ -894,10 +602,25 @@ demo is recompiled by steps 6 and 7 against the renamed door.
 - DESIGN.md carries none of the banned phrases and every claim in it is true of the tree.
 - The byte gate's rounding boundary is written down as a known gap.
 - `npm test`, `npm run type-check` and `npm run build` pass, and the lock file agrees with the manifest.
-- Siva has read the README, the guide and the pictures once, and said so. The pictures are 0.13.0's,
-  so this waits on that version being cut.
+- Siva has read the README, the guide and the pictures once, and said so. He read the pictures and
+  cut 0.13.0 on them, so what is left of this line is the README and the guide.
 
 ## Found while working, not yet queued
+
+- **The sheet the README opens on no longer clears both readings.** 1.0.0's criterion asks for the
+  picture that clears the covered fraction and the smallest text height by the most, and `tangent.svg`
+  wins the first by 25 points at 21.2% bare while drawing the smallest text of the four stills at
+  17.33 pixels, against 20.0, 20.8 and 19.32. 0.13.0's own criterion asks only for the frame reading,
+  which `tangent.svg` wins, so the two criteria now name different sheets. Found while cutting
+  0.13.0's steps 9 and 11.
+
+- **The rotation strip draws its frames at two thirds the width the other three do.** A slot is 410
+  pixels on the page in all four strips, and the figure inside it is 388, 388, 264 and 382 pixels.
+  `SLOT` is held at 14 in `demos/rotate.ts` by the rule that the gap between two frames must beat the
+  4.53 unit gap between the two panels inside one, so narrowing the extent to 9 took the figure down
+  from 316 pixels. Closing it means moving `PANEL` in from 2.6, which is a layout change rather than
+  a frame one. It bears on 1.0.0's criterion that every strip draws its frames one slot wide. Found
+  while cutting 0.13.0's steps 9 and 11.
 
 - **A run of descent shows a short hook where it meets the region's edge.** The run seeded at
   `(-1.3, 0.3)` draws a bracket a few points long at its start on both solid sheets, which reads as a
