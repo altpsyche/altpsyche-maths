@@ -91,13 +91,58 @@ function escaped(value: string): string {
   return value.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 }
 
+/** A colour per ground for one CSS custom property. A mark painted with
+ * `var(--name, colour)` takes the value of the ground it is read on, and the
+ * colour written inside the `var()` is what it falls back to. */
+export interface SvgTheme {
+  [property: string]: { light: string; dark: string };
+}
+
+export interface SvgMarkupOptions {
+  /** Written into the markup as a `<style>` element, so one file is read on a
+   * light page and a dark one with no script and no page CSS. */
+  theme?: SvgTheme;
+}
+
+const PROPERTY = /^[A-Za-z0-9_-]+$/;
+
+/** A value safe to write between `<style>` tags: no delimiter that would end the
+ * declaration or the element. */
+function plainValue(value: string): boolean {
+  return !/[<>&{};"]/.test(value);
+}
+
+/**
+ * The theme as a `<style>` element, the light ground on `:root` and the dark one
+ * behind `prefers-color-scheme`.
+ *
+ * An entry whose name or either colour would need escaping is left out, which
+ * leaves the mark on the colour written inside its own `var()` rather than on a
+ * value that could close the element.
+ */
+function themeStyle(theme: SvgTheme): string {
+  const names = Object.keys(theme).filter(
+    (name) => PROPERTY.test(name) && plainValue(theme[name].light) && plainValue(theme[name].dark)
+  );
+  if (names.length === 0) return '';
+  const block = (ground: 'light' | 'dark') => names.map((name) => `--${name}:${theme[name][ground]}`).join(';');
+  return `<style>:root{${block('light')}}@media(prefers-color-scheme:dark){:root{${block('dark')}}}</style>`;
+}
+
 /**
  * A whole `<svg>` as text, for a page that has not run any script yet.
  *
  * It carries no width or height of its own and only a view box, so the element
  * around it decides how big it is and the picture stays where it was put.
  */
-export function svgMarkup(marks: readonly Mark[], view: Mat3, width: number, height: number): string {
+export function svgMarkup(
+  marks: readonly Mark[],
+  view: Mat3,
+  width: number,
+  height: number,
+  options: SvgMarkupOptions = {}
+): string {
+  const style = options.theme ? themeStyle(options.theme) : '';
   const body = svgElements(marks, view)
     .map((element) => {
       const attributes = Object.entries(element.attributes)
@@ -107,7 +152,7 @@ export function svgMarkup(marks: readonly Mark[], view: Mat3, width: number, hei
       return `<${element.tag} ${attributes}>${escaped(element.text)}</${element.tag}>`;
     })
     .join('');
-  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${short(width)} ${short(height)}">${body}</svg>`;
+  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${short(width)} ${short(height)}">${style}${body}</svg>`;
 }
 
 const SVG_NAMESPACE = 'http://www.w3.org/2000/svg';

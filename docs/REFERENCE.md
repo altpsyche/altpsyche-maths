@@ -707,9 +707,13 @@ a group of that name.
 Both painters read the same list of marks and the same view matrix, so a picture on a page and a
 picture in a recording are the same picture.
 
-- `svgMarkup(marks, view, width, height)` — a whole `<svg>` as text, for a page that has not run any
-  script yet. It carries no width or height of its own and only a view box, so the element around it
-  decides how big it is.
+- `svgMarkup(marks, view, width, height, options?)` — a whole `<svg>` as text, for a page that has
+  not run any script yet. It carries no width or height of its own and only a view box, so the
+  element around it decides how big it is.
+- `SvgMarkupOptions` — what else `svgMarkup` takes: a `theme`.
+- `SvgTheme` — a `light` and a `dark` colour for each CSS custom property, written into the markup as
+  a `<style>` element. A mark painted `var(--ink, #1b1b1b)` takes the value of the ground it is read
+  on, and falls back to the colour inside the `var()` where the element is absent.
 - `svgElements(marks, view)` — every mark described as an element, in the order they are drawn.
 - `SvgElement` — one of those: its `tag`, `path` or `text`, its `attributes`, and the `text` a text
   element carries.

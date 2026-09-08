@@ -7,6 +7,7 @@
  * same suite everything else is.
  */
 import { marksAt, svgMarkup, viewAt, viewMatrix, type Extent, type Figure, type Mark } from '../index.js';
+import { THEME } from './palette.js';
 import { FRAMES, stripMarks, tangent } from './tangent.js';
 import {
   FRAMES as BOOLEAN_FRAMES,
@@ -23,11 +24,11 @@ export const HEIGHT = 600;
 
 /** One list of marks written out over a surface shaped like the extent it covers. */
 export function markupOf(marks: readonly Mark[], extent: Extent, width: number, height: number): string {
-  return svgMarkup(marks, viewMatrix(extent, 'contain', width, height), width, height);
+  return svgMarkup(marks, viewMatrix(extent, 'contain', width, height), width, height, { theme: THEME });
 }
 
 export function stillMarkup(figure: Figure, seconds: number, width = WIDTH, height = HEIGHT): string {
-  return svgMarkup(marksAt(figure, seconds), viewAt(figure, seconds, width, height), width, height);
+  return svgMarkup(marksAt(figure, seconds), viewAt(figure, seconds, width, height), width, height, { theme: THEME });
 }
 
 export interface Sheet {

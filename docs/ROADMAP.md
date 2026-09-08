@@ -160,10 +160,19 @@ eight.
 **The lock file agrees with the manifest again**, and holding it there is one
 `npm install --package-lock-only` in whichever commit bumps a version.
 
-**0.13.0 is planned and nothing of it is worked.** Siva read the eight sheets and rejected them, so
-1.0.0 waits behind it: the cut's last criterion is Siva reading the README, the guide and the
-pictures, and the pictures are being redrawn. The entry below carries eight steps, the measurement
-each one quotes, and one call that is Siva's.
+**0.13.0 is being worked and one of its eight steps is ticked.** Siva read the eight sheets and
+rejected them, so 1.0.0 waits behind it: the cut's last criterion is Siva reading the README, the
+guide and the pictures, and the pictures are being redrawn.
+
+**A sheet reads on a dark page as of step 1.** Every colour is painted as `var(--name, light)` and
+`svgMarkup` writes the theme as a `<style>` element, which works through an `<img>` with no page CSS
+reaching it. The six colours a reader takes a value off went from 1.10:1 through 3.91:1 against
+`#0d1117` to 15.87:1 through 6.75:1, and are unchanged on white. A value per ground is forced: the
+luminance a colour needs to clear 4.5:1 on white is 0.183333 or less and on `#0d1117` is 0.199675 or
+more. The suite went from 618 tests to 620 and the door from 227 names to 229.
+
+**The next session starts at step 2**, which is the text size, and step 6 carries the one call that
+is Siva's.
 
 **1.0.0 is being worked and sixteen of its seventeen steps are ticked.** The library is 6,794 lines,
 the door is 227 names, the suite is 618 tests over 40 files, and the four prose surfaces are a 175
@@ -271,11 +280,34 @@ changes the bytes of a sheet.
 **Every step changes a sheet, since the demos are what this version is.** Steps 1, 2 and 6 also add a
 name to the door, and 0.13.0 lands before the surface is frozen at 1.0.0 for that reason.
 
-- [ ] **1. The ground a sheet is drawn on.** Whether GitHub keeps a `<style>` element in an SVG it
-  serves, measured first, and the mechanism chosen on the answer. `svgMarkup` gains a theme, the
-  palette gains a value per ground, and `paint/svg.ts` writes a class where it writes a literal
-  colour now. **Measures:** the six reading colours from 4.83:1 through 17.22:1 on white and 1.10:1
-  through 3.91:1 on `#0d1117`, to 4.5:1 or better on both; the sheet count from eight.
+- [x] **1. The ground a sheet is drawn on.** A colour is painted as `var(--name, light)` and
+  `svgMarkup` writes the theme as a `<style>` element, the light ground on `:root` and the dark one
+  behind `prefers-color-scheme`. No class was needed and no colour is read to theme it, so the rule
+  that a colour is text is unchanged. **A value per ground is forced rather than chosen**: to clear
+  4.5:1 against white a colour needs a relative luminance of 0.183333 or less, and to clear it
+  against `#0d1117` it needs 0.199675 or more, a gap of 0.016341 that no single value fits. The
+  six reading colours went from 1.10:1, 3.19:1, 3.65:1, 3.77:1, 3.77:1 and 3.91:1 on `#0d1117` to
+  15.87:1, 8.43:1, 6.75:1, 8.69:1, 8.40:1 and 7.41:1, and are unchanged on white at 17.22:1 through
+  4.83:1. The six washes read 1.28:1 through 3.52:1 on the dark ground, inside the band the light
+  ones hold. The sheets stayed at eight and grew from 69,413, 277,410, 2,807, 13,466, 1,877, 8,097,
+  89,891 and 365,165 bytes to 72,474, 288,367, 3,395, 14,531, 2,436, 9,046, 92,075 and 372,614. The
+  door went from 227 names to 229 and the reference with it, and the suite from 618 tests to 620.
+
+  **GitHub's sanitizer is still unmeasured and it does not gate the step.** The colour inside each
+  `var()` is the light value, so a sheet whose `<style>` element is stripped draws exactly what it
+  drew before this step. The `<picture>` fallback is not needed and the sheets stay at eight.
+
+  **`lerpColour` reads the colour a `var()` falls back to**, which `colourOf` still refuses. Without
+  it every themed mark would have been held at the far end of an `indicate` rather than eased,
+  because `paintedTowards` reads the mark's own colour and `demos/tangent.ts` indicates its dot. The
+  mix runs through the light value on both grounds, so a themed colour cross-faded on a dark page
+  starts from its light end.
+
+  **The surface ramp cannot ride a custom property, which is step 6's to settle.** `shadeOf` computes
+  a colour for each of 2,304 cells from how squarely it faces the light, so there is no name to
+  theme. The saddle is the light ramp on both grounds and reads as a lit slab on the dark one. A
+  wash takes no reading off it, so what it needs is separation from both grounds rather than 4.5:1
+  against either, and a ramp inside the middle of the range clears that.
 
 - [ ] **2. A text size that holds against the frame.** A strip's text is the figure's own size, so a
   strip fitted to a wide extent shrinks every glyph in it. A figure gains a text size it can hold at

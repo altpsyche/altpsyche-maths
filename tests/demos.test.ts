@@ -49,9 +49,11 @@ import {
   MIST,
   MOSS,
   PEACH,
+  GROUND,
   SKY,
   SLATE,
   STEEL,
+  THEME,
 } from '../demos/palette.js';
 import {
   FRAMES as TURN_FRAMES,
@@ -775,29 +777,66 @@ describe("the flat demo's field", () => {
 });
 
 describe("the demos' palette", () => {
-  // The contrast of a colour against the white the sheets are drawn on, by the
-  // sRGB relative luminance the guidelines define.
-  const contrast = (colour: string) => {
-    const read = colourOf(colour)!;
+  // The contrast of a colour against a ground, by the sRGB relative luminance
+  // the guidelines define.
+  const contrast = (colour: string, ground: string) => {
     const channel = (value: number) => {
       const share = value / 255;
       return share <= 0.03928 ? share / 12.92 : ((share + 0.055) / 1.055) ** 2.4;
     };
-    const luminance = 0.2126 * channel(read.r) + 0.7152 * channel(read.g) + 0.0722 * channel(read.b);
-    return 1.05 / (luminance + 0.05);
+    const luminance = (text: string) => {
+      const read = colourOf(text)!;
+      return 0.2126 * channel(read.r) + 0.7152 * channel(read.g) + 0.0722 * channel(read.b);
+    };
+    const [high, low] = [luminance(colour), luminance(ground)].sort((a, b) => b - a);
+    return (high + 0.05) / (low + 0.05);
   };
 
-  it('gives every colour a reader reads off the contrast text is asked for', () => {
-    for (const colour of [INK, SLATE, EMBER, AMBER, DEEP, MOSS]) {
-      expect(contrast(colour)).toBeGreaterThan(4.5);
+  const READING = ['ink', 'slate', 'ember', 'amber', 'deep', 'moss'] as const;
+  const WASH = ['mist', 'peach', 'sky', 'haze', 'steel', 'frost'] as const;
+
+  it('gives every colour a reader reads off the contrast text is asked for, on both grounds', () => {
+    for (const name of READING) {
+      expect(contrast(THEME[name].light, GROUND.light)).toBeGreaterThan(4.5);
+      expect(contrast(THEME[name].dark, GROUND.dark)).toBeGreaterThan(4.5);
     }
-    expect(contrast(INK)).toBeCloseTo(17.22, 2);
+    expect(contrast(THEME.ink.light, GROUND.light)).toBeCloseTo(17.22, 2);
+    expect(contrast(THEME.ink.dark, GROUND.dark)).toBeCloseTo(15.87, 2);
   });
 
-  it('keeps every wash below it, so nothing carries a reading it cannot hold', () => {
-    for (const colour of [MIST, PEACH, SKY, HAZE, STEEL, FROST]) {
-      expect(contrast(colour)).toBeLessThan(4.5);
-      expect(contrast(colour)).toBeGreaterThan(1.1);
+  it('keeps every wash below it on both grounds, so nothing carries a reading it cannot hold', () => {
+    for (const name of WASH) {
+      for (const ground of ['light', 'dark'] as const) {
+        expect(contrast(THEME[name][ground], GROUND[ground])).toBeLessThan(4.5);
+        expect(contrast(THEME[name][ground], GROUND[ground])).toBeGreaterThan(1.1);
+      }
+    }
+  });
+
+  // No luminance clears 4.5:1 against both grounds at once, which is why a colour
+  // has a value per ground rather than one value chosen carefully.
+  it('has no single value that could have served both grounds', () => {
+    const capForLight = 1.05 / 4.5 - 0.05;
+    const floorForDark = 4.5 * (0.005483 + 0.05) - 0.05;
+    expect(capForLight).toBeLessThan(floorForDark);
+  });
+
+  it('paints every colour as a variable falling back to its light value', () => {
+    for (const [name, colour] of [
+      ['ink', INK],
+      ['mist', MIST],
+      ['slate', SLATE],
+      ['ember', EMBER],
+      ['amber', AMBER],
+      ['peach', PEACH],
+      ['deep', DEEP],
+      ['sky', SKY],
+      ['haze', HAZE],
+      ['steel', STEEL],
+      ['frost', FROST],
+      ['moss', MOSS],
+    ] as const) {
+      expect(colour).toBe(`var(--${name}, ${THEME[name as keyof typeof THEME].light})`);
     }
   });
 });

@@ -82,6 +82,22 @@ export function colourText({ r, g, b, a }: Rgba): string {
   return `rgba(${parts}, ${Number(Math.min(1, Math.max(0, a)).toFixed(3))})`;
 }
 
+const VARIABLE = /^var\(\s*--[A-Za-z0-9_-]+\s*,\s*(.+)\)$/;
+
+/**
+ * The colour a `var()` names as its fallback, or the text unchanged where it is
+ * not one.
+ *
+ * A themed colour is painted as `var(--ink, #1b1b1b)`, and the fallback is a
+ * colour written in a form `colourOf` already reads, so mixing from it is mixing
+ * from a stated value. The mix runs through that value on every ground, so a
+ * themed colour cross-faded on a dark page starts from its light end.
+ */
+function statedValue(colour: string): string {
+  const call = VARIABLE.exec(colour.trim());
+  return call ? call[1].trim() : colour;
+}
+
 /**
  * A colour a fraction of the way from one to another, or nothing where either
  * end is a form `colourOf` does not read.
@@ -92,8 +108,8 @@ export function colourText({ r, g, b, a }: Rgba): string {
  * rather than a quiet change to this one.
  */
 export function lerpColour(from: string, to: string, along: number): string | undefined {
-  const start = colourOf(from);
-  const end = colourOf(to);
+  const start = colourOf(statedValue(from));
+  const end = colourOf(statedValue(to));
   if (!start || !end) return undefined;
   const at = (a: number, b: number) => a + (b - a) * along;
   return colourText({

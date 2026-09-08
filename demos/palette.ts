@@ -7,36 +7,67 @@
  * own, because a mark takes a colour as text and the choosing is the author's,
  * so this sits with the demos rather than behind the door.
  *
- * Each is measured against the white the sheets are drawn on. Anything a reader
- * has to read a value or a label off clears the contrast the guidelines ask of
- * text, and the rest are washes and fields that carry no reading of their own.
- * A test holds both halves.
+ * Each colour has a value per ground, because no one value can serve both: to
+ * clear 4.5:1 against white a colour needs a relative luminance of 0.183333 or
+ * less, and to clear it against `#0d1117` it needs 0.199675 or more. Every
+ * colour is painted as `var(--name, light)`, so a sheet carrying the theme takes
+ * the value of the ground it is read on and a sheet whose style element was
+ * stripped falls back to the light value it shipped with.
+ *
+ * Anything a reader takes a value or a label off clears 4.5:1 against both
+ * grounds, and the rest are washes and fields that carry no reading of their
+ * own. A test holds both halves against both grounds.
  */
 
+/** A colour per ground, keyed by the custom property it is written to. */
+export const THEME = {
+  ink: { light: '#1b1b1b', dark: '#ebebeb' },
+  mist: { light: '#b4b9c0', dark: '#3a414c' },
+  slate: { light: '#6b7280', dark: '#9aa3ae' },
+  ember: { light: '#c2410c', dark: '#f97316' },
+  amber: { light: '#b45309', dark: '#eba043' },
+  peach: { light: '#fdba74', dark: '#7a4a1c' },
+  deep: { light: '#0369a1', dark: '#4cb8ea' },
+  sky: { light: '#38bdf8', dark: '#1f6f96' },
+  haze: { light: '#bfd7e6', dark: '#33505f' },
+  steel: { light: '#7fb2cc', dark: '#41708a' },
+  frost: { light: '#e0f2fe', dark: '#17293b' },
+  moss: { light: '#15803d', dark: '#3ec46d' },
+} as const;
+
+/** The grounds the two halves of the theme are measured against. */
+export const GROUND = { light: '#ffffff', dark: '#0d1117' } as const;
+
+/** One colour as a mark takes it, with the light value written in as what it
+ * falls back to. */
+function painted(name: keyof typeof THEME): string {
+  return `var(--${name}, ${THEME[name].light})`;
+}
+
 /** Every line a reader reads a number or a word off. */
-export const INK = '#1b1b1b';
+export const INK = painted('ink');
 /** The grid behind a graph, which has to be seen without being looked at. */
-export const MIST = '#b4b9c0';
+export const MIST = painted('mist');
 /** A shape that stands still while another moves across it. */
-export const SLATE = '#6b7280';
+export const SLATE = painted('slate');
 /** The curve a picture is about, and the cut where two surfaces meet. */
-export const EMBER = '#c2410c';
+export const EMBER = painted('ember');
 /** What a thing turns while it is being pointed at. */
-export const AMBER = '#b45309';
+export const AMBER = painted('amber');
 /** A region under a curve or inside a shape, which sits behind everything. */
-export const PEACH = '#fdba74';
+export const PEACH = painted('peach');
 /** The moving thing, and the arrows of a field. */
-export const DEEP = '#0369a1';
+export const DEEP = painted('deep');
 /** The edge of a pane of glass in space. */
-export const SKY = '#38bdf8';
+export const SKY = painted('sky');
 /** A field arrow where the field is gentle. */
-export const HAZE = '#bfd7e6';
+export const HAZE = painted('haze');
 /** A field arrow where the field is steep. */
-export const STEEL = '#7fb2cc';
+export const STEEL = painted('steel');
 /** The face of a pane of glass. */
-export const FROST = '#e0f2fe';
+export const FROST = painted('frost');
 /** A run of steepest descent. */
-export const MOSS = '#15803d';
+export const MOSS = painted('moss');
 
 /**
  * How dark a cell of a surface is drawn, from how squarely it faces the light.
