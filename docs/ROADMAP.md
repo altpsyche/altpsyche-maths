@@ -269,6 +269,84 @@ drawing on a GPU.
 sharper than triangles would. Nothing is waiting to draw this, which is the test this file orders its
 items by, so **whether 1.1.0 is worked at all is Siva's call rather than a session's.**
 
+**The depth buffer is not reached through this seam, and drawing the graph is what showed it.** A
+mark is flat. `PathMark` holds a `Path` of `Vec2` and carries no z, and `scene3` sorts its items by
+the mean depth of their own points and then hands back a flat group, so the depth it measured is
+gone before a painter sees anything. A GPU painter fed `Mark[]` therefore gets geometry already
+ordered by the painter's algorithm and has nothing to write into a depth buffer. **The argument that
+a depth buffer removes the cyclic-overlap case is true and this seam does not deliver it.**
+
+What the door does carry is `camera3.project`, which returns a `Projected` with a depth, and
+`SpaceItem`, which is a piece's world points beside the flat node built from them. So depth per piece
+is reachable today and depth per vertex is not. **Closing that is a separate item and it is Siva's
+call**, since the three answers are a mark carrying an optional z, a second call handing back space
+geometry unflattened, or the GPU painter projecting `SpaceItem` points itself. The first widens a
+door frozen at 1.0.0 and breaks the rule in `figure/mark.ts` that a mark asks only for what an SVG
+element and a 2D canvas can both do.
+
+**1.1.0 as written is still worth its own steps**, because flattening, dashes, stroke outlines and
+triangulation are what a GPU painter needs for a flat figure whatever the answer to depth is, and
+`strokeOutline` earns its place with no painter at all.
+
+#### The graph, with this item in it
+
+Nothing new crosses a boundary. This package still imports no renderer, and the site still holds both.
+
+```mermaid
+graph TD
+  subgraph site["altpsyche.dev &nbsp;&nbsp; the website"]
+    direction TB
+    W1["figures: the registry and the components"]
+    W2["shader surface and controls"]
+    W3["recording: frames to a VideoEncoder"]
+    W4["the GPU painter, and the glyph atlas under it"]
+  end
+
+  subgraph engine["@altpsyche/engine &nbsp;&nbsp; the renderer"]
+    direction TB
+    E1["gpu, graph, scene, host"]
+  end
+
+  subgraph maths["@altpsyche/maths &nbsp;&nbsp; one door"]
+    direction TB
+    M1["values: vectors, matrices, curves, easing"]
+    M2["timing: keys, tracks, sampling"]
+    M3["figure: marks, groups, timeline, animations"]
+    M4["tessellation: flatten, dashed, strokeOutline, triangulate"]
+    M5["painters: SVG, and a 2D canvas"]
+  end
+
+  W1 --> maths
+  W2 --> maths
+  W3 --> maths
+  W4 --> maths
+  W2 --> engine
+  W3 --> engine
+  W4 --> engine
+  maths -. "never" .-> engine
+
+  linkStyle 7 stroke-dasharray:4,stroke:#b00
+```
+
+**How a figure reaches a card, with nothing about a device crossing into this package.** Each arrow
+carries plain values, and the last one is the only one that touches a driver.
+
+```mermaid
+graph LR
+  F["a figure"] -->|"marksAt(t)"| K["Mark[]"]
+  K -->|"flatten, dashed, strokeOutline"| O["outlines as paths"]
+  O -->|"triangulate"| T["triangles, as numbers"]
+  K -->|"a text mark"| G["the glyph atlas, in the site"]
+  T --> P["the GPU painter, in the site"]
+  G --> P
+  P -->|"a FrameGraph"| R["@altpsyche/engine"]
+  R --> D["the device"]
+```
+
+**What answers the question of how this package reaches a renderer: it does not.** Marks and triangles
+are values, the site imports both packages and joins them, and the arrow drawn in red above stays
+undrawn. That is the arrangement `DESIGN.md` already fixed, and this item does not move it.
+
 **Its steps are written below, and no code was touched in the session that wrote them.**
 
 - [ ] **1. A cubic as a run of straight segments.** `flatten(path, tolerance)` returns each subpath as
