@@ -15,6 +15,17 @@ quality of those videos is also substantially the writing and the pacing, which 
 What is queued here is the part a library can be held to: whether a picture that channel would draw
 can be expressed at all.
 
+**What Manim has that this package already answers, so it is not audited again.** `ValueTracker`
+with `always_redraw` and `add_updater` is a `Track` with a `scene` rebuilt from the clock, and the
+rebuild is the better answer: `marksAt` gives one picture per time whichever direction the clock came
+from, where an updater driven by `dt` cannot be scrubbed backwards. `LaggedStart` is `stagger`,
+`AnimationGroup` is `together`, and `Succession` is one `play` after another. Two things here have no
+Manim counterpart at all: a figure as a file, which is 2.0.0, and boolean operations held to
+1.776e-15.
+
+**What Manim has that is refused rather than queued.** Sound, syntax-highlighted code, network
+graphs, and the glow and shadow that `manimgl` gets from its own shaders.
+
 **What decides the order.** A package is real when it has a consumer that ships, which is the
 argument [DESIGN.md](../DESIGN.md) makes about timing moving in here before a single figure existed. So
 an item earns its place by a picture something is waiting to draw, and the two demos below are what
@@ -67,6 +78,16 @@ passing the camera as data.
 **The website becomes a plain consumer.** It asks for a picture rather than assembling one, and the
 GPU painter and the recording move here from there.
 
+**A fifth decision is open, it is Siva's, and 2.0.0 is its deadline.** May a `Mark` be a raster
+image? There is no image mark today, so a figure cannot carry a photograph or a diagram somebody
+drew, and `ImageMobject` is how Manim carries one. Both painters could draw it, `<image>` and
+`drawImage`. **What makes it a deadline rather than an item is that a new kind of `Mark` is a change
+to the format's value types**, so adding one after 2.0.0 costs a major of the format's own version.
+**What is missing is the other half of this repository's test:** no demo and no chapter is waiting to
+draw an image, and a feature nothing is waiting to draw is a feature nobody has checked. So it is
+answered before the format freezes or it is refused before the format freezes, and either answer is
+cheaper than the third.
+
 **A fourth decision is open and it is Siva's. It gates the frozen renderer work rather than the format,
 so nothing below waits on it.**
 
@@ -86,8 +107,9 @@ draw it, so a figure asking for depth is refused by the SVG painter rather than 
 That keeps the rule's purpose, which is that nothing is lost without a word, while letting the GPU
 painter be worth building.
 
-**Nothing waits on this**, since the ladder holds nothing and the format work draws the marks that
-exist today.
+**Nothing waits on this**, since the format work draws the marks that exist today and the four look
+versions in front of it draw them differently rather than draw more of them. What the answer gates is
+the GPU painter, which is off the ladder either way.
 
 **A fifth set of decisions is answered, all Siva's, taken on 2026-09-08 after a review of the whole
 architecture. They reorder everything below.**
@@ -133,18 +155,42 @@ convention this repository already follows makes each one a minor bump. A versio
 demos draw, not when its code compiles. A version that is cut leaves this table and its item goes
 with it, because `git log` is what keeps a closed plan.
 
-**The ladder is frozen and holds nothing.** Siva's call. Four renderer versions were on it, and every
-one would have been written against an API the format is going to reshape. They come back once the
-format exists, in whatever shape it leaves them.
+**The ladder holds the look and then the format.** Siva's call on 2026-09-08, which reversed the
+freeze in part. Four renderer versions came off it and stay off, because every one would have been
+written against an API the format is going to reshape. Four look-and-feel versions went on in front
+of the format, because each one changes a value type the format is about to freeze a written form
+for, and freezing before they land costs a major of the format's own version to add them afterwards.
 
 | version | what lands |
 | --- | --- |
-| — | nothing is queued until the format is designed and read |
+| 1.1.0 | the typography: a size scale, a named family and a weight, text over more than one line, and a label that keeps clear |
+| 1.2.0 | the pacing: the easing vocabulary widened and named, and the demos pacing themselves |
+| 1.3.0 | the variable-width stroke, as the outline of a path rather than a painter's width |
+| 1.4.0 | gradients, as a second shape of fill with stops |
+| 1.5.0 | the view as a timeline entry, so a camera move is sequenced with the action |
+| 1.6.0 | a rectangular clip, and the inset it makes possible |
+| 2.0.0 | the figure format, whose step list is in [`FIGURE-FORMAT.md`](FIGURE-FORMAT.md) |
+| 2.1.0 | the curves and surfaces a figure can name: parametric, polar, implicit, and the solids |
+| 2.2.0 | matrices and tables, and a matrix applied to a grid |
+| 2.3.0 | the indications that run along a path, and text written on rather than faded in |
+| 2.4.0 | a group morphing into a group |
+| 2.5.0 | the recorder: a figure out as a video file |
 
-**What was on it, kept here so it is not rediscovered:** quadratics and dashes, the GPU painter, a
-figure in space keeping its depth, and text on a GPU with a recorder. The reading behind each is
-below and in `git log`, and the engine's stencil gap is filed in that repository as its item 2
-whatever happens here.
+**The 1.x band is in front of the format because each of its six changes something the format
+freezes.** 1.1.0 through 1.4.0 change a value type, 1.5.0 changes the shape of `Figure`, and 1.6.0
+changes what a `Mark` may ask for. The 2.x band is behind it because every one of those five adds a
+kind, which is a format minor an old figure survives.
+
+**Composition and camera is not on the ladder and is not dropped.** A moving view is an
+`ExtentChoice` in the plane and a `Camera3Choice` in space, and steps 3.8 and 7 of the format turn
+both into named forms with parameters. A version in front of that would write camera moves as
+closures and then rewrite them, so what composition needs beyond those two steps is a picture, and it
+is done-criteria on them instead.
+
+**What came off the ladder, kept here so it is not rediscovered:** quadratics and dashes, the GPU
+painter, a figure in space keeping its depth, and text on a GPU with a recorder. The reading behind
+each is below and in `git log`, and the engine's stencil gap is filed in that repository as its item
+2 whatever happens here.
 
 **Every version below 1.0.0 is cut and its item is deleted.** What queues work now is the table
 above, the found list below, and whatever the consumer asks for.
@@ -205,6 +251,13 @@ it, and out the far side. That walk is what makes the demo a gate rather than an
 takes the operation through no crossing, one crossing, two crossings and containment, which are the
 four cases this kind of code gets silently wrong.
 
+**Which demo each of the four look versions is cut against.** 1.1.0 reaches all four, since every
+one of them writes text and none of them names a font. 1.2.0 reaches all four too, since twenty-five
+of their twenty-six timeline entries take the same curve. 1.3.0 is the flat demo's tangent and the
+solid demo's three runs of descent. 1.4.0 is the flat demo's shaded region and the solid demo's
+plane. So each of the four holds to Siva's rule that a feature reaches a flat picture and a solid
+one.
+
 **A version is not cut until its demos draw.** The measurement is the demo's own marks: a count at
 named times, compared by tolerance, which is the gate DESIGN.md describes and which needs no browser.
 
@@ -213,7 +266,8 @@ boolean one as of 0.9.0 and the rotation one as of 0.9.5. Each image is SVG writ
 which needs no browser, so `npm run demos` regenerates the eight of them and a gate compares the
 regenerated bytes against the committed files. A picture in a README that nothing regenerates goes stale in silence. **A moving image in a README needs a GIF and this package has no
 encoder**, so what the README carries beside the still is a strip of frames in one SVG, which shows
-the motion in a still.
+the motion in a still. 2.5.0 is the version that ends that, and the strips stay either way, since a
+README that plays a video on load is a README nobody can read.
 
 ## Now
 
@@ -312,9 +366,270 @@ no box test in front of it and the quadratic over piece pairs is not worth remov
 
 ## The items
 
-Each is a version above. What follows is what each one covers.
+Each is a version above. What follows is what each one covers. The six of the 1.x band carry a step
+list and the five of the 2.x band do not, because writing one is a session of its own and the band is
+behind 2.0.0.
 
-### The figure format, and it is planned before anything is worked
+### 1.1.0 The typography
+
+**A figure's text has one size and no font.** Not one text mark in the four demos names a `family` or
+a `weight`, so every one of them falls back to `DEFAULT_FAMILY`, which is `sans-serif`. The flat
+demo's three sizes are 0.32 for its tick labels, 0.32 for its typeset equation and 0.34 for its
+reading, a span of 1.06:1, so nothing in that picture is larger than anything else. Across all four
+demos the sizes are 0.22, 0.26, 0.30, 0.32 and 0.34, a span of 1.55:1.
+
+**What this is not.** No new mark, no new painter code and no new value type. `Style` already carries
+`family` and `weight` and both painters already write them. What is missing is a figure using them
+and a size that says which text matters.
+
+- [ ] **1. A size scale, named by role.** A figure names a title, a label, a tick or a note rather
+  than a number, and the scale is one ratio applied throughout. **Measures:** the flat demo's largest
+  text against its smallest, from 1.06:1 to at least 2:1; the smallest glyph on each of the eight
+  sheets at or above what 0.13.0 measured, and `tangent.svg` still leading at 21.33 pixels, which is
+  the gate that already asserts the lead.
+
+- [ ] **2. A family and a weight the demos name.** A fallback stack rather than one family, since a
+  sheet is read wherever an `<img>` is opened. **Measures:** every text mark in the four demos naming
+  a family and a weight, from none of them today; the eight sheets' bytes re-committed with the
+  growth per sheet quoted.
+
+- [ ] **3. Text over more than one line.** A `TextNode` is one string at one anchor and there is no
+  newline, no leading and no wrapping anywhere in `figure/node.ts` or either painter, so a title over
+  two lines is placed by hand or not at all. A text node takes its lines and the leading between
+  them. **Measures:** a two-line title's second baseline against its first, at the leading it was
+  given, to 1e-12; a one-line text drawing the identical mark it draws today.
+
+- [ ] **4. A label that keeps clear of what it labels.** `upright` sits at a fixed offset from the
+  shape's centre in the rotation demo and the shape turns under it, so the word crosses the drawn
+  edge in two of the eight frames of `rotate-strip.svg`. A label takes a placement the turn cannot
+  reach. **Measures:** the word's box overlapping the shape's edge in none of the eight frames, from
+  two today.
+
+- [ ] **5. Cut 1.1.0.** The version bumped in this commit, `npm install --package-lock-only` in the
+  same one, the done-criteria verified line by line. **Measures:** the three gates; the eight sheets
+  identical after `npm run demos`; the door and the suite from 230 names and 637 tests.
+
+#### Done-criteria
+
+- Every text mark in the four demos names a family and a weight.
+- A text node carries more than one line, and a one-line text draws exactly the mark it draws today.
+- The flat demo's largest text is at least twice the size of its smallest, and the solid demo's is
+  too.
+- The smallest glyph on every sheet is at or above the pixel size 0.13.0 measured for it, and
+  `tangent.svg` still draws the largest smallest glyph of the eight.
+- The word in the rotation strip crosses the shape in none of its eight frames.
+- `npm test`, `npm run type-check` and `npm run build` pass, and the lock file agrees with the
+  manifest.
+
+### 1.2.0 The pacing
+
+**Twenty-six timeline entries across the four demos and one of them names a curve.** The other
+twenty-five take the default, which `Timeline.play` reads as `curveFor(true, true)`, so a change that
+should snap and a change that should settle are both smoothstep. Sixteen entries carry a negative
+`after` so runs overlap, and one demo staggers.
+
+**Four curves exist and all four are monotone.** `linear`, `easeIn`, `easeOut` and `smoothstep`, and
+`curveFor(fromFlat, toFlat)` is the only place they are chosen between. A `Key` says whether it is
+flat and nothing more, so a track cannot name its own curve and no figure can overshoot or come back.
+
+- [ ] **1. The easing vocabulary widened and named.** The four that exist, plus an overshoot and a
+  there-and-back, each a pure function of zero to one and each named so the format can carry a name
+  rather than a closure. **Measures:** each curve at eleven inputs against its closed form;
+  `curveFor`'s four answers unchanged; the door from 230 names.
+
+- [ ] **2. A key names its own curve.** A `Key` carries a curve rather than only a flat flag, and
+  `curveFor` stays the answer for a key that does not. **Measures:** a track keyed with each curve
+  sampled at eleven times against the curve's own values; every existing track's samples unchanged
+  within tolerance.
+
+- [ ] **3. The demos pace themselves.** Every entry that should not settle names its curve, and the
+  flat demo's eleven-entry entrance staggers where it now overlaps by hand. **Measures:** entries
+  naming a curve from 1 of 26; the flat demo's duration unchanged within a tenth of a second; each
+  sheet's marks at its named times re-committed with the count quoted.
+
+- [ ] **4. Cut 1.2.0.** **Measures:** the three gates; the eight sheets identical after
+  `npm run demos`; the door and the suite from wherever 1.1.0 left them.
+
+#### Done-criteria
+
+- The easing set is closed, named, and every member is a pure function of zero to one.
+- `curveFor` answers exactly as it does today for its four inputs.
+- A key names its own curve, and a key that does not is paced as it is today.
+- Every timeline entry in the four demos either names a curve or is one the default suits, and the
+  count of each is written in the commit body.
+- The eight sheets are re-committed and the byte gate is green.
+- The three gates pass and the lock file agrees with the manifest.
+
+### 1.3.0 The variable-width stroke
+
+**A stroke is one number and neither painter can taper it.** `Stroke.width` is a number in figure
+units, `paint/svg.ts` writes it once as `stroke-width` and `paint/canvas.ts` sets it once as
+`lineWidth`. This is what Manim gets from its own renderer and what neither painter here offers.
+
+**So a variable width is geometry rather than a painter's setting.** The stroke becomes the outline
+of the path, filled, computed in this package. That keeps `figure/mark.ts`'s rule intact, since what
+reaches a painter is a filled path both of them already draw, and it is the same answer Manim's
+renderer arrives at from the other direction.
+
+**One interaction has to be got right or the feature breaks `draw`.** `draw` trims a path with
+`trimPath`, so drawing a tapered line on has to trim the centreline and outline what is left, rather
+than trim the outline and open it.
+
+- [ ] **1. The outline of a stroked path.** A path and a width to the filled outline, with caps and
+  joins. **Measures:** a straight segment's outline against the rectangle it must be, to 1e-12; a
+  circle of radius r stroked at w giving an area within tolerance of `π((r + w/2)² − (r − w/2)²)`;
+  the outline of the flat demo's parabola against its stroked mark, by area, within a share the
+  commit quotes.
+
+- [ ] **2. A width that varies along the length.** The width is a number or a named taper with
+  parameters. **Measures:** a taper from w to nothing over a straight segment giving a triangle's
+  area to 1e-12; the width read at eleven places along the flat demo's tangent.
+
+- [ ] **3. `draw` over an outlined stroke.** The centreline is trimmed and re-outlined, so a tapered
+  line draws on from one end. **Measures:** the outlined mark at eleven fractions of `draw` against
+  the outline of the trimmed centreline, within tolerance.
+
+- [ ] **4. The demos taper.** The flat demo's tangent and the solid demo's three runs of descent.
+  **Measures:** the mark count and the bytes of each affected sheet, re-committed with both numbers
+  quoted; the marks at the named times.
+
+- [ ] **5. Cut 1.3.0.** **Measures:** the three gates; the eight sheets identical after
+  `npm run demos`; the door and the suite from wherever 1.2.0 left them.
+
+#### Done-criteria
+
+- A stroke's width is a number or a named taper, and a taper draws as a filled outline.
+- The outline of a uniform stroke matches the stroked mark by area within the share the plan quotes,
+  and a straight segment's outline is exact to 1e-12.
+- `draw` over a tapered line trims the centreline, and the eleven fractions agree within tolerance.
+- The flat demo's tangent and the solid demo's descent runs taper, and both sheets are re-committed.
+- The three gates pass and the lock file agrees with the manifest.
+
+### 1.4.0 Gradients
+
+**Refused until now, and the reason was corrected at 1.0.0.** Both painters draw a gradient. What
+refused it is that `Colour` is a string and a gradient is not, so it wants a shape of value the marks
+do not have, an id unique across every figure on a page, and a rule for how it is measured. The SVG
+painter also has no `<defs>` element at all today.
+
+**The pictures waiting for it.** The flat demo's shaded region under the parabola sits at one flat
+wash and should fade as it falls away from the curve. The solid demo's plane is one flat `FROST` fill
+and should fade toward its far edge, which is what makes a pane read as glass.
+
+- [ ] **1. A fill that is a gradient.** `Fill.colour` stays a string and a gradient is a second shape
+  of fill: stops, each a colour and an offset, along an axis given in the mark's own units.
+  **Measures:** the stops read back off a mark in the order they were given; the door from wherever
+  1.3.0 left it.
+
+- [ ] **2. The SVG painter's `<defs>`, and an id nothing collides with.** A gradient's id is built
+  from the mark's own id, which is already stable frame to frame and unique inside a figure, and the
+  document's own prefix makes it unique across a page. **Measures:** two figures in one document each
+  with a gradient, drawn with no repeated id; the bytes a sheet grows by.
+
+- [ ] **3. The canvas painter's gradient.** `createLinearGradient` with the same stops in the same
+  order, held by the recorded calls on a `CanvasLike` rather than by a pixel, since a claim about
+  what a device draws needs a device. **Measures:** the recorded stops against the mark's, colour for
+  colour and offset for offset.
+
+- [ ] **4. The demos use one.** The flat demo's region and the solid demo's plane. **Measures:** both
+  sheets re-committed with their bytes quoted; every reading over the gradient still between 1.2:1
+  and 4.5:1 against both grounds, which is the wash band 0.13.0 holds.
+
+- [ ] **5. Cut 1.4.0.** **Measures:** the three gates; the eight sheets identical after
+  `npm run demos`; the door and the suite from wherever 1.3.0 left them.
+
+#### Done-criteria
+
+- A fill is a colour or a gradient, and a gradient is stops along an axis in the mark's own units.
+- Two figures with a gradient in one document draw with no repeated id.
+- Both painters are given the same mark and produce the same stops in the same order.
+- The flat demo's region and the solid demo's plane are gradients, both sheets are re-committed, and
+  every reading over them stays inside the wash band on both grounds.
+- The three gates pass and the lock file agrees with the manifest.
+
+### 1.5.0 The view as a timeline entry
+
+**A camera move cannot be sequenced with anything.** `viewAt` reads `figure.extent` straight off the
+figure and the timeline never touches the view, so a view that moves is a function of the clock
+sitting outside the order everything else is written in. The flat demo's view follows its dot and
+holds it within 1.2 figure units of the middle, and there is no way to say that the move starts after
+the entrance finishes, overlaps it by half a second, or holds while a brace arrives. Manim animates
+`camera.frame` as an object among the others, which is why every chapter it draws can move the camera
+against the action.
+
+**What this changes is the shape of `Figure`**, which is why it goes in front of the format rather
+than after it.
+
+- [ ] **1. A view animation, and the timeline carrying it.** An entry that changes the extent over
+  its span, played and staggered like any other. The extent a figure declares stays what the view is
+  before the first entry and after the last. **Measures:** `viewAt` answering the same matrix at
+  every named time as it does today for a figure with no view entry; a view entry with a negative
+  `after` overlapping the entrance and the matrix at eleven times through the overlap.
+
+- [ ] **2. The named view moves.** A move to a fixed extent, a follow with a margin, a framing of
+  named marks, and a hold. These are the same forms step 7 of the format needs, written here first so
+  that step names them rather than inventing them. **Measures:** each form's matrix at eleven times
+  against its closed form; the flat demo's dot held within 1.2 figure units of the middle, which is
+  the number that view already quotes.
+
+- [ ] **3. Both demos move their view against the action.** The flat demo's follow becomes an entry
+  after its entrance, and the solid demo's orbit gains a held beat at the face of the saddle.
+  **Measures:** both demos' marks and view matrices at their named times, re-committed with the
+  seconds each hold lasts quoted; the flat demo's duration unchanged within a tenth of a second.
+
+- [ ] **4. Cut 1.5.0.** **Measures:** the three gates; the eight sheets identical after
+  `npm run demos`; the door and the suite from wherever 1.4.0 left them.
+
+#### Done-criteria
+
+- A view move is an entry in the timeline, sequenced with `after` and `stagger` like any animation.
+- A figure with no view entry gets the same matrix at every time it gets today.
+- The four view forms are named, and each one's matrix agrees with its closed form at eleven times.
+- Both demos move their view as a timeline entry, and the flat demo's dot stays within 1.2 figure
+  units of the middle.
+- The three gates pass and the lock file agrees with the manifest.
+
+### 1.6.0 The rectangular clip
+
+**`figure/mark.ts` refuses clipping and the reason it gives is the cost rather than the capability.**
+Both painters clip, `clipPath` and `clip()`, and the header's rule is that adding one means adding it
+to both in the same change. What a clip makes possible is the inset: a second view of the same figure
+in a corner of the frame, magnifying what the eye should be on, which is `ZoomedScene` in Manim.
+
+**The clip is a rectangle and nothing else.** An arbitrary path clip is a scissor test no GPU
+refuses only while the shape is a box; a path needs a stencil, and `@altpsyche/engine` cannot count a
+winding number, which is filed there as its item 2. So a rectangle is drawable by all three painters
+and a path is drawable by two, and the rule in `mark.ts` is what keeps the difference from reaching a
+figure.
+
+- [ ] **1. A clip on a mark, and both painters honouring it.** A rectangle in the figure's own units.
+  A mark wholly outside its clip contributes nothing rather than being drawn invisibly, which is the
+  rule `flatten` already holds for a mark with no fill and no stroke. **Measures:** a mark half
+  outside its clip drawing the same geometry with the clip written once in each painter; the recorded
+  calls on a `CanvasLike` against the SVG attributes, element for element.
+
+- [ ] **2. The inset.** A second view of the same figure, at its own extent, drawn into a rectangle
+  of the frame. **Measures:** the inset's marks against the same figure's marks read through the
+  inset's extent, mark for mark within tolerance.
+
+- [ ] **3. The flat demo carries one.** An inset magnifying the tangent point while the dot walks.
+  **Measures:** the sheet's bytes and mark count re-committed; every reading in the inset against the
+  ground still between 4.5:1 and the top of the reading band, which is what 0.13.0 holds the six
+  reading colours to.
+
+- [ ] **4. Cut 1.6.0.** **Measures:** the three gates; the eight sheets identical after
+  `npm run demos`; the door and the suite from wherever 1.5.0 left them.
+
+#### Done-criteria
+
+- A mark may carry a rectangular clip and both painters write it, and no other shape of clip exists.
+- A mark wholly outside its clip is left out of the list rather than drawn.
+- An inset draws the same marks as the figure read through the inset's own extent.
+- The flat demo carries an inset, its sheet is re-committed, and every reading in it holds the
+  contrast band.
+- The three gates pass and the lock file agrees with the manifest.
+
+### 2.0.0 The figure format
 
 **[`FIGURE-FORMAT.md`](FIGURE-FORMAT.md) is the shape this is built to**, and it is one of three
 documents of that name, one in each repository the change crosses.
@@ -427,15 +742,56 @@ expression form for arithmetic, so the camera has a step of its own.
 
 **Nothing is signed off.** Siva reads the plan before a line is written.
 
+### The 2.x band, which is what Manim has and this does not
+
+**Every one of these five adds a kind rather than changing a value type**, so each is a format minor
+an old figure survives, and each waits behind 2.0.0 for that reason. **None of them has a step list
+yet**, and writing one is a session of its own, which is the rule this file holds every item to.
+
+**2.1.0 The curves and surfaces a figure can name.** `plot` takes `(x: number) => number` and nothing
+else, so nothing that is not a function of x can be drawn on a graph: no circle on axes, no Lissajous
+figure, no phase portrait, no implicit curve. `surface3` already draws any parametrisation, so a
+sphere, a cube, a cylinder and a torus are builders over what exists rather than new machinery. **The
+picture waiting** is a phase portrait, which is the flat demo's field with a closed orbit through it
+that its slope field cannot express.
+
+**2.2.0 Matrices and tables, and a matrix applied to a grid.** A static matrix is already drawable,
+since `equationFromTex` goes through MathJax and `matchGlyphs` gives glyph-level access to what comes
+back. What is missing is a matrix whose entries are separately targetable, a table with rules, and
+the animation that carries the picture: a matrix applied to a number plane, deforming the grid.
+`mat3`, `numberPlane` and `transformPath` are all at the door already. **One thing has to be written
+into the step list:** interpolating a matrix entry by entry passes through a degenerate matrix near a
+quarter turn, so a rotation interpolates its angle and a general matrix interpolates entry by entry,
+which is what Manim does and what the picture expects. **The picture waiting** is the one this makes
+possible at all, a grid under a linear map.
+
+**2.3.0 The indications that run along a path, and text written on.** A light running along a path, a
+wave, and a wiggle are each a moving window over `trimPath`, which exists and is what `draw` already
+uses. Text is the other half: `draw` fades a text mark rather than drawing it, because a text mark is
+a string a painter lays out, so a typeset equation draws on and a plain label cannot. Closing that
+means outlines for plain text, the way MathJax already hands back outlines for an equation. **The
+picture waiting** is the flat demo's reading written on rather than faded in.
+
+**2.4.0 A group morphing into a group.** `morph` takes one target and one path. Matching many shapes
+to many is `TransformMatchingShapes`, and the matching machinery is already here: `morphEquation`
+matches glyphs and `alignPaths` matches subpaths. **The picture waiting** is the boolean demo's three
+panels morphing into one another, which no animation there can express today.
+
+**2.5.0 The recorder.** `framesOf` hands back a frame at a time and there is no encoder anywhere in
+this tree, so what a consumer gets is frames and what the goal at the top of this file asks for is an
+animation. This is the largest single distance between this package and Manim, which writes an MP4
+from a command. The third decision above already says the recorder lives here behind a dynamic
+import. **It goes after 2.0.0 rather than before** because a recorder reads a figure, and after the
+format a recorder reads a file, which is also what lets one run without a page around it.
+
 ## Found while working, not yet queued
 
-- **Three of the four things that look worse than 3Blue1Brown need no architecture.** Siva named all
-  four: motion and pacing, line quality and colour, typography and labels, and composition and
-  camera. Only line quality is partly a renderer. Easing, staggered entrances, held beats, a size
-  hierarchy and a moving camera are builder and demo work over the SVG painter that already draws.
-  **Siva asked for these in parallel and then chose to freeze everything behind the format**, so they
-  are recorded here rather than queued, and they are the first thing to pick up if the format
-  planning stalls.
+- **All four of the things that look worse than 3Blue1Brown are queued now**, which is Siva's call of
+  2026-09-08 and the reason the ladder above is no longer empty. Motion and pacing is 1.2.0,
+  typography and labels is 1.1.0, composition and camera is done-criteria on the format's steps 3.8
+  and 7, and line quality is 1.3.0 and 1.4.0 between them. **The reading that put them there is that
+  three of the four are builder and demo work over the SVG painter that already draws**, and only the
+  sharpness of a line is the renderer's.
 
 - **A renderer step would freeze an API before anything validated it**, which is part of why the
   ladder was frozen. A demo drawing quadratics as SVG checks the arithmetic and not whether the output
@@ -479,16 +835,11 @@ expression form for arithmetic, so the camera has a step of its own.
   `(-1.3, 0.3)` draws a bracket a few points long at its start on both solid sheets, which reads as a
   kink rather than as the run leaving the region. Found while cutting 0.13.0's step 10.
 
-- **The word riding the shape crosses it in two of the eight rotation frames.** `upright` sits at a
-  fixed offset from the shape's centre and the shape turns under it, so at two of the eight times in
-  `rotate-strip.svg` the word overlaps the drawn edge. The offset is one vector in `demos/rotate.ts`
-  and what it wants is a place the turn cannot reach. Found while cutting 0.13.0's step 3.
 
 ## Someday
 
-- **Gradients along a stroke or across a fill.** The refusal stands and the reason was corrected at
-  1.0.0: both painters draw a gradient, so the intersection rule was never what refused it. What
-  refuses it is that a colour is text and a gradient is not, so it wants a shape of value the marks do
-  not have, an id unique across every figure on a page, and a rule for how it is measured. Nothing has
-  asked for one.
-- **A variable-width stroke.** What Manim gets from its own renderer and neither painter here offers.
+**Nothing is here.** Gradients and the variable-width stroke were the two entries and both are on
+the ladder now, as 1.4.0 and 1.3.0, because Siva asked for the look rather than for another feature.
+The reasons they were refused are unchanged and are written into those two items as the work each has
+to do: a gradient wants a shape of value the marks do not have and an id unique across a page, and a
+variable width wants the stroke to become geometry, since neither painter can taper one.

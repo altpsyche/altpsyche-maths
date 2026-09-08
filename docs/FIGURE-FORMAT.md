@@ -315,19 +315,20 @@ function: the view follows the dot across, holding it within 1.2 figure units of
 about the exercise rather than only as an omission. Reading a figure and believing it has been
 understood is not the same as writing every one of its parameters down.
 
-### The value types, nine of them
+### The value types, ten of them
 
 A parameter is often not a number. `Coords`, `Scale`, `Interval`, `Extent`, `Camera3Choice`,
-`Mat3`, `Style` with its `Stroke` and `Fill`, `Equation`, and a `Track`. Each needs a written form,
-and each is small, and there are nine of them. The choice is in this list rather than the `Camera3` it
+`Mat3`, `Style` with its `Stroke` and `Fill`, `Equation`, a `Track`, and a `Curve`. Each needs a
+written form, and each is small, and there are ten of them. The choice is in this list rather than the `Camera3` it
 builds, because the built one carries closures.
 
 ### What the inventory changes about the plan
 
-**Sixteen names at the door carry a function and eleven shapes of function exist among them.** A
+**Seventeen names at the door carry a function and twelve shapes of function exist among them.** A
 curve of one number, a flat field of a place, a space field of a place, a surface of two numbers, a
 magnitude to a length, a magnitude to a colour, an amount to a fill, a number to a string, an aspect
-with a clock to an extent, a point to a projected point, and a clock with its track values to a tree.
+with a clock to an extent, a point to a projected point, a fraction to a fraction, and a clock with
+its track values to a tree.
 Every other builder and every other animation is already a record of values wearing a function call's
 clothing.
 
@@ -336,7 +337,7 @@ clothing.
 a precision, and later a choice of forms if a figure ever needs one.
 
 **So the vocabulary is twenty-one node kinds, two item producers, eleven path producers, two point
-producers, fifteen animation kinds, one timeline structure and nine value types**, which is sixty-one
+producers, fifteen animation kinds, one timeline structure and ten value types**, which is sixty-two
 things.
 
 ### What splitting steps 3 and 4 corrected in the inventory
@@ -381,6 +382,12 @@ than the expression form.
 track value or an orbit is a named camera form of its own. This is the second place after the flat
 demo's arc-length walk where a demo asks the expression form for arithmetic, and it is the reason the
 camera gets a step to itself.
+
+**A seventeenth name carries a function and it is the pacing.** `PlayOptions.curve` is a `Curve`,
+which is `(along: number) => number`, and `Timeline.play` defaults it to `curveFor(true, true)`. A
+`Key` carries a flat flag that `curveFor` reads. So a timeline as data names a curve rather than
+carrying one, and the set of names has to be closed before step 6 writes a timeline out. Four exist
+today and 1.2.0 widens the set, which is why that version sits in front of this one.
 
 **Eleven names at the door are drawn by no demo**, so a version cut against demos leaves them
 unchecked. They are `numberLine`, `callout`, `riemannBars`, `dot3`, `text3`, `arrow3`, `surface3` and
@@ -440,9 +447,20 @@ since it is a release away and has a document of its own.
   places; the suite from 637.
 
 - [ ] **2. The expression form, and the evaluator for it.** The closed vocabulary above, as a type
-  and a function that evaluates one against a set of track values. **Measures:** each form evaluated
-  against the TypeScript it replaces at ten inputs; a form naming an unknown function refused with a
-  sentence that names it.
+  and a function that evaluates one against a set of track values. **It is an expression over a point
+  and not only over a track value**, which is a requirement rather than a preference: the same
+  vocabulary then carries a curve of one number, a parametric curve, a field of a place, a surface of
+  two numbers and a pointwise map of a shape, where a form designed for a scalar first and widened
+  afterwards is a major of the format's own version. **Measures:** each form evaluated against the
+  TypeScript it replaces at ten inputs; a form over a point evaluated at ten places; a form naming an
+  unknown function refused with a sentence that names it.
+
+  **What the point form buys and what it still refuses.** Manim applies any Python function to every
+  point of a shape, which is `Homotopy`, `PhaseFlow` and `ApplyPointwiseFunction`, and a closed
+  format cannot. An expression over a point reaches the maps those are used for, a complex square, an
+  exponential and a Möbius map among them, and a map outside the vocabulary is refused rather than
+  drawn. That refusal is the price of the format being closed and it is the one place the price
+  shows.
 
 - [ ] **3. The node vocabulary, which is ten commits.** Twenty-one node kinds, two item producers,
   eleven path producers and two point producers as records with parameters, and a resolver from a record to the nodes that exist now. The
@@ -492,7 +510,10 @@ since it is a release away and has a document of its own.
     the resolver builds the `Camera3`, since the built one carries `project` and its `Projection`
     carries `place`. The solid demo's orbit is where the expression form meets a track for the second
     time. **Measures:** the solid demo's marks at each of the four times its strip draws, through a
-    stored choice rather than a built camera.
+    stored choice rather than a built camera. **This step and step 7 are also where composition and
+    camera lands**, which is one of the four things Siva named as looking worse than 3Blue1Brown, so
+    the solid demo's orbit gains a held beat at the face of the saddle and the commit quotes the
+    seconds it holds.
 
   - [ ] **3.9 The space nodes.** `polyline3`, `dot3`, `text3`, `arrow3`, `scene3` and `axes3`.
     **Measures:** the solid demo's axes and polylines at its named times; `dot3`, `text3` and
@@ -545,8 +566,12 @@ since it is a release away and has a document of its own.
   which carry a negative offset, producing the same marks at the same times.
 
 - [ ] **7. The extent as data.** A view that follows something becomes a named form with parameters
-  rather than a function of the clock. **Measures:** the flat demo's dot held within 1.2 figure units
-  of the middle of the frame, which is the number that view already quotes.
+  rather than a function of the clock, and the forms are the ones a figure needs rather than one per
+  demo: a fixed extent, an aspect choice, a follow with a margin, and a framing of named marks.
+  **This is the other half of composition and camera.** **Measures:** the flat demo's dot held within
+  1.2 figure units of the middle of the frame, which is the number that view already quotes; a
+  framing of the flat demo's brace and its reading holding both inside the frame at every named
+  time.
 
 - [ ] **8. The four demos rewritten as files**, 1,610 lines of module becoming descriptions.
   **Measures:** all nine sheets byte for byte as committed after `npm run demos`.
@@ -615,9 +640,16 @@ format that cannot is answered in an afternoon rather than after six months of r
 
 ## What is frozen until then
 
-The version ladder holds nothing. Four renderer versions were on it, and each would have been written
-against an API this format reshapes. What was on it is recorded in [`ROADMAP.md`](ROADMAP.md) so it is
-not rediscovered.
+Four renderer versions came off the ladder, because each would have been written against an API this
+format reshapes, and they are recorded in [`ROADMAP.md`](ROADMAP.md) so they are not rediscovered.
+
+**Four look-and-feel versions went on in front of this one**, and that is Siva's call rather than a
+softening of the freeze. Each of the four changes a value type this format is about to freeze a
+written form for: 1.1.0 the sizes and the font a `Style` carries, 1.2.0 the set of names a `Curve`
+can be, 1.3.0 what a `Stroke`'s width may be, and 1.4.0 what a `Fill` may be. Freezing before they
+land costs a major of the format's own version to add them afterwards, since an old figure has to
+keep rendering, and freezing after costs rewriting four demos' syntax in step 8, which is
+mechanical.
 
 One item survives in another repository regardless of what happens here, and it is the engine's
 stencil. That document says why.
