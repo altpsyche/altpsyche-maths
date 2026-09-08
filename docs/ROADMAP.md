@@ -426,13 +426,40 @@ demo is recompiled by steps 6 and 7 against the renamed door.
   65.0% and `rotate.svg` from 1,870 bytes to 1,876; the suite from 609 tests to 610, the new one
   holding every still above half its frame.
 
-- [ ] **11. The four surfaces divided, and who each is for.** No code. Two readers land here, the
-  person deciding whether to install this and the person looking up what `sectionOf` does, and a page
-  serves one of them at a time. This step writes into this entry what belongs on the README, what
-  belongs in the guide, what belongs in the reference and what stays in DESIGN.md, plus the numeric
-  floor steps 12 to 14 are held to. **Measures:** the outline; the count of README sections sharing
-  one shape from nine of fifteen; the count of the 402 README lines that move to the guide rather than
-  being rewritten.
+- [x] **11. The four surfaces divided, and who each is for.** Two readers land here. One is deciding
+  whether to install this and has not read a line of it. The other has installed it and wants to know
+  what `sectionOf` takes. A page serves one of them at a time, and the README serves both today,
+  which is why it is 402 lines with no install line in it.
+
+  **The README sells, and it is for the deciding reader only.** What a figure is, the picture that
+  reads best, how to install it, one example short enough to read in full, what it can draw with one
+  picture each, what it refuses, and a link to the other two pages. Nothing on it explains an option
+  bag. Target 120 lines from 402.
+
+  **`docs/GUIDE.md` teaches, and it is for the reader who has installed it.** In the order a reader
+  needs rather than the order the package is built: a figure and a mark, a painter, coordinates and
+  scales, a timeline and a span, tracks, annotations, equations, space, frames out. Every technical
+  word gets its everyday meaning where it first appears and a forward reference is a defect. It
+  carries the eight pictures and the code that draws them, which is where most of the README's nine
+  feature sections go. Those sections run from line 21 to line 321, so around 300 of the 402 lines
+  move rather than being rewritten.
+
+  **`docs/REFERENCE.md` is looked up, and nobody reads it through.** One entry per name at the door,
+  grouped by where the name comes from, each with its signature and one line saying what it is and
+  what it hands back. The gate step 14 writes reads the export names out of `index.ts` and fails when
+  a name has no entry or an entry names nothing at the door, so the fourth surface cannot go stale in
+  silence.
+
+  **DESIGN.md keeps the role it has**, which is why the design is what it is and what this package
+  refuses to do. Step 15 checks its claims rather than moving them.
+
+  **The floor steps 12 to 14 are held to**, and it is a floor and not the verdict: a sentence mean
+  under 18 words where the README's is 24.7 today, no sentence over 30 where 46 of 148 are, no banned
+  phrase where the README already has none, an install line where there is none, no section shape
+  shared by more than two sections where nine of fifteen share one, every technical word defined
+  where it first appears, and every code block compiling under `tsconfig.demos.json`. **Measured:**
+  four surfaces named with one reader each; nine of fifteen README sections sharing one shape today;
+  about 300 of 402 lines moving to the guide rather than being rewritten.
 
 - [ ] **12. The README written.** A full rewrite against the step 11 outline rather than a pass with a
   comb, and it sells rather than teaches. **Measures:** sentence mean from 24.7 words and the count
