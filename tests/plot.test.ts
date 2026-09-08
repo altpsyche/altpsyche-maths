@@ -28,7 +28,7 @@ function worstGap(path: Path, coords: typeof square, of: (x: number) => number):
 
 describe('a plotted function', () => {
   it('is one open subpath of one cubic per sample', () => {
-    const path = plot(tall, (x) => x * x, { samples: 16 });
+    const path = plot(tall, (x) => x * x, { resolution: 16 });
     expect(path).toHaveLength(1);
     expect(path[0].closed).toBe(false);
     expect(path[0].curves).toHaveLength(16);
@@ -36,7 +36,7 @@ describe('a plotted function', () => {
   });
 
   it('starts and ends on the curve itself', () => {
-    const path = plot(tall, (x) => x * x, { samples: 16 });
+    const path = plot(tall, (x) => x * x, { resolution: 16 });
     const start = pointOf(tall, -1, 1);
     const end = pointOf(tall, 4, 16);
     expect(path[0].start.x).toBeCloseTo(start.x, 12);
@@ -50,12 +50,12 @@ describe('a plotted function', () => {
     // available is in the slopes, and at the ends those are the three-point
     // difference rather than the two-point one.
     for (const samples of [16, 32, 64, 96]) {
-      expect(worstGap(plot(tall, (x) => x * x, { samples }), tall, (x) => x * x)).toBeLessThan(1e-12);
+      expect(worstGap(plot(tall, (x) => x * x, { resolution: samples }), tall, (x) => x * x)).toBeLessThan(1e-12);
     }
   });
 
   it('halves its gap from a sine four times over for each doubling of the count', () => {
-    const gaps = [16, 32, 64, 96, 256].map((samples) => worstGap(plot(wave, Math.sin, { samples }), wave, Math.sin));
+    const gaps = [16, 32, 64, 96, 256].map((samples) => worstGap(plot(wave, Math.sin, { resolution: samples }), wave, Math.sin));
     expect(gaps[0]).toBeLessThan(6e-2);
     expect(gaps[2]).toBeLessThan(2e-3);
     expect(gaps[4]).toBeLessThan(3e-5);
@@ -69,13 +69,13 @@ describe('a plotted function', () => {
   });
 
   it('is closer to a sine than straight pieces between the same samples would be', () => {
-    const path = plot(wave, Math.sin, { samples: 64 });
+    const path = plot(wave, Math.sin, { resolution: 64 });
     const straight = worstStraightGap(64);
     expect(worstGap(path, wave, Math.sin)).toBeLessThan(straight / 8);
   });
 
   it('draws over the run it is given rather than the whole graph', () => {
-    const path = plot(tall, (x) => x * x, { samples: 8, over: interval(0, 2) });
+    const path = plot(tall, (x) => x * x, { resolution: 8, over: interval(0, 2) });
     expect(path[0].start.x).toBeCloseTo(pointOf(tall, 0, 0).x, 12);
     expect(path[0].curves[7].to.x).toBeCloseTo(pointOf(tall, 2, 4).x, 12);
   });
@@ -85,7 +85,7 @@ describe('a plotted function', () => {
   });
 
   it('draws one piece where one piece is all that was asked for', () => {
-    const path = plot(tall, (x) => x * x, { samples: 1 });
+    const path = plot(tall, (x) => x * x, { resolution: 1 });
     expect(path[0].curves).toHaveLength(1);
   });
 });
@@ -161,7 +161,7 @@ describe('a curve that leaves its graph', () => {
   it('adds no piece where a sample already sits on the edge', () => {
     // Halving the gap from a sample already on the boundary lands back on it,
     // and a piece of no width has no slope to leave at.
-    const path = plot(pole, (x) => 1 / x, { samples: 96 });
+    const path = plot(pole, (x) => 1 / x, { resolution: 96 });
     for (const subpath of path) {
       let from = subpath.start;
       for (const curve of subpath.curves) {
@@ -218,13 +218,13 @@ describe('the area under a curve', () => {
     // A cubic holds a parabola with nothing left over, so the region's top is
     // the parabola itself and its area has no sampling error in it.
     for (const samples of [4, 16, 64, 96]) {
-      const area = enclosedArea(areaUnder(tall, (x) => x * x, interval(0, 2), { samples }));
+      const area = enclosedArea(areaUnder(tall, (x) => x * x, interval(0, 2), { resolution: samples }));
       expect(area / perGraphUnit).toBeCloseTo(8 / 3, 12);
     }
   });
 
   it('closes down to the axis and back', () => {
-    const path = areaUnder(tall, (x) => x * x, interval(0, 2), { samples: 4 });
+    const path = areaUnder(tall, (x) => x * x, interval(0, 2), { resolution: 4 });
     expect(path).toHaveLength(1);
     expect(path[0].closed).toBe(true);
     expect(path[0].curves).toHaveLength(7);
@@ -233,21 +233,21 @@ describe('the area under a curve', () => {
   });
 
   it('shares its top with the curve drawn over it', () => {
-    const region = areaUnder(tall, (x) => x * x, interval(0, 2), { samples: 8 });
-    const curve = plot(tall, (x) => x * x, { samples: 8, over: interval(0, 2) });
+    const region = areaUnder(tall, (x) => x * x, interval(0, 2), { resolution: 8 });
+    const curve = plot(tall, (x) => x * x, { resolution: 8, over: interval(0, 2) });
     expect(region[0].start).toEqual(curve[0].start);
     for (let piece = 0; piece < 8; piece++) expect(region[0].curves[piece]).toEqual(curve[0].curves[piece]);
   });
 
   it('measures down to the level it is given', () => {
-    const area = enclosedArea(areaUnder(tall, (x) => x * x, interval(0, 2), { baseline: -1, samples: 16 }));
+    const area = enclosedArea(areaUnder(tall, (x) => x * x, interval(0, 2), { baseline: -1, resolution: 16 }));
     // The parabola over a floor one below the axis: eight thirds and two more.
     expect(area / perGraphUnit).toBeCloseTo(8 / 3 + 2, 12);
   });
 
   it('holds a level off the graph at the near edge', () => {
-    const low = enclosedArea(areaUnder(tall, (x) => x * x, interval(0, 2), { baseline: -9, samples: 16 }));
-    const edge = enclosedArea(areaUnder(tall, (x) => x * x, interval(0, 2), { baseline: -1, samples: 16 }));
+    const low = enclosedArea(areaUnder(tall, (x) => x * x, interval(0, 2), { baseline: -9, resolution: 16 }));
+    const edge = enclosedArea(areaUnder(tall, (x) => x * x, interval(0, 2), { baseline: -1, resolution: 16 }));
     expect(low).toBeCloseTo(edge, 12);
   });
 

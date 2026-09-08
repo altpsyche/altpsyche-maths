@@ -24,7 +24,7 @@ import { line, polygon, straight, type Cubic, type Path, type Subpath } from './
 
 export interface PlotOptions {
   /** How many pieces the curve is cut into. */
-  samples?: number;
+  resolution?: number;
   /** The run of x the curve is drawn over, which is the whole width of the graph
    * where it is left out. */
   over?: Interval;
@@ -109,7 +109,7 @@ function crossing(
  * that makes the cubic pass through both samples at both slopes.
  */
 export function plot(coords: Coords, of: (x: number) => number, options: PlotOptions = {}): Path {
-  const samples = Math.max(1, Math.round(options.samples ?? SAMPLES));
+  const samples = Math.max(1, Math.round(options.resolution ?? SAMPLES));
   const { from, to } = interval.ordered(options.over ?? coords.x.graph);
   if (!(to > from)) return [];
 

@@ -360,11 +360,19 @@ demo is recompiled by steps 6 and 7 against the renamed door.
   finding and it is not queued: nothing reads those lists but a person, and the tree has never held
   them to an order.
 
-- [ ] **7. The option bags take one shape.** Four names mean sampling density today, `resolution` in
-  `space.ts` twice and `section.ts` and `field.ts`, and `samples` in `plot.ts`, in three different
-  shapes. Three names mean a domain: `over` in `space.ts` and `plot.ts` twice, and `within` in
-  `streamline.ts`. **Measures:** four names for density to one and three for a domain to one; the
-  shape each takes written out; every demo compiles.
+- [x] **7. The option bags take one shape.** Sampling density is `resolution` everywhere, and its
+  shape is one number, or one number per way the thing is counted. `plot` counted a curve in
+  `samples`, and it has one way to count so its number stays a number. The run a thing is sampled
+  over is `over`, keyed the same way: an `Interval` where there is one way and a record of them
+  where there are more, so `overX` and `overY` in `field.ts` and the bare `u` and `v` in
+  `section.ts` and `surface3.ts` are gone.
+
+  **`within` in `streamline.ts` is not the same idea and keeps its name.** `over` is where samples
+  are taken and `within` is where a walk is held, and a walk that leaves its box stops rather than
+  sampling outside it. Merging the two would have made one name mean two things, which is what this
+  step is against. **Measured:** two names for density to one and three for a domain to one, the
+  shape of each written out; the suite holds at 608 tests; every demo compiles and all eight sheets
+  identical.
 
 - [ ] **8. One palette the demos share.** Thirteen colours are written as hex across four demo files
   with no shared source, and `#1b1b1b` appears six times. The palette is the demos' own and not the

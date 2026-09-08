@@ -23,8 +23,8 @@ export interface Plane {
 }
 
 export interface SectionOptions {
-  u?: Interval;
-  v?: Interval;
+  /** The runs of the two parameters, nothing to one each unless named. */
+  over?: { u?: Interval; v?: Interval };
   resolution?: number | { u: number; v: number };
   /** How close two ends come before they are read as the same place. */
   tolerance?: number;
@@ -142,7 +142,9 @@ export function sectionOf(
   plane: Plane,
   options: SectionOptions = {},
 ): Vec3[][] {
-  const { u = interval(0, 1), v = interval(0, 1), resolution = 24, tolerance = TOLERANCE } = options;
+  const { over = {}, resolution = 24, tolerance = TOLERANCE } = options;
+  const u = over.u ?? interval(0, 1);
+  const v = over.v ?? interval(0, 1);
   const steps = stepsOf(resolution, 'u', 'v');
   const facing = vec3.normalize(plane.normal);
 

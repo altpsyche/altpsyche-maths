@@ -12,7 +12,7 @@ const LEVEL = { point: vec3(0, 0, 0.5), normal: vec3(0, 0, 1) };
 const TRUE_RADIUS = Math.sqrt(0.75);
 
 const errorAt = (resolution: number) => {
-  const runs = sectionOf(sphere, LEVEL, { ...OVER, resolution });
+  const runs = sectionOf(sphere, LEVEL, { over: OVER, resolution });
   expect(runs).toHaveLength(1);
   let worst = 0;
   for (const point of runs[0]) worst = Math.max(worst, Math.abs(Math.hypot(point.x, point.y) - TRUE_RADIUS));
@@ -35,12 +35,12 @@ describe('sectionOf', () => {
   });
 
   it('puts every point of the curve on the plane exactly', () => {
-    const runs = sectionOf(sphere, LEVEL, { ...OVER, resolution: 24 });
+    const runs = sectionOf(sphere, LEVEL, { over: OVER, resolution: 24 });
     for (const point of runs[0]) expect(Math.abs(point.z - 0.5)).toBeLessThan(1e-15);
   });
 
   it('closes the curve, so its two ends are the same point', () => {
-    const runs = sectionOf(sphere, LEVEL, { ...OVER, resolution: 24 });
+    const runs = sectionOf(sphere, LEVEL, { over: OVER, resolution: 24 });
     const run = runs[0];
     const gap = vec3.magnitude(vec3.sub(run[0], run[run.length - 1]));
     expect(gap).toBeLessThan(1e-12);
@@ -49,8 +49,7 @@ describe('sectionOf', () => {
 
   it('leaves a curve that runs off the grid open', () => {
     const runs = sectionOf((u, v) => vec3(u, v, u * u), { point: vec3(0, 0, 0.25), normal: vec3(0, 0, 1) }, {
-      u: interval(-1, 1),
-      v: interval(-1, 1),
+      over: { u: interval(-1, 1), v: interval(-1, 1) },
       resolution: 20,
     });
     expect(runs).toHaveLength(2);
@@ -62,6 +61,6 @@ describe('sectionOf', () => {
   });
 
   it('finds nothing where a plane misses the surface', () => {
-    expect(sectionOf(sphere, { point: vec3(0, 0, 4), normal: vec3(0, 0, 1) }, { ...OVER, resolution: 12 })).toHaveLength(0);
+    expect(sectionOf(sphere, { point: vec3(0, 0, 4), normal: vec3(0, 0, 1) }, { over: OVER, resolution: 12 })).toHaveLength(0);
   });
 });

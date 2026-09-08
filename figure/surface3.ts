@@ -14,10 +14,8 @@ import { polyline3, scene3, type SpaceItem } from './space.js';
 import type { GroupNode } from './node.js';
 
 export type Surface3Options = {
-  /** The run of the first parameter, nothing to one unless named. */
-  u?: Interval;
-  /** The run of the second parameter, nothing to one unless named. */
-  v?: Interval;
+  /** The runs of the two parameters, nothing to one each unless named. */
+  over?: { u?: Interval; v?: Interval };
   /** How many cells each way. */
   resolution?: number | { u: number; v: number };
   /**
@@ -54,7 +52,9 @@ export type Surface3Options = {
  * another's.
  */
 export function surfaceCells(name: string, of: (u: number, v: number) => Vec3, camera: Camera3, options: Surface3Options): SpaceItem[] {
-  const { u = interval(0, 1), v = interval(0, 1), resolution = 24, shade, light = vec3(0, 0, 1), cull = false, stroke } = options;
+  const { over = {}, resolution = 24, shade, light = vec3(0, 0, 1), cull = false, stroke } = options;
+  const u = over.u ?? interval(0, 1);
+  const v = over.v ?? interval(0, 1);
   const steps = stepsOf(resolution, 'u', 'v');
   const grid = cornersOf(of, u, v, steps);
   const toLight = vec3.normalize(light);

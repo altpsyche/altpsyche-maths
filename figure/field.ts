@@ -31,12 +31,9 @@ export interface VectorFieldOptions {
   width: number;
   /** How many samples across and up. One number is both. */
   resolution?: number | { x: number; y: number };
-  /** The run of x sampled, which is the whole width of the graph where it is
-   * left out. */
-  overX?: Interval;
-  /** The run of y sampled, which is the whole height of the graph where it is
-   * left out. */
-  overY?: Interval;
+  /** The runs sampled, each the whole of the graph that way where it is left
+   * out. */
+  over?: { x?: Interval; y?: Interval };
   /** How long a head is, in figure units. Four times the shaft's width unless
    * named, which is what an arrow takes when nothing says. */
   head?: number;
@@ -69,8 +66,9 @@ export function vectorField(
   options: VectorFieldOptions
 ): GroupNode {
   const steps = stepsOf(options.resolution ?? 12, 'x', 'y');
-  const overX = interval.ordered(options.overX ?? coords.x.graph);
-  const overY = interval.ordered(options.overY ?? coords.y.graph);
+  const over = options.over ?? {};
+  const overX = interval.ordered(over.x ?? coords.x.graph);
+  const overY = interval.ordered(over.y ?? coords.y.graph);
   const children = [];
 
   for (let column = 0; column < steps.x; column += 1) {

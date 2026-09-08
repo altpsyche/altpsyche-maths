@@ -196,8 +196,7 @@ describe('surface3', () => {
   const looking = camera3({ eye: vec3(0, 0, 5), target: vec3(0, 0, 0), projection: orthographic() });
   const ball = (resolution: number, cull: boolean, shades: number[] = []) =>
     surface3('ball', sphere, looking, {
-      u: interval(0, 2 * Math.PI),
-      v: interval(0, Math.PI),
+      over: { u: interval(0, 2 * Math.PI), v: interval(0, Math.PI) },
       resolution,
       cull,
       shade: (amount) => {

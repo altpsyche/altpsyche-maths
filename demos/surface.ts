@@ -86,8 +86,7 @@ const planeAt = (u: number, v: number) => vec3(u, v, HEIGHT);
 /** The curve where the two meet, found once rather than at every frame: it is the
  * same curve at every time and only the camera moves. */
 export const section = sectionOf(surfaceAt, { point: vec3(0, 0, HEIGHT), normal: vec3(0, 0, 1) }, {
-  u: OVER,
-  v: OVER,
+  over: { u: OVER, v: OVER },
   resolution: 48,
 });
 
@@ -172,10 +171,9 @@ export function sceneAt(along: number): Node {
     scene3(
       'body',
       [
-        ...surfaceCells('hill', surfaceAt, camera, { u: OVER, v: OVER, resolution: CELLS, shade }),
+        ...surfaceCells('hill', surfaceAt, camera, { over: { u: OVER, v: OVER }, resolution: CELLS, shade }),
         ...surfaceCells('pane', planeAt, camera, {
-          u: OVER,
-          v: OVER,
+          over: { u: OVER, v: OVER },
           resolution: PANES,
           shade: () => ({ colour: '#e0f2fe' }),
           stroke: glass,
