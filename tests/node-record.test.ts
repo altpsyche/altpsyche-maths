@@ -1,9 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import {
-  circle,
   mat3,
   marksAt,
-  polygon,
   resolveNode,
   sameMarks,
   slopeOf,
@@ -43,7 +41,9 @@ function panel(name: string, pivot: Vec2, swing: number, label: string): NodeRec
       {
         kind: 'group',
         name: 'pivot',
-        children: [{ kind: 'shape', name: 'disc', path: circle(pivot, 0.07), style: { fill: marker } }],
+        children: [
+          { kind: 'shape', name: 'disc', path: { kind: 'circle', centre: pivot, radius: 0.07 }, style: { fill: marker } },
+        ],
       },
       {
         kind: 'group',
@@ -52,7 +52,7 @@ function panel(name: string, pivot: Vec2, swing: number, label: string): NodeRec
           {
             kind: 'shape',
             name: 'ell',
-            path: polygon(LOCAL.map((point) => vec2.add(point, centre))),
+            path: { kind: 'polygon', points: LOCAL.map((point) => vec2.add(point, centre)) },
             style: { fill: wash, stroke: edge },
           },
           {

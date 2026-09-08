@@ -268,7 +268,7 @@ three more are written past those because a session should not rediscover them.
 
 | version | what lands | what it changes | steps | cut against | depends on | plan |
 | --- | --- | --- | --- | --- | --- | --- |
-| 2.0.0 | the figure format | every builder's shape, and the door | 30 | all four demos read from files, and the eight sheets | MathJax, which is already a dependency | written, in [`FIGURE-FORMAT.md`](FIGURE-FORMAT.md) |
+| 2.0.0 | the figure format | every builder's shape, and the door | 31 | all four demos read from files, and the eight sheets | MathJax, which is already a dependency | written, in [`FIGURE-FORMAT.md`](FIGURE-FORMAT.md) |
 | 2.1.0 | the curves and surfaces a figure can name: parametric, polar, implicit, and the solids | adds kinds | to plan | a phase portrait, which the flat demo's field cannot express | nothing outside this package | to plan |
 | 2.2.0 | matrices and tables, and a matrix applied to a grid | adds kinds | to plan | a grid under a linear map, which nothing here can draw | nothing outside this package | to plan |
 | 2.3.0 | the indications that run along a path, and text written on rather than faded in | adds kinds, and outlines for plain text | to plan | the flat demo's reading, written on | a source of glyph outlines for plain text | to plan |
@@ -443,10 +443,11 @@ plotted path instead of the function behind it, so a parabola's slope reads exac
 difference carried 1.06e-11. Step 2 published the expression form: `Expression`, `evaluate` and
 the thirty-four names of `EXPRESSION_FUNCTIONS`, holding a complex square, a complex exponential and
 a Möbius map. Step 3.1 published the node record and `resolveNode`, and the rotation demo built from
-records draws its eight marks at each of the four times its strip draws. The door is 283 names and
-the suite is 822 tests over 49 files. **Step 3.2 is what runs next**, which is a path as data: the
-seven named forms, `pathFromData` for anything else, and the three geometry calls that join the
-expression set once a path has a written form.
+records draws its eight marks at each of the four times its strip draws. Step 3.2 gave a path its
+written form: `PathRecord` is one of six named shapes, the path data of an SVG `d` attribute, or a
+path written out as cubics, and the rotation demo's two panels are records top to bottom. The door is
+285 names and the suite is 830 tests over 50 files. **Step 3.3 is what runs next**, which is
+`unionOf`, `intersectionOf` and `differenceOf` as records over two path records.
 
 **Two things fall due before the format freezes and both are Siva's**, which are
 whether a `Mark` may be a raster image, due by step 3 where the node vocabulary lands, and the
@@ -489,7 +490,7 @@ one 265 at 2.5 and 2.7 milliseconds a frame.
 
 **The format plan gained step 7.5, because 1.6.0 landed after it was written.** Step 6 carries the
 timeline as data and step 7 the extent, and nothing carried `Figure.insets`, so step 8 could not have
-written the flat demo out as a file with the panel it draws. The plan is thirty commits and its
+written the flat demo out as a file with the panel it draws. The plan is thirty-one commits and its
 value types eleven.
 
 **The solid demo carries an inset, so the clip reached both demos the way every 1.x feature before it
@@ -946,7 +947,8 @@ it reads, and neither number is this package's.
 **Two planning sessions ran and neither touched code.** What they produced is the format written
 down, the six questions below answered, and a step list Siva reads before anything lands. The audit
 of the 1.x band added a step to it for the insets 1.6.0 gave a figure and the review of 2026-09-09
-added one for the boolean operations, so it is thirty commits.
+added one for the boolean operations, and step 3.2 added one for the three calls that take geometry,
+so it is thirty-one commits.
 
 A figure format is a description of a picture over time that a program reads rather than runs. It
 carries nodes, tracks and animations, each a named thing with parameters, and no function anywhere.
@@ -1022,9 +1024,11 @@ specification changes before the code does.** It moves out when a second impleme
 when a tool wants the types and a validator without the whole library, which is also when
 `@altpsyche/figure-format` becomes a package. Nothing needs that today.
 
-**Steps 3 and 4 are split and the plan is complete.** Step 3 is ten commits and step 4 is five, each
-naming the demo whose marks measure it, and the plan was twenty-eight commits rather than the twelve
-to sixteen it claimed. The audit of the 1.x band added a step for the insets and it is twenty-nine.
+**Steps 3 and 4 are split and the plan is complete.** Step 3 is twelve commits and step 4 is five,
+each naming the demo whose marks measure it, and the plan was twenty-eight commits rather than the
+twelve to sixteen it claimed. The audit of the 1.x band added a step for the insets, the review of
+2026-09-09 added one for the boolean operations, and step 3.2 added one for the three calls that take
+geometry, so it is thirty-one.
 
 **Splitting them corrected the inventory in four places**, because the tables had been read from the
 names at the door rather than from each builder's return type. `riemannBars` returns a node and was

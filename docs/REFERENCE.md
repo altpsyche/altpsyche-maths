@@ -512,7 +512,7 @@ parameters, and a group's children are records. `shape`, `text` and `group` are 
 tree itself has, so a resolved record is the `Node` that `flatten` already walks. A record carries no
 functions, which is what lets the same tree survive being written to a file and read back.
 
-- `ShapeRecord` — a `kind` of `shape`, a `name`, a `path` and a `style`.
+- `ShapeRecord` — a `kind` of `shape`, a `name`, a `path` as a `PathRecord`, and a `style`.
 - `TextRecord` — a `kind` of `text`, a `name`, an `at`, a `content`, a `size` and the `options` a text
   node takes.
 - `GroupRecord` — a `kind` of `group`, a `name`, its `children` as records, and an optional
@@ -530,6 +530,21 @@ functions, which is what lets the same tree survive being written to a file and 
   expression is a place or a true or false.
 - `resolveNode(record, bindings)` — the record walked into the node it describes. The bindings reach
   the text holes and nothing else, since the holes are the only expressions a node record carries.
+- `PathRecord` — one path written as data, either a named form with its parameters or its cubics. A
+  figure chooses between the two per path rather than by a rule: a named form is shorter and says what
+  the shape is, and cubics carry a shape no named form describes. `straight` has no form here, since
+  it hands back one `Cubic` rather than a path.
+  - `line` — `from` and `to`.
+  - `polyline` — `points`, as an open run of straight segments.
+  - `polygon` — `points`, closed.
+  - `rect` — a `corner`, a `width` and a `height`.
+  - `circle` — a `centre` and a `radius`.
+  - `arc` — a `centre`, a `radius`, and `from` and `to` in radians, anticlockwise.
+  - `data` — `d`, the path data of an SVG `d` attribute.
+  - `cubics` — `subpaths`, the path itself, since a subpath is a point, a list of cubics and whether it
+    closes and is already data.
+- `resolvePath(record)` — the geometry a path record names. A form outside the set is refused with a
+  sentence naming what was asked for, since a figure read from a file carries whatever the file says.
 
 ## Text sizes
 

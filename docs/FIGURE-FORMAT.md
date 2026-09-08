@@ -473,7 +473,7 @@ frozen door is what a major exists for, so either the old calls keep working bes
 which means two APIs and two things to test, or the version goes to two. **That is Siva's call and
 this plan assumed a minor without asking.**
 
-**Realistic shape: at least thirty commits over the vocabulary and the surfaces, plus the
+**Realistic shape: at least thirty-one commits over the vocabulary and the surfaces, plus the
 site.** Against evenings and weekends that is months rather than weeks. The plan is still worth doing
 and the reasons in this document are unchanged. What was wrong was the size written next to them.
 
@@ -483,14 +483,14 @@ Each is commit-sized and names what its commit will measure. **The measurement i
 and it is the reason this plan is checkable: a figure as data draws mark for mark what the TypeScript
 figure draws, compared by tolerance.** The demos are already the conformance suite.
 
-**Steps 3 and 4 are written out, which is what the session of 2026-09-08 did.** Step 3 is ten
+**Steps 3 and 4 are written out, which is what the session of 2026-09-08 did.** Step 3 is twelve
 commits and step 4 is five, each named below with the demo whose marks measure it. Step 11 cuts the
 version and there is no step between it and step 10. **Step 7.5 was added by the audit of the 1.x
 band**, since 1.6.0 gave a figure insets and nothing here carried them.
 
-**The honest count is at least thirty commits rather than twelve to sixteen.** Eight of the
+**The honest count is at least thirty-one commits rather than twelve to sixteen.** Eight of the
 twelve steps are one commit each, which is the seven this plan was written with and the inset step
-1.6.0 added to it. Step 3 is eleven and step 4 is five. Step 8 rewrites four demos and is four. Step 9
+1.6.0 added to it. Step 3 is twelve and step 4 is five. Step 8 rewrites four demos and is four. Step 9
 rewrites the guide and the reference and is two. The site is not counted here at all, since it is a
 release away and has a document of its own.
 
@@ -517,8 +517,9 @@ release away and has a document of its own.
   door from 266 names to 274 and the suite from 787 to 808.
 
   **What the set leaves out and where it arrives.** A call taking geometry is not in it: `pointAlong`,
-  `lengthOf` and `slopeOf` all take a path, and a path has no written form until step 3.2, so they
-  join the set there. `labelFor` is not in it either and never will be, because a drawn string is a
+  `lengthOf` and `slopeOf` all take a path. This said they would join the set with the written form
+  for a path, and step 3.2 gave a path its form and left the set at thirty-four, because a call taking
+  a path widens `ExpressionValue`. They arrive at step 3.12 instead. `labelFor` is not in it either and never will be, because a drawn string is a
   template with holes and a hole carries the precision it is written with, which leaves the
   vocabulary over numbers and points alone.
 
@@ -529,10 +530,10 @@ release away and has a document of its own.
   drawn. That refusal is the price of the format being closed and it is the one place the price
   shows.
 
-- [ ] **3. The node vocabulary, which is eleven commits.** Twenty-one node kinds, two item producers,
+- [ ] **3. The node vocabulary, which is twelve commits.** Twenty-one node kinds, two item producers,
   eleven path producers and two point producers as records with parameters, and a resolver from a record to the nodes that exist now. The
   authoring calls keep their names and their arguments and return records. **The measurement every
-  one of the ten quotes is the same:** the demo that draws the kinds of that commit gives the same
+  one of the twelve quotes is the same:** the demo that draws the kinds of that commit gives the same
   marks at its own named times, within tolerance, built through records rather than calls, and the
   suite grows. A kind no demo draws is measured against its own call at one time instead.
 
@@ -554,11 +555,22 @@ release away and has a document of its own.
     **It is the rotation demo rather than the boolean one**, because the
     boolean demo's scene is a boolean operation over a track value and step 3.3 is what carries that.
 
-  - [ ] **3.2 A path as data.** `arc`, `circle`, `line`, `polygon`, `polyline`, `rect` and `straight`
-    as records, `pathFromData` as the written form for anything else, and the rule that a path is
-    either a named form with parameters or its cubics written out. **Measures:** each of the seven
-    against its own call within tolerance; the arc held between 2.6 and 2.8 parts in ten thousand of
-    the true radius, which is the bound the suite already holds; the rotation demo's two panels.
+  - [x] **3.2 A path as data.** `PathRecord` is `line`, `polyline`, `polygon`, `rect`, `circle`, `arc`,
+    `data` for the path data of an SVG `d` attribute, or `cubics` for a path written out, and
+    `resolvePath` reads one. **`straight` gets no form and the plan was wrong to name it**, since it
+    hands back one `Cubic` rather than a path and a path written out as cubics already carries its
+    controls, so the seven forms are the six shapes plus the SVG string rather than seven shapes.
+    **A path written out needs no new shape either**, because a subpath is a point, a list of cubics
+    and whether it closes, which is data already.
+    **Measured:** each of the seven forms resolves to what its own call returns within a tolerance of
+    1e-6, with the same subpath count, the same curve count per subpath and the same closure; a
+    polygon against a polyline of the same points reads as different, which is what says the
+    comparison can fail; a resolved arc of a whole turn at radius 2 and a resolved circle at radius 1
+    each leave the true radius by 2.7252e-4 of it, inside the 2.6 to 2.8 the suite already holds
+    `circle` to; the rotation demo's two panels are records top to bottom, their discs as `circle` and
+    their Ls as `polygon`, and still draw the same eight marks at each of the four times its strip
+    draws; a form the set has no entry for is refused with the sentence naming it; the suite from 822
+    to 830 and the door from 283 names to 285.
 
   - [ ] **3.3 The boolean operations as records.** `unionOf`, `intersectionOf` and `differenceOf` as
     records over two path records, since the answer's cubics are not the operands' and a walking disc
@@ -611,6 +623,17 @@ release away and has a document of its own.
     point producers they are. **Measures:** the solid demo's saddle, its plane, the curve of the
     crossing and its three runs of descent at its named times; the streamline's own bound, which the
     suite holds at 4.689e-10 of a figure unit.
+
+  - [ ] **3.12 The three calls that take geometry join the expression set.** `pointAlong`, `lengthOf`
+    and `slopeOf` each take a path, and step 2 said they would arrive with the written form for one.
+    They did not: step 3.2 gave a path its form and left the set at thirty-four, because a call taking
+    a path widens `ExpressionValue` past a number, a true or false and a point, which is a change to
+    the expression form rather than to the path form. **This lands before step 8**, since the flat
+    demo's reading is `slopeOf` inside a text hole and step 3.1 put a literal there.
+    **Measures:** each of the three against its own call at ten places; the flat demo's reading from a
+    hole whose expression is `slopeOf` over a path record, at each of the flat demo's seven named
+    times, giving the same seven strings step 3.1 measured; the set from thirty-four names to
+    thirty-seven.
 
 - [ ] **4. The animation vocabulary, which is five commits.** Fifteen kinds as records with
   parameters, and a resolver each from a record to the `Animation` the timeline already plays. **The

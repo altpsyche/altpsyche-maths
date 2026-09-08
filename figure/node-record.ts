@@ -8,9 +8,8 @@
  * moves.
  *
  * A record carries no functions, which is the whole point of it: the same tree
- * survives being written to a file and read back. What a record does not yet
- * carry is a path as data, since a path has a written form of its own that
- * arrives with the named forms, so a shape record holds resolved geometry.
+ * survives being written to a file and read back. A shape's path is a record of
+ * its own, either a named form with parameters or its cubics written out.
  *
  * Text is the one kind whose parameter is not a value the format already has. A
  * drawn string is a word beside a formatted number and the expression form is
@@ -20,7 +19,7 @@
  */
 import type { Mat3 } from '../values/mat3.js';
 import type { Vec2 } from '../values/vec2.js';
-import type { Path } from './path.js';
+import { resolvePath, type PathRecord } from './path-record.js';
 import { group, shape, text, type Node, type Style, type TextOptions } from './node.js';
 import { evaluate, type Bindings, type Expression } from './expression.js';
 import { labelFor } from './ticks.js';
@@ -47,7 +46,7 @@ export type TextContent = string | TextTemplate;
 export interface ShapeRecord {
   readonly kind: 'shape';
   readonly name: string;
-  readonly path: Path;
+  readonly path: PathRecord;
   readonly style?: Style;
 }
 
@@ -104,7 +103,7 @@ export function writeTemplate(content: TextContent, bindings: Bindings = {}): st
  * a value, so resolving a fixed tree needs no bindings at all.
  */
 export function resolveNode(record: NodeRecord, bindings: Bindings = {}): Node {
-  if (record.kind === 'shape') return shape(record.name, record.path, record.style);
+  if (record.kind === 'shape') return shape(record.name, resolvePath(record.path), record.style);
   if (record.kind === 'text') {
     return text(record.name, record.at, writeTemplate(record.content, bindings), record.size, record.options);
   }
