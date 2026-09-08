@@ -100,8 +100,9 @@ gives a figure, a painter and a file at the end.
 
 ## What this repository refactors
 
-The package is 8,316 lines of source across `values`, `timing`, `figure`, `paint` and the door, 156
-exported values and 783 tests over 47 files. Twenty-one builders return a node. This is a rewrite of
+The package is 8,316 lines of source across `values`, `timing`, `figure`, `paint` and the door, 165
+exported values counted as a top-level `export const`, `function` or `class` in those directories, and
+785 tests over 47 files. Twenty-one builders return a node. This is a rewrite of
 the middle of the package.
 
 ### Every builder splits in two
@@ -453,7 +454,7 @@ release away and has a document of its own.
 - [ ] **1. The readers take geometry rather than functions.** `slopeOf`, `areaUnder` and `tangentAt`
   work from a plotted path's own cubics. **Measures:** every demo's marks unchanged within tolerance
   at its named times; the slope read off a path against the closed-form derivative of `x²` at five
-  places; the suite from 783.
+  places; the suite from 785.
 
 - [ ] **2. The expression form, and the evaluator for it.** The closed vocabulary above, as a type
   and a function that evaluates one against a set of track values. **It is an expression over a point
@@ -482,7 +483,7 @@ release away and has a document of its own.
     kind, a name and its parameters, and a group's children are records. `shape`, `text` and `group`
     are the three, and `resolveNode` walks a record into the `Node` that `flatten` already takes.
     **Measures:** the boolean demo, which draws the fewest kinds of the four, mark for mark at its
-    named times; the suite from 783.
+    named times; the suite from 785.
 
   - [ ] **3.2 A path as data.** `arc`, `circle`, `line`, `polygon`, `polyline`, `rect` and `straight`
     as records, `pathFromData` as the written form for anything else, and the rule that a path is
@@ -607,7 +608,7 @@ release away and has a document of its own.
   same one, the done-criteria verified line by line with the number that satisfies each, and
   publishing asked for rather than assumed. It is a major because `areaUnder`, `plot`, `riemannBars`,
   `slopeOf` and `tangentAt` are all at the door and all change shape. **Measures:** the three gates;
-  all eight sheets identical after `npm run demos`; the door and the suite from 266 names and 783
+  all eight sheets identical after `npm run demos`; the door and the suite from 266 names and 785
   tests; the specification's own version, which is separate from this one.
 
 #### Done-criteria
