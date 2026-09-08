@@ -176,8 +176,8 @@ three more are written past those because a session should not rediscover them.
 | 2.2.0 | matrices and tables, and a matrix applied to a grid | adds kinds | to plan | a grid under a linear map, which nothing here can draw | nothing outside this package | to plan |
 | 2.3.0 | the indications that run along a path, and text written on rather than faded in | adds kinds, and outlines for plain text | to plan | the flat demo's reading, written on | a source of glyph outlines for plain text | to plan |
 | 2.4.0 | a group morphing into a group | adds a kind | to plan | the boolean demo's three panels, morphing into one another | nothing outside this package | to plan |
-| 2.5.0 | the recorder: a figure out as a video file | nothing in the format, and a name at the door | to plan | every demo as a file on disk rather than a strip of frames | an encoder and a container writer, neither chosen | to plan |
-| 2.6.0 | the GPU painter | nothing in the format, and a name at the door | to plan | both demos through a third painter, mark for mark against the SVG painter | `@altpsyche/engine`, with its item 2 landed | to plan |
+| 2.5.0 | the recorder: a figure out as a video file | nothing in the format, and a name at the door | to plan | every demo as a file on disk rather than a strip of frames | `mediabunny`, which the consumer already records with | to plan |
+| 2.6.0 | the GPU painter | nothing in the format, and a name at the door | to plan | both demos through a third painter, mark for mark against the SVG painter | `@altpsyche/engine`, with its item 2 landed, declared as a peer | to plan |
 | 2.7.0 | dashes and quadratics drawn on a GPU | nothing; `Stroke.dash` is already in the mark and no painter draws it | to plan | a dashed figure, and the strip that shows it moving | `@altpsyche/engine` | to plan |
 | 2.8.0 | text on a GPU, and the recorder running without a page | nothing in the format | to plan | every demo recorded off a card | `@altpsyche/engine`, 2.3.0's outlines, and 2.5.0 | to plan |
 | 3.0.0 | depth, so a figure in space keeps it | what a `Mark` may ask for, which breaks the format's own version | to plan | the solid demo, whose crossing curve is drawn in the right order rather than the tree's | `@altpsyche/engine`, and the fourth decision above | blocked on a decision |
@@ -193,12 +193,16 @@ and neither has a picture waiting, which is what a version needs before it is wo
 `nearestEdge` are at the door and a flat list of marks with stable ids is why hit testing is possible
 at all. What is missing is an event reaching a figure, and that is the part that changes `Figure`.
 
-**Two dependencies are named above and neither is chosen.** The recorder needs something to encode
-frames and something to write a container, and the browser's own `VideoEncoder` covers the first
-where it exists. Whatever is picked is loaded by the recording call rather than at import, which is
-the rule MathJax already follows here. 2.3.0's outlines for plain text are the second, and the
-typesetter already hands back outlines for an equation, so the question is whether the same path
-serves a plain label.
+**The recorder's encoder is chosen by precedent and it is `mediabunny`.** The consumer already
+records with it: `lib/video/VideoRecorder.ts` there pulls `Output`, `Mp4OutputFormat`,
+`WebMOutputFormat`, `BufferTarget` and `CanvasSource` out of a dynamic import, which is the same
+shape this package loads MathJax with. So 2.5.0 moves that dependency here rather than picking a new
+one, and the consumer drops it in the same release. **What would change the answer** is a recording
+that has to run with no browser, since a canvas source needs one.
+
+**2.3.0's outlines for plain text are the other dependency and are not chosen.** The typesetter
+already hands back outlines for an equation, so the question is whether the same path serves a plain
+label.
 
 **The engine's roadmap carries the other half of this table**, as a record of which version above
 needs what from it, so neither side rediscovers the dependency by reading the other's plan. It is a
@@ -864,6 +868,30 @@ format a recorder reads a file, which is also what lets one run without a page a
   take the churn by hand, or wait for that package to reach 1.0.0 before the painter starts. A 2.0.0
   with a frozen door cannot promise stability through a dependency below 1.0.0, where a minor may
   break anything, which is the same argument that produced the clean break.
+
+- **The consumer will hold two engines unless the declaration says otherwise, and the answer is a
+  peer dependency.** That site depends on `@altpsyche/engine` directly in nineteen files and not one
+  of them draws a figure: a shader playground, a shader background, a shader embed, a browser
+  compiler for Slang, a video export and a thumbnail script. So it keeps that package after the
+  painter lands here, and from 2.6.0 it depends on it twice, once directly and once through this
+  one. Both name `^0.3.0` today and a caret on a `0.x` tracks the last number alone, so the ranges
+  are identical now and split the moment either side moves a minor, at which point npm nests a
+  second copy under this package rather than hoisting one.
+
+  **What two copies cost, read from that package rather than assumed.** It holds three pieces of
+  module-level state: a `Set` that dedupes deprecation warnings, and two `WeakMap`s in `trace/trace.ts`
+  that track resource lifetimes. No module there holds a device or an adapter, so two copies do not
+  make two devices and a page can still hand one `GPUDevice` to both. What it costs is the renderer
+  twice in the browser bundle, a tracer blind to resources made through the other copy, which is the
+  half of that package's own diagnostics claim this would weaken, and a deprecation warning printed
+  twice.
+
+  **Declaring it a peer is what turns that into an install error rather than a bundle.** One engine
+  in the tree by construction, its version the consumer's to choose, and npm installs a missing peer
+  by itself so one install is still the whole of it. A mismatch then stops the install with a
+  sentence instead of shipping two renderers, which is the failure a package built to refuse a frame
+  before a driver sees it should prefer. **What would change the answer** is that package reaching
+  1.0.0 first, after which two caret ranges intersect across minors and npm dedupes with no help.
 
 - **An engine sitting idle costs its baseline.** That repository's numbers expire rather than hold: a
   pair of them read 514 tests over 34 files until they were re-taken at 864 over 73. Months with no
