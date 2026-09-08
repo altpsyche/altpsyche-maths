@@ -67,6 +67,26 @@ passing the camera as data.
 **The website becomes a plain consumer.** It asks for a picture rather than assembling one, and the
 GPU painter and the recording move here from there.
 
+**A fourth decision is open, it is Siva's, and 1.3.0 is incoherent until it is answered.**
+
+**May a figure be undrawable in SVG?** `figure/mark.ts` says no, in its own header: what a mark may
+ask for is the intersection of what an SVG element and a two-dimensional canvas can both do, rather
+than the union, because a figure reaching for something only one painter has "would look right on the
+page and lose it without a word in a recording". A third painter makes that a three-way intersection.
+
+**The two answers and what each costs.** If the rule stands, the GPU painter draws the same marks
+faster and sharper and gains no capability, so there is no depth buffer and 1.3.0 leaves the ladder.
+If the rule goes, a figure using depth is silently wrong in SVG, and the still frame a page puts in
+its exported HTML for a reader with no JavaScript is SVG.
+
+**A third answer exists and it is the one worth examining.** A figure declares which painters can
+draw it, so a figure asking for depth is refused by the SVG painter rather than drawn wrongly by it.
+That keeps the rule's purpose, which is that nothing is lost without a word, while letting the GPU
+painter be worth building.
+
+**Nothing in the ladder below 1.3.0 waits on this.** Quadratics, dashes and the painter itself all
+draw the marks that exist today.
+
 ## The version ladder
 
 **Every item gets its own minor version, then 1.0.0 is the polish.** Siva's plan, and the release
@@ -77,8 +97,8 @@ with it, because `git log` is what keeps a closed plan.
 | version | what lands |
 | --- | --- |
 | 1.1.0 | Quadratics and dashes, which is what a shader needs from a path |
-| 1.2.0 | The GPU painter: the fill, the stroke, and the engine behind a dynamic import |
-| 1.3.0 | A figure in space keeps its depth, and the painter writes a depth buffer |
+| 1.2.0 | The GPU painter: the fill, the stroke, and the engine behind a dynamic import, waiting on that package's item 2 |
+| 1.3.0 | A figure in space keeps its depth, and the painter writes a depth buffer, if the fourth decision allows it |
 | 1.4.0 | Text on a GPU, and a recorder that hands back a file |
 
 **Every version below 1.0.0 is cut and its item is deleted.** What queues work now is the table
@@ -495,6 +515,42 @@ Manim's reach and outside this seam's. Depth testing is per object and off by de
 item as what it waits on.
 
 ## Found while working, not yet queued
+
+- **The ladder freezes an API before anything validates it.** 1.1.0's demo draws quadratics as SVG,
+  which checks the arithmetic and not whether the output is the shape a shader wants, and the painter
+  that would say is 1.2.0. The engine's stencil gap below was found by reading its source rather than
+  by building anything, and a throwaway spike of the painter would have found it in an hour. **A
+  spike before 1.1.0 freezes a name is worth its own session** and touches nothing that ships.
+
+- **The engine cannot count a winding number, and 1.2.0's fill needs one.** `StencilMode` there is a
+  boolean mask: `mark` replaces every bit where it draws, `inside` keeps what compares equal, and
+  both set the front and back faces to one state. A winding number is counted by front and back faces
+  cancelling, which is the whole of how Loop and Blinn's fill decides an interior. **It is filed in
+  that repository as its item 2**, argued on its own merits, and 1.2.0 waits on it.
+
+- **A 1.0.0 package depends on a 0.3.0 one.** This package has promised its door does not change
+  under a consumer, and `@altpsyche/engine` is below 1.0.0, where a minor may break anything. The
+  promise cannot be honoured through a dependency that does not make it. Either the version is pinned
+  exactly and the churn is taken by hand, or that package reaches 1.0.0 first. **Siva's call**, and it
+  is wanted before 1.2.0 ships rather than after.
+
+- **This repository has no continuous integration at all.** There is no `.github/workflows`, and the
+  three gates are run by hand. The decision above says the GPU painter carries a browser gate and a
+  card gate, and `@altpsyche/engine` needed two workflows and seventeen gate scripts to have those.
+  Building that here is unestimated and is plausibly the size of the painter.
+
+- **A card gate is a gate only one machine can run.** The engine's card gate is measured on an RTX
+  5080, which is right for a renderer used in one place and is a maintenance problem for a package
+  published to npm: a correctness claim nobody else can check goes stale without anyone learning
+  that it has. What a published package can hold is the browser gate; what the card gate can hold is
+  a reading that is dated rather than a gate.
+
+- **The renderer may be the wrong thing to build for the goal.** Manim's value is a decade of
+  builders, number lines through matrices and tables and arbitrary shape morphing, and this file
+  already says that its videos are substantially the writing and the pacing. Four versions of
+  renderer work buy pictures that are sharper and can hold a depth buffer. The same effort spent on
+  builders over the SVG painter that exists moves closer to a reader being able to make the video.
+  **Siva's call, and it is the one that decides whether the ladder above is the right ladder.**
 
 - **A run of descent shows a short hook where it meets the region's edge.** The run seeded at
   `(-1.3, 0.3)` draws a bracket a few points long at its start on both solid sheets, which reads as a
