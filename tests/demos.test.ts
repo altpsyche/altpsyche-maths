@@ -128,7 +128,7 @@ describe('the committed pictures', () => {
     }
   });
 
-  it('holds the four strips at the floor and the four stills above it untouched', () => {
+  it('holds the four strips at the floor and gives the README its best-read still', () => {
     const onPage = (file: string) => {
       const markup = sheets.find((sheet) => sheet.file === file)!.markup();
       const written = [...markup.matchAll(/font-size="([0-9.]+)"/g)].map((found) => Number(found[1]));
@@ -139,10 +139,14 @@ describe('the committed pictures', () => {
     for (const strip of ['tangent-strip', 'boolean-strip', 'rotate-strip', 'surface-strip']) {
       expect(onPage(`docs/${strip}.svg`)).toBeCloseTo(14.0, 1);
     }
-    expect(onPage('docs/tangent.svg')).toBeCloseTo(17.33, 2);
-    expect(onPage('docs/boolean.svg')).toBeCloseTo(20.0, 2);
-    expect(onPage('docs/rotate.svg')).toBeCloseTo(20.8, 2);
-    expect(onPage('docs/surface.svg')).toBeCloseTo(19.32, 2);
+    const stills = ['tangent', 'boolean', 'rotate', 'surface'].map((name) => onPage(`docs/${name}.svg`));
+    expect(stills[0]).toBeCloseTo(21.33, 2);
+    expect(stills[1]).toBeCloseTo(20.0, 2);
+    expect(stills[2]).toBeCloseTo(20.8, 2);
+    expect(stills[3]).toBeCloseTo(19.32, 2);
+    // The README opens on the still that clears both readings by the most, so the
+    // one it opens on draws the largest smallest glyph as well as the least bare frame.
+    expect(Math.max(...stills)).toBe(stills[0]);
   });
 
   it('leave under four fifths of the frame bare, on the ink rather than on the box', () => {

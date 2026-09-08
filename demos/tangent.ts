@@ -230,7 +230,7 @@ export function sceneAt(along: number): Node {
   const x = toGraph(coords.x, point.x);
   return group('tangent', [
     numberPlane('grid', coords, { stroke: faint, minors: 4, minorOpacity: 0.45 }),
-    axes('axes', coords, { stroke: pen, fill: ink, size: 0.26, tip: TIP }),
+    axes('axes', coords, { stroke: pen, fill: ink, size: 0.32, tip: TIP }),
     shape('area', areaUnder(coords, curve, interval(0, x)), { fill: wash }),
     vectorField('field', coords, slopeField, {
       resolution: FIELD,
@@ -251,7 +251,7 @@ export function sceneAt(along: number): Node {
       padding: 0.28,
       stroke: pen,
       fill: ink,
-      size: 0.3,
+      size: 0.32,
     }),
   ]);
 }
