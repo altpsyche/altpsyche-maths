@@ -159,9 +159,10 @@ eight.
 **The lock file agrees with the manifest again**, and holding it there is one
 `npm install --package-lock-only` in whichever commit bumps a version.
 
-**1.0.0 is next and its sixteen steps are written below.** What it needs beyond the features is a
-read of the whole door with the promise a 1.0.0 makes in mind, and the read that planned it is a
-session of its own that touched no code.
+**1.0.0 is being worked and thirteen of its sixteen steps are ticked.** The tree is 6,569 lines, the
+door is 227 names, the suite is 610 tests, the README is 96 lines and there is a guide. What is left
+is the reference for the door and its gate, a read of DESIGN.md against the tree, and cutting the
+version. **The next session starts at step 14.**
 
 **What the 0.9.x audit found sound**, so that a later session does not go looking again. Sixty random
 pairs of shapes with no coincident edges hold both `area(A) + area(B) = area(A or B) + area(A and B)`
