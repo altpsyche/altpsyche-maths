@@ -67,7 +67,8 @@ passing the camera as data.
 **The website becomes a plain consumer.** It asks for a picture rather than assembling one, and the
 GPU painter and the recording move here from there.
 
-**A fourth decision is open, it is Siva's, and 1.3.0 is incoherent until it is answered.**
+**A fourth decision is open and it is Siva's. It gates the frozen renderer work rather than the format,
+so nothing below waits on it.**
 
 **May a figure be undrawable in SVG?** `figure/mark.ts` says no, in its own header: what a mark may
 ask for is the intersection of what an SVG element and a two-dimensional canvas can both do, rather
@@ -75,7 +76,8 @@ than the union, because a figure reaching for something only one painter has "wo
 page and lose it without a word in a recording". A third painter makes that a three-way intersection.
 
 **The two answers and what each costs.** If the rule stands, the GPU painter draws the same marks
-faster and sharper and gains no capability, so there is no depth buffer and 1.3.0 leaves the ladder.
+faster and sharper and gains no capability, so there is no depth buffer and the version that would
+have written one never returns to the ladder.
 If the rule goes, a figure using depth is silently wrong in SVG, and the still frame a page puts in
 its exported HTML for a reader with no JavaScript is SVG.
 
@@ -84,8 +86,8 @@ draw it, so a figure asking for depth is refused by the SVG painter rather than 
 That keeps the rule's purpose, which is that nothing is lost without a word, while letting the GPU
 painter be worth building.
 
-**Nothing in the ladder below 1.3.0 waits on this.** Quadratics, dashes and the painter itself all
-draw the marks that exist today.
+**Nothing waits on this**, since the ladder holds nothing and the format work draws the marks that
+exist today.
 
 **A fifth set of decisions is answered, all Siva's, taken on 2026-09-08 after a review of the whole
 architecture. They reorder everything below.**
@@ -347,11 +349,9 @@ is a format with a specification, and it evaluates a bounded expression form rat
 language: no loops, no recursion, no user-defined functions, no assignment, not Turing-complete.
 Those four are standing refusals in the specification's first section, because a name cannot hold a
 boundary and a rule can. Calling it a language was tried and dropped, since Lottie and glTF are both
-called formats and both have implementers on several platforms. The specification lives in its own repository, apart from
-every implementation, carrying the conformance suite and its own version, and this package becomes
-the reference implementation of it. That repository is made when there is a specification to put in
-it. And the specification's version is its own, so a figure declares which version of the language it
-is written in and a renderer declares which it reads.
+called formats and both have implementers on several platforms. The specification's version is its
+own, so a figure declares which version of the format it is written in and a renderer declares which
+it reads, and neither number is this package's.
 
 **This is the next session and it is a planning session.** No code is touched in it. What it produces
 is the format written down, the questions below answered, and a step list Siva reads before anything
@@ -447,23 +447,25 @@ rule forbids. When they are written out the plan is complete.
   are recorded here rather than queued, and they are the first thing to pick up if the format
   planning stalls.
 
-- **The ladder freezes an API before anything validates it.** 1.1.0's demo draws quadratics as SVG,
-  which checks the arithmetic and not whether the output is the shape a shader wants, and the painter
-  that would say is 1.2.0. The engine's stencil gap below was found by reading its source rather than
-  by building anything, and a throwaway spike of the painter would have found it in an hour. **A
-  spike before 1.1.0 freezes a name is worth its own session** and touches nothing that ships.
+- **A renderer step would freeze an API before anything validated it**, which is part of why the
+  ladder was frozen. A demo drawing quadratics as SVG checks the arithmetic and not whether the output
+  is the shape a shader wants, and only the painter says. The engine's stencil gap below was found by
+  reading its source rather than by building anything, and a throwaway spike of the painter would
+  have found it in an hour. **A spike is worth its own session whenever the renderer work returns**,
+  and it touches nothing that ships.
 
-- **The engine cannot count a winding number, and 1.2.0's fill needs one.** `StencilMode` there is a
+- **The engine cannot count a winding number, and a GPU fill needs one.** `StencilMode` there is a
   boolean mask: `mark` replaces every bit where it draws, `inside` keeps what compares equal, and
   both set the front and back faces to one state. A winding number is counted by front and back faces
   cancelling, which is the whole of how Loop and Blinn's fill decides an interior. **It is filed in
-  that repository as its item 2**, argued on its own merits, and 1.2.0 waits on it.
+  that repository as its item 2**, argued on its own merits, and the painter waits on it whenever it
+  returns.
 
 - **A 1.0.0 package depends on a 0.3.0 one.** This package has promised its door does not change
   under a consumer, and `@altpsyche/engine` is below 1.0.0, where a minor may break anything. The
   promise cannot be honoured through a dependency that does not make it. Either the version is pinned
   exactly and the churn is taken by hand, or that package reaches 1.0.0 first. **Siva's call**, and it
-  is wanted before 1.2.0 ships rather than after.
+  is answered: it is 2.0.0, a clean break, and the decision is above.
 
 - **This repository has no continuous integration at all.** There is no `.github/workflows`, and the
   three gates are run by hand. The decision above says the GPU painter carries a browser gate and a

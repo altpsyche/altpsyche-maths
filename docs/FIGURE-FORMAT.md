@@ -337,7 +337,8 @@ figure draws, compared by tolerance.** The demos are already the conformance sui
 
 **Steps 3 and 4 are each larger than a commit and are written out before they are worked**, which is
 the rule this repository holds every item to. What is below is the shape of the work rather than its
-final list, and the count is twelve to sixteen commits once those two are split.
+final list, and the count is twelve to sixteen commits once those two are split. Step 11 cuts the version and
+there is no step between it and step 10.
 
 - [ ] **1. The readers take geometry rather than functions.** `slopeOf`, `areaUnder` and `tangentAt`
   work from a plotted path's own cubics. **Measures:** every demo's marks unchanged within tolerance
@@ -382,6 +383,13 @@ final list, and the count is twelve to sixteen commits once those two are split.
 - [ ] **10. The demos are the conformance suite.** The gate reads each figure from its file rather
   than from its module. **Measures:** the whole suite green with every demo loaded as data; the byte
   gate on all nine sheets unchanged.
+
+- [ ] **11. Cut 2.0.0.** The version bumped in this commit, `npm install --package-lock-only` in the
+  same one, the done-criteria verified line by line with the number that satisfies each, and
+  publishing asked for rather than assumed. It is a major because `areaUnder`, `plot`, `riemannBars`,
+  `slopeOf` and `tangentAt` are all at the door and all change shape. **Measures:** the three gates;
+  all nine sheets identical after `npm run demos`; the door and the suite from 230 names and 637
+  tests; the specification's own version, which is separate from this one.
 
 #### Done-criteria
 
