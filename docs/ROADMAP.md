@@ -563,7 +563,9 @@ demo is recompiled by steps 6 and 7 against the renamed door.
 
 ## Someday
 
-- **Gradients along a stroke or across a fill.** DESIGN.md refuses them under the rule that a mark
-  may only ask for what both painters can do, and both painters can do gradients, so the refusal is
-  worth re-reading rather than assumed.
+- **Gradients along a stroke or across a fill.** The refusal stands and the reason was corrected at
+  1.0.0: both painters draw a gradient, so the intersection rule was never what refused it. What
+  refuses it is that a colour is text and a gradient is not, so it wants a shape of value the marks do
+  not have, an id unique across every figure on a page, and a rule for how it is measured. Nothing has
+  asked for one.
 - **A variable-width stroke.** What Manim gets from its own renderer and neither painter here offers.

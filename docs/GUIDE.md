@@ -472,9 +472,14 @@ Nothing here writes a file. What a consumer does with a painted frame is the con
 
 ## What this refuses
 
-**A mark may only ask for what both painters can do.** There are no filters, no blend modes, no
-clipping and no gradients. A figure reaching for something only SVG has would look right on a page
-and lose it without a word in a recording.
+**A mark may only ask for what both painters can do.** There are no filters, no blend modes and no
+clipping. A figure reaching for something only SVG has would look right on a page and lose it without
+a word in a recording.
+
+**A colour is flat.** There are no gradients either, and that one is not the rule above. Both
+painters draw a gradient: SVG names one with an element carrying an id, and a canvas names one with
+an object built from the context. A colour here is text that both take as it stands, so a gradient
+would be a shape of value the marks do not have.
 
 **A figure never reads the page.** Colours arrive as text you hand in. `colourOf` reads hex and
 `rgb()` back when something needs to walk between two of them, and refuses every other form rather

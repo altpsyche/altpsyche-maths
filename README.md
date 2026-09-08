@@ -65,9 +65,12 @@ that follows a moving thing. And a walk that hands out a figure a frame at a tim
 
 ## What it refuses, and why
 
-**A mark may only ask for what both painters can do.** No filters, no blend modes, no clipping and
-no gradients. A figure reaching for something only SVG has would look right on a page and lose it
-without a word in a recording.
+**A mark may only ask for what both painters can do.** No filters, no blend modes and no clipping. A
+figure reaching for something only SVG has would look right on a page and lose it without a word in
+a recording.
+
+**A colour is flat.** There are no gradients, and that one is not the rule above. Both painters draw
+a gradient, each naming it its own way, and a colour here is text that both take as it stands.
 
 **A figure never reads the page.** Colours arrive as text you hand in. Nothing here holds a palette
 or asks a browser for a computed style.

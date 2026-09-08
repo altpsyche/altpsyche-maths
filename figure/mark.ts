@@ -6,8 +6,13 @@
  * two-dimensional canvas can both do, rather than the union. A figure reaching
  * for something only one of them has would look right on the page and lose it
  * without a word in a recording, which is the worst way to find out. So there
- * are no filters, no blend modes, no clipping and no gradients here, and adding
- * one means adding it to both painters in the same change.
+ * are no filters, no blend modes and no clipping here, and adding one means
+ * adding it to both painters in the same change.
+ *
+ * A gradient is refused for a different reason, since both painters draw one.
+ * SVG names a gradient with an element carrying an id and a canvas names it with
+ * an object built from the context, and a colour here is text that both take as
+ * it stands.
  */
 import type { Vec2 } from '../values/vec2.js';
 import type { Path } from './path.js';
