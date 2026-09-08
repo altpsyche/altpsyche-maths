@@ -682,9 +682,20 @@ figure.
   machine that has the font. What is dropped is a shape whose whole reach, half a stroke width
   included, falls outside.
 
-- [ ] **2. The inset.** A second view of the same figure, at its own extent, drawn into a rectangle
-  of the frame. **Measures:** the inset's marks against the same figure's marks read through the
-  inset's extent, mark for mark within tolerance.
+- [x] **2. The inset.** `Figure.insets` is a list of `Inset`, each one an extent it shows, a
+  rectangle of the frame it draws into, a fit and one `ViewChange` applied in full at every time.
+  **Measured:** the same scene flattened under the inset's own matrix agrees with the inset's marks
+  to 1e-12 mark for mark, which reaches them through the tree rather than through the marks; two
+  units across and one up drawn into a box of four by four magnify by 2 containing and 4 covering,
+  with no flip, so a unit above the middle lands two above rather than two below; a clip of (0, 1) by
+  (-4, 5) magnified by two about (1, 0.5) becomes (6, 8) by (-8.5, 9.5) and is cut back to the
+  rectangle's (1, 5); `followView` on a dot reads (8, 3) with a width of 1 at -6, 0 and 3.5 along a
+  walk; 763 tests over 46 files to 779 over 47, and the door from 261 names to 266.
+
+  **A view entry naming a mark read the inset's copy of it as well, which the wiring found.** An
+  inset's copy carries an id ending in the mark's own, so `touches` matched both and a `followView`
+  was handed the box round the mark and its magnified copy together. `ownMarks` is the list before
+  the insets and `extentAt` folds over that.
 
 - [ ] **3. The flat demo carries one.** An inset magnifying the tangent point while the dot walks.
   **Measures:** the sheet's bytes and mark count re-committed; every reading in the inset against the
@@ -859,6 +870,12 @@ import. **It goes after 2.0.0 rather than before** because a recorder reads a fi
 format a recorder reads a file, which is also what lets one run without a page around it.
 
 ## Found while working, not yet queued
+
+- **The guide's Restrictions section still says a colour is flat and there are no gradients**, which
+  1.4.0 made false and did not correct. `docs/GUIDE.md` carries a paragraph arguing that a gradient
+  would be a kind of value the marks do not carry, and `Fill.gradient` has carried one since 1.4.0.
+  The clipping claim beside it was corrected when the clip landed. Fixing the paragraph is a
+  documentation commit of its own.
 
 - **All four of the things that look worse than 3Blue1Brown are queued now**, which is Siva's call of
   2026-09-08 and the reason the ladder above is no longer empty. Motion and pacing was 1.2.0 and is
