@@ -268,7 +268,7 @@ gap: each exists for an operation that has no picture in a graph or on a surface
   `clipPath`, `rect`, `path` in that order with the rectangle inside the clip path and
   `clip-path="url(#clip-100-30-40-40)"` on the mark; 782 tests over 47 files to 783.
 
-- [ ] **3. The guide teaches the view forms, the clip and the inset.** It mentions `taper` five times
+- [x] **3. The guide teaches the view forms, the clip and the inset.** It mentions `taper` five times
   and `gradient` three and names `moveView`, `followView`, `frameView`, the clip and the inset zero
   times, so 1.5.0 and 1.6.0 landed with a reference entry and no page. **Measures:** the guide's
   section count from 19; each of the five names appearing in it; the reference gate still holding

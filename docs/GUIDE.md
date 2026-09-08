@@ -345,13 +345,105 @@ of them.
 
 ## A moving view
 
-`viewAt(figure, seconds, width, height)` returns a painter's matrix at a time in one call. A figure
-whose extent is a function of the clock cannot then be asked for its extent at one time and its
-marks at another.
+A view move is a timeline entry. It sits in the same list the animations do, so a camera move can be
+told to start after an entrance or to overlap one, and `after` and `stagger` read it the way they
+read a fade.
+
+Three forms cover what a figure needs. `moveView` walks each field of the extent it is handed to the
+one it names and leaves the fields it does not, so a pan writes a centre alone. `followView` holds a
+named mark within a margin of the middle and pushes no further, stopping where its room runs out.
+`frameView` grows the frame to cover the named marks rather than fitting it to them, so the shape it
+was handed is the shape it keeps and the picture does not stretch as the marks move.
+
+```ts
+import { Timeline, fadeIn, followView, moveView, vec2 } from '@altpsyche/maths';
+
+// The dot is followed from the first frame, held within a unit of the middle, and
+// the camera pushes in on it once the picture has arrived.
+const timeline = Timeline.empty()
+  .play(followView('fig/dot', { within: 1, axis: 'x' }), 0)
+  .play(fadeIn('fig/grid'), 0.6)
+  .play(moveView({ width: 6, height: 3 }), 1.2, { after: 0.4 });
+```
+
+The extent a figure declares is the base those entries fold over rather than the answer. A figure
+with no view entry keeps its declared extent throughout, and a finished view entry stays applied in
+full, which is the rule every mark animation already follows.
+
+`extentAt(figure, seconds, aspect)` answers for how much of the world a figure shows at a time, after
+its view entries. `viewAt(figure, seconds, width, height)` is that call and `viewMatrix` together, so
+the extent and the matrix cannot disagree: asked for the extent at one time and the marks at another,
+a figure would draw a frame around the wrong picture.
 
 `fractionOf` resolves a point as a fraction across and up the extent it is handed, with the origin
 at the bottom left. A mark placed that way is in screen space and holds its place on the surface
-while the picture moves beneath it.
+while the picture moves beneath it. A scene placing a mark that way computes the frame the way its
+view entry does rather than calling `extentAt`, since a view that follows something reads the marks
+and the scene would be asking for what is being built.
+
+## Clips and insets
+
+A clip is the rectangle a mark is drawn inside, with everything of the mark outside that rectangle
+cut away. It is a `Bounds`, which is an `x` interval and a `y` interval, and it is a rectangle and no
+other shape: a path clip needs a winding number counted, which is a stencil on a graphics card, where
+a box is the scissor test every device already has.
+
+The rectangle is in the figure's own units rather than the mark's, which is the one place a mark
+departs from carrying its geometry through every transform above it. A transform that turns takes a
+rectangle to a shape with corners off the axes, so a clip that rode the transform down would be a
+rectangle only until a group turned.
+
+```ts
+import { circle, group, interval, shape, vec2 } from '@altpsyche/maths';
+
+const window = { x: interval(-2, 2), y: interval(-1, 1) };
+
+// Both discs are cut to the window, since a clip on a group reaches every mark
+// under it.
+const clipped = group('band', [
+  shape('left', circle(vec2(-1, 0), 0.8), { fill: ink }),
+  shape('right', circle(vec2(1, 0), 0.8), { fill: ink }),
+], { style: { clip: window } });
+```
+
+A clip inside a clip is the box both hold, since a group cannot show what the group above it has
+already cut away, and two clips that miss each other leave nothing under them at all.
+
+A shape whose whole reach falls outside its clip is left out of the mark list rather than drawn
+invisibly, and the reach counts half a stroke width past the geometry, since a line lying along the
+edge of its clip has half of it inside. A text mark stays whatever its clip says: a text mark reaches
+only as far as its own anchor here, because how wide some text is depends on which fonts the machine
+has, so dropping one on an anchor outside the clip would cut a line whose letters run back inside on
+the machine that has the font.
+
+An inset is a second view of the same figure, magnified and drawn into a rectangle of its own frame.
+It reads the marks the figure has already built rather than building the tree again, so what it shows
+is the picture at that time and not a second picture that could disagree about it.
+
+```ts
+import { followView, interval, vec2 } from '@altpsyche/maths';
+import type { Inset } from '@altpsyche/maths';
+
+const lens: Inset = {
+  // A window on the picture 1.4 by 0.63, drawn into a panel 2.8 by 1.26, so the
+  // magnification is exactly 2.
+  shows: { width: 1.4, height: 0.63 },
+  into: { x: interval(1.9, 4.7), y: interval(1.62, 2.88) },
+  // Applied in full at every time, with no span and no easing: an inset that
+  // eased into following would show the wrong part of the picture while it
+  // caught up.
+  view: followView('fig/dot'),
+  name: 'fig/lens',
+  hides: ['fig/panel'],
+};
+```
+
+The border and the ground behind a panel are the figure's own marks, since a frame round a picture is
+a shape and this package already has shapes. `hides` is what keeps the inset from magnifying them: an
+inset over the part of the picture its own border sits in would paint a picture of itself. Each
+inset's marks carry the id it is named by in front of the id of the mark they copy, so `fig/lens`
+gives `fig/lens/fig/dot`, and they carry the opacity of the marks they copy, so the picture inside a
+panel fades in as the picture does.
 
 ## Annotations
 
