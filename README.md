@@ -83,6 +83,9 @@ whole suite runs without a browser. A claim that needs one is a claim about a co
 [docs/GUIDE.md](docs/GUIDE.md) teaches the package: what a figure is, how to draw and move one, and
 what each part is for. Start there.
 
+[docs/REFERENCE.md](docs/REFERENCE.md) has one entry per name, for looking up what a call takes once
+you know which call you want.
+
 [DESIGN.md](DESIGN.md) says why it is built this way, and what it will not become.
 
 `index.ts` is the whole public surface. Nothing outside the package reaches a file inside it by

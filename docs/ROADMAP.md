@@ -159,10 +159,10 @@ eight.
 **The lock file agrees with the manifest again**, and holding it there is one
 `npm install --package-lock-only` in whichever commit bumps a version.
 
-**1.0.0 is being worked and thirteen of its sixteen steps are ticked.** The tree is 6,569 lines, the
-door is 227 names, the suite is 610 tests, the README is 96 lines and there is a guide. What is left
-is the reference for the door and its gate, a read of DESIGN.md against the tree, and cutting the
-version. **The next session starts at step 14.**
+**1.0.0 is being worked and fourteen of its sixteen steps are ticked.** The tree is 6,569 lines, the
+door is 227 names, the suite is 614 tests, the README is 96 lines, and there is a guide and a
+reference. What is left is a read of DESIGN.md against the tree with the byte gate's boundary written
+down, and cutting the version. **The next session starts at step 15.**
 
 **What the 0.9.x audit found sound**, so that a later session does not go looking again. Sixty random
 pairs of shapes with no coincident edges hold both `area(A) + area(B) = area(A or B) + area(A and B)`
@@ -498,11 +498,12 @@ demo is recompiled by steps 6 and 7 against the renamed door.
   present; nine of fifteen sections sharing one shape to six sections with six different shapes; the
   one code block compiles; all eight sheets referenced, four by the README and four by the guide.
 
-- [ ] **14. The reference for the door.** One entry per name at the door, each saying what it is and
-  what it takes, and a gate that fails when a name at the door has no entry or an entry names nothing
-  at the door. That gate is what stops the fourth surface going stale in silence, and it needs no
-  browser because it reads `index.ts` and a page of text. **Measures:** entries against names at the
-  door, which have to be equal; the suite from its step 13 count.
+- [x] **14. The reference for the door.** `docs/REFERENCE.md` is 791 lines in thirty-one sections, one
+  entry per name at the door: 227 entries against 227 names, each naming what it is and what it takes,
+  with an option bag's fields and a family's members under it. `tests/reference.test.ts` reads the door
+  and the page and holds the two equal both ways, and a name added to the door with no entry fails it.
+  The page's sentence mean is 15.5 words with none over 30, and it carries none of the banned phrases.
+  The suite went from 610 tests to 614. The README and the guide both link it.
 
 - [ ] **15. DESIGN.md, and the byte gate's boundary.** DESIGN.md is 242 lines and carries one banned
   word, `seamless`. Every claim it makes is checked against the tree, since four versions landed after

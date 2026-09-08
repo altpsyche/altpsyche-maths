@@ -2,7 +2,8 @@
 
 This page teaches the package. It goes in the order a reader needs, and every technical word gets
 its plain meaning where it first appears. [README.md](../README.md) says what the package is.
-[DESIGN.md](../DESIGN.md) says why it is built this way.
+[REFERENCE.md](REFERENCE.md) has one entry per name at the door. [DESIGN.md](../DESIGN.md) says why
+it is built this way.
 
 ## A figure, a mark, a painter
 

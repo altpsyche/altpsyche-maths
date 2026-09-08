@@ -1,0 +1,791 @@
+# Reference
+
+One entry for every name `index.ts` exports. Each says what the name is and what it takes. A test in
+the suite reads the door and this page. It fails when either holds a name the other does not, so a
+name added or renamed without an entry stops the build.
+
+[docs/GUIDE.md](GUIDE.md) teaches the package in the order a reader needs it. This page is for
+looking one name up. [DESIGN.md](../DESIGN.md) says why the design is what it is.
+
+## The words used on this page
+
+**Figure units** are the units a picture is measured in. A figure says how many wide and tall it is,
+and nothing in it is measured in pixels.
+
+**Graph units** are the numbers along an axis. A graph counting minus two to two across is in graph
+units, and a scale maps those numbers onto figure units.
+
+A **mark** is one thing to draw: an outline, filled or stroked, or a piece of text. A **node** is a
+part of the tree a figure is written as, and flattening the tree gives the marks.
+
+A **path** is a list of subpaths, and a subpath is a start point and a run of **cubics**. A cubic is
+a curve given by two control points and an end point, which is the one curve both SVG and canvas
+draw.
+
+**Below the line** are values and timing, which change almost never. **Above the line** are figures
+and painters. Nothing below the line imports anything above it.
+
+## Numbers
+
+Plain arithmetic, taking and returning numbers, so a vector, a colour channel and a uniform are all
+walked by the same lines.
+
+- `clamp(value, low, high)` — the value held inside the two bounds, whichever way round they are
+  given.
+- `lerp(from, to, along)` — the number `along` of the way from one to the other. An `along` outside
+  nothing to one reaches past that end rather than stopping there.
+- `inverseLerp(from, to, value)` — how far along the span the value sits, which is `lerp` read
+  backwards. A span of no width reports its start rather than dividing by zero.
+- `remap(value, fromLow, fromHigh, toLow, toHigh)` — the same position in a second span as it held
+  in the first.
+
+## Colours
+
+A colour in a figure is a string, which is what both painters take. These three read one back so two
+can be walked between.
+
+- `colourOf(colour)` — a colour read out of its text as `Rgba`, or nothing where the form is one
+  this does not read. Hex takes three, four, six or eight digits. `rgb()` and `rgba()` take channels
+  separated by commas or spaces, as numbers or percentages, and either name takes an alpha.
+- `colourText(rgba)` — a colour written back out, as `rgb()` where it is opaque and `rgba()` where
+  it is not. The channels are rounded, so the same colour reached two ways is the same string.
+- `lerpColour(from, to, along)` — a colour `along` of the way from one to another, or nothing where
+  either end is a form `colourOf` does not read. The walk is straight through each channel in sRGB,
+  which is what CSS mixes in when nothing names a space.
+- `Rgba` — a colour read out of its text.
+  - `r`, `g`, `b` — each channel, nothing to 255.
+  - `a` — the alpha, nothing to one.
+
+## Easing curves
+
+Four curves, each taking and returning nothing to one, so the caller decides the values at both ends
+and the curve decides only the pace between them.
+
+- `Curve` — a function from how far through a span the clock is to how far through the change the
+  value is.
+- `linear` — no easing: the value moves at one rate the whole way.
+- `easeIn` — quadratic, flat at the start, so the value leaves from rest and arrives at speed.
+- `easeOut` — quadratic, flat at the end, so the value leaves at speed and settles rather than
+  stopping dead.
+- `smoothstep` — the cubic that is flat at both ends, Ken Perlin.
+- `curveFor(fromFlat, toFlat)` — the curve for a span whose ends are flat or not. This is the only
+  place the four are chosen between, so a track and a timeline pace a change the same way.
+
+## Vectors
+
+- `Vec2` — a point or a direction in the plane, `x` and `y`.
+- `vec2(x, y)` — a `Vec2`, with the family of operations on the same name. The magnitude is not
+  called `length`, because a function's own `length` is how many arguments it takes and cannot be
+  written to.
+  - `vec2.ZERO` — the vector at the origin.
+  - `vec2.add(a, b)`, `vec2.sub(a, b)` — the two added, and the second taken from the first.
+  - `vec2.scale(v, s)` — every component multiplied by a number.
+  - `vec2.dot(a, b)` — the dot product.
+  - `vec2.cross(a, b)` — the z of the three-dimensional cross product, which is the signed area of
+    the parallelogram and says which side of `a` the vector `b` falls.
+  - `vec2.magnitude(v)`, `vec2.distance(a, b)` — how long a vector is, and how far apart two points
+    are.
+  - `vec2.normalize(v)` — the same direction at length one. A zero-length vector comes back as zero
+    rather than as not-a-number.
+  - `vec2.perpendicular(v)` — turned a quarter turn anticlockwise, which is the direction an arrow
+    head and a line's thickness are both measured along.
+  - `vec2.rotate(v, radians)` — turned about the origin.
+  - `vec2.angle(v)` — the direction it points, anticlockwise from the positive x axis, in radians
+    between minus pi and pi.
+  - `vec2.lerp(a, b, along)` — part of the way from one point to another.
+- `Vec3` — a point or a direction in space, `x`, `y` and `z`.
+- `vec3(x, y, z)` — a `Vec3`, with its own family on the same name.
+  - `vec3.ZERO`, `vec3.add`, `vec3.sub`, `vec3.scale`, `vec3.dot`, `vec3.magnitude`,
+    `vec3.normalize`, `vec3.lerp` — the same as their flat counterparts, in space.
+  - `vec3.cross(a, b)` — the cross product, which is the direction at right angles to both.
+
+## Intervals
+
+An interval is a run of numbers from one bound to another, and either bound may be the larger.
+
+- `Interval` — `from` and `to`, both readable and neither writable.
+- `interval(from, to)` — an interval, with its family on the same name. The width is not called
+  `length`, for the reason a vector's magnitude is not.
+  - `interval.span(interval)` — how far it reaches, without a sign, so an interval given either way
+    round reports the same width.
+  - `interval.holds(interval, value)` — whether the value is inside, both bounds counting as inside.
+  - `interval.ordered(interval)` — the same two bounds with the lower first, for anything that walks
+    from one end to the other.
+  - `interval.at(interval, along)` — a fraction of the way along, reaching past either bound when
+    the fraction is outside nothing to one.
+  - `interval.clampTo(interval, value)` — the value held inside the two bounds.
+  - `interval.remap(value, source, target)` — the place a value holds in one interval, read at the
+    same place in another. A source of no width hands back the target's first bound.
+
+## Matrices
+
+- `Mat3` — nine numbers, column-major, which is the transform a group of marks carries and the one
+  that maps figure units onto a surface. The entry at flat index `col * 3 + row` is the one in that
+  column and row.
+- `mat3` — the flat transform family.
+  - `mat3.IDENTITY` — the transform that changes nothing.
+  - `mat3.multiply(a, b)` — the product, applying `b` to a point first and then `a`, which is the
+    order a group's transform sits outside its child's.
+  - `mat3.translation(v)`, `mat3.scaling(v)`, `mat3.rotation(radians)` — a move, a scale, and a turn
+    about the origin.
+  - `mat3.transformPoint(m, v)` — the matrix applied to a point, taking the translation with it.
+  - `mat3.transformDirection(m, v)` — the rotation and scale applied and the translation left out,
+    which is what a direction wants: moving the picture must not move where an arrow points.
+  - `mat3.scaleFactor(m)` — how much longer a length becomes under the transform. A transform
+    scaling differently along each axis has no single answer, so this takes the mean of the two.
+- `Mat4` — sixteen numbers, column-major, which is how a camera turns a place in the world into a
+  place on the page. There is no inverse here, because a camera builds its view and its projection
+  forwards and never undoes either.
+- `mat4` — the space transform family.
+  - `mat4.IDENTITY`, `mat4.multiply(a, b)`, `mat4.translation(v)`, `mat4.scaling(v)` — as their flat
+    counterparts, in space.
+  - `mat4.rotationX(radians)`, `mat4.rotationY(radians)`, `mat4.rotationZ(radians)` — a turn about
+    each axis.
+  - `mat4.lookAt(eye, target, up)` — the matrix that lines the world up with an eye.
+  - `mat4.perspective({ fov, aspect, near, far })` — the projection that shrinks with distance.
+  - `mat4.orthographic({ left, right, bottom, top, near, far })` — the projection that does not.
+  - `mat4.transformPoint(m, v)`, `mat4.transformDirection(m, v)` — a point moved with the
+    translation, and a direction moved without it.
+
+## Tracks
+
+A track is one value's keys over time. This is the half of the package a control panel writes into
+and a figure reads out of.
+
+- `TrackValue` — what a key can hold: a number, a list of numbers, or a boolean. A boolean because a
+  control can be a switch, and a list because a control can be a vector or a colour.
+- `Key` — one keyed value.
+  - `time` — seconds into the clip. A key past the clip's end is never reached.
+  - `value` — the `TrackValue` held there.
+  - `smooth` — whether the curve is flat here, which eases the segments either side.
+- `Track` — one value's keys, in the order the sampler reads them.
+- `Tracks` — every track by name, keyed by whatever the caller keys.
+- `SAME_TIME` — how close two times count as one instant, which is half a frame at sixty a second.
+  Setting a key twice at one time replaces rather than stacks.
+- `sampleTrack(track, seconds)` — what a track is worth at a time, or null where it has no keys.
+  Outside the keys the nearest one holds, so a track never invents a value before its first key.
+- `sampleTracks(tracks, seconds)` — every track's value at a time, leaving out a track with no keys.
+- `withKey(track, key)` — the track with one key set, replacing the key at that time where there is
+  one.
+- `withoutKey(track, seconds)` — the track with the key at that time taken out.
+- `keyAt(track, seconds)` — the key sitting at a time, which is what a control reads to draw its
+  button as set rather than empty.
+
+## Paths
+
+- `Path` — a list of subpaths.
+- `Subpath` — `start`, a run of `curves`, and `closed`. A closed subpath joins its end back to its
+  start, which decides whether a fill has a straight edge there and whether the stroke has ends.
+- `Cubic` — one piece: `control1`, `control2` and `to`. A piece carries where it ends and not where
+  it began, which is why several calls here take the point it starts from as well.
+- `straight(from, to)` — a straight segment written as a cubic, with the controls at a third and two
+  thirds, which is the placement that leaves the pace even.
+- `line(from, to)` — an open path of one straight segment.
+- `polyline(points)` — an open run of straight segments.
+- `polygon(points)` — a closed run of straight segments.
+- `rect(corner, width, height)` — an axis-aligned rectangle from its corner and its size.
+- `circle(centre, radius)` — a circle as four cubic quarters, anticlockwise from the positive x
+  axis.
+- `arc(centre, radius, fromAngle, toAngle)` — an arc as a run of cubics, each covering at most a
+  quarter turn. The sweep is cut into quarters because a single cubic drifts from a true arc as the
+  angle it covers grows.
+- `pointOn(from, curve, along)` — the point a parameter of the way along a cubic.
+- `tangentOn(from, curve, along)` — which way a piece is heading at a parameter along it.
+- `splitCurve(from, curve, along)` — one piece cut into two, both drawing what the whole drew, by de
+  Casteljau's construction.
+- `transformPath(path, m)` — every point of a path moved by a transform, which is how a group's
+  transform reaches the geometry rather than being carried alongside it.
+- `pointCount(path)` — how many points a path holds, which is what two paths have to agree on before
+  one can be walked into the other.
+- `pathFromData(d)` — the path an SVG `d` attribute describes. Both cases of every command are read,
+  so a relative run is resolved against where the last one ended. A command letter followed by more
+  numbers than it takes repeats.
+- `TOLERANCE` — how close two things come before this package reads them as the same place, as a
+  distance in figure units. Every call that takes a tolerance defaults to this one, so a crossing, a
+  cut, a flattening and a stitch agree about what counts as one place.
+
+## Combining shapes
+
+- `areaOf(path)` — how much a path encloses, positive where it is wound anticlockwise. An open
+  subpath is closed by the straight run back to its start. Every subpath is added, so a ring written
+  as two loops wound opposite ways comes back as the difference between the two discs.
+- `unionOf(first, second, options)` — everything either path covers.
+- `intersectionOf(first, second, options)` — only what both paths cover.
+- `differenceOf(first, second, options)` — the first path with the second taken out of it.
+- `BooleanOptions` — what the three combining calls take.
+  - `tolerance` — how close two things come before they count as the same place, in figure units. It
+    decides where two paths are read as crossing and which ends are read as meeting.
+
+## Insides and crossings
+
+- `flattenPath(path, options)` — every subpath as a run of points, each loop closed.
+- `FlattenOptions` — what a flattening takes.
+  - `tolerance` — how far a straight run may sit from the curve it stands for, in figure units.
+- `windingAt(loops, point)` — how many times the loops wind round a point, counted along the ray
+  heading in the positive x direction.
+- `nearestEdge(loops, point)` — which edge of a flattening a point sits nearest, and which way it
+  runs. This tells a piece lying along another path's edge from one merely near it, which the
+  winding count cannot answer.
+- `FlatEdge` — `gap`, how far the point is from that edge, and `heading`, which way the edge runs.
+- `containsPoint(path, point, options)` — whether a path holds a point, under the nonzero rule. The
+  path is flattened again on every call, so asking about many points wants one flattening and
+  `windingAt` taken against it.
+- `curveCrossings(fromFirst, first, fromSecond, second, options)` — every place two cubics cross, as
+  a parameter along each and the point. Two curves covering the same stretch answer with the two
+  ends of that stretch.
+- `Crossing` — `alongFirst`, `alongSecond` and the `point` where they meet.
+- `CrossingOptions` — what a crossing search takes.
+  - `tolerance` — how close two pieces come before they count as meeting, in figure units. It
+    decides which meetings are told apart rather than how sharp one is, since Newton's method
+    supplies the sharpness afterwards.
+- `cutPath(path, cuts, options)` — a path with every cut put in, drawing what it drew and holding
+  one more piece per cut. A cut naming a piece the path does not have is ignored.
+- `Cut` — where one cut falls: the `subpath`, the `curve` in it, and how far `along` that piece.
+- `CutOptions` — what cutting takes.
+  - `tolerance` — how close two cuts, or a cut and the end of a piece, are before they count as the
+    same place, in figure units. It is read against each piece's own length, so a cut is made only
+    where the piece it would leave behind is long enough to see.
+
+## Length, trimming and morphing
+
+- `lengthOf(path)` — how long a path is, in figure units, across every subpath. It reads a little
+  short of the truth, by the chord error of its sampling.
+- `pointAlong(path, fraction)` — the point a fraction of the way along a path, measured by length
+  rather than by piece. A fraction outside nothing to one is held at the nearer end, and a path with
+  no points hands back nothing.
+- `trimPath(path, fraction)` — the path up to a fraction of its total length. A fraction at or past
+  one is the path itself, untouched.
+- `alignPaths(from, to)` — the two paths rewritten to the same shape of point list, each drawing
+  exactly what it drew before.
+- `lerpPath(from, to, along)` — part way from one path to another, point by point, after aligning
+  them.
+
+## Marks
+
+What a painter draws. A mark asks only for what both painters can do.
+
+- `Colour` — a colour as text, which is any colour a CSS author can write.
+- `Fill` — how an inside is painted.
+  - `colour` — the colour.
+  - `rule` — `nonzero` or `evenodd`, how a shape that crosses itself decides what is inside.
+- `Stroke` — how a line is painted.
+  - `colour` — the colour.
+  - `width` — in figure units, so a line reads the same weight at every size the figure is drawn at.
+  - `cap` — `butt`, `round` or `square`, the shape of each end.
+  - `join` — `miter`, `round` or `bevel`, the shape of each corner.
+  - `dash` — lengths of the drawn and undrawn runs, in figure units.
+  - `dashOffset` — how far into that pattern the line starts.
+- `PathMark` — an outline to draw: its `path`, and a `fill`, a `stroke`, or both.
+- `TextMark` — a piece of text to draw.
+  - `at` — where its anchor sits.
+  - `text` — the characters.
+  - `size` — in figure units, like a stroke width.
+  - `family`, `weight` — the font asked for.
+  - `align` — `start`, `middle` or `end`, which end of the text sits at the anchor.
+  - `baseline` — `alphabetic`, `middle` or `hanging`, where the anchor sits against the line of
+    text.
+  - `fill` — the colour the letters are painted.
+- `Mark` — a `PathMark` or a `TextMark`. Every mark also carries the `id` it was named by.
+
+## The extent and the view
+
+- `Extent` — how much of the world a figure shows, in its own units.
+  - `width`, `height` — how many units across and up.
+  - `centre` — where the middle of the frame sits, the origin unless named. A figure whose view
+    follows something moves this rather than moving everything it draws.
+- `ExtentChoice` — an extent, or a function of the surface's aspect and the time that returns one.
+- `Fit` — `contain` fits the whole extent inside the surface; `cover` fills the surface and lets the
+  extent run off the edges.
+- `resolveExtent(choice, aspect, seconds)` — the extent a choice comes to at one shape of surface
+  and one time.
+- `byAspect({ wide, square, tall })` — an extent per shape of surface, for a figure whose
+  composition does not survive being reframed. The two thresholds sit between sixteen by nine,
+  square, and nine by sixteen.
+- `matchingAspect(height)` — an extent that follows the shape of whatever it is drawn on. The height
+  is fixed and the width follows the surface, so `contain` fits it exactly at any shape.
+- `fractionOf(extent, across, up)` — a point given as a fraction of the frame rather than in figure
+  units, with nothing at the bottom left and one at the top right. This is the only placement that
+  is safe over something a figure cannot read, such as a shader.
+- `viewMatrix(extent, fit, surfaceWidth, surfaceHeight)` — the one matrix taking figure units onto a
+  surface, with the extent centred and the y axis flipped. A figure counts upward and both painters
+  count downward from the top, and flipping here is what keeps the two from disagreeing.
+
+## Bounds
+
+- `Bounds` — a box, as an `x` interval and a `y` interval.
+- `boundsOf(path)` — the box round a path, or nothing where it holds no points.
+- `boundsOfMarks(marks)` — the box round a list of marks, or nothing where the list is empty. A text
+  mark reaches only as far as its own anchor. How wide text is depends on which fonts the machine
+  has, and nothing about a figure's layout may turn on that.
+- `centreOf(bounds)` — the middle of a box, which is what a turn or a growth happens about when a
+  figure names no other point.
+
+## Graph coordinates
+
+A scale is the mapping from the numbers on an axis to places in a figure. It is a value the caller
+holds rather than something read back out of a drawn group, so a curve drawn over axes that were
+never drawn works.
+
+- `Scale` — `graph`, the numbers the axis counts through, and `units`, where those numbers land in
+  figure units.
+- `scaleOf(graph, units)` — a scale from those two intervals.
+- `toUnits(scale, value)` — a number on the axis, as a place in figure units.
+- `toGraph(scale, place)` — a place in figure units, as a number on the axis, which is what a reader
+  pointing at the picture is asking for.
+- `Coords` — an `x` scale and a `y` scale together.
+- `coordsOf(x, y)` — the two scales as one value.
+- `pointOf(coords, x, y)` — a pair of graph numbers as a point in figure units.
+
+## Ticks
+
+- `Tick` — `value`, in graph units and rounded to the decimals its own label shows, and `label`,
+  what is written there.
+- `tickStep(bounds, about)` — the gap between one tick and the next for an interval that wants about
+  this many. An axis here keeps the bounds it was given, so the span is divided as it stands rather
+  than rounded outward first.
+- `ticksOn(bounds, about)` — every tick inside the interval, with the number each one shows.
+- `labelFor(value, step)` — a tick's value written out, with as many decimals as its step needs and
+  no more. The decimal count comes from the step rather than from the value, so every label along
+  one axis is written to the same width.
+
+## The tree
+
+- `Style` — what a node paints with: `fill`, `stroke`, `opacity`, `family` and `weight`. A style set
+  on a group is handed down to its children.
+- `ShapeNode` — a named path with a style.
+- `TextNode` — named text at a point, with a size, an alignment and a baseline.
+- `GroupNode` — a named list of children, with an optional `transform` and `style`.
+- `Node` — a `ShapeNode`, a `TextNode` or a `GroupNode`.
+- `TextOptions` — a style, plus the `align` and `baseline` a text node takes.
+- `shape(name, path, style)` — a shape node.
+- `text(name, at, content, size, options)` — a text node.
+- `group(name, children, options)` — a group node, taking a `transform` and a `style`.
+- `flatten(root, transform, style)` — the tree resolved into the list a painter draws. A shape with
+  neither a fill nor a stroke is left out rather than emitted invisible. An invisible mark costs a
+  painter an element and turns up in a comparison between two frames as a change.
+
+## Graphs
+
+- `plot(coords, of, options)` — the curve of a function over a run of x, as one subpath per stretch
+  of it that is on the graph. Each piece is a Hermite cubic carrying the sample's own slope, which
+  is what makes the curve pass through both samples at both slopes.
+- `PlotOptions` — what plotting takes.
+  - `resolution` — how many pieces the curve is cut into.
+  - `over` — the run of x the curve is drawn over, the whole width of the graph where it is left
+    out.
+- `areaUnder(coords, of, over, options)` — the region between a curve and a level line, closed. The
+  top of the region is the same geometry `plot` draws over the same run.
+- `AreaOptions` — `PlotOptions`, plus:
+  - `baseline` — the height the region is measured down to, the axis itself where it is left out. A
+    height off the graph sits at the near edge instead.
+- `riemannBars(name, coords, of, options)` — the bars under a curve, each named by its place in the
+  run so a stagger can reach them one at a time. A bar whose top is off the graph is cut at the
+  edge.
+- `BarsOptions` — what the bars take.
+  - `fill`, `stroke` — how they are painted. The style sits on the group, which is what lets the
+    whole run fade as one thing.
+  - `bars` — how many the run is cut into.
+  - `over` — the run of x they cover, the whole width of the graph where it is left out.
+  - `height` — `left`, `right` or `middle`, where in each bar its height is read.
+  - `baseline` — the level the bars stand on.
+- `slopeOf(of, x, step)` — the slope of a function at a point, from the central difference either
+  side of it. Either side rather than one side makes the error fall as the step squared and costs
+  the same two calls.
+- `tangentAt(coords, of, x, options)` — the tangent to a curve at a point, as a straight line cut
+  where it leaves the graph.
+- `TangentOptions` — what a tangent takes.
+  - `reach` — how far the line reaches either side of the point, in graph units.
+  - `step` — the step the slope is read over, for a function whose own scale asks for a different
+    one.
+
+## Axes and grids
+
+- `numberLine(name, scale, options)` — one axis as a group: the line, the ticks under `ticks`, the
+  labels under `labels` and the tips under `tips`. Each tick and label is named after the number it
+  shows, so an animation naming one follows that number when the axis is rebuilt over a different
+  range.
+- `NumberLineOptions` — what a number line takes.
+  - `stroke` — the line, its ticks and the outline of its tips.
+  - `fill`, `size` — the labels and the tips, and how big the labels are in figure units. Nothing is
+    written where either is missing.
+  - `at` — where the line sits on the other axis, in figure units.
+  - `direction` — `across` or `up`.
+  - `ticks` — about how many are wanted. The step is a round number, so the count is near this
+    rather than equal to it.
+  - `tickLength` — how far a tick reaches across the line in total, half either side.
+  - `gap` — from the end of a tick to the label's own anchor.
+  - `tip` — how long the head at each end is. Nothing is drawn where this is zero.
+  - `spread` — how wide a head is across its base, against its length.
+  - `family`, `weight` — the font the labels are asked for.
+  - `skipZero` — leaves the label at zero out, which a second axis crossing here wants.
+  - `crossedAt` — the number on this line another line crosses it at. The label there is written
+    below and to the left of the crossing, since under it is where the other line already is.
+- `axes(name, coords, options)` — two number lines under one group, named `x` and `y`, each crossing
+  the other at that other's zero. Where zero is outside an interval the line sits at the near edge.
+- `AxesOptions` — the number line's own options without `at`, `direction` and `skipZero`, which a
+  pair of axes decides for itself.
+- `numberPlane(name, coords, options)` — the grid behind a graph: a line standing on each tick of
+  both axes, and fainter lines dividing the gaps between them.
+- `NumberPlaneOptions` — what the grid takes.
+  - `stroke` — the lines standing on the ticks, handed down from the group so the whole grid fades
+    as one thing.
+  - `minors` — how many gaps each step is divided into.
+  - `minorOpacity` — how much of the stroke a minor line is drawn with. A grid a reader notices is a
+    grid competing with the curve on top of it.
+  - `minorWidth` — how wide a minor line is against a major one.
+  - `ticks` — about how many ticks each axis wants.
+
+## Fields on a graph
+
+- `vectorField(name, coords, of, options)` — the arrows of a field over a graph, one group per
+  sample. Each is named by its column and row, so a stagger can reach them one at a time. A sample
+  sits at the middle of its cell rather than on the grid line.
+- `VectorFieldOptions` — what a flat field takes.
+  - `lengthOf` — how long an arrow is, in figure units, from the magnitude at its own sample. A
+    length in graph units under two axes counting at different rates would draw arrows pointing one
+    way several times shorter than arrows pointing the other at the same magnitude.
+  - `colourFor` — what colour an arrow is, from that same magnitude.
+  - `width` — how wide a shaft is, in figure units.
+  - `resolution` — how many samples across and up. One number is both.
+  - `over` — the runs of x and y sampled, each the whole of the graph that way where it is left out.
+  - `head` — how long a head is, in figure units. Four times the shaft's width unless named.
+  - `spread` — how wide a head is across its base, against its length.
+- `streamlineOf(of, from, options)` — the streamline of a field through a seed point, in graph
+  units. The run stops when it leaves the region, reaches its step cap, or stands where the field is
+  too small to point anywhere.
+- `StreamlineOptions` — what a streamline takes.
+  - `step` — how far each step moves, in graph units. The step is a distance rather than a time,
+    which is what keeps the points evenly spaced.
+  - `steps` — how many steps the run takes at most, in each direction it is run.
+  - `within` — the region the run is held inside, as an `x` and a `y` interval. It has no edges
+    where this is left out.
+  - `direction` — `forward`, `backward` or `both`. Both puts the backward half first, so the points
+    read from one end of the curve to the other.
+  - `least` — the magnitude below which the field is taken to have vanished, in graph units.
+
+## The camera
+
+- `Projection` — how a point in front of the eye becomes a place on the page. `near` is the plane in
+  front of which nothing is drawn, and `place` does the mapping.
+- `perspective(choice)` — an eye that sees things smaller the further off they are.
+- `PerspectiveChoice` — what that eye takes.
+  - `fov` — the angle the frame covers up and down, in radians.
+  - `height` — how tall the frame is in figure units, so handing this the extent's own height makes
+    the picture fill the frame.
+  - `near`, `far` — the two planes the projection is built between.
+- `orthographic(choice)` — an eye that sees everything at the size it is, however far off. Nothing
+  shrinks with distance, so there is no divide, no clip box, and nothing is ever cut away.
+- `OrthographicChoice` — what that eye takes.
+  - `scale` — how many figure units across the frame one world unit becomes.
+- `camera3(choice)` — an eye at a point looking at another, which a caller holds and hands to every
+  builder that works in space.
+- `Camera3Choice` — what a camera takes: `eye`, `target`, `up`, and a `projection`. An `up` lying
+  along the line of sight has no sideways direction in it. That gives a camera placing every point
+  at the middle of the frame, and it is a pose the caller has to avoid.
+- `Camera3` — the camera itself: the choice it was built from, the `view` matrix kept so a caller
+  with many points does not rebuild it per point, and `project`.
+- `Projected` — where one point landed.
+  - `at` — the place in figure units, measured from the middle of the frame.
+  - `depth` — how far the point is from the eye along the way the camera looks. A depth sort orders
+    by this rather than by the straight-line distance to the eye.
+  - `inFront` — whether the point is further off than the near plane. A point that is not is still
+    given a place, and that place is meaningless.
+
+## Drawing in space
+
+Every builder here hands back the flat nodes the rest of the package already draws, so the same
+animations reach a picture in space and a picture on a graph.
+
+- `SpaceItem` — one piece waiting to be sorted: the `points` it was built from and the `node` that
+  draws it. A figure holding two surfaces that pass through each other sorts all of their pieces
+  together.
+- `scene3(name, items, camera)` — a group whose children are ordered back to front, which is the
+  painter's algorithm. Two pieces that pass through each other, and three that overlap in a ring,
+  have no one order at all, and the answer for those is smaller pieces.
+- `polyline3(name, points, camera, options)` — a run of straight segments through points in space.
+- `Polyline3Options` — a style, plus:
+  - `close` — whether the last point joins back to the first. A run the near plane cut comes back
+    open however this is set, since closing it would draw an edge that is nowhere in the world.
+- `dot3(name, at, radius, fill, camera)` — a disc marking a point in space. Its radius is in figure
+  units and does not shrink with distance, because a dot marks where something is rather than how
+  big it is.
+- `text3(name, at, content, size, camera, options)` — a label at a point in space. The letters stay
+  upright and stay the size they are given, since a label is read rather than seen in perspective.
+- `Text3Options` — the text options, plus:
+  - `offset` — how far the label stands off the point it names, in figure units, applied after the
+    point is placed.
+- `arrow3(name, from, to, camera, options)` — a line between two points in space with a head at the
+  far end. The head is a flat triangle at the projected tip, so it stays the size it was given
+  however steeply the arrow points away. An arrow whose far end is behind the eye is cut at the near
+  plane and drawn with no head.
+- `Arrow3Options` — the same options a flat arrow takes.
+
+## Fields, surfaces and axes in space
+
+- `vectorField3(name, of, camera, options)` — a field of vectors in space, drawn as arrows ordered
+  back to front.
+- `fieldArrows3(name, of, camera, options)` — the same arrows as pieces waiting to be sorted, for a
+  figure that mixes them with pieces of its own. A sample whose vector is nothing draws no arrow.
+- `VectorField3Options` — the arrow options, plus:
+  - `over` — the box the samples are taken in, nothing to one each way unless named.
+  - `resolution` — how many samples each way. One number is all three.
+  - `lengthOf` — how long an arrow is, in the world's own units rather than the figure's. A far
+    arrow drawing shorter than a near one of the same magnitude is what says which is far. Its head
+    is still in figure units, since the head is drawn on the page.
+  - `colourFor` — what colour an arrow is, from that same magnitude.
+- `surface3(name, of, camera, options)` — a surface given by a function of two parameters, drawn as
+  a grid of four-cornered cells ordered back to front.
+- `surfaceCells(name, of, camera, options)` — the same cells before they are put in an order. Each
+  cell carries the name it was given ahead of its own place in the grid. An animation can then name
+  a whole surface once its cells are mixed with another's.
+- `Surface3Options` — what a surface takes.
+  - `over` — the runs of the two parameters, nothing to one each unless named.
+  - `resolution` — how many cells each way.
+  - `shade` — the fill a cell takes, given how squarely it faces the light. That amount is one
+    facing the light head on, a half edge on, and nothing facing away. The author supplies this
+    rather than naming two colours to mix, because a colour here is text.
+  - `light` — which way the light comes from, over the shoulder of an eye on the positive z axis
+    unless named.
+  - `cull` — whether a cell facing away from the eye is left out. Off by default, because a count
+    that changes as the camera turns is a count no gate can hold.
+  - `stroke` — how the edge of each cell is drawn.
+- `axes3(name, camera, options)` — the three axes as a group, one child per axis, each holding its
+  line under `line`, its ticks under `ticks` and its labels under `labels`.
+- `Axes3Options` — what the axes take.
+  - `x`, `y`, `z` — the run of each axis in world units, minus one to one unless named.
+  - `stroke` — the lines and their ticks.
+  - `fill`, `size` — the labels, and how big they are in figure units. Nothing is written where
+    either is missing.
+  - `ticks` — about how many are wanted on each axis.
+  - `tickLength` — how far a tick reaches across its axis in world units, half either side.
+  - `gap` — from the projected tick to the label's own anchor, in figure units.
+  - `family`, `weight` — the font the labels are asked for.
+- `sectionOf(of, plane, options)` — the runs of points where a plane cuts a surface, in space. A run
+  whose two ends meet comes back with its first point repeated at the end, so drawing the points as
+  they are given draws the loop closed.
+- `Plane` — `point`, somewhere the plane passes through, and `normal`, which way it faces. The
+  normal's length does not matter.
+- `SectionOptions` — what a section takes.
+  - `over` — the runs of the two parameters, nothing to one each unless named.
+  - `resolution` — how many samples each way.
+  - `tolerance` — how close two ends come before they are read as the same place.
+
+## Animations
+
+An animation takes the marks and a fraction of its span and hands back the marks as they stand at
+that fraction. Every one of them is nothing at the beginning of its span. Every mark it adds is in
+the list at every fraction, at nothing where it is not yet showing. A mark that arrived part way
+through would turn up in a comparison between two frames as something that changed.
+
+The first argument of each is the name of what it changes, which reaches a mark and every mark under
+a group of that name.
+
+- `Animation` — the function itself: the marks and how far along, to the marks at that point.
+- `fadeIn(target)` — from nothing to whatever opacity the mark already had, so a mark that is half
+  faded by design does not become solid on the way in.
+- `fadeOut(target)` — to nothing, from whatever opacity the mark had.
+- `fadeTo(target, opacity)` — a mark's own opacity walked to a value, for a figure that wants a
+  thing dimmed rather than gone.
+- `draw(target)` — drawn on from one end rather than switched on. A text mark has no path to walk
+  along, so it fades instead.
+- `moveBy(target, offset)` — moved by an offset in figure units, which reaches the geometry rather
+  than riding alongside it.
+- `moveAlong(target, path)` — carried along a path at a steady pace, by length rather than by piece.
+  What it moves is the offset from the path's own start, so a mark placed elsewhere travels the same
+  shape from where it stands.
+- `rotate(target, angle, options)` — turned about a point, by an angle in radians. A text mark's
+  anchor moves and its words stay upright.
+- `scale(target, to, options)` — grown or shrunk about a point, from one factor to another.
+- `ScaleOptions` — `AboutOptions`, plus:
+  - `from` — what it is scaled by at the start of the span, which is its own size.
+- `growFrom(target, from)` — grown from nothing at a point. Left out, the point is the middle of the
+  box round the marks. At the end of the span it is the marks themselves rather than the marks
+  rebuilt through a transform, so a finished growth leaves the geometry the author wrote.
+- `AboutOptions` — what a change happening about a point takes.
+  - `pivot` — the point it happens about, the middle of the box round the marks unless named.
+- `morph(target, into)` — one shape becoming another, point by point, the two paths aligned first. A
+  mark with no path is left alone.
+- `morphEquation(from, to)` — one typeset expression walked into another, the shared glyphs staying
+  put and only the difference moving. A paired glyph is drawn once rather than cross-faded, since
+  two copies of one letter at half opacity through the middle of a span is a ghost.
+- `countTo(target, from, to, write)` — a number ticking from one value to another, written into a
+  text mark. How the value is written is the caller's, so a count of a length and a count of a
+  population can round differently.
+- `indicate(target, options)` — swelled and settled, to point at something without moving it.
+- `IndicateOptions` — `AboutOptions`, plus:
+  - `factor` — how big it gets at the middle of the span.
+  - `colour` — a colour held for the length of the span and then let go.
+- `flash(target, options)` — rays out from a point and gone, for a moment a figure wants a reader to
+  look at.
+- `FlashOptions` — what a flash takes.
+  - `stroke` — how the rays are drawn.
+  - `at` — where it flashes from, the middle of the box round the marks unless named.
+  - `rays` — how many there are.
+  - `reach` — how far the far end of a ray reaches at the widest, in figure units. Twice the
+    distance from the middle of the box to its corner unless named, so the rays sit outside the
+    thing they point at.
+  - `inner` — where the near end of a ray sits, as a share of the reach.
+- `circumscribe(target, options)` — a shape drawn round something and then let go. The first half of
+  the span draws it on and the second half fades it, so one span is the whole gesture.
+- `CircumscribeOptions` — what it takes.
+  - `stroke` — how the shape is drawn.
+  - `around` — `box`, or the `ellipse` through the same four sides.
+  - `padding` — how far outside the box it sits, in figure units.
+
+## The timeline
+
+- `Timeline` — the animations a figure plays and when. Every method hands back a new timeline rather
+  than changing this one.
+  - `Timeline.empty()` — a timeline with nothing in it.
+  - `play(animation, seconds, options)` — one change over a span of that length.
+  - `together(animations, seconds, options)` — several changes over one span, which is how two
+    things move at once.
+  - `stagger(animations, seconds, options)` — a row of changes, each starting a gap after the one
+    before and each running the same length.
+  - `wait(seconds)` — a gap before the next entry.
+  - `at(marks, seconds)` — the marks as every span leaves them at a time. A span that has not
+    started is applied at nothing and one already finished is applied in full. That is what makes
+    this a function of time rather than a record of what has been played.
+  - `spans` — the spans it holds. `duration` — how long the whole thing runs.
+- `Span` — one entry: its `animation`, the seconds it runs `from` and `to`, and the `curve` pacing
+  it.
+- `PlayOptions` — what playing one change takes.
+  - `curve` — how the change is paced. Still at both ends unless a figure says otherwise, because a
+    move that starts and stops abruptly reads as a jump.
+  - `after` — seconds after the previous entry finished. A negative wait overlaps this animation
+    with the one before it.
+- `StaggerOptions` — `PlayOptions`, plus:
+  - `gap` — seconds between one change starting and the next. A quarter of each change's own length
+    unless a figure says otherwise, so a row overlaps rather than running one at a time.
+
+## The figure
+
+- `Figure` — the whole picture.
+  - `extent` — how much of the world it shows, fixed or a function of the surface and the clock.
+  - `fit` — `contain` or `cover`.
+  - `scene` — the tree, either fixed or rebuilt from the clock and the sampled track values.
+  - `tracks` — the keyed values the scene reads.
+  - `timeline` — the animations it plays.
+  - `duration` — overrides the timeline's own length, for a figure that should hold after its last
+    animation finishes.
+  - `still` — the one time a reader who asked for reduced motion is shown. Every figure names it,
+    because a figure stopped at zero often explains nothing.
+  - `loop` — whether it ends where it began, which a recording can loop without a jump. `isLoop` is
+    what holds that rather than trust.
+- `TrackValues` — every sampled value by name, which is what a scene function is handed.
+- `marksAt(figure, seconds)` — the marks a figure shows at a time.
+- `viewAt(figure, seconds, width, height)` — the matrix a painter needs at a time, in one call. A
+  figure whose extent is a function of the clock has to be asked for its extent at the time its
+  marks were asked for. Writing that as two calls has two chances to pass different times.
+- `durationOf(figure)` — how long a figure runs, which is its own duration where it names one and
+  its timeline's otherwise.
+- `isLoop(figure, tolerance)` — whether a figure declaring itself a loop actually is one. The
+  comparison is by tolerance, because the sine and cosine a figure is built from are not specified
+  to the last bit and differ between engines.
+- `sameMarks(one, two, tolerance)` — two lists holding the same marks in the same order, to a
+  tolerance.
+
+## Frames out
+
+- `FrameStep` — how far apart the frames are: `fps`, a rate, or `frames`, a count spread over the
+  whole figure. A recorder knows the rate it plays at; a strip knows how many pictures fit across a
+  page.
+- `FramesOptions` — a `FrameStep`, plus the `width` and `height` of the surface the view is built
+  for.
+- `frameTimesOf(figure, step)` — the times a walk reads, which a recorder needs before it has drawn
+  anything to say how far along it is. A walk stops strictly before the duration, so a figure that
+  loops never hands back its own first frame twice.
+- `framesOf(figure, options)` — a figure walked at a fixed step, a frame at a time. Frames come back
+  one at a time, since ten seconds at sixty a second is six hundred frames of every mark a figure
+  draws.
+- `Frame` — one moment read whole: its `index` in the walk, the `seconds` it was read at, its
+  `marks`, and the `view` built at that same time.
+
+## Painters
+
+Both painters read the same list of marks and the same view matrix, so a picture on a page and a
+picture in a recording are the same picture.
+
+- `svgMarkup(marks, view, width, height)` — a whole `<svg>` as text, for a page that has not run any
+  script yet. It carries no width or height of its own and only a view box, so the element around it
+  decides how big it is.
+- `svgElements(marks, view)` — every mark described as an element, in the order they are drawn.
+- `SvgElement` — one of those: its `tag`, `path` or `text`, its `attributes`, and the `text` a text
+  element carries.
+- `paintSvg(into, marks, view, maker)` — the marks put into an element that is already on the page.
+  Every child is replaced rather than matched up and patched, since a figure rebuilds its geometry
+  every frame and almost every attribute would be rewritten anyway.
+- `PaintTarget` — what `paintSvg` draws into: anything with `replaceChildren`.
+- `ElementMaker` — what it builds elements with: anything with `createElementNS`.
+- `PaintNode` — what those two hand back and take: anything with `setAttribute` and `textContent`.
+- `pathToData(path, view)` — the `d` attribute for a path: a move to the start, a cubic per segment,
+  and a close where the subpath joins back.
+- `paintCanvas(context, marks, view)` — every mark painted onto a canvas context, in order. Each is
+  wrapped in a save and a restore, so a mark that sets an opacity or a dash cannot leak it into the
+  mark after it.
+- `CanvasLike` — the part of a canvas context this package uses, so a recorder can hand in its own.
+
+## Annotations
+
+- `arrow(name, from, to, options)` — a line with a head at the far end. The shaft stops where the
+  head begins rather than running under it, because a shaft drawn to the point shows through a head
+  that is not fully opaque.
+- `ArrowOptions` — what an arrow takes.
+  - `stroke` — the shaft.
+  - `fill` — the head, filled with the shaft's own colour unless a figure asks for another.
+  - `head` — how long the head is, in figure units. Four times the shaft's width by default, which
+    keeps a head in proportion to its line at any size.
+  - `spread` — how wide the head is across its base, against its length.
+- `dot(name, at, radius, fill)` — a filled disc, which is what marks a place a line is pointing at.
+- `bracePath(from, to, options)` — a curly brace from one point to the other, as one open subpath of
+  six pieces. The tip is a corner rather than a smooth turn, which is what says which point of it is
+  being pointed at.
+- `BraceOptions` — what a brace takes.
+  - `depth` — how far the tip stands off the line between the two points, in figure units. A
+    negative depth puts the brace on the other side of that line.
+  - `curl` — how wide the curl at each end and at the tip is, in figure units. Half the depth unless
+    named, and never more than a quarter of the span, since two curls wider than that would cross.
+- `brace(name, from, to, content, options)` — a brace with a word on it, placed beyond the tip on
+  the far side from the two points. The label is anchored and never measured, because a box sized to
+  fit text would be a different box on two machines.
+- `BracedOptions` — `BraceOptions`, plus a `stroke`, `fill` and `size` for the label, and its
+  `align`, `baseline`, `family` and `weight`.
+  - `padding` — how far beyond the tip the label's anchor sits, in figure units.
+- `callout(name, at, to, content, options)` — a word attached to a place: a disc on the place, a
+  line out to where there is room, and the word at the end of it. The words sit away from what they
+  name because a label on top of the picture hides the thing the reader was told to look at.
+- `CalloutOptions` — the `stroke`, `fill` and `size` it is drawn with, and its `align`, `baseline`,
+  `family` and `weight`.
+  - `marker` — the disc left on the thing being named. Nothing is drawn where this is zero, which is
+    what a callout pointing at a moving thing wants.
+
+## Equations
+
+Typesetting is the one call that loads MathJax, so a figure with no equations in it never reaches
+that code. It runs at build time, and what a reader downloads is the outlines it wrote.
+
+- `typesetElement(tex)` — one expression typeset, as the tree the typesetter wrote it.
+- `EquationElement` — one node of that tree: its `tag`, its `attributes`, its `children`, and the
+  `text` a text element carries.
+- `equationOf(root)` — that tree read into the marks and the box a figure can place.
+- `equationFromTex(tex)` — the two calls above in the order they are always used in.
+- `Equation` — the `marks`, one per glyph, and the `box` they were typeset inside.
+- `EquationBox` — `x`, `y`, `width` and `height`, in the typesetter's own units.
+- `equationNode(name, equation, options)` — a typeset expression placed in a figure: one shape per
+  glyph, fitted inside a box and centred on a point. It fits inside both measurements rather than
+  being sized by the height alone. An expression twice as wide as it is tall would otherwise run off
+  the sides of a narrow figure.
+- `EquationOptions` — what placing an expression takes.
+  - `at` — the point it is placed against, in figure units.
+  - `align` — `start`, `middle` or `end`, which edge of the expression sits on that point across.
+    Two expressions placed at one point by their start keep the part they share in the same place.
+  - `width`, `height` — the box it is fitted inside, in figure units.
+  - `fill` — the colour the glyphs are painted.
+- `glyphToken(id)` — what a mark matches on: its leaf name after the first dash. A mark whose leaf
+  carries no dash is not a glyph a typesetter wrote, and it pairs with nothing.
+- `matchGlyphs(from, to)` — two typeset expressions paired glyph by glyph, with what neither answers
+  kept apart. Marks that are not paths are left out, since a glyph is an outline.
+- `GlyphMatch` — what that pairing found.
+  - `pairs` — each glyph of the expression being left, beside the one it becomes.
+  - `leaving` — glyphs of the expression being left that nothing in the other answers.
+  - `arriving` — glyphs of the expression being arrived at that nothing in the first answers.
