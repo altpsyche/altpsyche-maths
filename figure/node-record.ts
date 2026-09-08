@@ -34,6 +34,7 @@ import { group, shape, text, type Node, type Style, type TextOptions } from './n
 import { arrow, brace, callout, dot } from './annotate.js';
 import { axes, numberLine, numberPlane, type AxesOptions, type NumberLineOptions, type NumberPlaneOptions } from './axis.js';
 import { riemannBars, type BarsOptions } from './plot.js';
+import { equationNode, type Equation, type EquationOptions } from './equation.js';
 import type { Coords, Scale } from './scale.js';
 import type { Fill, Stroke } from './mark.js';
 import { evaluate, type Bindings, type Expression } from './expression.js';
@@ -192,6 +193,32 @@ export interface RiemannBarsRecord {
   readonly options?: BarsRecordOptions;
 }
 
+/**
+ * What a typeset expression takes beyond its geometry.
+ *
+ * The place it is hung from is an expression, since the flat demo hangs its two
+ * rules off a frame that follows the dot. The box it is fitted inside is layout.
+ */
+export interface EquationRecordOptions extends Omit<EquationOptions, 'at'> {
+  readonly at: Expression;
+}
+
+/**
+ * A typeset expression in a figure.
+ *
+ * The `equation` is resolved geometry, one path per glyph with the box round
+ * them, rather than the TeX it was typeset from. That is the answer to where
+ * text's geometry is settled: a figure carries what MathJax produced, so a
+ * renderer draws the expression without MathJax and two machines draw the same
+ * glyphs.
+ */
+export interface EquationRecord {
+  readonly kind: 'equationNode';
+  readonly name: string;
+  readonly equation: Equation;
+  readonly options: EquationRecordOptions;
+}
+
 export type NodeRecord =
   | ShapeRecord
   | TextRecord
@@ -203,7 +230,8 @@ export type NodeRecord =
   | NumberLineRecord
   | AxesRecord
   | NumberPlaneRecord
-  | RiemannBarsRecord;
+  | RiemannBarsRecord
+  | EquationRecord;
 
 function nameOfValue(value: number | boolean | Vec2): string {
   if (typeof value === 'number') return 'a number';
@@ -315,6 +343,11 @@ export function resolveNode(record: NodeRecord, bindings: Bindings = {}): Node {
         writeTemplate(record.content, bindings),
         { ...record.options, marker: maybe(record.options.marker, bindings, "a callout's marker") }
       );
+    case 'equationNode':
+      return equationNode(record.name, record.equation, {
+        ...record.options,
+        at: pointOf(record.options.at, bindings, "an equation's place"),
+      });
     case 'numberLine':
       return numberLine(record.name, record.scale, record.options);
     case 'axes':

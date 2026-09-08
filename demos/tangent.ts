@@ -181,7 +181,7 @@ const LENS_UP = interval.span(LENS.y);
  * carried the grid's left edge, the x axis and its arrow head off the frame, so
  * the axis ran out of the picture instead of ending in a tip.
  */
-function frameAt(point: Vec2): Extent {
+export function frameAt(point: Vec2): Extent {
   const followed = point.x - clamp(point.x, -REACH, REACH);
   return { ...size, centre: vec2(clamp(followed, -ROOM, ROOM), 0) };
 }

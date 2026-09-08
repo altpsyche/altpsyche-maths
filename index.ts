@@ -67,6 +67,8 @@ export type {
   CalloutRecord,
   CalloutRecordOptions,
   DotRecord,
+  EquationRecord,
+  EquationRecordOptions,
   GroupRecord,
   NodeRecord,
   NumberLineRecord,

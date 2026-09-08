@@ -454,8 +454,10 @@ shaded region runs from nothing to the x its dot stands at. Step 3.5 added `dot`
 and `callout` as node records, each resolving through its own call, so the flat demo's walking dot and
 its brace both draw from records. Step 3.6 added `numberLine`, `axes`, `numberPlane` and
 `riemannBars`, so the flat demo's whole frame draws from records: 42 marks of grid and 27 of axes.
-The door is 298 names and the suite is 865 tests over 54 files. **Step 3.7 is what runs next**, which
-is `equationNode`, and an `Equation` staying resolved geometry rather than TeX a renderer typesets.
+Step 3.7 added `equationNode`, and an `Equation` stays resolved geometry rather than TeX a renderer
+typesets, so the flat demo's two rules draw glyph for glyph from records at 32,936 and 42,224 bytes
+written out. The door is 300 names and the suite is 870 tests over 55 files. **Step 3.8 is what runs
+next**, which is `vectorField`, whose field is an expression of a place.
 
 **Two things fall due before the format freezes and both are Siva's**, which are
 whether a `Mark` may be a raster image, due by step 3 where the node vocabulary lands, and the

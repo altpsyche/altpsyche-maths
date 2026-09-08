@@ -648,10 +648,22 @@ release away and has a document of its own.
     and at 2; a bars curve that reads as a place refused with the sentence naming it; the suite from
     856 to 865 and the door from 293 names to 298.
 
-  - [ ] **3.7 The equation node.** `equationNode`, and an `Equation` stays resolved geometry a figure
-    carries rather than TeX a renderer typesets, which is the answer to where text's geometry is
-    settled. **Measures:** the flat demo's typeset rule, glyph for glyph at its named times; the
-    bytes of that equation written out.
+  - [x] **3.7 The equation node.** `equationNode` is a form of `NodeRecord`, and an `Equation` stays
+    resolved geometry a figure carries rather than TeX a renderer typesets. That is the answer to
+    where text's geometry is settled: a figure carries what MathJax produced, so a renderer draws the
+    expression without MathJax and two machines draw the same glyphs. The place it is hung from is an
+    expression, since the flat demo hangs both its rules off a frame that follows the dot, and the box
+    it is fitted inside is layout.
+    **Measured:** both of the flat demo's rules, glyph for glyph, at each of its seven named times,
+    within a tolerance of 1e-6, with the corner of the frame bound as a variable; seven glyphs for
+    `\frac{dy}{dx} = 0` and eight for `\frac{dy}{dx} = 2x`; the two rules reading as different
+    between two of those times, which is what says the place is not fixed; the written form of the
+    first equation is 32,936 bytes and the second 42,224, and neither carries the string `frac`; a
+    place that reads as a number refused with the sentence naming it; the suite from 865 to 870 and
+    the door from 298 names to 300.
+    **The bytes are the price of the answer and they are worth stating.** A figure carrying two
+    typeset rules carries 75 kilobytes of glyph outlines, where the TeX behind them is 34 characters.
+    What buys it is that no renderer needs a typesetter and no two machines disagree about a glyph.
 
   - [ ] **3.8 The field node.** `vectorField`, whose field is an expression of a place, with
     `lengthOf` and `colourFor` as named forms: a constant, a threshold and a saturating length.

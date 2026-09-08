@@ -536,9 +536,15 @@ functions, which is what lets the same tree survive being written to a file and 
   `options`. The curve is an expression of the bound variable `x`, the way a plot's is.
 - `BarsRecordOptions` — what `riemannBars` takes, with `over` as an `IntervalRecord`, since a figure
   that walks the bars across a graph moves both ends of the run.
+- `EquationRecord` — a `kind` of `equationNode`, a `name`, an `equation` and its `options`. The
+  equation is resolved geometry, one path per glyph with the box round them, rather than the TeX it
+  was typeset from, so a renderer draws the expression without MathJax and two machines draw the same
+  glyphs.
+- `EquationRecordOptions` — what `equationNode` takes, with `at` as an expression, since a figure may
+  hang an expression off a frame that moves. The box it is fitted inside is layout.
 - `NodeRecord` — a `ShapeRecord`, a `TextRecord`, a `GroupRecord`, a `DotRecord`, an `ArrowRecord`, a
-  `BraceRecord`, a `CalloutRecord`, a `NumberLineRecord`, an `AxesRecord`, a `NumberPlaneRecord` or a
-  `RiemannBarsRecord`. Every kind resolves through its own call, so a brace's curls, an arrow's head
+  `BraceRecord`, a `CalloutRecord`, a `NumberLineRecord`, an `AxesRecord`, a `NumberPlaneRecord`, a
+  `RiemannBarsRecord` or an `EquationRecord`. Every kind resolves through its own call, so a brace's curls, an arrow's head
   and an axis's tick list are each one piece of arithmetic with one set of gates over it. A graph
   frame's options are the values those calls already take rather than expressions: a frame is the
   furniture a figure draws its moving parts on, and widening a number to an expression later costs a
