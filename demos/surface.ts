@@ -63,9 +63,11 @@ const glass = { colour: SKY, width: 0.008 };
 const flow = { colour: DEEP, width: 0.022 };
 const fall = { colour: MOSS, width: 0.035 };
 
-/** Same frame as the other two demos, so the pictures in the README are one
- * size. */
-const extent: Extent = { width: 10.8, height: 6 };
+/** Shaped like the projection rather than like the other two demos. A
+ * perspective view of a saddle comes out roughly square, and over the whole
+ * orbit it spans 6.85 by 5.11, so a 16:9 frame leaves a margin no mark reaches.
+ * The extra height above the picture is the band the rule is written into. */
+const extent: Extent = { width: 8.2, height: 6.4 };
 
 /** The stretch of each parameter the surface is drawn over. */
 const OVER = interval(-1.5, 1.5);
@@ -240,7 +242,7 @@ export function sceneAt(along: number): Node {
       names: { x: 'x', y: 'y', z: 'z' },
     }),
     equationNode('rule', written, {
-      at: fractionOf(extent, 0.02, 0.86),
+      at: fractionOf(extent, 0.02, 0.93),
       align: 'start',
       width: 1.6,
       height: 0.7,
@@ -291,8 +293,8 @@ export function alongAt(seconds: number): number {
   return sampleTrack(orbit, seconds) as number;
 }
 
-export const SLOT = 11.4;
-export const DOWN = 6.4;
+export const SLOT = 8.8;
+export const DOWN = 6.8;
 
 /** Several times of one figure laid out together, as one list of marks, each
  * frame carried into its own slot and renamed so no two frames share an id. */

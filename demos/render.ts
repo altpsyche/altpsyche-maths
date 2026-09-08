@@ -6,7 +6,17 @@
  * them as text, so the picture in the README is regenerated and checked by the
  * same suite everything else is.
  */
-import { marksAt, svgMarkup, viewAt, viewMatrix, type Extent, type Figure, type Mark } from '../index.js';
+import {
+  marksAt,
+  resolveExtent,
+  svgMarkup,
+  viewAt,
+  viewMatrix,
+  type Extent,
+  type Figure,
+  type Mark,
+  type Mat3,
+} from '../index.js';
 import { SHADE_THEME, THEME } from './palette.js';
 import { FRAMES, stripMarks, tangent } from './tangent.js';
 import {
@@ -17,8 +27,13 @@ import {
 import { FRAMES as TURN_FRAMES, stripMarks as turnStripMarks, turns } from './rotate.js';
 import { FRAMES as SOLID_FRAMES, solid, stripMarks as solidStripMarks } from './surface.js';
 
-/** A hundred pixels to the figure unit, which is the size the README shows and
- * the only place the number matters, since the picture scales from its view box. */
+/** A hundred pixels to the figure unit, which is what turns an extent into the
+ * frame a still is written into. A frame shaped differently from the extent it
+ * draws leaves a margin no mark reaches, and this is the number that stops it. */
+export const PER_UNIT = 100;
+
+/** The frame the strips are fitted into, and the shape the flat demo's own
+ * extent already has. */
 export const WIDTH = 1080;
 export const HEIGHT = 600;
 
@@ -44,20 +59,6 @@ function writtenFloor(width: number, shownAt: number): number {
   return (PAGE_FLOOR * width) / shownAt;
 }
 
-/** One list of marks written out over a surface shaped like the extent it covers. */
-export function markupOf(
-  marks: readonly Mark[],
-  extent: Extent,
-  width: number,
-  height: number,
-  shownAt = SHOWN_AT
-): string {
-  return svgMarkup(marks, viewMatrix(extent, 'contain', width, height), width, height, {
-    theme: SHEET_THEME,
-    minTextSize: writtenFloor(width, shownAt),
-  });
-}
-
 export function stillMarkup(figure: Figure, seconds: number, width = WIDTH, height = HEIGHT): string {
   return svgMarkup(marksAt(figure, seconds), viewAt(figure, seconds, width, height), width, height, {
     theme: SHEET_THEME,
@@ -65,28 +66,75 @@ export function stillMarkup(figure: Figure, seconds: number, width = WIDTH, heig
   });
 }
 
+/** What a sheet is before it is written out: the marks, the frame in pixels and
+ * the matrix that puts one in the other. A gate that reads how much of a frame
+ * the marks cover needs all three, and reading them back out of the text would
+ * be measuring the painter rather than the picture. */
+export interface Drawn {
+  marks: readonly Mark[];
+  matrix: Mat3;
+  width: number;
+  height: number;
+  /** The width the page shows it at, which is what turns a written size into a
+   * size a reader sees. */
+  shownAt: number;
+}
+
 export interface Sheet {
   /** Where it lives, from the root of the repository. */
   file: string;
+  drawn: () => Drawn;
   markup: () => string;
+}
+
+/** A still written into a frame its own extent shapes, at a hundred pixels to
+ * the figure unit. An extent given as a function is resolved at the moment the
+ * still is taken, so what shapes the frame is what the figure draws then. */
+function stillDrawn(figure: Figure): Drawn {
+  const extent = resolveExtent(figure.extent, WIDTH / HEIGHT, figure.still);
+  const width = Math.round(extent.width * PER_UNIT);
+  const height = Math.round(extent.height * PER_UNIT);
+  return {
+    marks: marksAt(figure, figure.still),
+    matrix: viewAt(figure, figure.still, width, height),
+    width,
+    height,
+    shownAt: SHOWN_AT,
+  };
 }
 
 /** A strip of frames written out over a surface shaped like the strip's own
  * extent, so contain leaves no margin above or below the frames. */
-function stripMarkup(strip: { marks: readonly Mark[]; extent: Extent }): string {
+function stripDrawn(strip: { marks: readonly Mark[]; extent: Extent }): Drawn {
   const across = Math.round((strip.extent.width / strip.extent.height) * HEIGHT);
-  return markupOf(strip.marks, strip.extent, across, HEIGHT, SHOWN_AT_STRIP);
+  return {
+    marks: strip.marks,
+    matrix: viewMatrix(strip.extent, 'contain', across, HEIGHT),
+    width: across,
+    height: HEIGHT,
+    shownAt: SHOWN_AT_STRIP,
+  };
+}
+
+/** The text of a sheet, from what it draws and the frame it draws into. */
+export function markupFor(drawn: Drawn): string {
+  return svgMarkup(drawn.marks, drawn.matrix, drawn.width, drawn.height, {
+    theme: SHEET_THEME,
+    minTextSize: writtenFloor(drawn.width, drawn.shownAt),
+  });
+}
+
+function sheetOf(file: string, drawn: () => Drawn): Sheet {
+  return { file, drawn, markup: () => markupFor(drawn()) };
 }
 
 export const sheets: readonly Sheet[] = [
-  { file: 'docs/tangent.svg', markup: () => stillMarkup(tangent, tangent.still) },
-  { file: 'docs/tangent-strip.svg', markup: () => stripMarkup(stripMarks(FRAMES, 2)) },
-  // The surface is shaped like the figure rather than like the other demo, or
-  // contain fits it to the width and leaves a band of white above and below.
-  { file: 'docs/boolean.svg', markup: () => stillMarkup(booleans, booleans.still, WIDTH, 400) },
-  { file: 'docs/boolean-strip.svg', markup: () => stripMarkup(booleanStripMarks(BOOLEAN_FRAMES, 2)) },
-  { file: 'docs/rotate.svg', markup: () => stillMarkup(turns, turns.still) },
-  { file: 'docs/rotate-strip.svg', markup: () => stripMarkup(turnStripMarks(TURN_FRAMES, 2)) },
-  { file: 'docs/surface.svg', markup: () => stillMarkup(solid, solid.still) },
-  { file: 'docs/surface-strip.svg', markup: () => stripMarkup(solidStripMarks(SOLID_FRAMES, 2)) },
+  sheetOf('docs/tangent.svg', () => stillDrawn(tangent)),
+  sheetOf('docs/tangent-strip.svg', () => stripDrawn(stripMarks(FRAMES, 2))),
+  sheetOf('docs/boolean.svg', () => stillDrawn(booleans)),
+  sheetOf('docs/boolean-strip.svg', () => stripDrawn(booleanStripMarks(BOOLEAN_FRAMES, 2))),
+  sheetOf('docs/rotate.svg', () => stillDrawn(turns)),
+  sheetOf('docs/rotate-strip.svg', () => stripDrawn(turnStripMarks(TURN_FRAMES, 2))),
+  sheetOf('docs/surface.svg', () => stillDrawn(solid)),
+  sheetOf('docs/surface-strip.svg', () => stripDrawn(solidStripMarks(SOLID_FRAMES, 2))),
 ];

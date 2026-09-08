@@ -23,10 +23,12 @@ import {
   tangentAt,
   toGraph,
   vec2,
+  type Figure,
   type Mark,
   type Vec2,
 } from '../index.js';
-import { PAGE_FLOOR, SHOWN_AT, SHOWN_AT_STRIP, sheets, stillMarkup } from '../demos/render.js';
+import { PAGE_FLOOR, PER_UNIT, SHOWN_AT, SHOWN_AT_STRIP, sheets, stillMarkup } from '../demos/render.js';
+import { bareShare } from '../demos/cover.js';
 import {
   FRAMES as SOLID_FRAMES,
   HEIGHT,
@@ -125,18 +127,30 @@ describe('the committed pictures', () => {
     }
     expect(onPage('docs/tangent.svg')).toBeCloseTo(17.33, 2);
     expect(onPage('docs/boolean.svg')).toBeCloseTo(20.0, 2);
-    expect(onPage('docs/rotate.svg')).toBeCloseTo(17.33, 2);
-    expect(onPage('docs/surface.svg')).toBeCloseTo(14.67, 2);
+    expect(onPage('docs/rotate.svg')).toBeCloseTo(20.8, 2);
+    expect(onPage('docs/surface.svg')).toBeCloseTo(19.32, 2);
   });
 
-  it('each fill half their frame or better at the time their still is taken', () => {
-    // The frame is sized for the widest moment of the motion, so the time a still
-    // is taken at is what decides how much of it the bounds cover.
-    for (const figure of [tangent, booleans, turns, solid]) {
-      const box = boundsOfMarks(marksAt(figure, figure.still))!;
-      const frame = resolveExtent(figure.extent, 16 / 9, figure.still);
-      const cover = ((box.x.to - box.x.from) * (box.y.to - box.y.from)) / (frame.width * frame.height);
-      expect(cover).toBeGreaterThan(0.5);
+  it('leave under four fifths of the frame bare, on the ink rather than on the box', () => {
+    // The box round the marks is a number an empty frame passes, since a word in
+    // each far corner stretches it over the whole frame. The emptiest sheet reads 72.3%.
+    for (const sheet of sheets) expect(bareShare(sheet.drawn())).toBeLessThan(0.8);
+  });
+
+  it('write each still into a frame its own extent shapes', () => {
+    // A frame shaped differently from the extent it draws leaves a margin down one
+    // pair of edges that no mark can reach, whatever the figure does.
+    const stills: readonly [string, Figure][] = [
+      ['docs/tangent.svg', tangent],
+      ['docs/boolean.svg', booleans],
+      ['docs/rotate.svg', turns],
+      ['docs/surface.svg', solid],
+    ];
+    for (const [file, figure] of stills) {
+      const drawn = sheets.find((sheet) => sheet.file === file)!.drawn();
+      const extent = resolveExtent(figure.extent, 16 / 9, figure.still);
+      expect(drawn.width).toBe(Math.round(extent.width * PER_UNIT));
+      expect(drawn.height).toBe(Math.round(extent.height * PER_UNIT));
     }
   });
 
@@ -860,12 +874,15 @@ describe('the solid demo', () => {
   });
 
   it('keeps the whole picture inside the frame it declares', () => {
+    // The frame is read off the figure rather than written out again here, so
+    // reshaping it to fit the picture cannot leave this holding an old number.
+    const frame = resolveExtent(solid.extent, 16 / 9, 0);
     for (const seconds of named) {
       const box = boundsOfMarks(solidAt(seconds));
-      expect(Math.abs(box!.x.from)).toBeLessThanOrEqual(5.4);
-      expect(Math.abs(box!.x.to)).toBeLessThanOrEqual(5.4);
-      expect(Math.abs(box!.y.from)).toBeLessThanOrEqual(3);
-      expect(Math.abs(box!.y.to)).toBeLessThanOrEqual(3);
+      expect(Math.abs(box!.x.from)).toBeLessThanOrEqual(frame.width / 2);
+      expect(Math.abs(box!.x.to)).toBeLessThanOrEqual(frame.width / 2);
+      expect(Math.abs(box!.y.from)).toBeLessThanOrEqual(frame.height / 2);
+      expect(Math.abs(box!.y.to)).toBeLessThanOrEqual(frame.height / 2);
     }
   });
 });

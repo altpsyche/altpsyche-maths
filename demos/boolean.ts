@@ -46,8 +46,9 @@ const walker = { colour: DEEP, width: 0.018 };
 const wash = { colour: PEACH };
 
 /** Three panels across, and only as tall as they need to be. A frame twice the
- * height of its own picture is a picture floating in white. */
-const extent: Extent = { width: 10.8, height: 4 };
+ * height of its own picture is a picture floating in white, and over the whole
+ * of this timeline the marks reach 2.75 up and down. */
+const extent: Extent = { width: 10.8, height: 3 };
 
 /** How far apart the three panels stand, which is also how wide each of them
  * is, so the walk reaching the edge of one reaches the edge of its neighbour. */

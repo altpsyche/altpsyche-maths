@@ -47,10 +47,18 @@ const edge = { colour: DEEP, width: 0.04 };
 const wash = { colour: PEACH };
 const marker = { colour: EMBER };
 
-/** Two panels across, and tall enough for the swing of the right one with the
- * word that rides round outside it. Same frame as the flat demo, so the two
- * pictures in the README are the same size. */
-const extent: Extent = { width: 10.8, height: 6 };
+/**
+ * Two panels across, and tall enough for the swing of the right one with the
+ * word that rides round outside it.
+ *
+ * The frame is shaped and placed from what the picture reaches over the whole
+ * turn, which is x -3.60 to 4.94 and y -2.75 to 2.54. It is off the origin
+ * because only the right panel swings, so the marks stand further right than
+ * left, and a frame centred on the origin would leave the whole of that
+ * difference bare down the left edge.
+ */
+export const CENTRE = vec2(0.67, -0.1);
+const extent: Extent = { width: 9, height: 5.8, centre: CENTRE };
 
 /**
  * The shape, written about its own box centre.
@@ -162,7 +170,7 @@ export function stripMarks(
   const marks = times.flatMap((seconds, frame) => {
     const across = ((frame % columns) - (columns - 1) / 2) * SLOT;
     const up = ((rows - 1) / 2 - Math.floor(frame / columns)) * DOWN;
-    return moveBy('turns', vec2(across, up))(marksAt(turns, seconds), 1).map((mark) => ({
+    return moveBy('turns', vec2(across - CENTRE.x, up - CENTRE.y))(marksAt(turns, seconds), 1).map((mark) => ({
       ...mark,
       id: `at${frame}/${mark.id}`,
     }));
