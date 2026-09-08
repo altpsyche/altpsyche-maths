@@ -32,7 +32,7 @@ What is a risk is a number. "It converges in twelve steps" is true because of a 
 
 That decides where the work starts. **Drawing over a live shader is the first case, not the advanced one.** An arrow on the photon ring while the disc turns cannot contradict the shader, because the shader is underneath it.
 
-**A figure was flat, and that refusal is being lifted.** The argument for it was that a perspective view belongs to a shader, that the engine already owns a camera and a view projection, and that a figure growing its own would put two of each in the tree by the back door. What answers it is the goal: a large share of the pictures this package is meant to be able to draw are surfaces and vectors in space, so a package that refuses them refuses the goal. The camera that arrives here is a figure's camera and not the engine's, and the two stay separate for the reason the next section gives. The roadmap says which version it lands in.
+**A figure was flat, and that refusal was lifted at 0.10.0.** The argument for it was that a perspective view belongs to a shader, that the engine already owns a camera and a view projection, and that a figure growing its own would put two of each in the tree by the back door. What answered it is the goal: a large share of the pictures this package is meant to be able to draw are surfaces and vectors in space, so a package that refuses them refuses the goal. The camera here is a figure's camera and not the engine's, and the two stay separate for the reason the next section gives. Every builder that works in space hands back the flat nodes the rest of the package already draws.
 
 ## The engine is left alone
 
@@ -105,7 +105,7 @@ An arrow means "depends on".
 
 **The website depends on both packages and they do not know each other.** It reaches the engine for every shader it draws. It reaches maths for the figures, and for the track sampling its shader controls already do by hand.
 
-**Maths depends on nothing.** No renderer, no framework, no browser API beyond what a painter is handed. That is what lets it be tested without a browser.
+**Maths depends on no other package here.** No renderer, no framework, no browser API beyond what a painter is handed. That is what lets it be tested without a browser. Its one runtime dependency is MathJax, which the typesetting call loads and nothing else reaches.
 
 **Maths must never import the engine.** A painter that handed marks to the engine, so that a figure and a shader shared one surface, would look like it belongs beside the other painters. It would become a cycle the day the grey arrow above is drawn for real. That painter lives in the website, which knows both.
 
@@ -117,9 +117,9 @@ The engine has one door and a test that keeps it that way, so this package has o
 
 There is a line through the middle of it, and it is named now so that a split later is mechanical.
 
-**Below the line: values and timing.** Vectors, matrices, angles, intervals, easing curves, interpolation, and the geometry a figure needs. Keys, tracks and sampling. This half changes almost never.
+**Below the line: values and timing.** Vectors, matrices, angles, intervals, easing curves, interpolation and colour. Keys, tracks and sampling. This half changes almost never.
 
-**Above the line: figures and painters.** Marks, groups, the timeline, the animations, and the two painters. This half changes weekly for months.
+**Above the line: figures and painters.** Paths and the geometry over them, marks, groups, the timeline, the animations, and the two painters. This half changes weekly for months.
 
 Nothing below the line imports anything above it. Things that change at different rates should not share a release number, and if that pressure ever arrives the cut is already drawn.
 
@@ -130,7 +130,7 @@ That move mattered beyond tidiness. It gave the package a consumer that shipped 
 ## The seam: a figure at a time is data
 
 ```ts
-figure.at(seconds): readonly Mark[]
+marksAt(figure, seconds): readonly Mark[]
 ```
 
 Asking a figure for a time gives back a flat list of resolved marks. Transforms are applied. Styles are resolved. Coordinates are in the figure's own units. Nothing has touched a screen.
@@ -149,11 +149,11 @@ Four things follow from this seam and are part of it.
 
 **A figure is a pure function of time.** Ask for four seconds and it gives the picture at four seconds, whatever it gave before. Three consumers arrive at times in three different orders. The page plays forward. A reader dragging the scrub bar jumps backward. The recorder walks a fixed step and never skips. A figure holding state between frames would answer differently for each of them.
 
-**Randomness is seeded**, and the seed belongs to the figure rather than to the moment it is drawn.
+**Nothing here draws a random number.** A figure that wants one carries its own seed, so the picture at four seconds is the picture at four seconds however many times it is asked for.
 
 **Every mark carries an id.** Hit testing reads the list, the way everything else does. Without ids it would have to walk the figure instead, which is two traversals of one structure.
 
-**Marks are for explanation and not for data.** A figure of a few hundred marks redrawn sixty times a second is comfortable. Ten thousand is not, and a figure that wants ten thousand wants a shader.
+**Marks are for explanation and not for data.** A figure of a few hundred marks redrawn sixty times a second is comfortable. The flat demo is 202 marks and the solid one 265, and reading a frame and writing its SVG at 1280 by 720 costs 2.5 and 2.7 milliseconds each. A sixtieth of a second is 16.7. Ten thousand is not, and a figure that wants ten thousand wants a shader.
 
 ## Units and the frame
 
@@ -163,7 +163,7 @@ One figure then draws at 640 pixels wide in a chapter and at 2160 by 3840 in a r
 
 **A figure declares what to do about shape, rather than being cropped.** The export offers three shapes, and `accretion` already showed what a wide composition does in a square frame. It needed a zoom of 0.6 rather than a crop. So a figure gives an extent per shape where it wants one, and a single extent where the picture works everywhere.
 
-**A figure may declare itself a loop.** The export already offers a seamless loop, and a reader can tick it today. A figure that ends somewhere other than where it started would give them a clip that jumps once a second. A looping figure is one whose marks at its duration match its marks at zero. That is a gate rather than a promise, because the two lists are already there to compare.
+**A figure may declare itself a loop.** The export already offers a looping clip, and a reader can tick it today. A figure that ends somewhere other than where it started would give them a clip that jumps once a second. A looping figure is one whose marks at its duration match its marks at zero. That is a gate rather than a promise, because the two lists are already there to compare.
 
 ## Time
 
@@ -179,7 +179,7 @@ image.data.set(await source.frameAt(time + settle / this.settings.fps, settle + 
 
 **Settling** is the frames a shader draws and throws away before clip time zero. A shader that builds its picture out of its own last frame opens on an empty one.
 
-These are one type, declared once, and both the page and the recorder are handed it. The arithmetic above is correct and it is written in the one place that happens to need it. A figure over a shader needs the same arithmetic, and a second copy is how the two would come to disagree.
+That arithmetic is the consumer's, and this package holds no clock of its own: a figure is asked for a time in clip seconds and answers. The three numbers are one type declared once in the website, which hands the same type to the page and to the recorder. A figure over a shader needs the same arithmetic, and a second copy is how the two would come to disagree.
 
 ## The two painters
 
@@ -201,7 +201,7 @@ An overlay is sharper. A figure over a shader is a transparent SVG above a canva
 
 There is no per-figure choice between them. A figure that genuinely needed canvas on the page would be a change made against evidence, and none exists yet.
 
-**The still frame is painted into the page before any JavaScript runs.** `figure.at` is a pure function with no framework and no browser under it, so the SVG painter can write markup as a string during the static export. A figure then arrives in the HTML, at its still time, and starts moving when the page hydrates. A reader with no JavaScript sees the picture, a feed reader sees the picture, and nothing flashes empty on first paint. A canvas cannot do any of that, and this is the strongest reason SVG is the page painter rather than a narrow one.
+**The still frame is painted into the page before any JavaScript runs.** `marksAt` is a pure function with no framework and no browser under it, so the SVG painter can write markup as a string during the static export. A figure then arrives in the HTML, at its still time, and starts moving when the page hydrates. A reader with no JavaScript sees the picture, a feed reader sees the picture, and nothing flashes empty on first paint. A canvas cannot do any of that, and this is the strongest reason SVG is the page painter rather than a narrow one.
 
 ## Colour
 
@@ -210,6 +210,8 @@ There is no per-figure choice between them. A figure that genuinely needed canva
 On the page the palette can be CSS custom properties, which SVG reads directly. In a recording it cannot. The recorder draws into a canvas that is not in the document, and no theme reaches it. A figure that called `getComputedStyle` would work on the page and fail in an export. The palette is resolved once and handed over when the export starts.
 
 The palette names roles rather than colours, and the names match the site's own tokens so a figure looks like the page around it.
+
+**A colour is read only out of the text it was handed.** `colourOf` reads hex and `rgb()`, which is what lets two colours be walked between, and it refuses every other form rather than guessing at one. A named colour read as black would be a wrong picture with nothing to say it went wrong.
 
 ## Text and equations
 
@@ -238,5 +240,6 @@ The prose has to work with the figure removed. A picture carrying a step of the 
 - **Values and timing are pure functions**, tested without a canvas or a browser.
 - **A figure at a time is a list of marks.** A gate samples named times and compares lists, and names the mark that moved.
 - **The comparison is by tolerance and not by hash.** `Math.sin`, `Math.cos` and `Math.pow` are not specified to the last bit in JavaScript, and they differ between engines and versions. An exact match would be a gate that passes on one machine and fails on another for no reason a reader could see.
+- **One gate compares bytes, and it has a known boundary.** The committed pictures are held to the markup the demos write now, which is what lets a picture in the README go stale loudly rather than silently. A coordinate is written to three decimal places, so the differences between engines are invisible in the bytes. A value landing exactly on a half in the fourth place would still round two ways, and nothing has landed there yet. The fix if anything ever does is a picture gate comparing marks by tolerance, which costs the gate its ability to say a committed file is stale, so it is not made in advance.
 - **The two painters are held together** by one test that paints the same list both ways.
 - **A consumer's own screenshot gate can see a figure**, because SVG is in the document rather than inside a canvas, which is what a gate painting a mask over a whole canvas is blind to.

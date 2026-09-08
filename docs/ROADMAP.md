@@ -159,10 +159,11 @@ eight.
 **The lock file agrees with the manifest again**, and holding it there is one
 `npm install --package-lock-only` in whichever commit bumps a version.
 
-**1.0.0 is being worked and fourteen of its sixteen steps are ticked.** The tree is 6,569 lines, the
+**1.0.0 is being worked and fifteen of its sixteen steps are ticked.** The tree is 6,569 lines, the
 door is 227 names, the suite is 614 tests, the README is 96 lines, and there is a guide and a
-reference. What is left is a read of DESIGN.md against the tree with the byte gate's boundary written
-down, and cutting the version. **The next session starts at step 15.**
+reference. DESIGN.md is read against the tree and the byte gate's boundary is written down in it.
+What is left is cutting the version, which is Siva's to publish. **The next session starts at step
+16.**
 
 **What the 0.9.x audit found sound**, so that a later session does not go looking again. Sixty random
 pairs of shapes with no coincident edges hold both `area(A) + area(B) = area(A or B) + area(A and B)`
@@ -505,12 +506,19 @@ demo is recompiled by steps 6 and 7 against the renamed door.
   The page's sentence mean is 15.5 words with none over 30, and it carries none of the banned phrases.
   The suite went from 610 tests to 614. The README and the guide both link it.
 
-- [ ] **15. DESIGN.md, and the byte gate's boundary.** DESIGN.md is 242 lines and carries one banned
-  word, `seamless`. Every claim it makes is checked against the tree, since four versions landed after
-  it was last read, and the gradient refusal it makes is re-read rather than assumed. The picture
-  gate's rounding boundary is written down as a known gap on purpose, since nothing has hit it and the
-  fix costs the gate its ability to say a committed file is stale. **Measures:** banned words from one
-  to zero; the count of DESIGN.md claims checked and the count corrected.
+- [x] **15. DESIGN.md, and the byte gate's boundary.** Twenty-five claims about this tree were read
+  against it and ten were wrong: the seam written as `figure.at` where it is `marksAt`, twice; the flat
+  refusal written as being lifted where it lifted at 0.10.0; "maths depends on nothing" where MathJax
+  is a runtime dependency; geometry placed below the line where it sits above it; a seeded randomness
+  nothing here draws; a comfort claim with no reading behind it, now 202 and 265 marks at 2.5 and 2.7
+  milliseconds a frame against the 16.7 a sixtieth of a second gives; and the three times written as
+  one type declared here where the type is the website's. The gradient refusal is true: `Fill` and
+  `Stroke` carry a colour and nothing else. Banned words went from one to zero, `seamless` in a
+  sentence about a looping clip. The byte gate's boundary is written down under what becomes
+  measurable, with the fix it would cost and why it is not made in advance. Two claims were added, for
+  the colour reader and that gate. DESIGN.md went from 242 lines to 245. The gradient refusal was
+  re-read and the refusal stands, but the reason three other files give for it does not, which is the
+  commit after this one.
 
 - [ ] **16. Cut 1.0.0.** The version bumped in this commit, `npm install --package-lock-only` in the
   same one, the done-criteria verified line by line with the number that satisfies each, and
@@ -552,14 +560,6 @@ demo is recompiled by steps 6 and 7 against the renamed door.
   at 14.7 to 20.0. A strip's text size is the figure's own, so growing it grows the stills too, and
   what it wants is a text size a figure can scale with the frame it is drawn into. Found while
   measuring the eight sheets for 1.0.0.
-
-- **The picture gate is engine-dependent at a rounding boundary.** A coordinate is written to three
-  decimal places, so the sine and cosine differences between engines are invisible in the bytes,
-  which is what lets the committed pictures be compared byte for byte at all. A value landing exactly
-  on a half in the fourth place would still round two ways. Nothing has hit it, and the fix if
-  anything ever does is a picture gate that compares marks by tolerance rather than bytes, which
-  costs the gate its ability to say the committed file is stale. Found while planning step 8 of
-  0.5.0.
 
 ## Someday
 
