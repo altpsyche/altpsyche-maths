@@ -268,7 +268,7 @@ three more are written past those because a session should not rediscover them.
 
 | version | what lands | what it changes | steps | cut against | depends on | plan |
 | --- | --- | --- | --- | --- | --- | --- |
-| 2.0.0 | the figure format | every builder's shape, and the door | 29 | all four demos read from files, and the eight sheets | MathJax, which is already a dependency | written, in [`FIGURE-FORMAT.md`](FIGURE-FORMAT.md) |
+| 2.0.0 | the figure format | every builder's shape, and the door | 30 | all four demos read from files, and the eight sheets | MathJax, which is already a dependency | written, in [`FIGURE-FORMAT.md`](FIGURE-FORMAT.md) |
 | 2.1.0 | the curves and surfaces a figure can name: parametric, polar, implicit, and the solids | adds kinds | to plan | a phase portrait, which the flat demo's field cannot express | nothing outside this package | to plan |
 | 2.2.0 | matrices and tables, and a matrix applied to a grid | adds kinds | to plan | a grid under a linear map, which nothing here can draw | nothing outside this package | to plan |
 | 2.3.0 | the indications that run along a path, and text written on rather than faded in | adds kinds, and outlines for plain text | to plan | the flat demo's reading, written on | a source of glyph outlines for plain text | to plan |
@@ -312,7 +312,7 @@ draws, which needs a browser gate and a card gate. `@altpsyche/engine` needed tw
 seventeen gate scripts to have those, and building the same here is unestimated.
 
 **Two things on this plan are not versions and both have a deadline.** Composition and camera is
-done-criteria on steps 3.8 and 7 of the format, because a version in front of those would write
+done-criteria on steps 3.9 and 7 of the format, because a version in front of those would write
 camera moves as closures and then rewrite them. And whether a `Mark` may be a raster image is a
 decision above, answered or refused before 2.0.0 freezes, since a new kind of `Mark` is a change to
 the format's value types.
@@ -480,7 +480,7 @@ one 265 at 2.5 and 2.7 milliseconds a frame.
 
 **The format plan gained step 7.5, because 1.6.0 landed after it was written.** Step 6 carries the
 timeline as data and step 7 the extent, and nothing carried `Figure.insets`, so step 8 could not have
-written the flat demo out as a file with the panel it draws. The plan is twenty-nine commits and its
+written the flat demo out as a file with the panel it draws. The plan is thirty commits and its
 value types eleven.
 
 **The solid demo carries an inset, so the clip reached both demos the way every 1.x feature before it
@@ -650,7 +650,7 @@ including a hold, and step 7 of the format, which it defers to, names no hold: `
 dead time and a finished view entry stays applied in full, so a view holding while a brace arrives is
 the absence of an entry. Step 3 said the solid demo's orbit gains a held beat, and that orbit is a
 `Camera3` driven by a track inside the scene rather than the figure's view, so pacing it belongs to
-step 3.8 of the format. And both this file and the format claimed the flat demo holds its dot within
+step 3.9 of the format. And both this file and the format claimed the flat demo holds its dot within
 1.2 figure units of the middle: the reach is 1.2 but `ROOM` is 0.62 and binds at both ends of the
 walk, so the real bound is 2.14. The suite already held 2.14 and said why, so the gate was right and
 both plans were wrong.
@@ -936,8 +936,8 @@ it reads, and neither number is this package's.
 
 **Two planning sessions ran and neither touched code.** What they produced is the format written
 down, the six questions below answered, and a step list Siva reads before anything lands. The audit
-of the 1.x band added a step to it for the insets 1.6.0 gave a figure, so it is twenty-nine
-commits.
+of the 1.x band added a step to it for the insets 1.6.0 gave a figure and the review of 2026-09-09
+added one for the boolean operations, so it is thirty commits.
 
 A figure format is a description of a picture over time that a program reads rather than runs. It
 carries nodes, tracks and animations, each a named thing with parameters, and no function anywhere.
@@ -1032,6 +1032,16 @@ each gets a test against its own call rather than a picture. What grows is the c
 demo's eye sits at `4.6·cos(2πt)`, `4.6·sin(2πt)`, `2.6`, which is the second place a demo asks the
 expression form for arithmetic, so the camera has a step of its own.
 
+**A boolean operation had no written form and the demo that measures step 3.1 is built from three.**
+The review of 2026-09-09 read the plan against the tree. Ten operations take a path and hand one back
+and no inventory table held any of them, because the tables were read from return types and an
+operation's type is the same as a producer's. Three of the ten are named by a figure: `demos/boolean.ts`
+computes `unionOf`, `intersectionOf` and `differenceOf` inside a scene rebuilt from a track, so the
+answer's cubics change every frame and cubics written out at authoring time are one frame of it. Step
+3.3 carries the three, the other seven stay unwritten because each runs inside an animation or inside
+the resolver, and step 3.1 measures against the rotation demo, whose scene is a fixed tree of the
+three kinds it lands.
+
 **Nothing is signed off.** Siva reads the plan before a line is written.
 
 ### The 2.x band, which is what Manim has and this does not
@@ -1081,7 +1091,7 @@ format a recorder reads a file, which is also what lets one run without a page a
 - **All four of the things that look worse than 3Blue1Brown are queued now**, which is Siva's call of
   2026-09-08 and the reason the ladder above is no longer empty. Motion and pacing was 1.2.0 and is
   cut, typography and labels was 1.1.0 and is cut, composition and camera is done-criteria on the format's
-  steps 3.8 and 7, and line quality is 1.3.0 and 1.4.0 between them. **The reading that put them there is that
+  steps 3.9 and 7, and line quality is 1.3.0 and 1.4.0 between them. **The reading that put them there is that
   three of the four are builder and demo work over the SVG painter that already draws**, and only the
   sharpness of a line is the renderer's.
 

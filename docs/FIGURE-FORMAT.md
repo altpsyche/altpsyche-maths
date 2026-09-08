@@ -268,6 +268,27 @@ of the ten named ones. `straight` is beside them and returns one `Cubic` rather 
 | `pathFromData` | the path data of an SVG `d` attribute | no |
 | `straight` | from, to, and it returns a `Cubic` | no |
 
+### Path operations, ten of them
+
+These take a path and hand one back, so no table above holds them and the inventory read from return
+types missed all ten. **Three of them are named by a figure and the other seven are not.** The boolean
+demo names `unionOf`, `intersectionOf` and `differenceOf`, and each of those is a real operation over
+two paths rather than a shape with parameters: the answer's cubics are not the operands' cubics. The
+other seven run inside an animation or inside the resolver, so a figure never carries one.
+
+| operation | what it takes | who names it |
+| --- | --- | --- |
+| `unionOf` | two paths | a figure, in the boolean demo |
+| `intersectionOf` | two paths | a figure, in the boolean demo |
+| `differenceOf` | two paths | a figure, in the boolean demo |
+| `trimPath` | a path and a fraction | `draw` |
+| `lerpPath` | two paths and a fraction | `morph` |
+| `alignPaths` | two paths, and it returns two | `morph` |
+| `outlinePath` | a path and a width | the resolver, on every tapered stroke |
+| `transformPath` | a path and a `Mat3` | the resolver, on a group's transform |
+| `cutPath` | a path and a rectangle | `unionOf` and its two siblings |
+| `splitCurve` | one `Cubic` and a fraction | `cutPath` and `alignPaths` |
+
 ### Point producers, two of them
 
 These return points rather than a path, `Vec2[]` and `Vec3[][]`, and a figure passes what comes back
@@ -365,8 +386,9 @@ made of: the list of items `scene3` sorts and draws, rather than a node or a pat
 those three. A resolver hands back a `Node` that `flatten` already walks, so nothing below the line
 moves for any of the twenty.
 
-**A path needs a written form before anything that takes a path does.** Four producers work in the
-graph domain: `plot`, `areaUnder`, `tangentAt` and `bracePath`. Six more are shapes in
+**A path needs a written form before anything that takes a path does.** Ten operations take a path
+and hand one back and no table held any of them, which the section above corrects. Four producers work
+in the graph domain: `plot`, `areaUnder`, `tangentAt` and `bracePath`. Six more are shapes in
 `figure/path.ts`: `arc`, `circle`, `line`, `polygon`, `polyline` and `rect`, with `straight` beside
 them returning one `Cubic`. `pathFromData` reads a path out of SVG path data, which is a written form
 the format can carry as it stands. `streamlineOf` and `sectionOf` produce points rather than paths,
@@ -440,7 +462,7 @@ frozen door is what a major exists for, so either the old calls keep working bes
 which means two APIs and two things to test, or the version goes to two. **That is Siva's call and
 this plan assumed a minor without asking.**
 
-**Realistic shape: at least twenty-nine commits over the vocabulary and the surfaces, plus the
+**Realistic shape: at least thirty commits over the vocabulary and the surfaces, plus the
 site.** Against evenings and weekends that is months rather than weeks. The plan is still worth doing
 and the reasons in this document are unchanged. What was wrong was the size written next to them.
 
@@ -455,9 +477,9 @@ commits and step 4 is five, each named below with the demo whose marks measure i
 version and there is no step between it and step 10. **Step 7.5 was added by the audit of the 1.x
 band**, since 1.6.0 gave a figure insets and nothing here carried them.
 
-**The honest count is at least twenty-nine commits rather than twelve to sixteen.** Eight of the
+**The honest count is at least thirty commits rather than twelve to sixteen.** Eight of the
 twelve steps are one commit each, which is the seven this plan was written with and the inset step
-1.6.0 added to it. Step 3 is ten and step 4 is five. Step 8 rewrites four demos and is four. Step 9
+1.6.0 added to it. Step 3 is eleven and step 4 is five. Step 8 rewrites four demos and is four. Step 9
 rewrites the guide and the reference and is two. The site is not counted here at all, since it is a
 release away and has a document of its own.
 
@@ -482,7 +504,7 @@ release away and has a document of its own.
   drawn. That refusal is the price of the format being closed and it is the one place the price
   shows.
 
-- [ ] **3. The node vocabulary, which is ten commits.** Twenty-one node kinds, two item producers,
+- [ ] **3. The node vocabulary, which is eleven commits.** Twenty-one node kinds, two item producers,
   eleven path producers and two point producers as records with parameters, and a resolver from a record to the nodes that exist now. The
   authoring calls keep their names and their arguments and return records. **The measurement every
   one of the ten quotes is the same:** the demo that draws the kinds of that commit gives the same
@@ -492,8 +514,10 @@ release away and has a document of its own.
   - [ ] **3.1 The node record and the resolver, with the three kinds of the tree.** A record is a
     kind, a name and its parameters, and a group's children are records. `shape`, `text` and `group`
     are the three, and `resolveNode` walks a record into the `Node` that `flatten` already takes.
-    **Measures:** the boolean demo, which draws the fewest kinds of the four, mark for mark at its
-    named times; the suite from 785.
+    **Measures:** the rotation demo, whose scene is a fixed tree of those three kinds and no
+    expression at all, mark for mark at each of the four times its strip draws, which is eight marks
+    each time; the suite from 785. **It is the rotation demo rather than the boolean one**, because the
+    boolean demo's scene is a boolean operation over a track value and step 3.3 is what carries that.
 
   - [ ] **3.2 A path as data.** `arc`, `circle`, `line`, `polygon`, `polyline`, `rect` and `straight`
     as records, `pathFromData` as the written form for anything else, and the rule that a path is
@@ -501,32 +525,40 @@ release away and has a document of its own.
     against its own call within tolerance; the arc held between 2.6 and 2.8 parts in ten thousand of
     the true radius, which is the bound the suite already holds; the rotation demo's two panels.
 
-  - [ ] **3.3 The graph path producers.** `plot`, `areaUnder` and `tangentAt` as records whose curve
+  - [ ] **3.3 The boolean operations as records.** `unionOf`, `intersectionOf` and `differenceOf` as
+    records over two path records, since the answer's cubics are not the operands' and a walking disc
+    changes the answer every frame. The other seven operations get no written form, because each runs
+    inside an animation or inside the resolver and a figure never names one. **Measures:** the boolean
+    demo's twelve marks at each of its seven named times, mark for mark within tolerance, through
+    records rather than calls; the four cases its walk takes the operation through, no crossing, one
+    crossing, two crossings and containment.
+
+  - [ ] **3.4 The graph path producers.** `plot`, `areaUnder` and `tangentAt` as records whose curve
     is an expression, and `bracePath`. Step 1 has already made the readers take geometry, so the
     curve is all that is left in these three. `riemannBars` is not here, because it returns a node.
     **Measures:** the flat demo's parabola, its shaded region and its tangent, mark for mark at its
     named times.
 
-  - [ ] **3.4 The annotation nodes.** `dot`, `arrow`, `brace` and `callout`. **Measures:** the flat
+  - [ ] **3.5 The annotation nodes.** `dot`, `arrow`, `brace` and `callout`. **Measures:** the flat
     demo's dots, arrows and braces at its named times; `callout` against its call, since no demo
     draws one.
 
-  - [ ] **3.5 The graph frame nodes.** `numberLine`, `axes`, `numberPlane` and `riemannBars`, which
+  - [ ] **3.6 The graph frame nodes.** `numberLine`, `axes`, `numberPlane` and `riemannBars`, which
     share the tick list and the scale. **Measures:** the flat demo's axes and number planes and the
     solid demo's axes at their named times; `numberLine` and `riemannBars` against their calls, since
     no demo draws either.
 
-  - [ ] **3.6 The equation node.** `equationNode`, and an `Equation` stays resolved geometry a figure
+  - [ ] **3.7 The equation node.** `equationNode`, and an `Equation` stays resolved geometry a figure
     carries rather than TeX a renderer typesets, which is the answer to where text's geometry is
     settled. **Measures:** the flat demo's typeset rule, glyph for glyph at its named times; the
     bytes of that equation written out.
 
-  - [ ] **3.7 The field node.** `vectorField`, whose field is an expression of a place, with
+  - [ ] **3.8 The field node.** `vectorField`, whose field is an expression of a place, with
     `lengthOf` and `colourFor` as named forms: a constant, a threshold and a saturating length.
     **Measures:** the flat demo's slope field, arrow for arrow within tolerance; the saturating form
     against `0.34·m / (0.6 + m)` at ten magnitudes.
 
-  - [ ] **3.8 The camera as parameters rather than a closure.** A figure stores a `Camera3Choice` and
+  - [ ] **3.9 The camera as parameters rather than a closure.** A figure stores a `Camera3Choice` and
     the resolver builds the `Camera3`, since the built one carries `project` and its `Projection`
     carries `place`. The solid demo's orbit is where the expression form meets a track for the second
     time. **Measures:** the solid demo's marks at each of the four times its strip draws, through a
@@ -535,11 +567,11 @@ release away and has a document of its own.
     the solid demo's orbit gains a held beat at the face of the saddle and the commit quotes the
     seconds it holds.
 
-  - [ ] **3.9 The space nodes.** `polyline3`, `dot3`, `text3`, `arrow3`, `scene3` and `axes3`.
+  - [ ] **3.10 The space nodes.** `polyline3`, `dot3`, `text3`, `arrow3`, `scene3` and `axes3`.
     **Measures:** the solid demo's axes and polylines at its named times; `dot3`, `text3` and
     `arrow3` against their calls, since no demo draws one.
 
-  - [ ] **3.10 The surfaces and the space fields.** `surface3`, `surfaceCells`, `fieldArrows3` and
+  - [ ] **3.11 The surfaces and the space fields.** `surface3`, `surfaceCells`, `fieldArrows3` and
     `vectorField3`, with `shade` as a ramp through a band, and `sectionOf` and `streamlineOf` as the
     point producers they are. **Measures:** the solid demo's saddle, its plane, the curve of the
     crossing and its three runs of descent at its named times; the streamline's own bound, which the
