@@ -36,7 +36,7 @@ export type Animation = (marks: readonly Mark[], along: number) => readonly Mark
  * nothing changes nothing rather than failing, because a figure being written is
  * often a figure whose parts do not all exist yet.
  */
-function touches(id: string, target: string): boolean {
+export function touches(id: string, target: string): boolean {
   return id === target || id.startsWith(`${target}/`);
 }
 

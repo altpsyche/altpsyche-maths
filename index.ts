@@ -46,6 +46,8 @@ export type { Crossing, CrossingOptions } from './figure/intersect.js';
 export type { Colour, Fill, Gradient, Mark, PathMark, Stop, Stroke, Taper, TextMark, Width } from './figure/mark.js';
 export { byAspect, fractionOf, matchingAspect, resolveExtent, viewMatrix } from './figure/extent.js';
 export type { Extent, ExtentChoice, Fit, ViewAnimation, ViewChange } from './figure/extent.js';
+export { followView, frameView, moveView } from './figure/view.js';
+export type { FollowOptions, FrameOptions } from './figure/view.js';
 export { boundsOf, boundsOfMarks, centreOf } from './figure/bounds.js';
 export type { Bounds } from './figure/bounds.js';
 export { areaUnder, plot, riemannBars, slopeOf, tangentAt } from './figure/plot.js';

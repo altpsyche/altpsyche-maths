@@ -122,11 +122,11 @@ export class Timeline {
    * answer, so a declared extent chosen from the shape of the surface still
    * chooses under a view that moves.
    */
-  extentAt(extent: Extent, seconds: number): Extent {
+  extentAt(extent: Extent, seconds: number, marks: () => readonly Mark[] = () => []): Extent {
     let built = extent;
     for (const span of this.spans) {
       if (changesMarks(span.entry)) continue;
-      built = span.entry.view(built, span.curve(this.along(span, seconds)));
+      built = span.entry.view(built, span.curve(this.along(span, seconds)), marks);
     }
     return built;
   }

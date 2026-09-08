@@ -7,6 +7,7 @@
  */
 import { mat3, type Mat3 } from '../values/mat3.js';
 import { vec2, type Vec2 } from '../values/vec2.js';
+import type { Mark } from './mark.js';
 
 export interface Extent {
   width: number;
@@ -37,8 +38,13 @@ export function resolveExtent(choice: ExtentChoice, aspect: number, seconds = 0)
  * to the marks do. Like an animation it is given how far through its own span
  * the clock is, already eased, which is what makes the view a function of time
  * rather than a record of what has been played.
+ *
+ * The marks arrive as a getter because a view that follows something has to read
+ * where that thing is and most views read nothing. Every painter asks for the
+ * marks and the matrix both, so building the marks inside the call that answers
+ * for the matrix would build them twice a frame.
  */
-export type ViewAnimation = (extent: Extent, along: number) => Extent;
+export type ViewAnimation = (extent: Extent, along: number, marks: () => readonly Mark[]) => Extent;
 
 /**
  * A view animation as a timeline entry.

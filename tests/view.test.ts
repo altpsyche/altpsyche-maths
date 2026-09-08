@@ -11,6 +11,10 @@ import {
   circle,
   vec2,
   viewAt,
+  viewMatrix,
+  followView,
+  frameView,
+  moveView,
   Timeline,
 } from '@altpsyche/maths';
 import type { Extent, Figure, ViewChange } from '@altpsyche/maths';
@@ -160,5 +164,183 @@ describe('a view entry against the animations', () => {
     const moved = figureWith(Timeline.empty().play(moveTo(4), 2, { curve: linear }));
     const still = figureWith(undefined);
     for (const seconds of [0, 1, 2]) expect(marksAt(moved, seconds)).toEqual(marksAt(still, seconds));
+  });
+});
+
+describe('a move to an extent', () => {
+  it('walks each field of the extent it was handed to the one it names', () => {
+    const figure = figureWith(
+      Timeline.empty().play(moveView({ width: 20, height: 5, centre: vec2(3, -1) }), 2, { curve: linear }),
+      { width: 10, height: 10 }
+    );
+    for (let step = 0; step <= 10; step += 1) {
+      const along = step / 10;
+      const wanted: Extent = {
+        width: 10 + 10 * along,
+        height: 10 - 5 * along,
+        centre: vec2(3 * along, -along),
+      };
+      const read = viewAt(figure, 2 * along, 200, 200);
+      Array.from(viewMatrix(wanted, 'contain', 200, 200)).forEach((value, at) =>
+        expect(Array.from(read)[at]).toBeCloseTo(value, 10)
+      );
+    }
+  });
+
+  it('leaves the fields it does not name as they were', () => {
+    const panned = figureWith(Timeline.empty().play(moveView({ centre: vec2(4, 0) }), 1, { curve: linear }));
+    // A pan changes where the frame's middle sits and not how much it shows, so
+    // the pixels per unit are the same at both ends of the move.
+    expect(Array.from(viewAt(panned, 0, 200, 200))[0]).toBeCloseTo(20, 12);
+    expect(Array.from(viewAt(panned, 1, 200, 200))[0]).toBeCloseTo(20, 12);
+    expect(originAt(panned, 0)).toBeCloseTo(100, 12);
+    expect(originAt(panned, 1)).toBeCloseTo(20, 12);
+  });
+});
+
+/** A dot walking across, so a follow has something whose place is a function of
+ * the clock. */
+const walking = (timeline: Timeline): Figure => ({
+  extent: { width: 10, height: 10 },
+  scene: (seconds) => group('all', [shape('dot', circle(vec2(seconds, 0), 0.1), { fill: { colour: '#000' } })]),
+  timeline,
+  still: 0,
+});
+
+describe('a view that follows a mark', () => {
+  const WITHIN = 1.2;
+
+  it('holds the mark inside its margin of the middle and no closer', () => {
+    const figure = walking(Timeline.empty().play(followView('all/dot', { within: WITHIN }), 0));
+    for (let step = 0; step <= 10; step += 1) {
+      const seconds = step / 2;
+      const middle = mat3.transformPoint(viewAt(figure, seconds, 200, 200), vec2(0, 0));
+      const dot = mat3.transformPoint(viewAt(figure, seconds, 200, 200), vec2(seconds, 0));
+      // Twenty pixels to the figure unit at this extent, so the margin on the
+      // surface is 24 pixels.
+      expect(Math.abs(dot.x - 100)).toBeLessThanOrEqual(WITHIN * 20 + 1e-9);
+      // The view stands still while the dot is inside the margin, which is what
+      // leaves the picture something that does not move.
+      if (seconds <= WITHIN) expect(middle.x).toBeCloseTo(100, 10);
+      else expect(middle.x).toBeCloseTo(100 - (seconds - WITHIN) * 20, 10);
+    }
+  });
+
+  it('stops where its room runs out', () => {
+    const figure = walking(Timeline.empty().play(followView('all/dot', { within: WITHIN, room: 2 }), 0));
+    // Past a middle of 2 the view holds and the dot walks out of the margin,
+    // which is what a figure whose picture has its own edges asks for.
+    expect(originAt(figure, 3)).toBeCloseTo(100 - 1.8 * 20, 10);
+    expect(originAt(figure, 6)).toBeCloseTo(100 - 2 * 20, 10);
+    expect(originAt(figure, 60)).toBeCloseTo(100 - 2 * 20, 10);
+  });
+
+  it('follows one way when it is given one axis', () => {
+    const across = walking(Timeline.empty().play(followView('all/dot', { within: 0, axis: 'x' }), 0));
+    const both = walking(Timeline.empty().play(followView('all/dot', { within: 0, axis: 'both' }), 0));
+    const placeOf = (figure: Figure) => mat3.transformPoint(viewAt(figure, 3, 200, 200), vec2(0, 0));
+    expect(placeOf(across).x).toBeCloseTo(40, 10);
+    expect(placeOf(across).y).toBeCloseTo(100, 10);
+    // The dot walks along y at nothing, so following both ways reads the same
+    // here and the axis is what the test above separates.
+    expect(placeOf(both).y).toBeCloseTo(100, 10);
+  });
+
+  it('eases into following over its own span', () => {
+    const eased = walking(Timeline.empty().play(followView('all/dot', { within: 0 }), 2, { curve: linear }));
+    for (let step = 0; step <= 10; step += 1) {
+      const along = step / 10;
+      const seconds = 2 * along;
+      // The follow is the extent it was handed walked towards the followed one,
+      // so at half a span it has closed half the distance.
+      expect(originAt(eased, seconds)).toBeCloseTo(100 - seconds * along * 20, 10);
+    }
+  });
+
+  it('leaves the view alone when its name matches nothing', () => {
+    const missing = walking(Timeline.empty().play(followView('all/nothing', { within: 0 }), 0));
+    for (const seconds of [0, 1, 3]) expect(originAt(missing, seconds)).toBeCloseTo(100, 12);
+  });
+});
+
+describe('a view framing named marks', () => {
+  const framed = (padding: number) =>
+    ({
+      extent: { width: 10, height: 5 },
+      scene: group('all', [
+        shape('left', circle(vec2(-2, 0), 0.5), { fill: { colour: '#000' } }),
+        shape('right', circle(vec2(2, 1), 0.5), { fill: { colour: '#000' } }),
+        shape('far', circle(vec2(20, 0), 0.5), { fill: { colour: '#000' } }),
+      ]),
+      timeline: Timeline.empty().play(frameView(['all/left', 'all/right'], { padding }), 1, { curve: linear }),
+      still: 0,
+    }) satisfies Figure;
+
+  it('covers the named marks and keeps the shape of the frame it was handed', () => {
+    const figure = framed(0);
+    // The two named discs reach from -2.5 to 2.5 across and -0.5 to 1.5 up, so
+    // five across and two up, and a frame of two to one covers that at five.
+    const wanted: Extent = { width: 5, height: 2.5, centre: vec2(0, 0.5) };
+    Array.from(viewAt(figure, 1, 200, 100)).forEach((value, at) =>
+      expect(value).toBeCloseTo(Array.from(viewMatrix(wanted, 'contain', 200, 100))[at], 10)
+    );
+    for (let step = 0; step <= 10; step += 1) {
+      const along = step / 10;
+      const between: Extent = {
+        width: 10 - 5 * along,
+        height: 5 - 2.5 * along,
+        centre: vec2(0, 0.5 * along),
+      };
+      Array.from(viewAt(figure, along, 200, 100)).forEach((value, at) =>
+        expect(value).toBeCloseTo(Array.from(viewMatrix(between, 'contain', 200, 100))[at], 10)
+      );
+    }
+  });
+
+  it('grows by its padding on every side, and the taller side may be what drives it', () => {
+    // Padded by one the marks reach seven across and four up, and four up at two
+    // to one wants eight across, so the height is what sets the width here.
+    const wanted: Extent = { width: 8, height: 4, centre: vec2(0, 0.5) };
+    Array.from(viewAt(framed(1), 1, 200, 100)).forEach((value, at) =>
+      expect(value).toBeCloseTo(Array.from(viewMatrix(wanted, 'contain', 200, 100))[at], 10)
+    );
+  });
+
+  it('leaves out the marks it does not name', () => {
+    // The third disc sits at 20 across, so a framing that reached it would be
+    // more than twenty units wide.
+    expect(Array.from(viewAt(framed(0), 1, 200, 100))[0]).toBeCloseTo(40, 10);
+  });
+});
+
+describe('the marks a view reads', () => {
+  /** A figure counting how many times its own scene is built, which is what says
+   * whether the matrix and the marks are two builds or one. */
+  const counted = (timeline: Timeline) => {
+    let built = 0;
+    const figure: Figure = {
+      extent: { width: 10, height: 10 },
+      scene: (seconds) => {
+        built += 1;
+        return group('all', [shape('dot', circle(vec2(seconds, 0), 0.1), { fill: { colour: '#000' } })]);
+      },
+      timeline,
+      still: 0,
+    };
+    return { figure, count: () => built };
+  };
+
+  it('is not built at all for a view that reads no mark', () => {
+    const { figure, count } = counted(Timeline.empty().play(moveView({ centre: vec2(1, 0) }), 1));
+    viewAt(figure, 0.5, 200, 200);
+    expect(count()).toBe(0);
+  });
+
+  it('is built once however many entries read it', () => {
+    const { figure, count } = counted(
+      Timeline.empty().together([followView('all/dot', { within: 1 }), frameView(['all/dot'])], 1)
+    );
+    viewAt(figure, 0.5, 200, 200);
+    expect(count()).toBe(1);
   });
 });

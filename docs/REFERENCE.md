@@ -361,6 +361,24 @@ A mark is what a painter draws. It may request only what both painters implement
 - `ViewChange` — a view animation as a timeline entry, holding it under `view`. The wrapper is what
   lets one span list carry a change to the marks and a change to the view, since both are functions
   of two arguments and nothing at runtime tells them apart.
+- `moveView(to)` — a move to an extent, from wherever the entries before it left the view. Fields the
+  move does not name are left as they were, so a figure that only pans writes a `centre` and one that
+  only zooms writes a `width` and a `height`.
+- `followView(target, options)` — a view that follows a mark, holding it within a margin of the
+  middle. The target is the middle of the named mark's own bounds, and a name that matches nothing
+  leaves the view alone.
+  - `within` — how far the target may sit from the middle before the view starts to follow it. The
+    view holds still inside that margin and then pushes exactly as far as it must, so what a reader
+    is looking at stays where they are looking.
+  - `room` — how far the middle may travel from where it started, for a figure whose picture has its
+    own edges.
+  - `axis` — `x`, `y`, or both ways unless named.
+- `frameView(targets, options)` — a view framing the named marks, grown to cover them rather than
+  fitted to them, so the shape of the frame is the one it was handed and the picture does not stretch
+  as the marks move.
+  - `padding` — how many figure units of margin it leaves round them.
+- `FollowOptions` — what a follow takes: `within`, `room` and `axis`, above.
+- `FrameOptions` — what a framing takes: `padding`, above.
 - `Fit` — `contain` fits the whole extent inside the surface; `cover` fills the surface and lets the
   extent run off the edges.
 - `resolveExtent(choice, aspect, seconds)` — the extent a choice comes to at one shape of surface

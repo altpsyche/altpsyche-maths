@@ -76,7 +76,11 @@ export function marksAt(figure: Figure, seconds: number): readonly Mark[] {
  */
 export function viewAt(figure: Figure, seconds: number, width: number, height: number): Mat3 {
   const declared = resolveExtent(figure.extent, width / height, seconds);
-  const extent = figure.timeline ? figure.timeline.extentAt(declared, seconds) : declared;
+  if (!figure.timeline) return viewMatrix(declared, figure.fit ?? 'contain', width, height);
+  // The marks are built at most once and only if a view entry asks for them, so
+  // a figure whose view follows nothing pays nothing for one that does.
+  let built: readonly Mark[] | undefined;
+  const extent = figure.timeline.extentAt(declared, seconds, () => (built ??= marksAt(figure, seconds)));
   return viewMatrix(extent, figure.fit ?? 'contain', width, height);
 }
 

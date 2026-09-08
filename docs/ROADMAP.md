@@ -626,7 +626,7 @@ than after it.
 
   The door went from 252 names to 255 and the suite from 722 tests to 732 over 45 files.
 
-- [ ] **2. The named view moves, and the marks a follow reads.** A move to a fixed extent, a follow
+- [x] **2. The named view moves, and the marks a follow reads.** A move to a fixed extent, a follow
   with a margin, and a framing of named marks. **Measures:** each form's matrix at eleven times
   against its closed form; the flat demo's dot held within 1.2 figure units of the middle, which is
   the number that view already quotes; `marksAt` called once rather than twice for a figure whose
@@ -648,6 +648,36 @@ than after it.
   marks arrive as a getter rather than as a list**, since every painter calls `marksAt` and `viewAt`
   both and computing the marks inside `viewAt` would build the solid demo's 245 marks and its depth
   sort a second time at every frame. A figure whose view reads no mark then pays nothing.
+
+  **Landed.** `moveView`, `followView` and `frameView`, in `figure/view.ts`, and `ViewAnimation`
+  gained the getter. `viewAt` builds the marks at most once per call and only if an entry asks: a
+  figure whose view is a `moveView` builds its scene no times, and one whose view is a `followView`
+  and a `frameView` together builds it once.
+
+  **A move walks each field of the extent it was handed to the one it names, and leaves the fields it
+  does not name.** From 10 by 10 to 20 by 5 centred at (3, -1) over eleven times, each matrix agrees
+  with `viewMatrix` on the lerped extent to 1e-10. A pan writes a centre alone, so the pixels per
+  unit read 20 at both ends of it while the origin walks from 100 to 20.
+
+  **A follow holds the mark within its margin of the middle and no closer.** With a margin of 1.2 and
+  a dot walking across at one unit a second, the view stands still while the dot is inside the margin
+  and the middle then reads 100 − (seconds − 1.2)·20 pixels, so the dot never leaves 1.2 figure units
+  of the middle. That is the number the flat demo's own view quotes. Given a room of 2 the middle
+  stops at 40 pixels off and holds there at 6 seconds and at 60. A name matching nothing leaves the
+  view where it was, which is the rule every animation follows.
+
+  **A framing grows the frame to cover the marks rather than fitting it to them**, so the shape it
+  was handed is the shape it keeps and the picture does not stretch as the marks move. Two discs
+  reaching 5 across and 2 up inside a frame of two to one come out 5 by 2.5 centred at (0, 0.5),
+  agreeing with the closed form at eleven times. Padded by one they reach 7 across and 4 up, and 4 up
+  at two to one wants 8 across, so the height sets the width and the framing is 8 by 4. A disc at 20
+  across that the framing does not name is left out, which the 40 pixels per unit says.
+
+  **`touches` is exported from `figure/animation.ts` rather than written twice**, since a follow and
+  a framing name marks by the same rule an animation does: a name is a mark's id or the front of one.
+
+  The door went from 255 names to 260 and the suite from 732 tests to 744. The eight sheets are
+  byte-identical.
 
 - [ ] **3. Both demos move their view against the action.** The flat demo's follow becomes an entry
   after its entrance. **Measures:** both demos' marks and view matrices at their named times,
