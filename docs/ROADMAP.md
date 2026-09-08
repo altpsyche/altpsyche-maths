@@ -52,6 +52,7 @@ with it, because `git log` is what keeps a closed plan.
 
 | version | what lands |
 | --- | --- |
+| 0.13.0 | The eight sheets readable on a dark ground and worth looking at |
 | 1.0.0 | The two demos complete, the README, the surface frozen |
 
 **One place in the order is worth defending.** A camera that moves rides with three dimensions
@@ -159,6 +160,11 @@ eight.
 **The lock file agrees with the manifest again**, and holding it there is one
 `npm install --package-lock-only` in whichever commit bumps a version.
 
+**0.13.0 is planned and nothing of it is worked.** Siva read the eight sheets and rejected them, so
+1.0.0 waits behind it: the cut's last criterion is Siva reading the README, the guide and the
+pictures, and the pictures are being redrawn. The entry below carries eight steps, the measurement
+each one quotes, and one call that is Siva's.
+
 **1.0.0 is being worked and sixteen of its seventeen steps are ticked.** The library is 6,794 lines,
 the door is 227 names, the suite is 618 tests over 40 files, and the four prose surfaces are a 175
 line README, a 544 line guide, a 792 line reference and a 387 line DESIGN.md. **The next session
@@ -201,6 +207,135 @@ no box test in front of it and the quadratic over piece pairs is not worth remov
 ## The items
 
 Each is a version above. What follows is what each one covers.
+
+### The pictures, 0.13.0
+
+**A sheet is one figure written out as SVG, and there are eight of them.** Siva read all eight and
+rejected them. What he named is five faults. They look unfinished, they are ugly, the two solid
+sheets are the worst of them and are not readable, the vector fields read as noise rather than as
+fields, and every sheet is drawn for a white ground and breaks on a dark one.
+
+#### What the eight sheets measure today
+
+**Coverage is the share of the frame the drawn bounds cover**: `tangent-strip` 93.4%, `tangent`
+80.0%, `surface-strip` 79.3%, `boolean-strip` 75.9%, `surface` 71.0%, `rotate-strip` 65.5%,
+`rotate` 65.0%, `boolean` 59.9%. **On-page text is the smallest labelled glyph at the width the
+README shows the sheet**: `boolean` 20.0px, `tangent` and `rotate` 17.3px, `surface` 14.7px, and the
+four strips at 10.8, 9.4, 7.9 and 7.6px.
+
+**Coverage does not measure emptiness, which is why a sheet can pass it and still look empty.**
+`rotate.svg` reads 65.0% covered and draws two shapes inside the upper third of a frame 1080 by 600.
+The bounds are stretched by a caption at y=575 and a word at y=181 while the picture between them
+stays small. Step 8 replaces the number with one an empty frame fails.
+
+**Twelve colours are written against one ground.** `demos/palette.ts` says so in its own header: each
+is measured against the white the sheets are drawn on. Six of the twelve carry a reading a reader
+takes a value or a word off, and all six clear 4.5:1 against white at INK 17.22:1, DEEP 5.93:1, EMBER
+5.18:1, MOSS and AMBER 5.02:1 and SLATE 4.83:1. Against GitHub's dark ground `#0d1117` none of the
+six clears it: INK falls to 1.10:1, SLATE to 3.91:1, AMBER and MOSS to 3.77:1, EMBER to 3.65:1 and
+DEEP to 3.19:1. `paint/svg.ts` writes each colour into the mark as a literal `fill`, so nothing on
+the page can correct it.
+
+**The saddle reads as cardboard because its shading covers a contrast range of 2.19.** `shadeOf` runs
+a level from 150 to 240 in a warm ramp, which against white is 3.46:1 for a cell facing away and
+1.27:1 for one facing the light. The lightest cell sits 1.27:1 from the ground it is drawn on, so the
+near edge of the surface is nearly the page.
+
+#### The mechanism for a dark ground is measured rather than chosen
+
+**A `<style>` block inside the SVG carrying `@media (prefers-color-scheme: dark)` works through an
+`<img>`.** Measured in Chromium with `--blink-settings=preferredColorScheme`: the same file draws
+`#f0f0f0` text under the dark scheme and `#1b1b1b` under the light one, from one file with no page CSS
+reaching it. This is also what `paint/svg.ts` already promises in its own header, that a figure
+follows a theme with nothing watching.
+
+**What is not measured here is GitHub's sanitizer**, which is what serves the README's sheets and may
+strip a `<style>` element. Step 1 measures that first. The fallback is `<picture>` with a `<source>`
+per scheme, which GitHub documents, and it doubles the sheets from eight to sixteen and the byte gate
+with them.
+
+#### The one call that is Siva's
+
+**Whether the dark sheet keeps the warm surface ramp or takes a cool one**, and whether a dark sheet
+is a second palette chosen for that ground or the light palette lightened. Step 1 lands a mechanism
+and a light palette unchanged, then puts both versions of the surface sheet in front of Siva. Nothing
+after step 1 depends on the answer.
+
+#### The steps
+
+**The order is not free.** The ground lands first, because the palette it settles is what every later
+step picks a colour from. The text size lands before the frames are re-timed, since step 8 measures
+the text of the frames step 4 chose. The stills are re-measured last, because every step before it
+changes the bytes of a sheet.
+
+**Every step changes a sheet, since the demos are what this version is.** Steps 1, 2 and 6 also add a
+name to the door, and 0.13.0 lands before the surface is frozen at 1.0.0 for that reason.
+
+- [ ] **1. The ground a sheet is drawn on.** Whether GitHub keeps a `<style>` element in an SVG it
+  serves, measured first, and the mechanism chosen on the answer. `svgMarkup` gains a theme, the
+  palette gains a value per ground, and `paint/svg.ts` writes a class where it writes a literal
+  colour now. **Measures:** the six reading colours from 4.83:1 through 17.22:1 on white and 1.10:1
+  through 3.91:1 on `#0d1117`, to 4.5:1 or better on both; the sheet count from eight.
+
+- [ ] **2. A text size that holds against the frame.** A strip's text is the figure's own size, so a
+  strip fitted to a wide extent shrinks every glyph in it. A figure gains a text size it can hold at
+  a floor on the page rather than in figure units alone. **Measures:** the smallest labelled glyph
+  from 7.6px on `surface-strip` and 7.9, 9.4 and 10.8px on the other three strips, to a floor no
+  sheet falls under, with the four stills held at 14.7px or better.
+
+- [ ] **3. The rotation's placeholder word, and every caption.** `demos/rotate.ts` draws the literal
+  string `label` as the word riding the shape, twice in `rotate.svg` and eight times in
+  `rotate-strip.svg`. The boolean captions read "either one", "both at once" and "first without
+  second" where the register asks for the standard name. **Measures:** the count of sheets carrying
+  the string `label` from two to zero, with a gate; the caption text of six panels.
+
+- [ ] **4. The frames a strip shows.** `tangent-strip.svg` draws its first two frames at slope 0.00
+  and they look alike, and `surface-strip.svg` draws four frames that are two near-identical pairs. A
+  strip's times are chosen for difference rather than for even spacing. **Measures:** the share of
+  marks that move between the closest two frames of each strip, from its value today to a floor every
+  strip clears.
+
+- [ ] **5. The curve clipped to its frame.** The parabola runs out of the top of all four
+  `tangent-strip` frames and off the left edge of `tangent.svg`. **Measures:** the share of drawn
+  geometry outside the view box, from its value on the two tangent sheets to zero.
+
+- [ ] **6. The surface lit so its depth reads, and its axes named.** `shadeOf` covers a contrast range
+  of 2.19 against white, from 3.46:1 to 1.27:1. The three axes carry tick numbers and no names, the
+  descent runs meet in a vertical spike at the centre, and the crossing curve disappears behind the
+  surface at the back. **Measures:** the contrast range of the shading from 2.19; the lightest cell
+  from 1.27:1 against its ground; the axis names from none to three.
+
+- [ ] **7. A field drawn as a field.** The flat sheet samples 50 arrows and the solid one 36, and at
+  the width the README shows them neither draws a head. **Measures:** the arrow count from 50 and 36;
+  the drawn head from none to its size on the page; the two field colours from HAZE 1.49:1 and STEEL
+  2.30:1 against white.
+
+- [ ] **8. The stills re-timed, and every sheet measured again.** Coverage replaced by a number an
+  empty frame fails, since `rotate.svg` passes 65.0% while drawing inside the upper third of its
+  frame. All eight read again on that number and on on-page text, and the picture the README opens on
+  decided on the readings rather than kept. **Measures:** the replacement number for all eight
+  against the eight coverage figures above; the sheet the README opens on.
+
+#### Done-criteria
+
+- Every colour a reader takes a value or a word off clears 4.5:1 against the white ground and against
+  `#0d1117`, and a test in the suite holds both.
+- A sheet in the README is legible under the dark scheme, measured the way step 1 measured it.
+- No sheet draws a labelled glyph smaller than the floor step 2 sets, and no still falls below 14.7px.
+- No sheet carries the string `label`, and a gate says so.
+- Every caption names the operation with the standard name for it.
+- No two frames of a strip move fewer marks between them than the floor step 4 sets.
+- No drawn geometry falls outside the view box on any sheet.
+- The surface's shading covers a contrast range wider than 2.19, and its lightest cell stands clear
+  of the ground it is drawn on.
+- The three axes of the solid sheets carry names.
+- Every field arrow draws a head at the width the README shows it.
+- Every sheet is measured on the number step 8 sets, and the README opens on the sheet that reads
+  best on it.
+- `npm test`, `npm run type-check` and `npm run build` pass, and the lock file agrees with the
+  manifest.
+- `npm run demos` regenerates every sheet byte for byte as committed.
+- Siva has read the eight sheets once and said so.
 
 ### The polish, 1.0.0
 
@@ -583,15 +718,12 @@ demo is recompiled by steps 6 and 7 against the renamed door.
 - DESIGN.md carries none of the banned phrases and every claim in it is true of the tree.
 - The byte gate's rounding boundary is written down as a known gap.
 - `npm test`, `npm run type-check` and `npm run build` pass, and the lock file agrees with the manifest.
-- Siva has read the README, the guide and the pictures once, and said so.
+- Siva has read the README, the guide and the pictures once, and said so. The pictures are 0.13.0's,
+  so this waits on that version being cut.
 
 ## Found while working, not yet queued
 
-- **A strip's labels are too small to read at the width the README shows it.** The four strips draw
-  their smallest labelled text at 7.6 to 10.8 pixels on the page, where the four stills draw theirs
-  at 14.7 to 20.0. A strip's text size is the figure's own, so growing it grows the stills too, and
-  what it wants is a text size a figure can scale with the frame it is drawn into. Found while
-  measuring the eight sheets for 1.0.0.
+Nothing is queued here. The strips' text size is 0.13.0's step 2.
 
 ## Someday
 
