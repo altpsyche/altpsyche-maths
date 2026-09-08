@@ -48,8 +48,10 @@ export { byAspect, fractionOf, matchingAspect, resolveExtent, viewMatrix } from 
 export type { Extent, ExtentChoice, Fit, ViewAnimation, ViewChange } from './figure/extent.js';
 export { followView, frameView, moveView } from './figure/view.js';
 export type { FollowOptions, FrameOptions } from './figure/view.js';
-export { boundsOf, boundsOfMarks, centreOf } from './figure/bounds.js';
+export { boundsOf, boundsOfMarks, centreOf, grownBy, overlapOf } from './figure/bounds.js';
 export type { Bounds } from './figure/bounds.js';
+export { insetMarks, insetMatrix } from './figure/inset.js';
+export type { Inset } from './figure/inset.js';
 export { areaUnder, plot, riemannBars, slopeOf, tangentAt } from './figure/plot.js';
 export type { AreaOptions, BarsOptions, PlotOptions, TangentOptions } from './figure/plot.js';
 export { vectorField } from './figure/field.js';

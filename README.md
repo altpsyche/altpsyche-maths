@@ -146,7 +146,8 @@ thousandth of a pixel, and to the same style exactly.
 
 ## Restrictions
 
-A mark may request only what both painters implement: no filters, no blend modes, no clipping. A
+A mark may request only what both painters implement: no filters and no blend modes, and a clip is
+a rectangle and no other shape. A
 figure using an SVG filter would render correctly on a page and lose the effect silently in a
 recording.
 

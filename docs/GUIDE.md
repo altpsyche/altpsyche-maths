@@ -592,9 +592,13 @@ Nothing here writes a file. What a consumer does with a painted frame is the con
 
 ## Restrictions
 
-**A mark may request only what both painters implement.** There are no filters, no blend modes and
-no clipping. A figure using an SVG filter would render correctly on a page and lose the effect
-silently in a recording.
+**A mark may request only what both painters implement.** There are no filters and no blend modes. A
+figure using an SVG filter would render correctly on a page and lose the effect silently in a
+recording.
+
+**A clip is a rectangle and no other shape.** A path clip needs a winding number counted, which is a
+stencil on a card, where a box is the scissor test every device already has. So a rectangle is what
+all three painters draw and the type is what keeps a figure from asking for the other one.
 
 **A colour is flat.** There are no gradients either, and that exclusion is not the rule above. Both
 painters draw a gradient: SVG names one with an element carrying a document-unique identifier, and a

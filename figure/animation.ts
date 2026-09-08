@@ -155,8 +155,11 @@ export function fadeTo(target: string, opacity: number): Animation {
  * bigger, the way it makes everything else bigger, which is what a group that
  * scales already does to the marks under it. Doing less here would leave a
  * shrinking mark with the stroke it started at.
+ *
+ * The clip is left where the figure put it, so a mark an animation moves slides
+ * through its own clip rather than carrying the window along with it.
  */
-function carried(mark: Mark, through: Mat3): Mark {
+export function carried(mark: Mark, through: Mat3): Mark {
   const scale = mat3.scaleFactor(through);
   if (mark.kind === 'text') {
     return {

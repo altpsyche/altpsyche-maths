@@ -306,7 +306,8 @@ A track is one value's keys over time. A control panel writes tracks and a figur
 
 ## Marks
 
-A mark is what a painter draws. It may request only what both painters implement.
+A mark is what a painter draws. It may request only what both painters implement, so there are no
+filters and no blend modes, and a clip is a rectangle and no other shape.
 
 - `Colour` — a colour as text, which is any colour a CSS author can write.
 - `Fill` — how an inside is painted.
@@ -347,7 +348,14 @@ A mark is what a painter draws. It may request only what both painters implement
   - `baseline` — `alphabetic`, `middle` or `hanging`, where the anchor sits against the line of
     text.
   - `fill` — the colour the letters are painted.
-- `Mark` — a `PathMark` or a `TextMark`. Every mark also carries the `id` it was named by.
+- `Mark` — a `PathMark` or a `TextMark`. Every mark also carries the `id` it was named by, an
+  `opacity`, and a `clip`.
+  - `clip` — the `Bounds` the mark is drawn inside, in the figure's own units, with everything of it
+    outside that rectangle cut away. It is in the figure's units rather than the mark's own, because a
+    transform that turns takes a rectangle to a shape with corners off the axes and a path clip is
+    what no card draws without counting a winding number. A shape whose whole reach falls outside its
+    clip, half a stroke width included, is left out of the list rather than drawn invisibly. A text
+    mark stays, since a text mark reaches only as far as its own anchor.
 
 ## The extent and the view
 
@@ -404,6 +412,10 @@ A mark is what a painter draws. It may request only what both painters implement
   has, and nothing about a figure's layout may turn on that.
 - `centreOf(bounds)` — the middle of a box, which is what a turn or a growth happens about when a
   figure names no other point.
+- `overlapOf(one, other)` — the box both boxes hold, or nothing where they miss each other. Touching
+  along an edge counts as meeting, so a box holds what sits exactly on its boundary.
+- `grownBy(bounds, margin)` — the box reaching one margin further out on all four sides, which is
+  what a stroke of a given width adds to the geometry it is drawn along.
 
 ## Graph coordinates
 
@@ -435,8 +447,11 @@ never drawn works.
 
 ## The tree
 
-- `Style` — what a node paints with: `fill`, `stroke`, `opacity`, `family` and `weight`. A style set
-  on a group is handed down to its children.
+- `Style` — what a node paints with: `fill`, `stroke`, `opacity`, `family`, `weight` and `clip`. A
+  style set on a group is handed down to its children. A `clip` inside a `clip` is the box both of
+  them hold, since a group cannot show what the group above it has already cut away, and two that
+  miss each other leave nothing under them at all. A clip stays where it was declared rather than
+  riding a transform below it.
 - `ShapeNode` — a named path with a style.
 - `TextNode` — named text at a point, with a size, an alignment and a baseline. Its `text` may hold
   several lines separated by a newline, and `leading` is how far apart their baselines sit, in the
@@ -783,6 +798,7 @@ a group of that name.
     because a figure stopped at zero often explains nothing.
   - `loop` — whether it ends where it began, which a recording can loop without a jump. `isLoop` is
     what holds that rather than trust.
+  - `insets` — the second views of the figure drawn into rectangles of its own frame.
 - `TrackValues` — every sampled value by name, which is what a scene function is handed.
 - `marksAt(figure, seconds)` — the marks a figure shows at a time. A tapered stroke is turned into
   its filled outline after the timeline has run, so an animation that trims a path trims the
@@ -801,6 +817,32 @@ a group of that name.
   to the last bit and differ between engines.
 - `sameMarks(one, two, tolerance)` — two lists holding the same marks in the same order, to a
   tolerance.
+
+## Insets
+
+An inset is a second view of the same figure, magnified and drawn into a rectangle of the frame,
+which is what `ZoomedScene` is in Manim. It reads the marks the figure has already built rather than
+building the tree again, so what it shows is the picture at that time and not a second picture that
+could disagree about it. The border and the ground behind one are the figure's own marks, since a
+frame round a picture is a shape.
+
+- `Inset` — one such view.
+  - `shows` — how much of the figure it shows, in the figure's own units, which is the same kind of
+    `Extent` the figure itself declares.
+  - `into` — the `Bounds` of the frame it is drawn into, in the figure's own units.
+  - `fit` — `contain` or `cover`, whether what it shows is held inside that rectangle or fills it.
+  - `view` — one `ViewChange` its own extent is put through, applied in full at every time, so an
+    inset follows a mark or frames a group by the forms a timeline already carries. There is no span
+    and no easing, because an inset that eased into following would show the wrong part of the
+    picture while it caught up.
+  - `name` — what every mark of the inset has its id begin with, which is what keeps the inset's copy
+    of a mark from colliding with the mark itself. `inset` unless named.
+- `insetMarks(marks, inset)` — the marks of one inset, given the marks a figure draws. Each one is
+  magnified and clipped to the inset's rectangle, and one whose whole reach falls outside it is left
+  out. A mark already carrying a clip keeps it, magnified and then cut down to the rectangle.
+- `insetMatrix(shows, into, fit)` — the matrix taking what an inset shows onto the rectangle it draws
+  into. There is no flip here, unlike `viewMatrix`: both rectangles are in the figure's own units and
+  count upward the same way.
 
 ## Frames
 

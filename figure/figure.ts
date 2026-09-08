@@ -13,6 +13,7 @@ import { sampleTracks, type TrackValue, type Tracks } from '../timing/track.js';
 import { flatten, type Node } from './node.js';
 import { outlinedMarks } from './outline.js';
 import { Timeline } from './timeline.js';
+import { insetMarks, type Inset } from './inset.js';
 import { resolveExtent, viewMatrix, type Extent, type ExtentChoice, type Fit } from './extent.js';
 import type { Mat3 } from '../values/mat3.js';
 import type { Mark } from './mark.js';
@@ -44,14 +45,24 @@ export interface Figure {
   /** A figure that ends where it began, which a recording can loop without a
    * jump. Held by a test rather than taken on trust. */
   loop?: boolean;
+  /** The second views of this figure drawn into rectangles of its own frame,
+   * each magnifying the part of the picture a reader should be looking at. */
+  insets?: readonly Inset[];
 }
 
 export function durationOf(figure: Figure): number {
   return figure.duration ?? figure.timeline?.duration ?? 0;
 }
 
-/** The marks a figure shows at a time. */
-export function marksAt(figure: Figure, seconds: number): readonly Mark[] {
+/**
+ * The marks the figure's own tree draws at a time, without its insets.
+ *
+ * A view entry naming a mark reads this rather than the whole list: an inset's
+ * copy of a mark carries a name ending in that mark's own, so a view following
+ * one would be handed the box round the mark and its magnified copy together and
+ * would follow neither.
+ */
+function ownMarks(figure: Figure, seconds: number): readonly Mark[] {
   const values = figure.tracks ? sampleTracks(figure.tracks, seconds) : {};
   const tree = typeof figure.scene === 'function' ? figure.scene(seconds, values) : figure.scene;
   const marks = flatten(tree);
@@ -60,6 +71,17 @@ export function marksAt(figure: Figure, seconds: number): readonly Mark[] {
   // path trims the centreline and the outline follows it rather than being opened
   // up along one side.
   return outlinedMarks(played);
+}
+
+/** The marks a figure shows at a time, its insets behind its own marks so an
+ * inset is drawn over the picture it magnifies. */
+export function marksAt(figure: Figure, seconds: number): readonly Mark[] {
+  const drawn = ownMarks(figure, seconds);
+  if (!figure.insets) return drawn;
+  // Every inset reads the figure's own marks and none of them reads another's, so
+  // an inset placed over an inset magnifies the picture rather than the first
+  // inset's copy of it.
+  return [...drawn, ...figure.insets.flatMap((inset) => insetMarks(drawn, inset))];
 }
 
 /**
@@ -82,7 +104,7 @@ export function extentAt(figure: Figure, seconds: number, aspect: number): Exten
   // The marks are built at most once and only if a view entry asks for them, so
   // a figure whose view follows nothing pays nothing for one that does.
   let built: readonly Mark[] | undefined;
-  return figure.timeline.extentAt(declared, seconds, () => (built ??= marksAt(figure, seconds)));
+  return figure.timeline.extentAt(declared, seconds, () => (built ??= ownMarks(figure, seconds)));
 }
 
 /**
