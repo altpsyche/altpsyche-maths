@@ -666,11 +666,21 @@ winding number, which is filed there as its item 2. So a rectangle is drawable b
 and a path is drawable by two, and the rule in `mark.ts` is what keeps the difference from reaching a
 figure.
 
-- [ ] **1. A clip on a mark, and both painters honouring it.** A rectangle in the figure's own units.
-  A mark wholly outside its clip contributes nothing rather than being drawn invisibly, which is the
-  rule `flatten` already holds for a mark with no fill and no stroke. **Measures:** a mark half
-  outside its clip drawing the same geometry with the clip written once in each painter; the recorded
-  calls on a `CanvasLike` against the SVG attributes, element for element.
+- [x] **1. A clip on a mark, and both painters honouring it.** A rectangle in the figure's own units.
+  A `Mark` carries an optional `clip`, which is a `Bounds`, and a group hands one down and takes the
+  box both hold where one sits inside another. **Measured:** the clip (0, -2) to (4, 2) at a view of
+  ten units across per figure unit is x 100, y 30, width 40, height 40 in both painters, written by
+  SVG as one `<clipPath>` holding one `<rect>` in the sheet's own `<defs>` and by the canvas painter
+  as `beginPath`, `rect`, `clip` after its `save`; a disc half outside its clip writes the same `d`
+  numbers as the same disc unclipped; a clip costs a sheet 153 bytes, 233 to 386 on a disc drawn
+  alone; (0, 4) inside (2, 8) leaves (2, 4) and two clips that miss leave nothing under them; 747
+  tests over 45 files to 763 over 46, and the door unchanged at 261 names.
+
+  **A text mark outside its clip stays in the list, which the step did not say.** A text mark reaches
+  only as far as its own anchor, since how wide some text is depends on which fonts the machine has,
+  so dropping one on an anchor outside the clip would cut a line whose letters run back inside on the
+  machine that has the font. What is dropped is a shape whose whole reach, half a stroke width
+  included, falls outside.
 
 - [ ] **2. The inset.** A second view of the same figure, at its own extent, drawn into a rectangle
   of the frame. **Measures:** the inset's marks against the same figure's marks read through the
