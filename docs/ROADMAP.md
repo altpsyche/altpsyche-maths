@@ -151,9 +151,8 @@ all.
 ## The version ladder
 
 **Every item gets its own minor version.** Siva's plan, and the release convention this repository
-already follows makes each one a minor bump. 1.0.0 was the polish of the 0.x band and is published;
-what polishes the 1.x band is the section above this one, and it gates the release rather than taking
-a version. A version is cut when its
+already follows makes each one a minor bump. 1.0.0 was the polish of the 0.x band and is published, and
+the 1.x band's own polish is closed and recorded under Now. Neither took a version of its own. A version is cut when its
 demos draw, not when its code compiles. A version that is cut leaves this table and its item goes
 with it, because `git log` is what keeps a closed plan.
 
@@ -231,95 +230,7 @@ Now section and `git log` are what keep it.
 **The reading behind each of the four is below and in `git log`**, so none of them is rediscovered
 from nothing when it returns.
 
-**What queues work is the table above, the polish section in front of it, the found list below, and
-whatever the consumer asks for.**
-
-## The 1.x polish, which gates the release rather than the ladder
-
-**Nothing since 1.0.0 is published.** `npm view @altpsyche/maths version` answers 1.0.0, and 1.1.0
-through 1.6.0 are bumped in this tree and nowhere else, with thirty-six commits unpushed and no tags.
-The consumer reads `^0.6.0` and holds 0.6.0, so ten feature versions have never been drawn by the
-thing this package exists to draw for. **Siva publishes at the end of the 1.x cycle, after the items
-below**, which is what makes them a gate on the release rather than a version of their own.
-
-**This earns no version bump.** Eight of the nine are documentation, and the ninth tightens an
-interface 1.6.0 never shipped, so the version stays at 1.6.0 and these commits complete it. A found
-list entry that is a fix would be a patch; a claim that was already false is not.
-
-**One demo was skipped in the whole of 1.x and it is the solid demo's inset.** The flat and the solid
-demo both carry the taper of 1.3.0, the gradient of 1.4.0 and a view entry of 1.5.0. The boolean and
-the rotate demo carry none of the three, which is the exception those two were given rather than a
-gap: each exists for an operation that has no picture in a graph or on a surface.
-
-- [x] **1. What a mark may ask for, said once and correctly.** `DESIGN.md` says a clip path is
-  something a canvas "either lacks or supports partially" and that the mark vocabulary refuses it,
-  which 1.6.0 made false, and it names neither the clip nor the inset. **Measures:** every refusal in
-  `DESIGN.md`, the README and the guide naming the same set, which is filters and blend modes; the
-  clip and the inset each described where the design describes the seam. **Measured:** three
-  documents named three sets and none named the tree's, since the README still excluded gradients as
-  well; all four now say no filters and no blend modes, with the clip and the fill each given the
-  reason its own exclusion turns on; the README's suite count from 701 tests to 782.
-
-- [x] **2. A target with no `append` cannot silently lose a mark.** `PaintNode.append` is optional and
-  its reason is the gradient: a target without it draws every mark and no gradient. A `<clipPath>`
-  holding no `<rect>` clips away everything that references it, so the same target loses every
-  clipped mark instead. `CanvasLike.clip` was made required for this reason and the SVG side was not.
-  **Measured:** `append` required; a clipped mark painted into a stand-in document makes `defs`,
-  `clipPath`, `rect`, `path` in that order with the rectangle inside the clip path and
-  `clip-path="url(#clip-100-30-40-40)"` on the mark; 782 tests over 47 files to 783.
-
-- [x] **3. The guide teaches the view forms, the clip and the inset.** It mentions `taper` five times
-  and `gradient` three and names `moveView`, `followView`, `frameView`, the clip and the inset zero
-  times, so 1.5.0 and 1.6.0 landed with a reference entry and no page. **Measures:** the guide's
-  section count from 19; each of the five names appearing in it; the reference gate still holding
-  every door name to one entry.
-
-- [x] **4. The format plan's stale facts.** Its inventory still says the extent is a function of the
-  clock and the flat demo holds its dot within 1.2 figure units, which 1.5.0 found wrong and corrected
-  in step 7 alone; this file says 1.2 in its own demo section as well. It counts nine sheets where
-  there are eight, four look versions in front of the format where six went, and quotes a door of 230
-  names and a suite of 637 tests. **Measured:** eight numbers rather than six, since its scope section also
-  claimed 9,507 lines of source and 133 exported values where the tree reads 8,316 and 156; the rest
-  are eight sheets, six look versions, 266 door names and 783 tests, and the extent paragraph now
-  says the view is a timeline entry holding the dot within 2.14 units.
-
-- [x] **5. An inset is a thing the format has no step for.** Step 6 carries the timeline as data and
-  step 7 the extent, and nothing carries `Figure.insets`, so step 8 could not write the flat demo out
-  as a file with the panel it draws. **Measured:** step 7.5 written, measuring the flat demo's inset built from a
-  record at 32 to 40 marks against its 146; the count from twenty-eight commits to twenty-nine in
-  four places; the value types from ten to eleven, since `Inset` is one and the clip is a `Bounds`
-  inside `Style`.
-
-- [x] **6. The solid demo carries an inset.** Everything it draws fits inside 7.872 by 6.155 against
-  a declared 8.2 by 6.4, four per cent of margin, so a panel crops something and what moves out of
-  the way is what 1.5.0 already walks away for the camera push. **Measured:** the panel is 2.6 by 1.95 at (-3.3, -2.55) showing 1.3 by
-  0.975 of the middle, so it magnifies by exactly 2, and it sits inside the 6.8 by 5.307 the camera
-  pushes to rather than inside the declared 8.2 by 6.4, since an inset's marks carry no opacity of
-  their own and cannot be walked away the way the rule and the title are; docs/surface.svg from 97200
-  bytes and 245 marks to 126906 and 247 with an inset of 67 to 77, and docs/surface-strip.svg from
-  391635 to 522338; 783 tests over 47 files to 785.
-
-  **What the panel shows is the middle rather than the crossing, which the step assumed.** The
-  crossing is a hyperbola, so its two branches pass outside a window on the middle at some bearings,
-  and holding both would need 6.3 of the 8.2 units the figure declares, which is a reduction rather
-  than a magnification. The panel carries the saddle's cells, all three runs of descent and the six
-  axis marks through the middle at every named time, and the crossing at three of the four.
-
-- [x] **7. Verify and hand the release over.** **Measured:** 785 tests over 47 files, `tsc --noEmit`
-  and the build clean, the eight sheets identical after `npm run demos`, the lock file agreeing with
-  a manifest reading 1.6.0, and the door at 266 names. Two more stale numbers were found in the
-  sweep: the README said 247 names at the door, and `DESIGN.md` said the flat demo is 202 marks and
-  the solid one 265 at 2.5 and 2.7 milliseconds a frame, where they are 181 and 321 at their still
-  times and cost 3.9 and 4.2 milliseconds at the median of sixty runs, writing SVG at 1280 by 720.
-
-#### Done-criteria
-
-- No document in this tree says a mark may not be clipped, and no document says a colour is flat.
-- A painter target that cannot hold a child is refused by the type rather than losing marks.
-- The guide names every form 1.5.0 and 1.6.0 added.
-- The format plan quotes no number the tree contradicts, and it carries a step for insets.
-- The solid demo draws an inset, its sheet is re-committed, and its readings hold the contrast band.
-- The three gates pass and the tree is clean, so publishing is one command Siva runs.
+**What queues work is the table above, the found list below, and whatever the consumer asks for.**
 
 ## The two demos, which are what a version is cut against
 
@@ -399,11 +310,56 @@ README that plays a video on load is a README nobody can read.
 
 ## Now
 
-**The 1.x band is complete in this tree and published nowhere.** An audit on 2026-09-08 read the
-whole band against the tree and found nine things, which are the section above the demos. Six
-versions of features have never been drawn by the consumer, which is the test this file orders its
-items by, so the polish is a gate on the release rather than a version of its own. Siva publishes when
-it closes.
+**The 1.x band is closed and 1.6.0 is one command from publishing.** An audit on 2026-09-08 read the
+whole band against the tree and found nine things, and seven commits closed them. Nothing since
+1.0.0 is published: `npm view @altpsyche/maths version` answers 1.0.0 while this tree reads 1.6.0,
+with thirty-seven commits unpushed and no tags, and the consumer holds 0.6.0. **Siva publishes**, and
+the polish took no version of its own because eight of the nine were documentation and the ninth
+tightened an interface 1.6.0 never shipped.
+
+**Three documents contradicted the tree and one of them was the design.** `DESIGN.md` said a clip
+path is something a 2D canvas "either lacks or supports partially" and that the mark vocabulary
+refuses it, which 1.6.0 made false, and the README still excluded gradients, which 1.4.0 did. All
+four documents now name one set of refusals, which is filters and blend modes, and say separately why
+a clip is a rectangle and what a fill carries.
+
+**A painter target that cannot hold a child is now refused by the type.** `PaintNode.append` was
+optional and the reason its comment gave was the gradient: a target without it draws every mark and
+no gradient. A `<clipPath>` holding no `<rect>` clips away everything referencing it, so the same
+target lost every clipped mark instead, silently. `CanvasLike.rect` and `CanvasLike.clip` were made
+required on that reasoning when the clip landed and the SVG side was not.
+
+**The guide gained the two versions it never taught.** It named `moveView`, `followView`,
+`frameView`, the clip and the inset zero times and now names them 29 times over two sections, and its
+own moving-view section was stale beyond the omission: it said a figure's extent is a function of the
+clock, which is the shape 1.5.0 replaced. Nothing gates the guide's code, so the three new blocks
+were type-checked against the door in a scratch tree.
+
+**Ten numbers across the two plans were wrong and the format plan carried a known-wrong paragraph.**
+Its inventory said the extent is a function of the clock and the flat demo holds its dot within 1.2
+figure units, which 1.5.0 measured at 2.14, corrected in step 7 and left standing there. It counted
+nine sheets in three places where there are eight, four look versions in front of the format where
+six went, a door of 230 names and a suite of 637 tests, and 9,507 lines of source with 133 exported
+values. The README said 247 door names and `DESIGN.md` said the flat demo is 202 marks and the solid
+one 265 at 2.5 and 2.7 milliseconds a frame.
+
+**The format plan gained step 7.5, because 1.6.0 landed after it was written.** Step 6 carries the
+timeline as data and step 7 the extent, and nothing carried `Figure.insets`, so step 8 could not have
+written the flat demo out as a file with the panel it draws. The plan is twenty-nine commits and its
+value types eleven.
+
+**The solid demo carries an inset, so the clip reached both demos the way every 1.x feature before it
+did.** Its panel is 2.6 by 1.95 showing 1.3 by 0.975 of the middle at a magnification of exactly 2,
+sitting inside the 6.8 by 5.307 the camera pushes to rather than inside the declared 8.2 by 6.4:
+an inset's marks carry no opacity of their own, so walking the panel away the way the rule and the
+title are walked away would leave the magnified copy standing on nothing. **What it shows is the
+middle rather than the crossing**, since the crossing is a hyperbola whose branches pass outside a
+window on the middle at some bearings and holding both would need 6.3 of 8.2 units, which is a
+reduction. docs/surface.svg went from 97200 bytes and 245 marks to 126906 and 247 with an inset of 67
+to 77, and docs/surface-strip.svg from 391635 to 522338.
+
+**The suite went from 782 tests over 47 files to 785, and the door is unchanged at 266 names.** Every
+done-criterion was verified line by line in the commit that closed the item.
 
 **1.6.0 is cut, and a mark may be drawn inside a rectangle.** Four steps and a fifth found while
 working closed it. A clip is a rectangle and no other shape: a path clip needs a winding number
