@@ -100,8 +100,9 @@ gives a figure, a painter and a file at the end.
 
 ## What this repository refactors
 
-The package is 9,507 lines of source, 133 exported values and 637 tests over 40 files. Twenty-one
-builders return a node. This is a rewrite of the middle of the package.
+The package is 8,316 lines of source across `values`, `timing`, `figure`, `paint` and the door, 156
+exported values and 783 tests over 47 files. Twenty-one builders return a node. This is a rewrite of
+the middle of the package.
 
 ### Every builder splits in two
 
@@ -306,21 +307,26 @@ negative offset.
 **This was missing from the first inventory entirely.** It is not a node and not an animation, and it
 has to serialise before any figure does.
 
-### The extent, which is a function of the clock
+### The extent, and the view entries folded over it
 
-`ExtentChoice` is `Extent | ((aspect: number, seconds: number) => Extent)`. The flat demo's is a
-function: the view follows the dot across, holding it within 1.2 figure units of the middle.
+`ExtentChoice` is `Extent | ((aspect: number, seconds: number) => Extent)`, and a view that moves is
+no longer either of those. 1.5.0 made it a timeline entry, so the flat demo declares a plain extent
+and plays one `followView` over it, holding the dot within 2.14 figure units of the middle: its reach
+is 1.2 and its room is 0.62, and the room binds at both ends of the walk.
 
 **This was missed when the flat demo was written out as data**, which is worth recording as a warning
 about the exercise rather than only as an omission. Reading a figure and believing it has been
-understood is not the same as writing every one of its parameters down.
+understood is not the same as writing every one of its parameters down. It was missed a second time
+in the same paragraph: 1.5.0 measured the bound at 2.14, corrected step 7 and left this saying 1.2.
 
-### The value types, ten of them
+### The value types, eleven of them
 
 A parameter is often not a number. `Coords`, `Scale`, `Interval`, `Extent`, `Camera3Choice`,
-`Mat3`, `Style` with its `Stroke` and `Fill`, `Equation`, a `Track`, and a `Curve`. Each needs a
-written form, and each is small, and there are ten of them. The choice is in this list rather than the `Camera3` it
-builds, because the built one carries closures.
+`Mat3`, `Style` with its `Stroke`, its `Fill` and the `Bounds` it carries as a clip, `Equation`, a
+`Track`, a `Curve`, and an `Inset`. Each needs a written form, and each is small, and there are eleven
+of them. The choice is in this list rather than the `Camera3` it builds, because the built one carries
+closures. `Bounds` is inside `Style` rather than beside it, since 1.6.0 put the clip there and the
+written form for a style is what gains a field.
 
 ### What the inventory changes about the plan
 
@@ -423,7 +429,7 @@ frozen door is what a major exists for, so either the old calls keep working bes
 which means two APIs and two things to test, or the version goes to two. **That is Siva's call and
 this plan assumed a minor without asking.**
 
-**Realistic shape: at least twenty-eight commits over the vocabulary and the surfaces, plus the
+**Realistic shape: at least twenty-nine commits over the vocabulary and the surfaces, plus the
 site.** Against evenings and weekends that is months rather than weeks. The plan is still worth doing
 and the reasons in this document are unchanged. What was wrong was the size written next to them.
 
@@ -435,17 +441,19 @@ figure draws, compared by tolerance.** The demos are already the conformance sui
 
 **Steps 3 and 4 are written out, which is what the session of 2026-09-08 did.** Step 3 is ten
 commits and step 4 is five, each named below with the demo whose marks measure it. Step 11 cuts the
-version and there is no step between it and step 10.
+version and there is no step between it and step 10. **Step 7.5 was added by the audit of the 1.x
+band**, since 1.6.0 gave a figure insets and nothing here carried them.
 
-**The honest count is at least twenty-eight commits rather than twelve to sixteen.** Seven of the
-eleven steps are one commit each. Step 3 is ten and step 4 is five. Step 8 rewrites four demos and is
-four. Step 9 rewrites the guide and the reference and is two. The site is not counted here at all,
-since it is a release away and has a document of its own.
+**The honest count is at least twenty-nine commits rather than twelve to sixteen.** Eight of the
+twelve steps are one commit each, which is the seven this plan was written with and the inset step
+1.6.0 added to it. Step 3 is ten and step 4 is five. Step 8 rewrites four demos and is four. Step 9
+rewrites the guide and the reference and is two. The site is not counted here at all, since it is a
+release away and has a document of its own.
 
 - [ ] **1. The readers take geometry rather than functions.** `slopeOf`, `areaUnder` and `tangentAt`
   work from a plotted path's own cubics. **Measures:** every demo's marks unchanged within tolerance
   at its named times; the slope read off a path against the closed-form derivative of `x²` at five
-  places; the suite from 637.
+  places; the suite from 783.
 
 - [ ] **2. The expression form, and the evaluator for it.** The closed vocabulary above, as a type
   and a function that evaluates one against a set of track values. **It is an expression over a point
@@ -474,7 +482,7 @@ since it is a release away and has a document of its own.
     kind, a name and its parameters, and a group's children are records. `shape`, `text` and `group`
     are the three, and `resolveNode` walks a record into the `Node` that `flatten` already takes.
     **Measures:** the boolean demo, which draws the fewest kinds of the four, mark for mark at its
-    named times; the suite from 637.
+    named times; the suite from 783.
 
   - [ ] **3.2 A path as data.** `arc`, `circle`, `line`, `polygon`, `polyline`, `rect` and `straight`
     as records, `pathFromData` as the written form for anything else, and the rule that a path is
@@ -576,8 +584,16 @@ since it is a release away and has a document of its own.
   of the walk; a framing of the flat demo's brace and its reading holding both inside the frame at
   every named time.
 
+- [ ] **7.5. The insets as data.** `Figure.insets` is a list, each entry an extent it shows, a
+  rectangle of the frame it draws into, a fit, one view form applied in full, a name and the marks it
+  hides. Every part of it is already a value the steps above carry, so this step writes the record
+  and the resolver and adds no vocabulary. **It exists because 1.6.0 landed after this plan was
+  written**, and without it step 8 could not write the flat demo out as a file with the panel that
+  demo draws. **Measures:** the flat demo's inset built from a record giving the same marks at its own
+  named times, which is 32 to 40 marks against its 146; the panel inside the frame at each of them.
+
 - [ ] **8. The four demos rewritten as files**, 1,610 lines of module becoming descriptions.
-  **Measures:** all nine sheets byte for byte as committed after `npm run demos`.
+  **Measures:** all eight sheets byte for byte as committed after `npm run demos`.
 
 - [ ] **9. The guide and the reference rewritten.** 544 and 805 lines describing an API that changed.
   **Measures:** the guide's code blocks compiling in order; the reference's entries against the door
@@ -585,19 +601,19 @@ since it is a release away and has a document of its own.
 
 - [ ] **10. The demos are the conformance suite.** The gate reads each figure from its file rather
   than from its module. **Measures:** the whole suite green with every demo loaded as data; the byte
-  gate on all nine sheets unchanged.
+  gate on all eight sheets unchanged.
 
 - [ ] **11. Cut 2.0.0.** The version bumped in this commit, `npm install --package-lock-only` in the
   same one, the done-criteria verified line by line with the number that satisfies each, and
   publishing asked for rather than assumed. It is a major because `areaUnder`, `plot`, `riemannBars`,
   `slopeOf` and `tangentAt` are all at the door and all change shape. **Measures:** the three gates;
-  all nine sheets identical after `npm run demos`; the door and the suite from 230 names and 637
+  all eight sheets identical after `npm run demos`; the door and the suite from 266 names and 783
   tests; the specification's own version, which is separate from this one.
 
 #### Done-criteria
 
 - Every demo is a file, and reading it draws marks identical within tolerance to the module it
-  replaced, at every named time.
+  replaced, at every named time, the flat demo's inset included.
 - None of the sixteen names at the door that take a function takes one, no figure holds a closure,
   and a figure stores a `Camera3Choice` rather than a built `Camera3`.
 - The vocabulary is twenty-one node kinds, two item producers, eleven path producers, two point
@@ -646,10 +662,11 @@ format that cannot is answered in an afternoon rather than after six months of r
 Four renderer versions came off the ladder, because each would have been written against an API this
 format reshapes, and they are recorded in [`ROADMAP.md`](ROADMAP.md) so they are not rediscovered.
 
-**Four look-and-feel versions went on in front of this one**, and that is Siva's call rather than a
-softening of the freeze. Each of the four changes a value type this format is about to freeze a
+**Six look-and-feel versions went on in front of this one**, and that is Siva's call rather than a
+softening of the freeze. Each of the six changes a value type this format is about to freeze a
 written form for: 1.1.0 the sizes and the font a `Style` carries, 1.2.0 the set of names a `Curve`
-can be, 1.3.0 what a `Stroke`'s width may be, and 1.4.0 what a `Fill` may be. Freezing before they
+can be, 1.3.0 what a `Stroke`'s width may be, 1.4.0 what a `Fill` may be, 1.5.0 how a view that moves
+is written down, and 1.6.0 the clip a `Style` carries and the inset a `Figure` does. Freezing before they
 land costs a major of the format's own version to add them afterwards, since an old figure has to
 keep rendering, and freezing after costs rewriting four demos' syntax in step 8, which is
 mechanical.

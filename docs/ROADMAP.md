@@ -167,7 +167,7 @@ three more are written past those because a session should not rediscover them.
 
 | version | what lands | what it changes | steps | cut against | depends on | plan |
 | --- | --- | --- | --- | --- | --- | --- |
-| 2.0.0 | the figure format | every builder's shape, and the door | 28 | all four demos read from files, and the nine sheets | MathJax, which is already a dependency | written, in [`FIGURE-FORMAT.md`](FIGURE-FORMAT.md) |
+| 2.0.0 | the figure format | every builder's shape, and the door | 29 | all four demos read from files, and the eight sheets | MathJax, which is already a dependency | written, in [`FIGURE-FORMAT.md`](FIGURE-FORMAT.md) |
 | 2.1.0 | the curves and surfaces a figure can name: parametric, polar, implicit, and the solids | adds kinds | to plan | a phase portrait, which the flat demo's field cannot express | nothing outside this package | to plan |
 | 2.2.0 | matrices and tables, and a matrix applied to a grid | adds kinds | to plan | a grid under a linear map, which nothing here can draw | nothing outside this package | to plan |
 | 2.3.0 | the indications that run along a path, and text written on rather than faded in | adds kinds, and outlines for plain text | to plan | the flat demo's reading, written on | a source of glyph outlines for plain text | to plan |
@@ -274,17 +274,21 @@ gap: each exists for an operation that has no picture in a graph or on a surface
   section count from 19; each of the five names appearing in it; the reference gate still holding
   every door name to one entry.
 
-- [ ] **4. The format plan's stale facts.** Its inventory still says the extent is a function of the
+- [x] **4. The format plan's stale facts.** Its inventory still says the extent is a function of the
   clock and the flat demo holds its dot within 1.2 figure units, which 1.5.0 found wrong and corrected
   in step 7 alone; this file says 1.2 in its own demo section as well. It counts nine sheets where
   there are eight, four look versions in front of the format where six went, and quotes a door of 230
-  names and a suite of 637 tests. **Measures:** each of the six numbers against what the tree reads
-  today, which is eight sheets, six versions, 266 names and 782 tests.
+  names and a suite of 637 tests. **Measured:** eight numbers rather than six, since its scope section also
+  claimed 9,507 lines of source and 133 exported values where the tree reads 8,316 and 156; the rest
+  are eight sheets, six look versions, 266 door names and 783 tests, and the extent paragraph now
+  says the view is a timeline entry holding the dot within 2.14 units.
 
-- [ ] **5. An inset is a thing the format has no step for.** Step 6 carries the timeline as data and
+- [x] **5. An inset is a thing the format has no step for.** Step 6 carries the timeline as data and
   step 7 the extent, and nothing carries `Figure.insets`, so step 8 could not write the flat demo out
-  as a file with the panel it draws. **Measures:** the step written with the measurement it will
-  quote, and the twenty-eight count and the value-type inventory corrected to match.
+  as a file with the panel it draws. **Measured:** step 7.5 written, measuring the flat demo's inset built from a
+  record at 32 to 40 marks against its 146; the count from twenty-eight commits to twenty-nine in
+  four places; the value types from ten to eleven, since `Inset` is one and the clip is a `Bounds`
+  inside `Style`.
 
 - [ ] **6. The solid demo carries an inset.** Everything it draws fits inside 7.872 by 6.155 against
   a declared 8.2 by 6.4, four per cent of margin, so a panel crops something and what moves out of
@@ -331,8 +335,9 @@ stayed on an x track would have been two clocks free to disagree, since a span's
 track's value are unrelated. **What would change this answer** is an animation that can hand the
 scene back what it did, which the seam refuses on purpose.
 
-As of 0.10.0 the view follows the dot across, holding it within 1.2 figure units of the middle of the
-frame where it used to cross 2.76. As of 0.11.0 the parabola sits on the field of its own tangents,
+As of 0.10.0 the view follows the dot across, holding it within 2.14 figure units of the middle of the
+frame where it used to cross 2.76: its reach is 1.2 and its room is 0.62, and the room binds at both
+ends of the walk. As of 1.5.0 that follow is a timeline entry rather than a function of the clock. As of 0.11.0 the parabola sits on the field of its own tangents,
 and the run integrated through that field from the origin never leaves the drawn curve by more than
 4.689e-10 of a figure unit.
 
@@ -803,8 +808,9 @@ own, so a figure declares which version of the format it is written in and a ren
 it reads, and neither number is this package's.
 
 **Two planning sessions ran and neither touched code.** What they produced is the format written
-down, the six questions below answered, and a step list of twenty-eight commits Siva reads before
-anything lands.
+down, the six questions below answered, and a step list Siva reads before anything lands. The audit
+of the 1.x band added a step to it for the insets 1.6.0 gave a figure, so it is twenty-nine
+commits.
 
 A figure format is a description of a picture over time that a program reads rather than runs. It
 carries nodes, tracks and animations, each a named thing with parameters, and no function anywhere.
@@ -881,8 +887,8 @@ when a tool wants the types and a validator without the whole library, which is 
 `@altpsyche/figure-format` becomes a package. Nothing needs that today.
 
 **Steps 3 and 4 are split and the plan is complete.** Step 3 is ten commits and step 4 is five, each
-naming the demo whose marks measure it, and the plan is twenty-eight commits rather than the twelve to
-sixteen it claimed.
+naming the demo whose marks measure it, and the plan was twenty-eight commits rather than the twelve
+to sixteen it claimed. The audit of the 1.x band added a step for the insets and it is twenty-nine.
 
 **Splitting them corrected the inventory in four places**, because the tables had been read from the
 names at the door rather than from each builder's return type. `riemannBars` returns a node and was
