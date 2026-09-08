@@ -349,43 +349,54 @@ undrawn. That is the arrangement `DESIGN.md` already fixed, and this item does n
 
 **Its steps are written below, and no code was touched in the session that wrote them.**
 
-- [ ] **1. A cubic as a run of straight segments.** `flatten(path, tolerance)` returns each subpath as
-  a polyline, by recursive de Casteljau subdivision stopping when a piece's control points sit within
-  the tolerance of the chord. The tolerance is in figure units, so a caller scales it by the view the
-  way a stroke width is scaled. **Measures:** the greatest distance from the returned polyline to the
-  true curve at tolerances of 1e-2, 1e-3 and 1e-4, each under the tolerance asked for; the point count
-  at each; and a quarter arc's flattened edge inside the 2.6 to 2.8 parts in ten thousand the control
-  distance already leaves.
+**The step list below was rewritten after reading how Manim does this**, which is recorded under the
+entry as what the techniques are named. The first list flattened every cubic on the processor and ear
+clipped the fill into triangles. Both are the wrong technique and the reading says why.
 
-- [ ] **2. A dashed path as the runs that are drawn.** `dashed(path, dash, offset)` returns the drawn
+- [ ] **1. A cubic as quadratics.** `quadratics(path, tolerance)` rewrites each cubic as a run of
+  quadratic Bézier pieces within a tolerance. A quadratic is what a fragment shader can test exactly:
+  the canonical control points (0,0), (0.5,0) and (1,1) put the curve on `v = u²`, so a pixel is
+  outside when `v < u²` and one comparison decides it. A cubic has no such test, which is why Manim
+  converts and why this is the first step rather than an optimisation. **Measures:** the greatest
+  distance from the quadratic run to the true cubic at tolerances of 1e-2, 1e-3 and 1e-4; the piece
+  count at each; and a quarter arc converted and read back inside the 2.6 to 2.8 parts in ten
+  thousand the control distance already leaves.
+
+- [ ] **2. A fill as two triangles for each curve.** `fillTriangles(path)` returns, per quadratic, the
+  fan triangle reaching back to its subpath's first point and the triangle on the curve's own three
+  control points, with the `uv` coordinates that put the curve on `v = u²`. Nothing here decides what
+  is inside: the winding number is counted per pixel from which way each triangle faces, which is a
+  stencil pass the site owns. **This replaces the ear clipping the first list planned**, which
+  triangulates a flattened outline and therefore fixes the resolution at authoring time and costs
+  more the more complex the shape. Two triangles per curve is the whole cost whatever the shape.
+  **Measures:** the triangle count against twice the curve count exactly; the covered area against
+  `area(path)`, which is closed form by Green's theorem; and a ring under both fill rules coming out
+  right from the facing alone.
+
+- [ ] **3. A dashed path as the runs that are drawn.** `dashed(path, dash, offset)` returns the drawn
   runs as subpaths of their own, reading `length.ts` for where a length falls inside a piece. Both
-  painters resolve a dash themselves and a GPU painter has nothing that will, so this is the one part
-  of a stroke's style that has no answer today. **Measures:** the summed length of the returned
-  subpaths against the drawn share the dash array asks for, on a straight line and on a circle; and a
-  dash longer than the path returning the whole path once.
+  painters resolve a dash themselves and a shader has nothing that will. **Measures:** the summed
+  length of the returned subpaths against the drawn share the dash array asks for, on a straight line
+  and on a circle; and a dash longer than the path returning the whole path once.
 
-- [ ] **3. A stroke as a path that can be filled.** `strokeOutline(path, stroke)` returns the region a
+- [ ] **4. A stroke as a path that can be filled.** `strokeOutline(path, stroke)` returns the region a
   stroke covers, with miter, round and bevel joins and butt, round and square caps, and a miter limit
-  past which a miter becomes a bevel. **Measures:** the outline's `area` against width times length
-  exactly for a straight segment, since `area` is closed form by Green's theorem; the same for a
-  closed square; the miter limit taking effect at the angle it names; and a round join's edge inside
-  the same 2.6 to 2.8 parts in ten thousand as every other arc here.
-
-- [ ] **4. A fill as triangles.** `triangulate(path, rule)` returns triangles covering what the fill
-  rule says is inside, over a path flattened by step 1. Ear clipping over the flattened outline is the
-  named technique, with holes joined to their outer loop by a bridge, which is what handles a ring
-  under the nonzero rule. **Measures:** the summed triangle area against `area(path)`, which is exact,
-  to a named tolerance; no two triangles overlapping; and the sixty random pairs of shapes the boolean
-  suite already builds, each triangulated and summed against its own area.
+  past which a miter becomes a bevel. **This is no longer what a GPU painter uses.** Manim expands a
+  stroke into a strip of quads inside the shader, breaking each curve into segments per frame so the
+  count follows the view, and a stroke expanded on the processor cannot do that. The step stays
+  because it is what lets the boolean operations reach strokes, which is its own reason.
+  **Measures:** the outline's `area` against width times length exactly for a straight segment; the
+  same for a closed square; the miter limit taking effect at the angle it names; and a round join's
+  edge inside the same 2.6 to 2.8 parts in ten thousand as every other arc here.
 
 - [ ] **5. The demo the layer is cut against.** A sheet whose whole purpose is the tessellation, which
-  is the exception `demos/boolean.ts` and `demos/rotate.ts` already set: an operation with no picture
-  in a graph or a surface is given a picture of its own. One shape is drawn three times side by side,
-  as its outline, as the polyline step 1 returns, and as the triangles step 4 returns, with the point
-  and triangle counts written under each. A tolerance walks from coarse to fine across the clip, so
-  the counts move and the polyline tightens onto the curve. **Measures:** the sheet's marks at four
-  named times; its bare fraction under the four fifths every sheet is held to; its smallest glyph
-  above the fourteen pixel floor; and the counts written on it asserted against what the calls return.
+  is the exception `demos/boolean.ts` and `demos/rotate.ts` already set. One shape is drawn three
+  times side by side: as its cubics, as the quadratic run step 1 returns, and as the two-triangle
+  cover step 2 returns, with the piece and triangle counts written under each. A tolerance walks from
+  coarse to fine across the clip, so the counts move and the quadratics tighten onto the curve.
+  **Measures:** the sheet's marks at four named times; its bare fraction under the four fifths every
+  sheet is held to; its smallest glyph above the fourteen pixel floor; and the counts written on it
+  asserted against what the calls return.
 
 - [ ] **6. Cut 1.1.0.** The version bumped in this commit, `npm install --package-lock-only` in the
   same one, the reference given an entry per new name, the guide given a section, and the
@@ -394,19 +405,49 @@ undrawn. That is the arrangement `DESIGN.md` already fixed, and this item does n
 
 #### Done-criteria
 
-- A cubic flattened at a named tolerance stays within that tolerance of the true curve, and the suite
-  says so at three tolerances.
+- A cubic rewritten as quadratics at a named tolerance stays within that tolerance of the true cubic,
+  and the suite says so at three tolerances.
+- A fill returns exactly two triangles per quadratic, and the area they cover is `area(path)` to a
+  named tolerance under both fill rules.
 - A dash array resolves to subpaths whose summed length is the drawn share, on a straight path and on
   a curved one.
 - A stroke outline's area is the closed form for a straight segment and for a closed square, and the
   three joins and three caps each have a test.
-- Triangles cover a fill to within a named tolerance of `area`, no two overlapping, over the sixty
-  random pairs the boolean suite already builds.
 - The demo draws, its marks are asserted at four named times, and the counts written on it are the
   counts the calls return.
 - Nothing in this item imports a browser API, and the whole of it is held by `npm test` alone.
 - The reference has one entry per name at the door and the gate holds them equal.
 - `npm test`, `npm run type-check` and `npm run build` pass, and the lock file agrees with the manifest.
+
+#### How Manim does this, read from its own source on 2026-09-08
+
+**Quadratics, never cubics.** `manimlib/mobject/types/vectorized_mobject.py` stores anchors at
+`points[0::2]` and handles at `points[1::2]`, and `add_cubic_bezier_curve_to` converts through
+`get_quadratic_approximation_of_cubic`. The reason is the fragment test above.
+
+**A fill is two triangles per curve and a stencil buffer.** `manimlib/shaders/fill.wgsl` says it: "Each
+bezier of a path contributes two triangles: one reaching back to the mobject's base point, which
+together with those of the other beziers covers the interior of the path, and one hugging the curve
+itself, whose fragments falling outside it are cut away." And on what decides the interior: "Nothing
+here decides what is inside the path. The winding number around each pixel does, counted in the
+stencil buffer from which way each of these triangles happens to face once projected." The fragment
+stage is one line, `if (in.fill_all == 0.0 && in.uv_coords.y < in.uv_coords.x * in.uv_coords.x) {
+discard; }`. The technique is Loop and Blinn's, from "Resolution Independent Curve Rendering using
+Programmable Graphics Hardware".
+
+**A stroke is a quad strip built in the shader.** `manimlib/shaders/stroke.wgsl` draws "a strip of
+quads following each bezier, with a fan of triangles rounding off the joint at each end", breaking
+each curve into segments with a `POLYLINE_FACTOR` of 100 and a `MAX_STEPS` of 32. The count follows
+the view because it is computed per frame.
+
+**A point stays in space until the vertex stage.** Both shaders read `vec3f` control points and call
+`project_point(point)` in the vertex stage. Manim never flattens to two dimensions before the
+renderer, which is exactly what `figure/space.ts` does here, and it is why a depth buffer is within
+Manim's reach and outside this seam's. Depth testing is per object and off by default:
+`apply_depth_test` turns it on.
+
+**Manim's shaders are WGSL.** The `manimlib/shaders` directory is `fill.wgsl`, `stroke.wgsl`,
+`surface.wgsl` and the rest, so the move Siva proposed is the move that project already made.
 
 **The site's half of this is queued in that repository**, as the GPU figure painter, and it names this
 item as what it waits on.
