@@ -131,7 +131,7 @@ function nameOf(value: number | boolean | Vec2): string {
 const points = (list: readonly Expression[], bindings: Bindings, what: string): Vec2[] =>
   list.map((point, at) => pointOf(point, bindings, `point ${at} of ${what}`));
 
-const spanOf = (record: IntervalRecord, bindings: Bindings, what: string): Interval =>
+export const spanOf = (record: IntervalRecord, bindings: Bindings, what: string): Interval =>
   interval(numberOf(record.from, bindings, `the start of ${what}`), numberOf(record.to, bindings, `the end of ${what}`));
 
 /**
@@ -142,7 +142,7 @@ const spanOf = (record: IntervalRecord, bindings: Bindings, what: string): Inter
  * closed: a figure naming its own variable would be a renderer looking a name up
  * rather than binding one.
  */
-function curveOf(expression: Expression, bindings: Bindings): (x: number) => number {
+export function curveOf(expression: Expression, bindings: Bindings): (x: number) => number {
   return (x) =>
     numberOf(expression, { ...bindings, variables: { ...bindings.variables, x } }, 'a plotted curve');
 }

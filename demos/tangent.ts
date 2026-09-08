@@ -135,7 +135,7 @@ export const coords = coordsOf(
 
 /** How long each axis reaches past its last tick, and how wide the arrow head
  * there is. */
-const TIP = 0.18;
+export const TIP = 0.18;
 
 /** How far the middle of the frame may travel before the graph's own edge would
  * leave it: the frame's half-width, less the graph's, less the arrow head the

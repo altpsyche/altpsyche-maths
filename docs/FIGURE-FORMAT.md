@@ -629,10 +629,24 @@ release away and has a document of its own.
     a number where a dot's place belongs, a place where its radius belongs, and a kind the vocabulary
     has no entry for; the suite from 845 to 856 and the door from 286 names to 293.
 
-  - [ ] **3.6 The graph frame nodes.** `numberLine`, `axes`, `numberPlane` and `riemannBars`, which
-    share the tick list and the scale. **Measures:** the flat demo's axes and number planes and the
-    solid demo's axes at their named times; `numberLine` and `riemannBars` against their calls, since
-    no demo draws either.
+  - [x] **3.6 The graph frame nodes.** `numberLine`, `axes`, `numberPlane` and `riemannBars` are
+    forms of `NodeRecord`, each resolving through its own call, so the tick list and the scale stay
+    where they are. **The frame options are the values the calls already take rather than
+    expressions**, because a frame is the furniture a figure draws its moving parts on, no demo
+    animates a tick length, and widening a number to an expression later costs a minor rather than a
+    major since a bare number is a literal already. `riemannBars` is the exception: its curve is an
+    expression the way a plot's is, and its `over` is an `IntervalRecord`, since a figure that walks
+    the bars across a graph moves both ends of the run.
+    **The solid demo's axes are `axes3` and the plan was wrong to name them here**, so they arrive at
+    step 3.10 with the rest of the space nodes.
+    **Measured:** the flat demo's number plane, all 42 of its marks, and its axes, all 27 of theirs,
+    mark for mark within a tolerance of 1e-6; a grid at four minors against one at two reading as
+    different, which is what says the comparison can fail; the axes holding still at each of the
+    flat demo's seven named times, since a frame does not follow a clock; `numberLine` and
+    `riemannBars` against their calls, the bars from the expression `x * x` at six bars over 0 to 3
+    read at the middle; a run of bars walked across the graph on a track reading as different at 0
+    and at 2; a bars curve that reads as a place refused with the sentence naming it; the suite from
+    856 to 865 and the door from 293 names to 298.
 
   - [ ] **3.7 The equation node.** `equationNode`, and an `Equation` stays resolved geometry a figure
     carries rather than TeX a renderer typesets, which is the answer to where text's geometry is

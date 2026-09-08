@@ -21,12 +21,20 @@
  * label does it with `scale` over the marks, which is what the animation
  * vocabulary already carries, so a size that follows a track would be a second
  * way to say the same thing.
+ *
+ * A graph frame's options are the values the calls already take rather than
+ * expressions. A frame is the furniture a figure draws its moving parts on and no
+ * demo animates a tick length, and widening a number to an expression later costs
+ * a minor rather than a major, since a bare number is a literal already.
  */
 import type { Mat3 } from '../values/mat3.js';
 import type { Vec2 } from '../values/vec2.js';
-import { resolvePath, type PathRecord } from './path-record.js';
+import { curveOf, resolvePath, spanOf, type IntervalRecord, type PathRecord } from './path-record.js';
 import { group, shape, text, type Node, type Style, type TextOptions } from './node.js';
 import { arrow, brace, callout, dot } from './annotate.js';
+import { axes, numberLine, numberPlane, type AxesOptions, type NumberLineOptions, type NumberPlaneOptions } from './axis.js';
+import { riemannBars, type BarsOptions } from './plot.js';
+import type { Coords, Scale } from './scale.js';
 import type { Fill, Stroke } from './mark.js';
 import { evaluate, type Bindings, type Expression } from './expression.js';
 import { labelFor } from './ticks.js';
@@ -143,6 +151,47 @@ export interface CalloutRecord {
   readonly options: CalloutRecordOptions;
 }
 
+/**
+ * What a run of bars takes beyond its coordinates and its curve.
+ *
+ * The run it covers is an `IntervalRecord`, since a figure that walks the bars
+ * across a graph moves both ends of it. Everything else a bar carries is
+ * layout.
+ */
+export interface BarsRecordOptions extends Omit<BarsOptions, 'over'> {
+  readonly over?: IntervalRecord;
+}
+
+export interface NumberLineRecord {
+  readonly kind: 'numberLine';
+  readonly name: string;
+  readonly scale: Scale;
+  readonly options: NumberLineOptions;
+}
+
+export interface AxesRecord {
+  readonly kind: 'axes';
+  readonly name: string;
+  readonly coords: Coords;
+  readonly options: AxesOptions;
+}
+
+export interface NumberPlaneRecord {
+  readonly kind: 'numberPlane';
+  readonly name: string;
+  readonly coords: Coords;
+  readonly options: NumberPlaneOptions;
+}
+
+export interface RiemannBarsRecord {
+  readonly kind: 'riemannBars';
+  readonly name: string;
+  readonly coords: Coords;
+  /** The curve the bars stand under, as an expression of the bound variable `x`. */
+  readonly of: Expression;
+  readonly options?: BarsRecordOptions;
+}
+
 export type NodeRecord =
   | ShapeRecord
   | TextRecord
@@ -150,7 +199,11 @@ export type NodeRecord =
   | DotRecord
   | ArrowRecord
   | BraceRecord
-  | CalloutRecord;
+  | CalloutRecord
+  | NumberLineRecord
+  | AxesRecord
+  | NumberPlaneRecord
+  | RiemannBarsRecord;
 
 function nameOfValue(value: number | boolean | Vec2): string {
   if (typeof value === 'number') return 'a number';
@@ -262,6 +315,17 @@ export function resolveNode(record: NodeRecord, bindings: Bindings = {}): Node {
         writeTemplate(record.content, bindings),
         { ...record.options, marker: maybe(record.options.marker, bindings, "a callout's marker") }
       );
+    case 'numberLine':
+      return numberLine(record.name, record.scale, record.options);
+    case 'axes':
+      return axes(record.name, record.coords, record.options);
+    case 'numberPlane':
+      return numberPlane(record.name, record.coords, record.options);
+    case 'riemannBars':
+      return riemannBars(record.name, record.coords, curveOf(record.of, bindings), {
+        ...record.options,
+        over: record.options?.over ? spanOf(record.options.over, bindings, 'a run of bars') : undefined,
+      });
   }
   throw new Error(`a node has no kind called ${String((record as { kind?: unknown }).kind)}`);
 }

@@ -529,9 +529,20 @@ functions, which is what lets the same tree survive being written to a file and 
 - `CalloutRecordOptions` — a `stroke`, a `fill`, a `size`, and an optional `marker`, `align`,
   `baseline`, `family` and `weight`. A marker of nothing leaves the disc out, which is what a callout
   pointing at a moving thing wants.
+- `NumberLineRecord` — a `kind` of `numberLine`, a `name`, a `scale` and its `options`.
+- `AxesRecord` — a `kind` of `axes`, a `name`, its `coords` and its `options`.
+- `NumberPlaneRecord` — a `kind` of `numberPlane`, a `name`, its `coords` and its `options`.
+- `RiemannBarsRecord` — a `kind` of `riemannBars`, a `name`, its `coords`, the curve as `of`, and its
+  `options`. The curve is an expression of the bound variable `x`, the way a plot's is.
+- `BarsRecordOptions` — what `riemannBars` takes, with `over` as an `IntervalRecord`, since a figure
+  that walks the bars across a graph moves both ends of the run.
 - `NodeRecord` — a `ShapeRecord`, a `TextRecord`, a `GroupRecord`, a `DotRecord`, an `ArrowRecord`, a
-  `BraceRecord` or a `CalloutRecord`. The four annotations resolve through their own calls, so a
-  brace's curls and an arrow's head are one piece of arithmetic with one set of gates over it.
+  `BraceRecord`, a `CalloutRecord`, a `NumberLineRecord`, an `AxesRecord`, a `NumberPlaneRecord` or a
+  `RiemannBarsRecord`. Every kind resolves through its own call, so a brace's curls, an arrow's head
+  and an axis's tick list are each one piece of arithmetic with one set of gates over it. A graph
+  frame's options are the values those calls already take rather than expressions: a frame is the
+  furniture a figure draws its moving parts on, and widening a number to an expression later costs a
+  minor rather than a major, since a bare number is a literal already.
 - `TextContent` — what a text record draws: a plain string, or a `TextTemplate`.
 - `TextTemplate` — a `template` string with numbered holes, `{0}` for the first and `{1}` for the
   second, and one `holes` entry per hole. `{{` writes one brace, which leaves a set in braces

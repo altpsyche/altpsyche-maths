@@ -60,6 +60,8 @@ export { resolveNode, writeTemplate } from './figure/node-record.js';
 export type {
   ArrowRecord,
   ArrowRecordOptions,
+  AxesRecord,
+  BarsRecordOptions,
   BraceRecord,
   BraceRecordOptions,
   CalloutRecord,
@@ -67,6 +69,9 @@ export type {
   DotRecord,
   GroupRecord,
   NodeRecord,
+  NumberLineRecord,
+  NumberPlaneRecord,
+  RiemannBarsRecord,
   ShapeRecord,
   TextContent,
   TextHole,
