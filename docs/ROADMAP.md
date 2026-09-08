@@ -411,6 +411,23 @@ a commit and needing to be split, four prose and demo surfaces to rewrite that w
 and twelve to sixteen commits rather than six. **It is almost certainly 2.0.0 rather than a minor,
 since `plot` returns a `Path` today and would return a record**, and that is Siva's call.
 
+**Three more decisions, Siva's, on 2026-09-08.**
+
+**This is 2.0.0 and it is a clean break.** `areaUnder`, `plot`, `riemannBars`, `slopeOf` and
+`tangentAt` are all at the door and all change shape, so every step of the plan touches a door frozen
+five commits ago. Old calls stop working rather than standing beside new ones, since two APIs is two
+resolvers, two sets of tests and a reference twice the size, carried until a major removes them
+anyway. 1.0.0 has one consumer and it is this tree's own author.
+
+**The specification's repository is made and it is `altpsyche-figure-language`**, holding the
+specification and eventually the conformance suite and no implementation. It has no remote:
+publishing it is asked for rather than assumed. **The specification leads and this package follows**,
+because implementation-first would make that document a description of whatever got built.
+
+**The next session splits steps 3 and 4 and writes no code.** Twenty-four node kinds and path
+producers in one bullet and fifteen animations in another are not commit-sized, which this file's own
+rule forbids. When they are written out the plan is complete.
+
 **Nothing is signed off.** Siva reads the plan before a line is written.
 
 ## Found while working, not yet queued
