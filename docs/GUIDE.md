@@ -185,6 +185,38 @@ skipped. Without it the only available shapes are the ones the builders here pro
 `pointAlong` returns the point at a fraction of that length rather than of the curve's parameter.
 `trimPath` cuts a path to a fraction of its length.
 
+## Stroke widths
+
+A **stroke width** is one number in figure units, or a **taper**. A taper is the width where the
+path starts, the width where it ends, and the name of the curve the width leaves the first along.
+The curve is named rather than passed as a function, so a figure written out as data can carry one.
+
+```ts
+import { outlinePath, widthAt, vec2, line } from '@altpsyche/maths';
+
+const swell = { from: 0, to: 0.2, curve: 'thereAndBack' } as const;
+widthAt(swell, 0.5);
+outlinePath(line(vec2(0, 0), vec2(2, 0)), swell);
+```
+
+Neither painter strokes at two widths, so a tapered stroke is drawn as the filled outline of its own
+path. `outlinePath` builds that outline: an open subpath becomes one loop, the left side out, the
+cap, the right side back and the cap at the start, and a closed subpath becomes two loops wound
+against each other, which the nonzero rule reads as a ring. The caps, the joins and the miter limit
+are the SVG specification's, and so are the defaults: a butt cap, a miter join and a limit of four.
+
+The outline is built on a flattening, since the offset of a cubic is not a cubic. Its tolerance
+defaults to a thousandth of a figure unit, which is a tenth of a pixel at a hundred pixels to the
+unit. The width is read at each point of that flattening, and a run is split further where the width
+along it bends, so a stroke that swells has points to swell at even where the path itself is
+straight.
+
+`marksAt` takes the outline after the timeline has run. An animation therefore still sees the
+centreline, so `draw` over a tapered line trims that centreline and the outline follows it rather
+than being opened up along one side. `widthAt` reads the width at a fraction of the length,
+`widestWidth` picks the one number a caller that needs one reads, and `outlinedMarks` is the pass
+itself, which a list with no taper in it comes out of unchanged.
+
 ## Graphs
 
 A **scale** is a pair of intervals: the numbers an axis counts through, and where those numbers land
@@ -572,8 +604,8 @@ so a gradient would be a kind of value the marks do not carry.
 **A figure never reads the page.** Colour enters as text. `colourOf` parses hex and `rgb()` for
 interpolation in sRGB and rejects every other form rather than guessing at it.
 
-**A stroke has one width along its length.** A tapering line is what a renderer of its own would
-provide, and neither painter here is one.
+**A stroke's width is one number or a taper between two, and nothing else.** A width per point,
+which is what a renderer of its own would offer, is not something a figure can name here.
 
 **Nothing below the line imports anything above it.** Values and timing are below: vectors, a
 transform, the easing curves, a value interpolated between keys. Figures and painters are above. A

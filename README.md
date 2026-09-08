@@ -154,18 +154,20 @@ Gradients are excluded for a different reason, since both painters draw them. SV
 with an element carrying a document-unique identifier, and a canvas with an object built from the
 context. A colour here is text that both accept unchanged.
 
-A stroke has one width along its length. Colour enters as text, `'#1b1b1b'` or `'rgb(27, 27, 27)'`;
+A stroke's width is one number or a taper between two numbers along a named curve, drawn as the
+filled outline of its own path, since neither painter strokes at two widths. A width per point is not
+something a figure can name. Colour enters as text, `'#1b1b1b'` or `'rgb(27, 27, 27)'`;
 `colourOf` parses hex and `rgb()` for interpolation in sRGB and rejects every other form rather than
 guessing. Nothing reads the page, and `getComputedStyle` appears nowhere in the tree.
 
-No screenshot gates this package. Every assertion reads a mark list or a number, so the suite of 618
+No screenshot gates this package. Every assertion reads a mark list or a number, so the suite of 701
 tests runs in Node without a browser. Comparisons are by tolerance rather than by hash, because
 `Math.sin`, `Math.cos` and `Math.pow` are not specified to the last bit and differ between engines.
 
 ## Further reading
 
 [docs/GUIDE.md](docs/GUIDE.md) teaches the package in order. [docs/REFERENCE.md](docs/REFERENCE.md)
-carries one entry for each of the 227 names at the door. [DESIGN.md](DESIGN.md) states why the
+carries one entry for each of the 247 names at the door. [DESIGN.md](DESIGN.md) states why the
 design is what it is and what it will not become.
 
 `index.ts` is the entire public surface, and nothing outside the package reaches a file inside it by

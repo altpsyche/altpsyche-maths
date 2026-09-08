@@ -165,7 +165,6 @@ three more are written past those because a session should not rediscover them.
 
 | version | what lands | what it changes | steps | cut against | depends on | plan |
 | --- | --- | --- | --- | --- | --- | --- |
-| 1.3.0 | the variable-width stroke, as the filled outline of a path | what a `Stroke`'s width may be | 5 | the flat demo's tangent and the solid demo's three runs of descent | nothing outside this package | written |
 | 1.4.0 | gradients, as stops along an axis in the mark's own units | what a `Fill` may be | 5 | the flat demo's shaded region and the solid demo's plane | nothing outside this package | written |
 | 1.5.0 | the view as a timeline entry, so a camera move is sequenced with the action | the shape of `Figure` | 4 | both demos' views, moved against their own entrances | nothing outside this package | written |
 | 1.6.0 | a rectangular clip, and the inset it makes possible | what a `Mark` may ask for | 4 | the flat demo's inset on its tangent point | nothing outside this package | written |
@@ -291,9 +290,9 @@ it, and out the far side. That walk is what makes the demo a gate rather than an
 takes the operation through no crossing, one crossing, two crossings and containment, which are the
 four cases this kind of code gets silently wrong.
 
-**Which demo each of the look versions is cut against.** 1.3.0 is the flat demo's tangent and the
-solid demo's three runs of descent. 1.4.0 is the flat demo's shaded region and the solid demo's
-plane. So each of them holds to Siva's rule that a feature reaches a flat picture and a solid one.
+**Which demo each of the look versions is cut against.** 1.4.0 is the flat demo's shaded region and
+the solid demo's plane, which holds to Siva's rule that a feature reaches a flat picture and a solid
+one. 1.3.0 held to it with the flat demo's tangent and the solid demo's three runs of descent.
 1.1.0 held to it too and reached all four, since every one of them writes text and none of them
 named a font.
 
@@ -309,6 +308,47 @@ the motion in a still. 2.5.0 is the version that ends that, and the strips stay 
 README that plays a video on load is a README nobody can read.
 
 ## Now
+
+**1.3.0 is cut, and a stroke's width may change along its length.** Five steps closed it. A `Taper`
+is the width where a path starts, the width where it ends, and the `CurveName` the width leaves the
+first along, which is the shape a key already has and so a shape a file can carry. `Stroke.width` is
+a `Width`, one number or a taper, and a tapered stroke is drawn as the filled outline of its own
+path, since neither an SVG `stroke-width` attribute nor a canvas context's `lineWidth` holds two
+widths. `outlinePath` builds that outline on a flattening, because the offset of a cubic is not a
+cubic, and its tolerance is a thousandth of a figure unit, a tenth of a pixel at the hundred pixels
+to the unit the demos draw at.
+
+**Area is the reading throughout, because a stroke of width w over a length L covers Lw wherever the
+two sides do not run into each other.** A straight segment of length 2 stroked at 0.4 is the
+rectangle exactly, to 1e-12. A circle of radius 1 stroked at 0.1 covers 0.6283471 against the
+0.6283185 of the ring, a share of 4.549e-5. The flat demo's parabola at the 0.05 it is drawn at
+covers 0.44047672 against 0.44048238, a share of 1.286e-5. A 2 by 2 square covers 0.8 under a miter
+join and 0.795 under a bevel, both to 1e-12. A taper from 0.4 to nothing over a straight segment of
+length 2 is the triangle exactly, 0.4 to 1e-12.
+
+**`marksAt` takes the outline after the timeline has run**, so an animation still sees the
+centreline: `draw` trims that and the outline follows, agreeing with the outline of the trimmed
+centreline to 1e-12 at all eleven fractions. Trimming the outline instead leaves the loop open along
+one side, covering 0.0398015 where the right answer is 0.2.
+
+**Two findings landed on the way through.** The flattening answers for the geometry alone, so a
+straight run is two points however the width moves along it and a swell had nothing to swell at; a
+run is now split while the width along it bends. Reading the width halfway along against the width
+its ends average to is not that test, because a curve that rises and falls by the same amount has its
+midpoint on the chord: the swell then drew as a four-point diamond whose area was the right answer
+for the wrong shape. The width is read at a third and two thirds, where the geometry's own flatness
+test reads a cubic's two controls.
+
+**The demos taper the two lines that are claims about one place.** The flat demo's tangent is nothing
+at both ends and 0.035 in the middle, since a line drawn at one weight to the edge of the graph reads
+as a line that carries on past it. The solid demo's three runs of descent are 0.035 at their seeds
+and nothing where they leave, since every run is stopped by the edge of the region rather than by
+arriving anywhere. The mark counts are unchanged at 144 and 245, and what moved is which call draws
+them: 43 fills and 89 strokes a frame in the flat demo where it painted 42 and 90, and 196 and 54 in
+the solid where it painted 193 and 57. Four sheets grew and four are byte-identical.
+
+**The door went from 240 names to 247 and the suite from 668 tests to 701 over 43 files.** Every
+done-criterion was verified line by line in the commit that cut it.
 
 **1.2.0 is cut, and a figure names how a change is paced.** Four steps closed it. The easing set is
 six curves from four: `overshoot` is Robert Penner's back ease out, whose constant 1.70158 puts its
@@ -478,127 +518,6 @@ Each is a version above. What follows is what each one covers. The four of the 1
 list and the eight of the 2.x band do not, because writing one is a session of its own and the band
 is behind 2.0.0.
 
-### 1.3.0 The variable-width stroke
-
-**A stroke is one number and neither painter can taper it.** `Stroke.width` is a number in figure
-units, `paint/svg.ts` writes it once as `stroke-width` and `paint/canvas.ts` sets it once as
-`lineWidth`. This is what Manim gets from its own renderer and what neither painter here offers.
-
-**So a variable width is geometry rather than a painter's setting.** The stroke becomes the outline
-of the path, filled, computed in this package. That keeps `figure/mark.ts`'s rule intact, since what
-reaches a painter is a filled path both of them already draw, and it is the same answer Manim's
-renderer arrives at from the other direction.
-
-**One interaction has to be got right or the feature breaks `draw`.** `draw` trims a path with
-`trimPath`, so drawing a tapered line on has to trim the centreline and outline what is left, rather
-than trim the outline and open it.
-
-- [x] **1. The outline of a stroked path.** A path and a width to the filled outline, with caps and
-  joins. **Measures:** a straight segment's outline against the rectangle it must be, to 1e-12; a
-  circle of radius r stroked at w giving an area within tolerance of `π((r + w/2)² − (r − w/2)²)`;
-  the outline of the flat demo's parabola against its stroked mark, by area, within a share the
-  commit quotes.
-
-  **Landed.** `outlinePath` takes a path and a width and gives the filled outline, with the SVG
-  specification's caps, joins and miter limit and its defaults: a butt cap, a miter join, and a
-  limit of four. A straight segment of length 2 stroked at 0.4 is the rectangle exactly, its four
-  corners agreeing to 1e-12 and its area 0.8 to the same. A circle of radius 1 stroked at 0.1 covers
-  0.6283471 against the ring's 0.6283185, a share of 4.549e-5. The flat demo's parabola stroked at
-  the 0.05 it is drawn at covers 0.44047672 against the 0.44048238 its length times its width comes
-  to, a share of 1.286e-5. A 2 by 2 square stroked at 0.1 covers 0.8 under a miter join and 0.795
-  under a bevel, both to 1e-12, and 0.79765367 under a round join against the 0.79785398 four
-  quarter discs leave, a share of 2.5e-4. A round cap adds a half disc at each end, 0.92485781
-  against 0.92566371, a share of 8.7e-4. The three shares that are not exact are the flattening the
-  outline is built on: the offset of a cubic is not a cubic, so the outline walks a polyline, and its
-  tolerance defaults to a thousandth of a figure unit, which is a tenth of a pixel at the hundred
-  pixels to the unit the demos draw at. The door went from 240 names to 242 and the suite from 668
-  tests to 682 over 42 files. Nothing in the demos changed and the eight sheets are byte-identical.
-
-- [x] **2. A width that varies along the length.** The width is a number or a named taper with
-  parameters. **Measures:** a taper from w to nothing over a straight segment giving a triangle's
-  area to 1e-12; the width read at eleven places along the flat demo's tangent.
-
-  **Landed.** A `Taper` is two widths and the name of the curve the width leaves the first along,
-  which is the shape a key already has and so a shape a file can carry. `Stroke.width` is a `Width`,
-  which is one number or a taper. A taper from 0.4 to nothing over a straight segment of length 2 is
-  the triangle exactly: three corners at (0, 0.2), (2, 0) and (0, −0.2), and an area of 0.4 against
-  the 0.4 of Lw/2, to 1e-12. The flat demo's tangent at x of 1.5 is 5.072714 long, and tapered from
-  0.035 to nothing it reads 0.999994049 of the half width the taper asks for at all eleven places
-  along it: the edge slants by 0.0175 over 5.072714, whose cosine is 0.99999405, and a perpendicular
-  from the centreline is the half width less that. A stroke that swells reads 0.2 at the middle of
-  its length against the 0.2 half width it asks for.
-
-  **One defect found on the way, and it is why the width is read at a third and two thirds.** The
-  flattening answers for the geometry alone, so a straight run is two points however the width moves
-  along it, and a swell had nothing to swell at: `thereAndBack` from nothing to 0.4 drew as two
-  points. Splitting a run while the width halfway along differs from the width its ends average to
-  fixed it only for a taper that is not symmetric, since a curve that rises and falls by the same
-  amount has its midpoint on the chord: the swell then drew as a four-point diamond, whose area of
-  0.4 is the right answer for the wrong shape. The test is now at a third and two thirds, which is
-  where the geometry's own flatness test reads a cubic's controls, and the swell draws as 48 points
-  with an area of 0.4000000000000001 against the 0.4 of its length times its mean width.
-
-  **A width has three readings and each site says which it needs.** The width at a place builds the
-  outline, the widest is what a part measured against the line reads, and a scaled width is what a
-  group's transform leaves. Eight sites did arithmetic on a width and each took one of the three: a
-  tick length and an arrow head take the widest, a group's scale and a minor grid line take the
-  scaled width. Both painters run every mark through `outlinedMarks` before drawing, since neither a
-  `stroke-width` attribute nor a context's `lineWidth` holds two widths.
-
-  The door went from 242 names to 247 and the suite from 682 tests to 697 over 43 files. Nothing in
-  the demos tapers yet, so the eight sheets are byte-identical.
-
-- [x] **3. `draw` over an outlined stroke.** The centreline is trimmed and re-outlined, so a tapered
-  line draws on from one end. **Measures:** the outlined mark at eleven fractions of `draw` against
-  the outline of the trimmed centreline, within tolerance.
-
-  **Landed.** `marksAt` outlines after the timeline has run, so a mark carries the outline and an
-  animation still sees the centreline. At all eleven fractions of `draw` over a line of length 2
-  tapering from 0.4 to nothing, the mark's path holds the same number of loops as the outline of the
-  trimmed centreline and covers the same area to 1e-12. The taper runs over the length that has been
-  drawn, so the area at a fraction f is 0.4f: at a half it is 0.2, which is the Lw/2 of the 1 that
-  exists rather than of the 2 that will. Trimming the outline instead leaves the loop open along one
-  side, and that shape covers 0.0398015 where the outline of the trimmed centreline covers 0.2.
-
-  Both painters keep the same pass, which a list of marks from a figure comes out of unchanged, so a
-  mark built by hand and handed straight to a painter still draws. The suite went from 697 tests to
-  699 and the door is unchanged at 247, since where a call is made is not a name. The eight sheets
-  are byte-identical.
-
-- [x] **4. The demos taper.** The flat demo's tangent and the solid demo's three runs of descent.
-  **Measures:** the mark count and the bytes of each affected sheet, re-committed with both numbers
-  quoted; the marks at the named times.
-
-  **Landed.** The flat demo's tangent is nothing at both ends and 0.035 in the middle, along
-  `thereAndBack`. A tangent is a claim about one place on the curve, and a line drawn at one weight
-  to the edge of the graph reads as a line that carries on past it. The solid demo's three runs of
-  descent are 0.035 at their seeds and nothing where they leave, since every run is stopped by the
-  edge of the region rather than by arriving anywhere.
-
-  The mark counts are unchanged, 144 in the flat demo and 245 in the solid, because a stroke with no
-  fill beside it leaves one mark whichever way it is drawn. What moved is which call draws them:
-  the flat demo paints 43 fills and 89 strokes a frame where it painted 42 and 90, and the solid
-  demo 196 and 54 where it painted 193 and 57. The four affected sheets grew: tangent.svg from 61397
-  to 62080 bytes, tangent-strip.svg from 247844 to 250542, surface.svg from 87987 to 92608, and
-  surface-strip.svg from 354264 to 372675. The other four are byte-identical.
-
-  At the beat the tangent is flat, so its outline is 0.035 tall, and the half width read across it a
-  quarter, a half and three quarters of the way along is within 6.2e-7 of what the taper asks for.
-  Each run of descent is 0.035 across at its seed, narrows at every one of its stations and closes to
-  nothing at the far end. The suite went from 699 tests to 701.
-
-- [ ] **5. Cut 1.3.0.** **Measures:** the three gates; the eight sheets identical after
-  `npm run demos`; the door and the suite from 240 names and 668 tests.
-
-#### Done-criteria
-
-- A stroke's width is a number or a named taper, and a taper draws as a filled outline.
-- The outline of a uniform stroke matches the stroked mark by area within the share the plan quotes,
-  and a straight segment's outline is exact to 1e-12.
-- `draw` over a tapered line trims the centreline, and the eleven fractions agree within tolerance.
-- The flat demo's tangent and the solid demo's descent runs taper, and both sheets are re-committed.
-- The three gates pass and the lock file agrees with the manifest.
-
 ### 1.4.0 Gradients
 
 **Refused until now, and the reason was corrected at 1.0.0.** Both painters draw a gradient. What
@@ -612,8 +531,8 @@ and should fade toward its far edge, which is what makes a pane read as glass.
 
 - [ ] **1. A fill that is a gradient.** `Fill.colour` stays a string and a gradient is a second shape
   of fill: stops, each a colour and an offset, along an axis given in the mark's own units.
-  **Measures:** the stops read back off a mark in the order they were given; the door from wherever
-  1.3.0 left it.
+  **Measures:** the stops read back off a mark in the order they were given; the door from the 247
+  names 1.3.0 left it at.
 
 - [ ] **2. The SVG painter's `<defs>`, and an id nothing collides with.** A gradient's id is built
   from the mark's own id, which is already stable frame to frame and unique inside a figure, and the
@@ -630,7 +549,7 @@ and should fade toward its far edge, which is what makes a pane read as glass.
   and 4.5:1 against both grounds, which is the wash band 0.13.0 holds.
 
 - [ ] **5. Cut 1.4.0.** **Measures:** the three gates; the eight sheets identical after
-  `npm run demos`; the door and the suite from wherever 1.3.0 left them.
+  `npm run demos`; the door and the suite from 247 names and 701 tests.
 
 #### Done-criteria
 
