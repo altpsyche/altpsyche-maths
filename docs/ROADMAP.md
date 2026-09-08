@@ -173,10 +173,44 @@ is a scratch page run by hand and its readings are quoted by hand into the entri
 one thing about it that cannot be held by `npm test`, and it is why the spike is a session rather
 than a commit.
 
-- [ ] **1. The seam, before any mark.** A scratch tree outside this repository that links
+- [x] **1. The seam, before any mark.** A scratch tree outside this repository that links
   `@altpsyche/engine` and draws one triangle. **Measures:** what `selectBackend` offers and what
   `readingOf` reads on this machine, both quoted; one frame submitted with the `FrameCost` the engine
-  costs it at.
+  costs it at. **Read on 2026-09-09.** The offering is `{ webgpu: true, webgl2: true }`, gathered by
+  asking for an adapter rather than by reading `navigator.gpu`. `selectBackend` answers `webgpu` for
+  a WGSL frame and `webgl2` for a GLSL one; with no adapter it refuses a WGSL frame with `no GLSL
+  translation is available to draw this WGSL frame on WebGL 2`, takes `webgl2` once that frame
+  carries `translated: 'glsl'`, and with nothing offered refuses with `WebGPU returned no adapter on
+  this device`. `readingOf`, through `probe()`, reads backend `webgpu` at tier `toy`, adapter
+  returned, survived on-screen compositing, renderer `nvidia`, architecture `blackwell` and not
+  SwiftShader, with 18 features and 36 limits. The frame costs 1 pass, 1 draw, 0 dispatches, 1
+  pipeline switch, 1 bind switch, 0 attachment loads, 1 attachment store and 0 transient bytes. The
+  triangle drew: its corners at (200, 36), (48, 264) and (352, 264) of a 400 by 300 canvas enclose
+  34,656 pixels and 34,634 read as the fill, which is 0.06 per cent short and is the boundary a pass
+  with no multisampling leaves. **Three gaps came with it and are counted below.**
+
+**Gap 1: nothing at the door joins a selection to a renderer.** `selectBackend` opens by saying which
+backend draws a frame is "answered inside the library rather than by the caller naming one", and
+`createFrameRenderer` builds WebGL 2 for any caller that passes neither `backend` nor `device`. So a
+WGSL frame handed to `createSurface` on this machine is refused with `WebGL 2 was handed a wgsl frame
+to draw`, twice, while `selectBackend` on the same page answers `webgpu`. What the caller has to do
+instead is gather the offering itself, call `selectBackend`, call `requestWebGPUDevice`, and pass the
+backend and the device back in. A GPU painter here would write those four steps and every other
+consumer would write them again.
+
+**Gap 2: a canvas the engine drew cannot be read.** No readback is at the door: `readPixels` is a
+backend method and neither backend is exported. The canvas cannot answer either, because the context
+is configured `RENDER_ATTACHMENT | COPY_DST` with no `COPY_SRC`, so `drawImage` of the drawn canvas
+into a 2D context gives (0, 0, 0, 0) at every one of 120,000 pixels while a screenshot of that same
+canvas reads (240, 92, 51) inside the triangle. Every reading above came from a screenshot for that
+reason. **Step 2 measures a drawn edge against 2.6 to 2.8 parts in ten thousand of the true radius**,
+which is a measurement in pixels, so this gap is in front of the next step rather than beside it.
+
+**Gap 3: `probe()` leaves its canvases on the page.** `onScreenCanvas` appends a 200 by 100 canvas at
+`position: fixed; left: 0; top: 0` for each backend it trials and removes neither, so two of them
+stand over the top-left corner of the document afterwards. The first triangle drawn after a probe had
+its top-left 200 by 100 covered by the clear colour (0.1, 0.2, 0.3) those canvases hold, read as (25,
+51, 76). A painter that probes a device before drawing a figure leaves that over the figure.
 
 - [ ] **2. One filled path.** A disc of radius 1 as a `PathMark`, filled. **Measures:** the drawn
   edge against the 2.6 to 2.8 parts in ten thousand of the true radius the control distance leaves,
@@ -371,9 +405,17 @@ README that plays a video on load is a README nobody can read.
 
 ## Now
 
-**1.6.0 is published and the GPU spike is what runs next.** Siva's call of 2026-09-09. The spike's own
+**1.6.0 is published and the GPU spike is running.** Siva's call of 2026-09-09. The spike's own
 scheduling argument is that its window is the slack of 1.x and 2.0.0, and 1.x is spent, so what is
-left is 2.0.0's twenty-nine commits. Its steps are the section in front of the ladder. **2.0.0 is
+left is 2.0.0's twenty-nine commits. Its steps are the section in front of the ladder.
+
+**The spike's first step is read and the seam holds.** One triangle drew through the one door on a
+`blackwell` adapter, at 1 pass and 1 draw, with 34,634 of an expected 34,656 pixels filled. **Three
+gaps came with it**, each written under step 1 with the reading that found it: nothing at the door
+joins a selection to a renderer, a canvas the engine drew cannot be read, and `probe()` leaves two
+canvases pinned over the top-left corner of the page. **The second gap is in front of step 2 rather
+than beside it**, because step 2 measures a drawn edge in pixels and this machine read its own
+triangle through a screenshot. **2.0.0 is
 ready to start behind it**: the six questions are answered, the inventory is counted, and step 1 is
 self-contained. **Two things fall due before the format freezes and both are Siva's**, which are
 whether a `Mark` may be a raster image, due by step 3 where the node vocabulary lands, and the
