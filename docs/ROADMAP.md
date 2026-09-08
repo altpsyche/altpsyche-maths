@@ -361,19 +361,37 @@ it.
   reached a shader are of the form `var(--name, #rrggbb)`, so the painter took the hex out of the
   fallback. A custom property with no fallback would have to be resolved against the document.
 
-- [ ] **6. The findings, batched.** **Measures:** one entry per gap in this file with the reading that
+- [x] **6. The findings, batched.** **Measures:** one entry per gap in this file with the reading that
   found it, and one batch to the engine's roadmap, each argued on that package's own merits rather
-  than on a consumer needing it, which is the only argument that repository takes.
+  than on a consumer needing it, which is the only argument that repository takes. **Landed on
+  2026-09-09.** Eight gaps are written above, each under the step that found it and each carrying its
+  reading. The batch went to the engine's roadmap as one commit, in the section that file had already
+  set aside for it, and it is four findings rather than eight. **Three of the eight are not that
+  package's**: a plain text mark's missing outline is 2.3.0 here, a mark's colour being a CSS string
+  is 2.0.0 here, and the counted stencil is its item 2 already. **One more is documented behaviour
+  there rather than a defect**, so it is recorded under the batch instead of in it, which is what
+  stops the next session filing it again. **The four that stand there are three inconsistencies
+  between what that package says and what it does, and one door export that changes a caller's
+  document permanently**, and none of them is argued on a consumer needing anything.
 
-#### Done-criteria
+#### Done-criteria, verified on 2026-09-09
 
-- `package.json` and `package-lock.json` are untouched, and no `@altpsyche/engine` import exists in
-  this tree.
-- The scratch tree lives outside this repository and nothing in `git status` mentions it.
-- Every gap is written where it would be fixed, which is the engine's roadmap, and counted here with
-  the reading that found it.
-- The three gates read exactly what they read before, since nothing that ships was touched.
-- The known stencil gap is re-measured rather than listed as a discovery.
+- **`package.json` and `package-lock.json` are untouched, and no `@altpsyche/engine` import exists in
+  this tree.** `git status --short` named only `docs/ROADMAP.md` at every one of the six commits, and
+  a grep for that name over every `.ts` and `.json` in this tree outside `node_modules` finds it in
+  this file alone.
+- **The scratch tree lives outside this repository and nothing in `git status` mentions it.** It sits
+  in this session's own scratchpad and reaches both packages by an esbuild alias to each door, so the
+  page imports each by the name a consumer would.
+- **Every gap is written where it would be fixed, which is the engine's roadmap, and counted here with
+  the reading that found it.** Eight are counted here. Four went there. The other four are named above
+  with the reason each belongs to this package or is already filed there.
+- **The three gates read exactly what they read before, since nothing that ships was touched.** 785
+  tests over 47 files, `tsc --noEmit` clean, `tsc -p tsconfig.build.json` clean, before the first
+  commit and after the last. `npm run demos` reproduces the eight committed sheets byte for byte.
+- **The known stencil gap is re-measured rather than listed as a discovery.** `StencilMode` is
+  `'mark' | 'inside'`, neither counts, and the annulus that proves it drew 349,144 pixels against the
+  261,799 the nonzero rule wants. The batch names it as that package's item 2 and files nothing new.
 
 ## The version ladder
 
