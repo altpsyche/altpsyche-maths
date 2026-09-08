@@ -24,9 +24,8 @@ const exported = [...door.matchAll(/export\s+(?:type\s+)?\{([^}]*)\}/g)].flatMap
     .filter(Boolean),
 );
 
-// An entry opens a list item at the left margin with its own name in backticks.
-// An indented item is a field or a member of the entry above it and names
-// nothing at the door.
+// An entry opens a list item at the left margin with its name in backticks, and an
+// indented item is a field of the entry above it and names nothing at the door.
 const entries = [...reference.matchAll(/^- `([A-Za-z_$][A-Za-z0-9_$]*)/gm)].map((match) => match[1]);
 
 describe('the reference and the door', () => {

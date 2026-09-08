@@ -56,9 +56,8 @@ describe('a turn', () => {
   });
 
   it('keeps every point one distance from one centre across the whole span', () => {
-    // This is what a pivot read off the marks after the turn would break: the
-    // box round a turned shape is not the turned box, so the centre would move
-    // as the fraction advanced and the turn would not be a turn.
+    // The box round a turned shape is not the turned box, so a pivot read off the
+    // marks after the turn would move as the fraction advanced.
     const marks = elbow();
     const box = boundsOfMarks(marks);
     if (!box) throw new Error('an L has a box');

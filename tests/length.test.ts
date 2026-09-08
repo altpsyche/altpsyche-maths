@@ -76,9 +76,8 @@ const coords = coordsOf(
 
 describe('a cut by length', () => {
   it('is even along one long curve, where the parameter is not', () => {
-    // A cubic's parameter is not its length: the same step in parameter covers
-    // more of the curve where the curve is moving fast. Reading the fraction of
-    // the length as the parameter left this 4.7e-3 of the whole out.
+    // A cubic's parameter is not its length, and reading the fraction of the length
+    // as the parameter leaves 4.7e-3 of the whole out.
     expect(worstUneven(arc(vec2(0, 0), 1, 0, Math.PI / 2))).toBeLessThan(2e-4);
   });
 

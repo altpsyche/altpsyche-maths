@@ -287,9 +287,8 @@ describe('mat4', () => {
 
 describe('what the door hands out on its own', () => {
   it('states one tolerance that every call taking one falls back to', () => {
-    // Four calls take a tolerance and each is a distance in the picture's own
-    // units, so one number rather than four keeps them agreeing about what
-    // counts as one place.
+    // Four calls take a tolerance and each is a distance in the picture's own units,
+    // so one number rather than four keeps them agreeing on what one place is.
     expect(TOLERANCE).toBe(1e-6);
     const crossings = curveCrossings(
       vec2(0, 0),

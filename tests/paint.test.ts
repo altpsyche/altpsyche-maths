@@ -159,12 +159,8 @@ describe('svg', () => {
   });
 
   it('takes an element from a document, whose own call accepts more than a painter can make', () => {
-    // Shaped the way a document is rather than the way the painter is. An element
-    // there holds other elements and text, and text is not a thing an attribute
-    // can be set on, so the two calls each accept something the other refuses and
-    // neither signature is assignable to the other. This compiling is the test:
-    // the element a maker makes travels through to the target, and a caller with
-    // a real document does not have to cast its own element to hand it over.
+    // Neither signature is assignable to the other, since a document's element holds
+    // text an attribute cannot be set on, so this compiling is the whole test.
     interface DocumentElement {
       setAttribute(name: string, value: string): void;
       textContent: string | null;

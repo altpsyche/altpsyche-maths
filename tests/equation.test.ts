@@ -219,9 +219,8 @@ describe('an equation placed by an edge', () => {
   };
 
   it('puts the edge it was given on the point it was given', async () => {
-    // What is placed is the box the typesetter measured, and the ink sits a
-    // little inside it, so the three are compared against each other rather
-    // than against the point. Each is half the drawn width from the next.
+    // The box the typesetter measured is what is placed and the ink sits inside it,
+    // so the three are compared against each other at half the drawn width apart.
     const box = (await equationFromTex('\\frac{dy}{dx} = 2x')).box;
     const drawn = box.width * Math.min(1.2 / box.width, 0.6 / box.height);
     const start = await edges('\\frac{dy}{dx} = 2x', 'start');

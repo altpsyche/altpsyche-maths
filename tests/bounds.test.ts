@@ -39,10 +39,8 @@ const hullOf = (path: Path) => {
 
 describe('the box round a path', () => {
   it('is exactly the circle it holds, at any radius and any centre', () => {
-    // The four cubics a circle is made of meet at the four points furthest out
-    // along each axis, so those are segment ends and the box has no error in it
-    // at all. The 2.7 parts in ten thousand the cubics cost sit at the corners,
-    // inside the box.
+    // The four cubics meet at the points furthest out along each axis, so the box
+    // is exact and the 2.7 parts in ten thousand they cost sit inside it.
     for (const [centre, radius] of [
       [vec2(0, 0), 1],
       [vec2(3, -2), 0.25],

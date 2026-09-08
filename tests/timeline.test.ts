@@ -236,9 +236,8 @@ describe('a row of changes staggered', () => {
 
   it('starts each one a gap after the one before', () => {
     const line = Timeline.empty().stagger(six, 0.8, { gap: 0.2 });
-    // Each start is the one before plus the gap, reached the way play reaches
-    // every start, so the row carries play's own accumulation and lands within
-    // a nanosecond rather than exactly.
+    // Each start is the one before plus the gap, so the row carries play's own
+    // accumulation and lands within a nanosecond rather than exactly.
     line.spans.forEach((span, at) => expect(span.from).toBeCloseTo(0.2 * at, 12));
     expect(line.duration).toBeCloseTo(1.8, 12);
   });

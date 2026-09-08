@@ -163,9 +163,8 @@ describe('a pair of axes', () => {
   const coords = coordsOf(across, up);
 
   it('writes the number at the crossing below and to the left of it', () => {
-    // Written under the crossing, it lands on the other line and inside the head
-    // at the end of it. Text is never measured here, so it is moved by the same
-    // offsets the labels already use rather than by how wide the number is.
+    // Text is never measured here, so the label under the crossing takes the
+    // offsets the labels already use rather than the width of the number.
     const marks = flatten(axes('axes', coords, { stroke: pen, fill: ink, size: 0.3, tip: 0.18 }));
     const label = find(marks, 'axes/x/labels/0');
     const line = find(marks, 'axes/y/line');

@@ -96,9 +96,8 @@ describe('the committed pictures', () => {
   });
 
   it('each fill half their frame or better at the time their still is taken', () => {
-    // A picture cut to prove a feature draws can sit in a corner of its frame.
-    // The frame is sized for the widest moment of the motion, so which moment a
-    // still is taken at is what decides how full it looks.
+    // The frame is sized for the widest moment of the motion, so the time a still
+    // is taken at is what decides how much of it the bounds cover.
     for (const figure of [tangent, booleans, turns, solid]) {
       const box = boundsOfMarks(marksAt(figure, figure.still))!;
       const frame = resolveExtent(figure.extent, 16 / 9, figure.still);
@@ -123,11 +122,8 @@ describe('the committed pictures', () => {
 
 describe('the flat demo', () => {
   it('draws the same 202 marks at every time', () => {
-    // A hundred and ninety-one the scene writes, of which a hundred are the
-    // field's fifty arrows, fifteen the two rules and two the brace and its
-    // number, plus the box round the reading and ten rays. Nothing arrives or
-    // leaves part way through, which is what lets one frame be compared against
-    // another at all.
+    // A hundred of the 202 are the field's fifty arrows and fifteen the two rules,
+    // and nothing arrives or leaves part way through, so every time reads alike.
     for (const seconds of [0, ...FRAMES, durationOf(tangent)]) expect(marksAt(tangent, seconds)).toHaveLength(202);
   });
 
@@ -171,10 +167,8 @@ describe('the flat demo', () => {
   });
 
   it('holds the glyphs the two rules share still while the right-hand side walks', () => {
-    // Hung from the same left edge rather than centred. Centred, the six they
-    // share would slide sideways as the wider rule arrived. Read against the
-    // middle of the frame rather than against the world, since the view follows
-    // the dot and the rule is placed against the frame.
+    // Hung from one left edge, since centred the six glyphs they share would slide
+    // sideways as the wider rule arrived, and read against the frame the view moves.
     const startOf = (seconds: number, id: string) => {
       const mark = marksAt(tangent, seconds).find((each) => each.id === id);
       if (mark?.kind !== 'path') throw new Error(`${id} is a path`);
@@ -202,9 +196,8 @@ describe('the flat demo', () => {
         (label) =>
           marksAt(tangent, seconds).find((mark) => mark.id === `tangent/axes/x/labels/${label}`)?.opacity ?? 1
       );
-    // Somewhere in the row the six are part way up and no two are equal, which
-    // is the whole of what a stagger promises. Scanned for rather than named, so
-    // retiming the entrance does not need this line rewritten.
+    // A stagger promises only that somewhere the six are part way up and no two
+    // equal, so the moment is scanned for rather than named.
     const moment = Array.from({ length: 400 }, (_, step) => step / 100).find((seconds) => {
       const shown = row(seconds);
       return shown[0] > shown[5] && shown[0] < 1;
@@ -315,9 +308,8 @@ describe('the flat demo', () => {
   });
 
   it('writes its reading and its rules above the graph rather than over it', () => {
-    // Text is never measured, so nothing here reads a width. The graph's own
-    // top edge is a number the coords give, and every anchor and every glyph of
-    // the two rules is checked against it.
+    // Text is never measured, so the graph's top edge from the coords is what every
+    // anchor and every glyph of the two rules is checked against.
     const top = pointOf(coords, 4, 9).y;
     for (const seconds of [TIMES.entrance, TIMES.beat, TIMES.walkTo, durationOf(tangent)]) {
       for (const mark of marksAt(tangent, seconds)) {
@@ -333,9 +325,8 @@ describe('the flat demo', () => {
   });
 
   it('keeps the dot and everything placed against the frame inside the frame', () => {
-    // The grid and the axes run off the edge once the view follows the dot,
-    // which is what following means. What may never leave is the dot the view is
-    // following and the two things placed against the frame itself.
+    // The grid and the axes run off the edge once the view follows the dot, so what
+    // may never leave is the dot and the two marks placed against the frame.
     const placed = ['tangent/point/disc', 'tangent/reading'];
     for (const seconds of FRAMES) {
       const centre = resolveExtent(tangent.extent, 1.8, seconds).centre ?? vec2(0, 0);
@@ -354,9 +345,8 @@ describe('the flat demo', () => {
   });
 
   it('follows the dot rather than letting it cross the frame', () => {
-    // Across only: the reading and the rule are placed against the frame and the
-    // graph is not, so a view that dropped to follow the dot at the stationary
-    // point would carry that band down over the grid.
+    // The view follows across only, since dropping to the dot at the stationary
+    // point would carry the frame-placed reading and rule down over the grid.
     let followed = 0;
     let still = 0;
     for (let step = 0; step <= 200; step += 1) {
@@ -449,9 +439,8 @@ const panelAreas = (apart: number): number[] =>
 
 describe('the boolean demo', () => {
   it('draws the same 12 marks at every time', () => {
-    // Four to a panel: the two outlines, the result and the word under it. A
-    // panel whose result is empty draws an empty path rather than no mark, which
-    // is what lets one frame be compared against another at all.
+    // Four to a panel, and a panel whose result is empty draws an empty path rather
+    // than no mark, so the count holds at every time.
     const times = [
       0,
       BOOLEAN_TIMES.entrance,
@@ -570,9 +559,8 @@ describe('the rotation demo', () => {
   };
 
   it('draws the same eight marks at every time', () => {
-    // Two panels of four: the pivot, the shape, the word riding with it, and the
-    // words underneath. Nothing arrives or leaves, which is what lets one frame
-    // be compared against another.
+    // Two panels of four, the pivot and the shape with the word riding it and the
+    // words underneath, and nothing arrives or leaves at any time.
     for (const seconds of [0, ...TURN_FRAMES, TURN]) expect(marksAt(turns, seconds)).toHaveLength(8);
   });
 
@@ -600,9 +588,8 @@ describe('the rotation demo', () => {
   });
 
   it('spins the left panel where it stands and swings the right one round', () => {
-    // A turn keeps every corner the distance from the pivot it started at, so
-    // the furthest corner is the reach of the panel. The left panel's reach is
-    // the shape's own, and the right one's is that plus the swing.
+    // A turn keeps every corner its distance from the pivot, so the left panel's
+    // reach is the shape's own and the right one's is that plus the swing.
     const reach = (swing: number) => Math.max(...LOCAL.map((point) => Math.hypot(swing + point.x, point.y)));
     for (const seconds of [0, ...TURN_FRAMES, TURN]) {
       const own = corners(seconds, 'own').map((point) => vec2.distance(point, OWN));
@@ -680,9 +667,8 @@ describe('the solid demo', () => {
   const named = [SOLID_TIMES.entrance, SOLID_TIMES.quarter, SOLID_TIMES.half, SOLID_TIMES.round];
 
   it('draws the same 265 marks at every time', () => {
-    // A hundred and forty-four cells of saddle, sixteen panes of glass, the
-    // field's thirty-six arrows at two marks each, three runs of descent and the
-    // two branches of the cut, with the axes and the rule making up the rest.
+    // A hundred and forty-four cells of saddle, sixteen panes of glass and the
+    // field's thirty-six arrows at two marks each, with the rest the axes and rule.
     for (const seconds of [0, ...SOLID_FRAMES, SOLID_TIMES.round]) expect(solidAt(seconds)).toHaveLength(265);
   });
 
@@ -735,9 +721,8 @@ describe('the solid demo', () => {
   });
 
   it('brings the eye back to where it started after one orbit', () => {
-    // Mark for mark by name rather than in order. Two cells at the same depth
-    // keep the order they were given, and a thousandth of a millionth of a turn
-    // is enough to swap two of them, which says nothing about where the eye is.
+    // Compared by name rather than in order, since two cells at one depth keep the
+    // order given and a turn of 1e-9 swaps them without moving the eye.
     const before = new Map(solidAt(SOLID_TIMES.entrance).map((mark) => [mark.id, mark]));
     const after = solidAt(SOLID_TIMES.round);
     expect(after).toHaveLength(before.size);

@@ -46,9 +46,8 @@ describe('a plotted function', () => {
   });
 
   it('draws a quadratic exactly, at every count', () => {
-    // A cubic can hold a parabola with nothing left over, so the only error
-    // available is in the slopes, and at the ends those are the three-point
-    // difference rather than the two-point one.
+    // A cubic holds a parabola with nothing left over, so the only error is in the
+    // slopes, and at the ends those take the three-point difference.
     for (const samples of [16, 32, 64, 96]) {
       expect(worstGap(plot(tall, (x) => x * x, { resolution: samples }), tall, (x) => x * x)).toBeLessThan(1e-12);
     }
@@ -280,9 +279,8 @@ describe('the bars under a curve', () => {
 
   it('is one bar per piece, each named by its place in the run', () => {
     const marks = flatten(riemannBars('bars', tall, (x) => x * x, { fill: wash, bars: 4, over: interval(0, 2) }));
-    // The first bar reads its height at zero, where the curve is zero, and it is
-    // still a mark: dropping it would make it appear between one frame and the
-    // next as soon as the curve or the level moves.
+    // The first bar reads a height of zero and is still a mark, since dropping it
+    // would make it appear between frames as soon as the curve moves.
     expect(marks.map((mark) => mark.id)).toEqual(['bars/0', 'bars/1', 'bars/2', 'bars/3']);
   });
 
@@ -318,9 +316,8 @@ describe('the bars under a curve', () => {
     for (const mark of marks) {
       if (mark.kind !== 'path') throw new Error('a bar is a path');
       for (const point of mark.path.flatMap((subpath) => [subpath.start, ...subpath.curves.map((c) => c.to)])) {
-        // Exactly on the edge, not near it: the bar is built from its own
-        // corners, so the top one is the number the scale gave rather than the
-        // near corner with a height added back on.
+        // Exactly on the edge rather than near it, since the bar is built from its
+        // own corners and the top one is the number the scale gave.
         expect(interval.holds(square.y.units, point.y)).toBe(true);
       }
     }

@@ -159,30 +159,29 @@ eight.
 **The lock file agrees with the manifest again**, and holding it there is one
 `npm install --package-lock-only` in whichever commit bumps a version.
 
-**1.0.0 is being worked and fifteen of its sixteen steps are ticked.** The tree is 6,794 lines, the
-door is 227 names, the suite is 618 tests over 40 files, and the four prose surfaces are a 101 line
-README, a 513 line guide, a 793 line reference and a 245 line DESIGN.md. **The next session starts at
-step 16, and it is short.**
+**1.0.0 is being worked and sixteen of its seventeen steps are ticked.** The library is 6,794 lines,
+the door is 227 names, the suite is 618 tests over 40 files, and the four prose surfaces are a 175
+line README, a 544 line guide, a 792 line reference and a 387 line DESIGN.md. **The next session
+starts at step 17, and it is short.**
 
 **Every done-criterion below is verified but one, and that one is Siva's.** The three gates pass, the
 lock file agrees with the manifest, `npm run demos` leaves all eight sheets byte for byte as
 committed, the reference has 227 entries against 227 names with a gate holding them equal, the
-README and the guide read at a sentence mean of 13.7 and 13.7 words with none over 30, the guide's
+README and the guide read at a sentence mean of 16.6 and 15.1 words with none over 30, the guide's
 seventeen code blocks compile in order, no comment in the tree carries a measurement nothing asserts,
 no inline comment run is longer than two lines, and DESIGN.md carries none of the banned phrases. What
 is left is **Siva reading the README, the guide and the pictures once and saying so**. On his word,
-step 16 is one commit: the version to 1.0.0, `npm install --package-lock-only` in the same commit,
+step 17 is one commit: the version to 1.0.0, `npm install --package-lock-only` in the same commit,
 and `npm publish` asked for rather than assumed.
 
 **The four prose surfaces were rewritten in one register, which is Siva's call and not a step.** He
 read the pages, rejected the tone twice, and named the model: Eric Lengyel. Definitions first, third
 person, the standard name for anything that has one, and every number with the expression behind it.
-CLAUDE.md's voice brief carries the rule. The README is 179 lines, the guide 544, the reference 793
-and DESIGN.md 387, all four at a sentence mean between 15.0 and 16.6 with none over 30, no banned
-phrases and no second person. The guide's seventeen code blocks still compile in order and the
-reference gate still holds 227 entries against 227 names.
+CLAUDE.md's voice brief carries the rule. All four read at a sentence mean between 15.1 and 16.6 with
+none over 30, no banned phrases and no second person. The guide's seventeen code blocks still compile
+in order and the reference gate still holds 227 entries against 227 names.
 
-**Step 16's last criterion is Siva reading those four pages once and saying so**, and the pages
+**Step 17's last criterion is Siva reading those four pages once and saying so**, and the pages
 changed under it after this rewrite, so that read is of the current text rather than of what was
 there before.
 
@@ -547,7 +546,13 @@ demo is recompiled by steps 6 and 7 against the renamed door.
   re-read and the refusal stands, but the reason three other files give for it does not, which is the
   commit after this one.
 
-- [ ] **16. Cut 1.0.0.** The version bumped in this commit, `npm install --package-lock-only` in the
+- [x] **16. The comment runs in the suite.** The two-line rule was read against the library alone, so
+  the library held no run over two lines while `tests/` held 24 of three to six, 79 comment lines in
+  all. Each kept its claim and lost the sentence restating it, and the 24 are 48 lines now. Eleven
+  files changed, the three gates pass at 618 tests over 40 files, and all eight sheets regenerate byte
+  for byte as committed.
+
+- [ ] **17. Cut 1.0.0.** The version bumped in this commit, `npm install --package-lock-only` in the
   same one, the done-criteria verified line by line with the number that satisfies each, and
   publishing asked for rather than assumed. **Measures:** the three gates; all eight sheets identical
   after `npm run demos`; the suite's final count from 590.
