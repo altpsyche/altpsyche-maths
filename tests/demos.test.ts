@@ -11,6 +11,8 @@ import {
   containsPoint,
   durationOf,
   easeOut,
+  extentAt,
+  resolveExtent,
   flattenPath,
   nearestEdge,
   flatten,
@@ -20,7 +22,6 @@ import {
   plot,
   pointAlong,
   pointOf,
-  resolveExtent,
   sameMarks,
   sampleTrack,
   smoothstep,
@@ -241,7 +242,7 @@ describe('the committed pictures', () => {
       const end = durationOf(figure);
       for (let step = 0; step <= 240; step += 1) {
         const seconds = (step / 240) * end;
-        const extent = resolveExtent(figure.extent, STILL_WIDTH / STILL_HEIGHT, seconds);
+        const extent = extentAt(figure, seconds, STILL_WIDTH / STILL_HEIGHT);
         const centre = extent.centre ?? vec2(0, 0);
         for (const mark of marksAt(figure, seconds)) {
           if (mark.kind !== 'text') continue;
@@ -273,7 +274,7 @@ describe('the committed pictures', () => {
     ];
     for (const [file, figure] of stills) {
       const drawn = sheets.find((sheet) => sheet.file === file)!.drawn();
-      const extent = resolveExtent(figure.extent, 16 / 9, figure.still);
+      const extent = extentAt(figure, figure.still, 16 / 9);
       expect(drawn.width).toBe(Math.round(extent.width * PER_UNIT));
       expect(drawn.height).toBe(Math.round(extent.height * PER_UNIT));
     }
@@ -432,7 +433,7 @@ describe('the flat demo', () => {
     const startOf = (seconds: number, id: string) => {
       const mark = marksAt(tangent, seconds).find((each) => each.id === id);
       if (mark?.kind !== 'path') throw new Error(`${id} is a path`);
-      const centre = resolveExtent(tangent.extent, 1.8, seconds).centre ?? vec2(0, 0);
+      const centre = extentAt(tangent, seconds, 1.8).centre ?? vec2(0, 0);
       return vec2(mark.path[0].start.x - centre.x, mark.path[0].start.y - centre.y);
     };
     for (const glyph of ['0-1D451', '1-1D466', '2-1D451', '3-1D465', '4-rule', '5-3D']) {
@@ -646,7 +647,7 @@ describe('the flat demo', () => {
     // may never leave is the dot and the two marks placed against the frame.
     const placed = ['tangent/point/disc', 'tangent/reading'];
     for (const seconds of FRAMES) {
-      const centre = resolveExtent(tangent.extent, 1.8, seconds).centre ?? vec2(0, 0);
+      const centre = extentAt(tangent, seconds, 1.8).centre ?? vec2(0, 0);
       for (const mark of marksAt(tangent, seconds)) {
         if (!placed.includes(mark.id) && !mark.id.startsWith('tangent/equation/')) continue;
         const points =
@@ -661,6 +662,21 @@ describe('the flat demo', () => {
     }
   });
 
+  it('follows the dot from a timeline entry rather than from a function of the clock', () => {
+    // What the entry buys is that the extent is a plain extent a file can carry.
+    // A closure on the figure could not be sequenced against anything and could
+    // not be written down.
+    expect(typeof tangent.extent).toBe('object');
+    expect(resolveExtent(tangent.extent, 1.8, 0).centre).toBeUndefined();
+    const views = tangent.timeline!.spans.filter((span) => typeof span.entry !== 'function');
+    expect(views).toHaveLength(1);
+    // Its span is nothing wide, so it is applied in full from the first frame and
+    // the picture is the one the closure drew.
+    expect(views[0].from).toBe(0);
+    expect(views[0].to).toBe(0);
+    expect(extentAt(tangent, 0, 1.8).centre!.x).toBeCloseTo(-0.62, 12);
+  });
+
   it('follows the dot rather than letting it cross the frame', () => {
     // The view follows across only, since dropping to the dot at the stationary
     // point would carry the frame-placed reading and rule down over the grid.
@@ -668,7 +684,7 @@ describe('the flat demo', () => {
     let still = 0;
     for (let step = 0; step <= 200; step += 1) {
       const seconds = (durationOf(tangent) * step) / 200;
-      const centre = resolveExtent(tangent.extent, 1.8, seconds).centre ?? vec2(0, 0);
+      const centre = extentAt(tangent, seconds, 1.8).centre ?? vec2(0, 0);
       const mark = marksAt(tangent, seconds).find((each) => each.id === 'tangent/point/disc');
       if (mark?.kind !== 'path') continue;
       const middle = centreOf(boundsOf(mark.path)!);
@@ -1207,7 +1223,7 @@ describe('the solid demo', () => {
   it('keeps the whole picture inside the frame it declares', () => {
     // The frame is read off the figure rather than written out again here, so
     // reshaping it to fit the picture cannot leave this holding an old number.
-    const frame = resolveExtent(solid.extent, 16 / 9, 0);
+    const frame = extentAt(solid, 0, 16 / 9);
     for (const seconds of named) {
       const box = boundsOfMarks(solidAt(seconds));
       expect(Math.abs(box!.x.from)).toBeLessThanOrEqual(frame.width / 2);

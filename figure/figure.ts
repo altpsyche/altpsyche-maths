@@ -13,7 +13,7 @@ import { sampleTracks, type TrackValue, type Tracks } from '../timing/track.js';
 import { flatten, type Node } from './node.js';
 import { outlinedMarks } from './outline.js';
 import { Timeline } from './timeline.js';
-import { resolveExtent, viewMatrix, type ExtentChoice, type Fit } from './extent.js';
+import { resolveExtent, viewMatrix, type Extent, type ExtentChoice, type Fit } from './extent.js';
 import type { Mat3 } from '../values/mat3.js';
 import type { Mark } from './mark.js';
 
@@ -63,25 +63,38 @@ export function marksAt(figure: Figure, seconds: number): readonly Mark[] {
 }
 
 /**
- * The matrix a painter needs at a time, in one call.
+ * How much of the world the figure shows at a time, after its view entries.
  *
- * A figure whose extent is a function of the clock has to be asked for its
- * extent at the same time its marks were asked for, and a consumer writing that
- * as two calls has two chances to pass different times. What the painter is
- * handed is the matrix, so the extent and the centring stay in here.
+ * The extent a figure declares is the base the view entries are folded over
+ * rather than the answer, so a declared extent chosen from the shape of the
+ * surface still chooses under a view that moves. A mark placed against the frame
+ * is placed in the figure's own units, so this is the call that answers for where
+ * the frame is.
  *
- * The extent the figure declares is the base the timeline's view entries are
- * folded over rather than the answer, so a declared extent chosen from the shape
- * of the surface still chooses under a view that moves.
+ * A scene that places a mark against the frame cannot read the frame from here,
+ * because a view that follows something reads the marks and the scene would be
+ * asking for what is being built. Such a scene computes the frame the way the
+ * view entry does.
  */
-export function viewAt(figure: Figure, seconds: number, width: number, height: number): Mat3 {
-  const declared = resolveExtent(figure.extent, width / height, seconds);
-  if (!figure.timeline) return viewMatrix(declared, figure.fit ?? 'contain', width, height);
+export function extentAt(figure: Figure, seconds: number, aspect: number): Extent {
+  const declared = resolveExtent(figure.extent, aspect, seconds);
+  if (!figure.timeline) return declared;
   // The marks are built at most once and only if a view entry asks for them, so
   // a figure whose view follows nothing pays nothing for one that does.
   let built: readonly Mark[] | undefined;
-  const extent = figure.timeline.extentAt(declared, seconds, () => (built ??= marksAt(figure, seconds)));
-  return viewMatrix(extent, figure.fit ?? 'contain', width, height);
+  return figure.timeline.extentAt(declared, seconds, () => (built ??= marksAt(figure, seconds)));
+}
+
+/**
+ * The matrix a painter needs at a time, in one call.
+ *
+ * A figure whose view moves has to be asked for its extent at the same time its
+ * marks were asked for, and a consumer writing that as two calls has two chances
+ * to pass different times. What the painter is handed is the matrix, so the
+ * extent and the centring stay in here.
+ */
+export function viewAt(figure: Figure, seconds: number, width: number, height: number): Mat3 {
+  return viewMatrix(extentAt(figure, seconds, width / height), figure.fit ?? 'contain', width, height);
 }
 
 /** Whether a figure declaring itself a loop actually is one, which is the gate

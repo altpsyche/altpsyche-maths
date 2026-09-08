@@ -569,10 +569,12 @@ since it is a release away and has a document of its own.
 - [ ] **7. The extent as data.** A view that follows something becomes a named form with parameters
   rather than a function of the clock, and the forms are the ones a figure needs rather than one per
   demo: a fixed extent, an aspect choice, a follow with a margin, and a framing of named marks.
-  **This is the other half of composition and camera.** **Measures:** the flat demo's dot held within
-  1.2 figure units of the middle of the frame, which is the number that view already quotes; a
-  framing of the flat demo's brace and its reading holding both inside the frame at every named
-  time.
+  **This is the other half of composition and camera.** The forms landed at 1.5.0 as `moveView`,
+  `followView` and `frameView`, so this step carries them as parameters rather than writing them.
+  **Measures:** the flat demo's dot held within 2.14 figure units of the middle of the frame, which
+  is what its reach of 1.2 and its room of 0.62 come to together, since the room binds at both ends
+  of the walk; a framing of the flat demo's brace and its reading holding both inside the frame at
+  every named time.
 
 - [ ] **8. The four demos rewritten as files**, 1,610 lines of module becoming descriptions.
   **Measures:** all nine sheets byte for byte as committed after `npm run demos`.

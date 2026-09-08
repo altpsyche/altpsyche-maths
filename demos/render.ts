@@ -8,7 +8,7 @@
  */
 import {
   marksAt,
-  resolveExtent,
+  extentAt,
   svgMarkup,
   viewAt,
   viewMatrix,
@@ -92,7 +92,7 @@ export interface Sheet {
  * the figure unit. An extent given as a function is resolved at the moment the
  * still is taken, so what shapes the frame is what the figure draws then. */
 function stillDrawn(figure: Figure): Drawn {
-  const extent = resolveExtent(figure.extent, WIDTH / HEIGHT, figure.still);
+  const extent = extentAt(figure, figure.still, WIDTH / HEIGHT);
   const width = Math.round(extent.width * PER_UNIT);
   const height = Math.round(extent.height * PER_UNIT);
   return {

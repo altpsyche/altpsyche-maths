@@ -787,9 +787,13 @@ a group of that name.
 - `marksAt(figure, seconds)` — the marks a figure shows at a time. A tapered stroke is turned into
   its filled outline after the timeline has run, so an animation that trims a path trims the
   centreline and the outline follows it.
+- `extentAt(figure, seconds, aspect)` — how much of the world a figure shows at a time, after its
+  view entries. The extent a figure declares is the base those entries are folded over rather than
+  the answer, so this is the call that says where the frame is. A scene placing a mark against the
+  frame cannot read it from here, since a view that follows something reads the marks.
 - `viewAt(figure, seconds, width, height)` — the matrix a painter needs at a time, in one call. A
-  figure whose extent is a function of the clock has to be asked for its extent at the time its
-  marks were asked for. Writing that as two calls has two chances to pass different times.
+  figure whose view moves has to be asked for its extent at the time its marks were asked for.
+  Writing that as two calls has two chances to pass different times.
 - `durationOf(figure)` — how long a figure runs, which is its own duration where it names one and
   its timeline's otherwise.
 - `isLoop(figure, tolerance)` — whether a figure declaring itself a loop actually is one. The

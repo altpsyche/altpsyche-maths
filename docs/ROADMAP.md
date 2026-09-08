@@ -628,9 +628,9 @@ than after it.
 
 - [x] **2. The named view moves, and the marks a follow reads.** A move to a fixed extent, a follow
   with a margin, and a framing of named marks. **Measures:** each form's matrix at eleven times
-  against its closed form; the flat demo's dot held within 1.2 figure units of the middle, which is
-  the number that view already quotes; `marksAt` called once rather than twice for a figure whose
-  view reads no mark.
+  against its closed form; the flat demo's dot held within its reach of 1.2 figure units of the
+  middle wherever its room allows; `marksAt` called once rather than twice for a figure whose view
+  reads no mark.
 
   **Two corrections to this step, found by reading step 7 of the format before working it.** This
   step defers to that list and the list is not the one written here first.
@@ -679,18 +679,48 @@ than after it.
   The door went from 255 names to 260 and the suite from 732 tests to 744. The eight sheets are
   byte-identical.
 
-- [ ] **3. Both demos move their view against the action.** The flat demo's follow becomes an entry
-  after its entrance. **Measures:** both demos' marks and view matrices at their named times,
-  re-committed with the seconds each hold lasts quoted; the flat demo's duration unchanged within a
-  tenth of a second.
+- [x] **3. The flat demo's view becomes a timeline entry.** **Measures:** the demo's marks and view
+  matrices at its named times; the flat demo's duration unchanged within a tenth of a second.
 
-  **What the solid demo gains is not what this step said, and the call is open.** It said the orbit
-  gains a held beat at the face of the saddle. The orbit is a `Camera3` inside the scene driven by a
-  track, not the figure's view, so pacing it is a track change and belongs to step 3.8 of the format,
-  where the camera becomes parameters. The solid demo's own view is a fixed 8.2 by 6.4 extent and has
-  never moved. **A framing of the cut is what would exercise a form in a solid picture**, since
-  Siva's rule is that a feature reaches a flat picture and a solid one, and the crossing curve is what
-  that demo is about. Whether that picture is wanted is Siva's.
+  **Landed, and the picture is byte-identical.** `tangent.extent` was
+  `(_aspect, seconds) => frameAt(pointAt(seconds))` and is now the plain extent `size`, with
+  `followView('tangent/point', { within: REACH, room: ROOM, axis: 'x' })` as the one view entry. Its
+  span is nothing wide, so it is applied in full from the first frame. The duration is 10.25 seconds
+  as it was and the matrices read 602 across at the entrance and the beat and 478 at the walk and the
+  end, which are the numbers step 1 recorded. The eight sheets are byte-identical.
+
+  **The 1.2 this step and step 2 both quoted is not what the picture holds, and the same wrong number
+  is in step 7 of the format.** The reach of 1.2 is the margin the view pushes to close, but `ROOM`
+  is 0.62 and it binds at both ends of the walk, so the dot sits 2.14 figure units from the middle at
+  the worst rather than 1.2. `tests/demos.test.ts` already held 2.14 and said why, so the number was
+  right in the gate and wrong in the plan. The reach does bite mid-walk, where the dot crosses the
+  middle and the offset is nothing.
+
+  **The door gained `extentAt(figure, seconds, aspect)`, which the step needed rather than chose.**
+  Four gates read the frame off `figure.extent` to place a mark against it, and a declared extent
+  stopped being the whole view the moment a view entry existed. `viewAt` is now that call plus
+  `viewMatrix`, so the two cannot disagree. `demos/render.ts` reads it too, so a still's pixel size
+  would follow a view that zoomed.
+
+  **A scene placing a mark against the frame cannot read the frame from `extentAt`**, since a view
+  that follows something reads the marks and the scene would be asking for what is being built. The
+  flat demo's reading and its rule are placed by `frameAt` for that reason, which is the same
+  arithmetic the view entry does.
+
+  The door went from 260 names to 261 and the suite from 744 tests to 745.
+
+  **What a demo moving its view against the action would be is Siva's, and no picture is waiting.**
+  The flat demo's view moves only while the dot walks, and after the walk it holds while the brace
+  arrives because the dot has stopped rather than because anything said so. Nothing in either demo
+  reads better for a sequenced camera move today.
+
+  **What the solid demo gains is Siva's and no picture is waiting.** This step said the orbit gains a
+  held beat at the face of the saddle. That orbit is a `Camera3` inside the scene driven by a track
+  rather than the figure's view, so pacing it is a track change and belongs to step 3.8 of the
+  format, where the camera becomes parameters. The solid demo's own view is a fixed 8.2 by 6.4 extent
+  and has never moved. **A framing of the cut is what would exercise a form in a solid picture**,
+  since Siva's rule is that a feature reaches a flat picture and a solid one, and the crossing curve
+  is what that demo is about.
 
 - [ ] **4. Cut 1.5.0.** **Measures:** the three gates; the eight sheets identical after
   `npm run demos`; the door and the suite from wherever 1.4.0 left them.

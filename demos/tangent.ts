@@ -42,6 +42,7 @@ import {
   equationFromTex,
   equationNode,
   fadeIn,
+  followView,
   morphEquation,
   flash,
   fractionOf,
@@ -303,8 +304,22 @@ export function sceneAt(along: number): Node {
   );
 }
 
+/**
+ * The view following the dot, as an entry rather than as a function of the clock
+ * written on the figure.
+ *
+ * Its span is nothing wide, so it is applied in full from the first frame and the
+ * picture is the one the closure drew. What the entry buys is that the figure's
+ * extent is a plain extent, which a file can carry, and that the follow sits in
+ * the same list the animations do.
+ */
+const follows = Timeline.empty().play(
+  followView('tangent/point', { within: REACH, room: ROOM, axis: 'x' }),
+  0
+);
+
 /** The picture arriving, one part at a time. */
-const entrance = Timeline.empty()
+const entrance = follows
   .play(fadeIn('tangent/grid'), 0.6)
   .together([draw('tangent/axes/x/line'), draw('tangent/axes/y/line')], 0.7, { after: -0.2 })
   .together(
@@ -397,7 +412,7 @@ export function pointAt(seconds: number): Vec2 {
 }
 
 export const tangent: Figure = {
-  extent: (_aspect, seconds) => frameAt(pointAt(seconds)),
+  extent: size,
   duration: line.duration,
   still: WALK_FROM + WALK * 0.85,
   tracks: { s: walk },
