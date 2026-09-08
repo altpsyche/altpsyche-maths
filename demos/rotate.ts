@@ -97,11 +97,11 @@ const ell = (centre: Vec2): Path => polygon(LOCAL.map((point) => vec2.add(point,
 /** How far each panel's middle stands from the middle of the figure. */
 const PANEL = 2.6;
 const SHAPE_Y = 0.2;
-const LABEL_Y = -2.75;
+export const LABEL_Y = -2.75;
 /** The sizes this figure's text takes, pinned by the word riding the shape since
  * this figure draws no axis to pin them by. The word is the size that holds the
  * smallest glyph at 21.02 pixels on the page in a frame ten units wide. */
-const TEXT = textScale(0.296 / TEXT_RATIO);
+export const TEXT = textScale(0.296 / TEXT_RATIO);
 
 
 /** The left panel's pivot, which is also its shape's centre, because a turn

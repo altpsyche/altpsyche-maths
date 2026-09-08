@@ -438,13 +438,15 @@ item 2.
 **Two numbers this file carried are corrected by the spike.** The flat demo holds 181 marks at its
 still time and not 146, and the still time is 7.86.
 
-**2.0.0 is under way and its first two steps are landed.** Step 1 gave the three graph readers the
+**2.0.0 is under way and its first three steps are landed.** Step 1 gave the three graph readers the
 plotted path instead of the function behind it, so a parabola's slope reads exactly where a central
-difference carried 1.06e-11, and step 2 published the expression form: `Expression`, `evaluate` and
+difference carried 1.06e-11. Step 2 published the expression form: `Expression`, `evaluate` and
 the thirty-four names of `EXPRESSION_FUNCTIONS`, holding a complex square, a complex exponential and
-a Möbius map. The door is 274 names and the suite is 808 tests over 48 files. **Step 3.1 is what runs
-next**, which is the node record and the resolver with the three kinds of the tree, and it is the
-spine the other ten commits of step 3 hang off.
+a Möbius map. Step 3.1 published the node record and `resolveNode`, and the rotation demo built from
+records draws its eight marks at each of the four times its strip draws. The door is 283 names and
+the suite is 822 tests over 49 files. **Step 3.2 is what runs next**, which is a path as data: the
+seven named forms, `pathFromData` for anything else, and the three geometry calls that join the
+expression set once a path has a written form.
 
 **Two things fall due before the format freezes and both are Siva's**, which are
 whether a `Mark` may be a raster image, due by step 3 where the node vocabulary lands, and the

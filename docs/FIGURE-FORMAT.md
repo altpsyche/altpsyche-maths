@@ -536,17 +536,22 @@ release away and has a document of its own.
   marks at its own named times, within tolerance, built through records rather than calls, and the
   suite grows. A kind no demo draws is measured against its own call at one time instead.
 
-  - [ ] **3.1 The node record and the resolver, with the three kinds of the tree.** A record is a
+  - [x] **3.1 The node record and the resolver, with the three kinds of the tree.** A record is a
     kind, a name and its parameters, and a group's children are records. `shape`, `text` and `group`
     are the three, and `resolveNode` walks a record into the `Node` that `flatten` already takes.
     **A text record's content is a template with numbered holes and one expression per hole**, since
     the flat demo's reading is a word beside a formatted number and nothing in the expression form
     joins text.
-    **Measures:** the rotation demo, whose scene is a fixed tree of those three kinds and no
-    expression at all, mark for mark at each of the four times its strip draws, which is eight marks
-    each time; the flat demo's reading, which is `slope 0.00` at three of its named times, `slope
-    1.16` at the fourth and `slope 6.00` at the last three, from a template and one call to
-    `labelFor`; the suite from 785. **It is the rotation demo rather than the boolean one**, because the
+    **Measured:** the rotation demo built from records draws the same eight marks at each of the four
+    times its strip draws, within a tolerance of 1e-6, and in the same order under the same ids; a
+    group record with its style dropped falls its four text marks back to `sans-serif` and a
+    translation of one unit on the root moves all eight, which is what says the comparison can fail;
+    the flat demo's reading is `slope 0.00` at three of its named times, `slope 1.16` at the fourth
+    and `slope 6.00` at the last three, written from the template `slope {0}` and one hole at a
+    precision of 0.01; three precisions, 1, 0.01 and 0.001, write a third as `0`, `0.33` and `0.333`;
+    a hole the list has no entry for and a hole given a place or a true or false are each refused with
+    the sentence naming it; the suite from 808 to 822 and the door from 274 names to 283.
+    **It is the rotation demo rather than the boolean one**, because the
     boolean demo's scene is a boolean operation over a track value and step 3.3 is what carries that.
 
   - [ ] **3.2 A path as data.** `arc`, `circle`, `line`, `polygon`, `polyline`, `rect` and `straight`

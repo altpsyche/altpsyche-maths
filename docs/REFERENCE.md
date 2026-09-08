@@ -505,6 +505,32 @@ never drawn works.
   neither a fill nor a stroke is left out rather than emitted invisible. An invisible mark costs a
   painter an element and turns up in a comparison between two frames as a change.
 
+## The tree as data
+
+A node record is the tree written as data rather than as calls. A record is a kind, a name and its
+parameters, and a group's children are records. `shape`, `text` and `group` are the three kinds the
+tree itself has, so a resolved record is the `Node` that `flatten` already walks. A record carries no
+functions, which is what lets the same tree survive being written to a file and read back.
+
+- `ShapeRecord` — a `kind` of `shape`, a `name`, a `path` and a `style`.
+- `TextRecord` — a `kind` of `text`, a `name`, an `at`, a `content`, a `size` and the `options` a text
+  node takes.
+- `GroupRecord` — a `kind` of `group`, a `name`, its `children` as records, and an optional
+  `transform` and `style`.
+- `NodeRecord` — a `ShapeRecord`, a `TextRecord` or a `GroupRecord`.
+- `TextContent` — what a text record draws: a plain string, or a `TextTemplate`.
+- `TextTemplate` — a `template` string with numbered holes, `{0}` for the first and `{1}` for the
+  second, and one `holes` entry per hole. `{{` writes one brace, which leaves a set in braces
+  writable.
+- `TextHole` — one number written into a template: its `value` as an expression, and the `precision`
+  it is rounded and padded to. The precision is what keeps a hole following a track at one width as
+  the number moves.
+- `writeTemplate(content, bindings)` — the template with its holes filled, each hole written to its
+  own precision. A hole naming an index the list has no entry for is refused, and so is a hole whose
+  expression is a place or a true or false.
+- `resolveNode(record, bindings)` — the record walked into the node it describes. The bindings reach
+  the text holes and nothing else, since the holes are the only expressions a node record carries.
+
 ## Text sizes
 
 - `TextRole` — what a piece of text is doing: `title`, `note`, `label` or `tick`. A title says what

@@ -247,7 +247,7 @@ const arrowLength = (magnitude: number) => (0.34 * magnitude) / (0.6 + magnitude
 /** The stretch the dot walks, from the stationary point to where the curve meets
  * the top of its axis. The walk is measured along this rather than across x, so
  * the dot keeps one speed instead of gathering pace as the curve steepens. */
-const walkPath = plot(coords, curve, { over: interval(0, 3) });
+export const walkPath = plot(coords, curve, { over: interval(0, 3) });
 
 const START = pointAlong(walkPath, 0) ?? vec2(0, 0);
 

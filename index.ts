@@ -54,6 +54,8 @@ export { insetMarks, insetMatrix } from './figure/inset.js';
 export type { Inset } from './figure/inset.js';
 export { EXPRESSION_FUNCTIONS, evaluate } from './figure/expression.js';
 export type { Arithmetic, Bindings, Comparison, Expression, ExpressionValue, Variables } from './figure/expression.js';
+export { resolveNode, writeTemplate } from './figure/node-record.js';
+export type { GroupRecord, NodeRecord, ShapeRecord, TextContent, TextHole, TextRecord, TextTemplate } from './figure/node-record.js';
 export { areaUnder, plot, riemannBars, slopeOf, tangentAt } from './figure/plot.js';
 export type { AreaOptions, BarsOptions, PlotOptions, TangentOptions } from './figure/plot.js';
 export { vectorField } from './figure/field.js';
