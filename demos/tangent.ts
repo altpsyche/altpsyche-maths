@@ -38,6 +38,7 @@ import {
   brace,
   countTo,
   draw,
+  easeOut,
   equationFromTex,
   equationNode,
   fadeIn,
@@ -49,8 +50,10 @@ import {
   indicate,
   interval,
   labelFor,
+  linear,
   moveBy,
   numberPlane,
+  overshoot,
   plot,
   pointAlong,
   pointOf,
@@ -280,14 +283,19 @@ const entrance = Timeline.empty()
     0.4,
     { after: -0.1 }
   )
+  // A staggered row is paced by its gap, and 0.08 of a second is shorter than the
+  // rest a smoothstep spends leaving zero, so a label easing in as well arrives
+  // later than the row reads it as arriving.
   .stagger(
     acrossLabels.map((label) => fadeIn(label)),
     0.4,
-    { gap: 0.08 }
+    { gap: 0.08, curve: easeOut }
   )
-  .play(fadeIn('tangent/axes/y/labels'), 0.4, { after: -0.4 })
+  .play(fadeIn('tangent/axes/y/labels'), 0.4, { after: -0.4, curve: easeOut })
   .play(draw('tangent/curve'), 0.9, { after: -0.1 })
-  .play(growFrom('tangent/point', pointOf(coords, 0, 0)), 0.4, { after: -0.2 })
+  // The dot passes its own size and settles on it, which is what says it landed
+  // rather than swelled into place.
+  .play(growFrom('tangent/point', pointOf(coords, 0, 0)), 0.4, { after: -0.2, curve: overshoot })
   .together(
     [
       fadeIn('tangent/area'),
@@ -308,7 +316,10 @@ const beat = entrance.together(
     circumscribe('tangent/reading', { stroke: accent, padding: 0.14 }),
   ],
   1,
-  { after: 0.2 }
+  // A swell and a box that draws then lets go each carry their own out-and-back,
+  // so easing the clock as well eases the gesture twice and its two halves crawl
+  // away from the middle they turn at.
+  { after: 0.2, curve: linear }
 );
 
 const WALK = 3.6;
@@ -321,7 +332,9 @@ const MORPH = 0.9;
 
 const morphed = beat.play(morphEquation('tangent/equation/at-rest', 'tangent/equation/moving'), MORPH);
 
-const flashed = morphed.wait(WALK - MORPH).play(flash('tangent/point', { stroke: accent, rays: 10 }), 0.8);
+const flashed = morphed
+  .wait(WALK - MORPH)
+  .play(flash('tangent/point', { stroke: accent, rays: 10 }), 0.8, { curve: linear });
 
 /** The brace draws on while its number counts to the rise, which is one span so
  * the two cannot end at different moments. */

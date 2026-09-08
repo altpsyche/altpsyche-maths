@@ -495,10 +495,25 @@ flat and nothing more, so a track cannot name its own curve and no figure can ov
   3 to 7 reads 7 at its midpoint and 3 again at its end. The suite went from 658 tests to 663, the
   door is unchanged at 240 since a field is not a name, and the eight sheets are byte-identical.
 
-- [ ] **3. The demos pace themselves.** Every entry that should not settle names its curve, and the
+- [x] **3. The demos pace themselves.** Every entry that should not settle names its curve, and the
   flat demo's eleven-entry entrance staggers where it now overlaps by hand. **Measures:** entries
   naming a curve from 1 of 26; the flat demo's duration unchanged within a tenth of a second; each
   sheet's marks at its named times re-committed with the count quoted.
+
+  **Landed.** Entries naming a curve went from 1 of 23 to 7 of 23. The 26 counted the three `wait`
+  calls, which carry no animation and so can name nothing. Three reasons cover the six that gained a
+  name. A row a `stagger` built is paced by its gap, and 0.08 of a second is shorter than the rest a
+  smoothstep spends leaving zero, so each fade of the flat demo's label row and the boolean demo's
+  outlines is `easeOut`: the first label reads 0.441 a tenth of a second in where a smoothstep reads
+  0.156. A thing arriving at its own size is `overshoot`, so the flat demo's dot reaches 0.176001
+  units across against the 0.16 it settles at, a ratio of 1.100004 at 3.032 seconds, which is
+  0.580103 of its 0.4 span. And a gesture carrying its own out-and-back is `linear`, since easing the
+  clock as well eases it twice: the swell at the beat is halfway to its peak a quarter of the way
+  through at 1.500000 of the settled width where an eased clock would read 1.2325, and each of the
+  flash's ten rays reads 0.5 opacity a quarter through. No span moved, so the four durations are
+  10.25, 7.74, 11.8 and 6 seconds as they were, and the eight sheets are byte-identical: no still and
+  no strip frame falls inside a paced entry, which is why five new gates read the pacing at times
+  inside those entries instead. The suite went from 663 tests to 668.
 
 - [ ] **4. Cut 1.2.0.** **Measures:** the three gates; the eight sheets identical after
   `npm run demos`; the door and the suite from 235 names and 652 tests.

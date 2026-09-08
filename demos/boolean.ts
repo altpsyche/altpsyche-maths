@@ -21,6 +21,7 @@
 import {
   circle,
   differenceOf,
+  easeOut,
   fadeIn,
   group,
   intersectionOf,
@@ -119,10 +120,12 @@ export function sceneAt(apart: number): Node {
 /** The picture arriving: the outlines one panel after another, then the words,
  * then the results. */
 const entrance = Timeline.empty()
+  // The gap is what paces a row, so each panel's own fade leaves at speed rather
+  // than from rest and the three arrive 0.12 apart as the gap says.
   .stagger(
     PANELS.map((panel) => fadeIn(`booleans/${panel.name}/discs`)),
     0.4,
-    { gap: 0.12 }
+    { gap: 0.12, curve: easeOut }
   )
   .together(
     PANELS.map((panel) => fadeIn(`booleans/${panel.name}/label`)),

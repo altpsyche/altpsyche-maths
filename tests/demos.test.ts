@@ -10,6 +10,7 @@ import {
   colourOf,
   containsPoint,
   durationOf,
+  easeOut,
   flattenPath,
   nearestEdge,
   flatten,
@@ -22,6 +23,7 @@ import {
   resolveExtent,
   sameMarks,
   sampleTrack,
+  smoothstep,
   streamlineOf,
   tangentAt,
   toGraph,
@@ -383,6 +385,63 @@ describe('the flat demo', () => {
     expect(row(TIMES.entrance).every((opacity) => opacity > 0.999)).toBe(true);
   });
 
+  it('brings each x label in at speed rather than from rest', () => {
+    const first = 'tangent/axes/x/labels/-1';
+    const opacityAt = (seconds: number) =>
+      marksAt(tangent, seconds).find((mark) => mark.id === first)?.opacity ?? 1;
+    // The row's own start is scanned for at a thousandth of a second rather than
+    // named, since the entrance is a chain and no name is kept for where the
+    // stagger begins.
+    const from = Array.from({ length: 4001 }, (_, step) => step / 1000).find(
+      (seconds) => opacityAt(seconds) > 0
+    );
+    expect(from).toBeDefined();
+    const along = 0.1 / 0.4;
+    const shown = opacityAt(from! + 0.1);
+    expect(shown).toBeCloseTo(easeOut(along), 2);
+    expect(shown).toBeGreaterThan(smoothstep(along) + 0.25);
+  });
+
+  it('lands its dot by passing its own size and settling back on it', () => {
+    const widthAt = (seconds: number) => {
+      const box = boundsOfMarks(marksAt(tangent, seconds).filter((mark) => mark.id.startsWith('tangent/point')));
+      return box === null ? 0 : interval.span(box.x);
+    };
+    const settled = widthAt(TIMES.entrance);
+    let widest = 0;
+    let at = 0;
+    for (let step = 2800; step <= 3400; step++) {
+      const seconds = step / 1000;
+      if (widthAt(seconds) > widest) {
+        widest = widthAt(seconds);
+        at = seconds;
+      }
+    }
+    expect(widest / settled).toBeCloseTo(1.100004, 5);
+    expect(at).toBeCloseTo(2.8 + 0.4 * 0.580103, 3);
+    expect(widthAt(TIMES.entrance)).toBeCloseTo(0.16, 10);
+  });
+
+  it('swells its dot on a clock that does not ease, so the gesture eases once', () => {
+    const widthAt = (seconds: number) => {
+      const box = boundsOfMarks(marksAt(tangent, seconds).filter((mark) => mark.id.startsWith('tangent/point')));
+      return box === null ? 0 : interval.span(box.x);
+    };
+    const settled = widthAt(TIMES.entrance);
+    const from = TIMES.entrance + 0.2;
+    // A quarter of the way through, the swell's own out-and-back is halfway up,
+    // so the factor is halfway to its peak of two. An eased clock would read
+    // 1.2325 here instead.
+    expect(widthAt(from + 0.25) / settled).toBeCloseTo(1.5, 6);
+    expect(widthAt(from + 0.5) / settled).toBeCloseTo(2, 6);
+  });
+
+  it('flashes on a clock that does not ease either', () => {
+    const rays = marksAt(tangent, TIMES.walkTo + 0.2).filter((mark) => mark.id.includes('/flash/'));
+    expect(rays).toHaveLength(10);
+    for (const ray of rays) expect(ray.opacity).toBeCloseTo(0.5, 6);
+  });
+
   it('holds at the stationary point until the picture has arrived and been pointed at', () => {
     expect(sampleTrack(walk, 0)).toBe(0);
     expect(sampleTrack(walk, TIMES.entrance)).toBeCloseTo(0, 12);
@@ -703,6 +762,19 @@ describe('the boolean demo', () => {
         }
       }
     }
+  });
+
+  it('brings each panel of outlines in at speed, since the gap is what paces the row', () => {
+    const opacityAt = (seconds: number) =>
+      marksAt(booleans, seconds).find((mark) => mark.id === 'booleans/union/discs/first')?.opacity ?? 1;
+    const from = Array.from({ length: 4001 }, (_, step) => step / 1000).find(
+      (seconds) => opacityAt(seconds) > 0
+    );
+    expect(from).toBeDefined();
+    const along = 0.1 / 0.4;
+    const shown = opacityAt(from! + 0.1);
+    expect(shown).toBeCloseTo(easeOut(along), 2);
+    expect(shown).toBeGreaterThan(smoothstep(along) + 0.25);
   });
 });
 
