@@ -361,6 +361,30 @@ to 77, and docs/surface-strip.svg from 391635 to 522338.
 **The suite went from 782 tests over 47 files to 785, and the door is unchanged at 266 names.** Every
 done-criterion was verified line by line in the commit that closed the item.
 
+**1.6.0 publishes as a minor and four published types broke since 1.0.0, which is Siva's call taken
+on 2026-09-09 rather than a reading of the convention.** The door itself is additive: 230 names at
+1.0.0 to 266, none removed. What is not additive is the shape of four of them.
+
+| what changed | at 1.0.0 | now | landed at |
+| --- | --- | --- | --- |
+| `Span.animation` | `animation: Animation` | `entry: Entry` | 1.5.0 |
+| `CanvasLike` | neither `rect` nor `clip` | both, required | 1.6.0 |
+| `PaintNode` | no `append` | required | the polish |
+| `Stroke.width` | `number` | `number \| Taper` | 1.3.0 |
+
+**A fifth is worse for being silent.** `Fill.gradient` and `Mark.clip` are new optional fields, so a
+consumer painting marks with a painter of its own ignores them and draws the wrong picture with no
+error, which is the failure `figure/mark.ts` opens by refusing.
+
+**Why the number is 1.6.0 anyway.** 2.0.0 is reserved for the figure format in three documents, one
+in each repository the change crosses, and taking it here moves the format to 3.0.0 for a break no
+consumer feels. Nothing on npm is above 1.0.0 and the only consumer is on 0.6.0, so its next move
+crosses 1.0.0's own major whatever this one is called. **What would change the answer** is a second
+consumer adopting 1.0.0 from npm, which would be someone the number misleads.
+
+**The consumer's own plan was wrong about this and is corrected.** Its roadmap said the first move is
+a door read name by name at 1.0.0, ten names renamed and two removed. It is that and these four.
+
 **1.6.0 is cut, and a mark may be drawn inside a rectangle.** Four steps and a fifth found while
 working closed it. A clip is a rectangle and no other shape: a path clip needs a winding number
 counted, which is a stencil on a card, where a box is the scissor test every device already has. Both
