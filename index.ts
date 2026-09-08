@@ -91,8 +91,18 @@ export type { StreamlineOptions } from './figure/streamline.js';
 export type { VectorFieldOptions } from './figure/field.js';
 export { axes, numberLine, numberPlane } from './figure/axis.js';
 export type { AxesOptions, NumberLineOptions, NumberPlaneOptions } from './figure/axis.js';
-export { camera3, orthographic, perspective } from './figure/camera.js';
-export type { Camera3, Camera3Choice, OrthographicChoice, PerspectiveChoice, Projected, Projection } from './figure/camera.js';
+export { camera3, orthographic, perspective, resolveProjection } from './figure/camera.js';
+export type {
+  Camera3,
+  Camera3Choice,
+  OrthographicChoice,
+  PerspectiveChoice,
+  Projected,
+  Projection,
+  ProjectionChoice,
+} from './figure/camera.js';
+export { resolveCamera, resolvePoint3 } from './figure/camera-record.js';
+export type { Camera3Record, Point3Record } from './figure/camera-record.js';
 export { arrow3, dot3, polyline3, scene3, text3 } from './figure/space.js';
 export type { Arrow3Options, Polyline3Options, SpaceItem, Text3Options } from './figure/space.js';
 export { fieldArrows3, vectorField3 } from './figure/field3.js';

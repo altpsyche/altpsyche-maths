@@ -683,14 +683,31 @@ release away and has a document of its own.
     field that reads as a number refused with the sentence naming it; the suite from 870 to 877 and
     the door from 300 names to 303.
 
-  - [ ] **3.9 The camera as parameters rather than a closure.** A figure stores a `Camera3Choice` and
-    the resolver builds the `Camera3`, since the built one carries `project` and its `Projection`
-    carries `place`. The solid demo's orbit is where the expression form meets a track for the second
-    time. **Measures:** the solid demo's marks at each of the four times its strip draws, through a
-    stored choice rather than a built camera. **This step and step 7 are also where composition and
-    camera lands**, which is one of the four things Siva named as looking worse than 3Blue1Brown, so
-    the solid demo's orbit gains a held beat at the face of the saddle and the commit quotes the
-    seconds it holds.
+  - [x] **3.9 The camera as parameters rather than a closure.** A figure stores a `Camera3Record` and
+    `resolveCamera` builds the `Camera3`, since the built one carries `project` and its `Projection`
+    carries `place`. `ProjectionChoice` is `perspective` or `orthographic` with the parameters its
+    own builder already takes, and `resolveProjection` reads one. The solid demo's orbit is where the
+    expression form meets a track for the second time.
+    **A place in space is three expressions rather than one**, because the expression form is over
+    numbers and points on the page and has no value for a place in space. Three expressions write the
+    orbit directly, since the eye is a cosine and a sine of one track, and widening the field later
+    to accept a single expression as well costs a minor rather than a major, so this does not
+    foreclose a 3-D value in the vocabulary. A plain `Vec3` is a `Point3Record` already.
+    **Measured:** the solid demo's camera at each of the four times its strip draws and each of its
+    four named times, placing five points spread through the box the saddle stands in, agreeing with
+    the built camera to twelve places across, up and in depth, and on whether each point is in front;
+    the eye at 4.6 and 0 across at the start of the orbit and 0 and 4.6 a quarter round; either
+    projection built from its own parameters, an orthographic at a scale of 2 placing (1.5, -0.5, -9)
+    at (3, -1) with its near plane at negative infinity; a projection the set has no entry for and a
+    place in space whose x reads as a point each refused with the sentence naming it; the suite from
+    877 to 884 and the door from 303 names to 309.
+
+  - [ ] **3.9b Composition and camera, which is a look rather than a vocabulary.** The solid demo's
+    orbit gains a held beat at the face of the saddle, and the commit quotes the seconds it holds.
+    **This is Siva's call and not a session's**, because it changes the pacing of a published demo and
+    the sheets it draws, where every other step of this plan holds them byte for byte. What is wanted
+    is the seconds the beat holds and where in the orbit it sits. **Step 7 carries the other half**,
+    which is the extent as data.
 
   - [ ] **3.10 The space nodes.** `polyline3`, `dot3`, `text3`, `arrow3`, `scene3` and `axes3`.
     **Measures:** the solid demo's axes and polylines at its named times; `dot3`, `text3` and

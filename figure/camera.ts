@@ -94,6 +94,24 @@ export type Camera3Choice = {
   projection?: Projection;
 };
 
+/**
+ * A projection written as data: which of the two, with the parameters its own
+ * builder takes.
+ *
+ * A built `Projection` carries `place`, which is a function, so a figure stores
+ * the choice and a resolver builds the projection.
+ */
+export type ProjectionChoice =
+  | ({ readonly kind: 'perspective' } & PerspectiveChoice)
+  | ({ readonly kind: 'orthographic' } & OrthographicChoice);
+
+/** The projection a choice names. */
+export function resolveProjection(choice: ProjectionChoice): Projection {
+  if (choice.kind === 'orthographic') return orthographic(choice);
+  if (choice.kind === 'perspective') return perspective(choice);
+  throw new Error(`a projection has no form called ${String((choice as { kind?: unknown }).kind)}`);
+}
+
 /** Where a point in space landed, how far off it is, and whether the eye can see
  * it at all. */
 export type Projected = {

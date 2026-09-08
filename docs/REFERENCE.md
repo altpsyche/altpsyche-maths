@@ -746,6 +746,19 @@ functions, which is what lets the same tree survive being written to a file and 
     by this rather than by the straight-line distance to the eye.
   - `inFront` — whether the point is further off than the near plane. A point that is not is still
     given a place, and that place is meaningless.
+- `ProjectionChoice` — a projection written as data: a `kind` of `perspective` or `orthographic`, with
+  the parameters its own builder takes. A built `Projection` carries `place`, which is a function, so a
+  figure stores the choice.
+- `resolveProjection(choice)` — the projection a choice names. A form outside the set is refused with
+  a sentence naming it.
+- `Point3Record` — a place in space whose `x`, `y` and `z` may each follow a track. A plain `Vec3` is
+  one already, since a bare number is a literal. It is three expressions rather than one because the
+  expression form is over numbers and points on the page and has no value for a place in space.
+- `Camera3Record` — a camera written as data: an `eye`, a `target`, an optional `up` as
+  `Point3Record`s, and an optional `projection` as a `ProjectionChoice`.
+- `resolvePoint3(record, bindings, what)` — a place in space read out of its three expressions.
+- `resolveCamera(record, bindings)` — the camera a record describes, built at the time its expressions
+  are read for.
 
 ## Drawing in space
 

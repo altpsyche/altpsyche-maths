@@ -458,9 +458,15 @@ Step 3.7 added `equationNode`, and an `Equation` stays resolved geometry rather 
 typesets, so the flat demo's two rules draw glyph for glyph from records at 32,936 and 42,224 bytes
 written out. Step 3.8 added `vectorField`, whose field is an expression of a place and whose arrow
 length is an expression of a magnitude, with `ColourChoice` for the one thing the expression
-vocabulary has no form for. The door is 303 names and the suite is 877 tests over 56 files. **Step
-3.9 is what runs next**, which is the camera as a `Camera3Choice` rather than a closure, and it is
-also where composition and camera lands.
+vocabulary has no form for. Step 3.9 added `Camera3Record`, `ProjectionChoice` and the two resolvers,
+so the solid demo's orbit is a cosine and a sine of one track and its camera places every point where
+the built one does. The door is 309 names and the suite is 884 tests over 57 files.
+
+**Step 3.9b is a look and it is Siva's**, which is the held beat the solid demo's orbit gains at the
+face of the saddle: it changes a published demo's pacing and the sheets it draws, where every other
+step of this plan holds them byte for byte. What is wanted is the seconds the beat holds and where in
+the orbit it sits. **Step 3.10 is what a session runs next**, which is `polyline3`, `dot3`, `text3`,
+`arrow3`, `scene3` and `axes3`.
 
 **Two things fall due before the format freezes and both are Siva's**, which are
 whether a `Mark` may be a raster image, due by step 3 where the node vocabulary lands, and the

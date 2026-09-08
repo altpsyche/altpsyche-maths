@@ -235,7 +235,7 @@ const PANES = 4;
  * picture, and the tips of the axes and their numbers reach past it, so handing
  * the camera the extent's own height would carry them off the top and bottom.
  */
-const FRAME = 5;
+export const FRAME = 5;
 
 /**
  * Which way the light comes from, over the shoulder and to one side.
