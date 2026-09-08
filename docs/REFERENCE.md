@@ -58,18 +58,29 @@ that two can be interpolated.
 
 ## Easing curves
 
-Each curve maps the interval 0 to 1 onto itself, so the caller fixes the values at both ends and
-the curve fixes only the pace between them.
+Each curve takes how far through a span the clock is, from 0 to 1, so the caller fixes the values at
+both ends and the curve fixes only the pace between them. Four of the six are monotone, which means
+the value never turns back. `overshoot` passes 1 before settling on it and `thereAndBack` returns to
+0, so those two are named rather than chosen from a pair of flat flags.
 
 - `Curve` — a function from how far through a span the clock is to how far through the change the
   value is.
+- `CurveName` — the name of any curve this package holds, which is the closed set a figure as data
+  may name.
 - `linear` — no easing: the value moves at one rate the whole way.
 - `easeIn` — quadratic, flat at the start, so the value leaves from rest and arrives at speed.
 - `easeOut` — quadratic, flat at the end, so the value leaves at speed and settles rather than
   stopping dead.
 - `smoothstep` — the cubic that is flat at both ends, Ken Perlin.
-- `curveFor(fromFlat, toFlat)` — the curve for a span whose ends are flat or not. This is the only
-  place the four are chosen between, so a track and a timeline pace a change the same way.
+- `overshoot` — the back ease out, Robert Penner: the value passes its destination and comes back to
+  it, peaking at 1.100004 of the change 0.580103 of the way through.
+- `thereAndBack` — a smoothstep over each half, so the value reaches its destination halfway through
+  and is 0 at 1 rather than 1.
+- `curveFor(fromFlat, toFlat)` — the curve for a span whose ends are flat or not. This is where the
+  four monotone curves are chosen between, so a track and a timeline pace a change the same way.
+- `curveNamed(name)` — the curve a `CurveName` stands for.
+- `nameOfCurve(curve)` — the name of a curve, or `undefined` for one a caller wrote itself, which is
+  what a writer checks before it claims a figure is expressible as data.
 
 ## Vectors
 

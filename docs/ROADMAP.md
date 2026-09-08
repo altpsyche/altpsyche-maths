@@ -461,10 +461,23 @@ should snap and a change that should settle are both smoothstep. Sixteen entries
 `curveFor(fromFlat, toFlat)` is the only place they are chosen between. A `Key` says whether it is
 flat and nothing more, so a track cannot name its own curve and no figure can overshoot or come back.
 
-- [ ] **1. The easing vocabulary widened and named.** The four that exist, plus an overshoot and a
+- [x] **1. The easing vocabulary widened and named.** The four that exist, plus an overshoot and a
   there-and-back, each a pure function of zero to one and each named so the format can carry a name
   rather than a closure. **Measures:** each curve at eleven inputs against its closed form;
-  `curveFor`'s four answers unchanged; the door from 230 names.
+  `curveFor`'s four answers unchanged; the door from 235 names, which is what it held rather than the
+  230 written here before 1.1.0 landed.
+
+  **Landed.** Six curves from four. `overshoot` is Robert Penner's back ease out with his constant
+  1.70158, which peaks at 1.100004 of the change 0.580103 of the way through, both from the closed
+  forms 1 + 4c³/(27(c+1)²) and 1 - 2c/(3(c+1)). `thereAndBack` is a smoothstep over each half, so it
+  reaches 1 at the midpoint and is 0 at 1, and it is the only member whose value at one end is not
+  one. Neither can come from a flat flag, which is why the set is named: `CurveName` is the closed
+  set, `curveNamed` reads it and `nameOfCurve` writes it back, so a timeline written to a file names
+  its pacing instead of holding a closure. `curveFor` is untouched and answers its four pairings with
+  `linear`, `easeIn`, `easeOut` and `smoothstep` as it did. Each of the six agrees with a closed form
+  restated in the test at eleven inputs to ten decimal places. The door went from 235 names to 240
+  and the suite from 652 tests to 658. The eight sheets are byte-identical, since no demo names a
+  curve yet and step 3 is where they do.
 
 - [ ] **2. A key names its own curve.** A `Key` carries a curve rather than only a flat flag, and
   `curveFor` stays the answer for a key that does not. **Measures:** a track keyed with each curve

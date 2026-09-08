@@ -6,6 +6,7 @@ import {
   clamp,
   curveCrossings,
   curveFor,
+  curveNamed,
   easeIn,
   easeOut,
   flattenPath,
@@ -14,7 +15,9 @@ import {
   lerp,
   mat3,
   mat4,
+  nameOfCurve,
   nearestEdge,
+  overshoot,
   pointOn,
   rect,
   remap,
@@ -22,12 +25,13 @@ import {
   smoothstep,
   splitCurve,
   straight,
+  thereAndBack,
   vec2,
   vec3,
   windingAt,
   withKey,
 } from '@altpsyche/maths';
-import type { Mat4, Vec3 } from '@altpsyche/maths';
+import type { Curve, CurveName, Mat4, Vec3 } from '@altpsyche/maths';
 
 /**
  * The values half, which has no clock and no screen in it. Every curve is
@@ -59,19 +63,68 @@ describe('scalar', () => {
   });
 });
 
+const ELEVEN = [0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1];
+
+/** The back ease's own constants, written out here rather than imported, so the
+ * test is a second statement of the closed form and not a copy of the first. */
+const BACK = 1.70158;
+
+const CLOSED_FORMS: Record<CurveName, (along: number) => number> = {
+  linear: (along) => along,
+  easeIn: (along) => Math.pow(along, 2),
+  easeOut: (along) => 1 - Math.pow(1 - along, 2),
+  smoothstep: (along) => 3 * Math.pow(along, 2) - 2 * Math.pow(along, 3),
+  overshoot: (along) => 1 + (BACK + 1) * Math.pow(along - 1, 3) + BACK * Math.pow(along - 1, 2),
+  thereAndBack: (along) => {
+    const half = along <= 0.5 ? along * 2 : 2 - along * 2;
+    return 3 * Math.pow(half, 2) - 2 * Math.pow(half, 3);
+  },
+};
+
 describe('curves', () => {
-  it('separates at the midpoint, which is the whole reason there are four', () => {
+  it('separates at the midpoint, which is the whole reason there are six', () => {
     expect(linear(0.5)).toBeCloseTo(0.5, 10);
     expect(easeIn(0.5)).toBeCloseTo(0.25, 10);
     expect(easeOut(0.5)).toBeCloseTo(0.75, 10);
     expect(smoothstep(0.5)).toBeCloseTo(0.5, 10);
+    expect(overshoot(0.5)).toBeCloseTo(1.0876975, 7);
+    expect(thereAndBack(0.5)).toBeCloseTo(1, 10);
   });
 
-  it('starts at zero and ends at one whichever curve it is', () => {
-    for (const curve of [linear, easeIn, easeOut, smoothstep]) {
-      expect(curve(0)).toBeCloseTo(0, 10);
-      expect(curve(1)).toBeCloseTo(1, 10);
+  it('agrees with its closed form at eleven inputs', () => {
+    for (const [name, closed] of Object.entries(CLOSED_FORMS)) {
+      for (const along of ELEVEN) {
+        expect(curveNamed(name as CurveName)(along)).toBeCloseTo(closed(along), 10);
+      }
     }
+  });
+
+  it('starts at zero and ends where its own shape says', () => {
+    for (const name of Object.keys(CLOSED_FORMS) as CurveName[]) {
+      expect(curveNamed(name)(0)).toBeCloseTo(0, 10);
+      expect(curveNamed(name)(1)).toBeCloseTo(name === 'thereAndBack' ? 0 : 1, 10);
+    }
+  });
+
+  it('passes its destination only where a curve is meant to', () => {
+    for (const name of Object.keys(CLOSED_FORMS) as CurveName[]) {
+      const highest = Math.max(...ELEVEN.map((along) => curveNamed(name)(along)));
+      if (name === 'overshoot') expect(highest).toBeGreaterThan(1);
+      else expect(highest).toBeLessThanOrEqual(1 + TOLERANCE);
+    }
+  });
+
+  it('peaks past the end by a hundredth part and a bit, where the back constant puts it', () => {
+    const at = 1 - (2 * BACK) / (3 * (BACK + 1));
+    expect(at).toBeCloseTo(0.580103, 6);
+    expect(overshoot(at)).toBeCloseTo(1.100004, 6);
+    expect(overshoot(at)).toBeCloseTo(1 + (4 * Math.pow(BACK, 3)) / (27 * Math.pow(BACK + 1, 2)), 10);
+  });
+
+  it('turns at the top and comes back to where it started', () => {
+    expect(thereAndBack(0.25)).toBeCloseTo(0.5, 10);
+    expect(thereAndBack(0.75)).toBeCloseTo(0.5, 10);
+    expect(thereAndBack(1)).toBeCloseTo(0, 10);
   });
 
   it('picks the curve from which ends are flat', () => {
@@ -79,6 +132,21 @@ describe('curves', () => {
     expect(curveFor(true, false)(0.5)).toBeCloseTo(0.25, 10);
     expect(curveFor(false, true)(0.5)).toBeCloseTo(0.75, 10);
     expect(curveFor(true, true)(0.25)).toBeCloseTo(0.15625, 10);
+  });
+
+  it('answers the four flat pairings with the four monotone curves', () => {
+    expect(nameOfCurve(curveFor(false, false))).toBe('linear');
+    expect(nameOfCurve(curveFor(true, false))).toBe('easeIn');
+    expect(nameOfCurve(curveFor(false, true))).toBe('easeOut');
+    expect(nameOfCurve(curveFor(true, true))).toBe('smoothstep');
+  });
+
+  it('names every curve it holds and nothing a caller wrote itself', () => {
+    for (const name of Object.keys(CLOSED_FORMS) as CurveName[]) {
+      expect(nameOfCurve(curveNamed(name))).toBe(name);
+    }
+    const written: Curve = (along) => Math.sqrt(along);
+    expect(nameOfCurve(written)).toBeUndefined();
   });
 });
 
