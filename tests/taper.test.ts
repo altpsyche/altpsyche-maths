@@ -1,10 +1,14 @@
 import { describe, expect, it } from 'vitest';
 import {
+  Timeline,
   areaOf,
+  draw,
   flatten,
   flattenPath,
   group,
   line,
+  linear,
+  marksAt,
   mat3,
   nearestEdge,
   outlinePath,
@@ -13,11 +17,12 @@ import {
   shape,
   svgMarkup,
   tangentAt,
+  trimPath,
   vec2,
   widestWidth,
   widthAt,
 } from '@altpsyche/maths';
-import type { Mark, Taper } from '@altpsyche/maths';
+import type { Figure, Mark, Taper } from '@altpsyche/maths';
 import { coords, curve } from '../demos/tangent.js';
 
 /**
@@ -153,5 +158,41 @@ describe('a tapered stroke on its way to a painter', () => {
     const markup = svgMarkup([tapered()], mat3.IDENTITY, 10, 10);
     expect(markup).not.toContain('stroke-width');
     expect(markup).toContain('fill="#e00"');
+  });
+});
+
+describe('a tapered stroke drawn on', () => {
+  const width: Taper = { from: 0.4, to: 0 };
+  const path = line(vec2(0, 0), vec2(2, 0));
+  const figure: Figure = {
+    extent: { width: 4, height: 2 },
+    still: 1,
+    scene: shape('line', path, { stroke: { colour: '#e00', width } }),
+    timeline: Timeline.empty().play(draw('line'), 1, { curve: linear }),
+  };
+
+  it('trims the centreline and outlines what is left, at eleven fractions', () => {
+    for (let place = 0; place <= 10; place++) {
+      const along = place / 10;
+      const mark = marksAt(figure, along)[0];
+      if (mark?.kind !== 'path') throw new Error('a drawn outline is a path');
+      const want = outlinePath(trimPath(path, along), width);
+      expect(mark.path).toHaveLength(want.length);
+      expect(Math.abs(areaOf(mark.path))).toBeCloseTo(Math.abs(areaOf(want)), 12);
+    }
+  });
+
+  it('keeps the drawn end closed, which trimming the outline would open', () => {
+    // The taper runs over the length that has been drawn, so half a line of
+    // length 2 tapering from 0.4 to nothing covers the 0.2 of Lw/2 over the 1
+    // that exists. Trimming the outline instead walks half way round the loop
+    // and leaves the shape open along one side.
+    const half = marksAt(figure, 0.5)[0];
+    if (half?.kind !== 'path') throw new Error('a drawn outline is a path');
+    expect(half.path[0].closed).toBe(true);
+    expect(Math.abs(areaOf(half.path))).toBeCloseTo(0.2, 12);
+    const opened = trimPath(outlinePath(path, width), 0.5);
+    expect(opened[0].closed).toBe(false);
+    expect(Math.abs(areaOf(opened))).not.toBeCloseTo(0.2, 3);
   });
 });

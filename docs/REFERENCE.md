@@ -284,7 +284,8 @@ A track is one value's keys over time. A control panel writes tracks and a figur
 - `widestWidth(width)` — the widest a stroke gets, which is the number a caller that has to pick one
   reads. A tick standing on an axis is measured against the line it stands on.
 - `outlinedMarks(marks)` — the marks a painter draws, with every tapered stroke turned into the
-  filled outline it is drawn as. A mark whose stroke is one width is handed back as it stands, so a
+  filled outline it is drawn as. `marksAt` runs it after the timeline, so the outline is in the marks
+  a gate reads rather than only in what a painter writes. A mark whose stroke is one width is handed back as it stands, so a
   list with no taper comes out unchanged and running it twice changes nothing. A shape carrying a
   fill as well leaves two marks, the fill under its own id and the outline under that id with
   `/stroke` on the end. Both painters run this over the marks they are given.
@@ -741,7 +742,9 @@ a group of that name.
   - `loop` — whether it ends where it began, which a recording can loop without a jump. `isLoop` is
     what holds that rather than trust.
 - `TrackValues` — every sampled value by name, which is what a scene function is handed.
-- `marksAt(figure, seconds)` — the marks a figure shows at a time.
+- `marksAt(figure, seconds)` — the marks a figure shows at a time. A tapered stroke is turned into
+  its filled outline after the timeline has run, so an animation that trims a path trims the
+  centreline and the outline follows it.
 - `viewAt(figure, seconds, width, height)` — the matrix a painter needs at a time, in one call. A
   figure whose extent is a function of the clock has to be asked for its extent at the time its
   marks were asked for. Writing that as two calls has two chances to pass different times.

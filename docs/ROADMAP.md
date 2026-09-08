@@ -548,9 +548,22 @@ than trim the outline and open it.
   The door went from 242 names to 247 and the suite from 682 tests to 697 over 43 files. Nothing in
   the demos tapers yet, so the eight sheets are byte-identical.
 
-- [ ] **3. `draw` over an outlined stroke.** The centreline is trimmed and re-outlined, so a tapered
+- [x] **3. `draw` over an outlined stroke.** The centreline is trimmed and re-outlined, so a tapered
   line draws on from one end. **Measures:** the outlined mark at eleven fractions of `draw` against
   the outline of the trimmed centreline, within tolerance.
+
+  **Landed.** `marksAt` outlines after the timeline has run, so a mark carries the outline and an
+  animation still sees the centreline. At all eleven fractions of `draw` over a line of length 2
+  tapering from 0.4 to nothing, the mark's path holds the same number of loops as the outline of the
+  trimmed centreline and covers the same area to 1e-12. The taper runs over the length that has been
+  drawn, so the area at a fraction f is 0.4f: at a half it is 0.2, which is the Lw/2 of the 1 that
+  exists rather than of the 2 that will. Trimming the outline instead leaves the loop open along one
+  side, and that shape covers 0.0398015 where the outline of the trimmed centreline covers 0.2.
+
+  Both painters keep the same pass, which a list of marks from a figure comes out of unchanged, so a
+  mark built by hand and handed straight to a painter still draws. The suite went from 697 tests to
+  699 and the door is unchanged at 247, since where a call is made is not a name. The eight sheets
+  are byte-identical.
 
 - [ ] **4. The demos taper.** The flat demo's tangent and the solid demo's three runs of descent.
   **Measures:** the mark count and the bytes of each affected sheet, re-committed with both numbers

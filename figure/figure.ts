@@ -11,6 +11,7 @@
  */
 import { sampleTracks, type TrackValue, type Tracks } from '../timing/track.js';
 import { flatten, type Node } from './node.js';
+import { outlinedMarks } from './outline.js';
 import { Timeline } from './timeline.js';
 import { resolveExtent, viewMatrix, type ExtentChoice, type Fit } from './extent.js';
 import type { Mat3 } from '../values/mat3.js';
@@ -54,7 +55,11 @@ export function marksAt(figure: Figure, seconds: number): readonly Mark[] {
   const values = figure.tracks ? sampleTracks(figure.tracks, seconds) : {};
   const tree = typeof figure.scene === 'function' ? figure.scene(seconds, values) : figure.scene;
   const marks = flatten(tree);
-  return figure.timeline ? figure.timeline.at(marks, seconds) : marks;
+  const played = figure.timeline ? figure.timeline.at(marks, seconds) : marks;
+  // The outline is taken after the timeline has run, so an animation that trims a
+  // path trims the centreline and the outline follows it rather than being opened
+  // up along one side.
+  return outlinedMarks(played);
 }
 
 /**
