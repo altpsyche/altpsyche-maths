@@ -26,17 +26,32 @@ export interface SvgElement {
   text?: string;
 }
 
+/** One colour for each of the two grounds a sheet is read on. */
+export interface SvgColour {
+  light: string;
+  dark: string;
+}
+
 /** A colour per ground for one CSS custom property. A mark painted with
  * `var(--name, colour)` takes the value of the ground it is read on, and the
  * colour written inside the `var()` is what it falls back to. */
 export interface SvgTheme {
-  [property: string]: { light: string; dark: string };
+  [property: string]: SvgColour;
 }
 
 export interface SvgMarkupOptions {
   /** Written into the markup as a `<style>` element, so one file is read on a
    * light page and a dark one with no script and no page CSS. */
   theme?: SvgTheme;
+  /**
+   * What the sheet paints behind its own marks, one colour per ground.
+   *
+   * Inside an `<img>` the colour scheme query answers for the browser and not
+   * for the page around it, so a dark half chosen on a light page lands on a
+   * ground it was never measured against. A sheet that paints the ground it was
+   * measured on holds its readings wherever it is shown.
+   */
+  ground?: SvgColour;
   /**
    * The smallest font size written, in the units painted into rather than in
    * figure units. A view that fits a wide extent scales every figure unit down,
@@ -139,19 +154,27 @@ function plainValue(value: string): boolean {
 }
 
 /**
- * The theme as a `<style>` element, the light ground on `:root` and the dark one
- * behind `prefers-color-scheme`.
+ * The theme and the ground as a `<style>` element, the light half on `:root` and
+ * the dark one behind `prefers-color-scheme`.
  *
  * An entry whose name or either colour would need escaping is left out, which
  * leaves the mark on the colour written inside its own `var()` rather than on a
- * value that could close the element.
+ * value that could close the element. A ground either colour of which would need
+ * escaping is dropped whole, since half a ground is a sheet painted on white by
+ * accident.
  */
-function themeStyle(theme: SvgTheme): string {
-  const names = Object.keys(theme).filter(
-    (name) => PROPERTY.test(name) && plainValue(theme[name].light) && plainValue(theme[name].dark)
-  );
-  if (names.length === 0) return '';
-  const block = (ground: 'light' | 'dark') => names.map((name) => `--${name}:${theme[name][ground]}`).join(';');
+function themeStyle(theme: SvgTheme | undefined, ground: SvgColour | undefined): string {
+  const names = theme
+    ? Object.keys(theme).filter(
+        (name) => PROPERTY.test(name) && plainValue(theme[name].light) && plainValue(theme[name].dark)
+      )
+    : [];
+  const painted = ground && plainValue(ground.light) && plainValue(ground.dark) ? ground : undefined;
+  if (names.length === 0 && painted === undefined) return '';
+  const block = (side: 'light' | 'dark') => {
+    const properties = theme ? names.map((name) => `--${name}:${theme[name][side]}`) : [];
+    return [...properties, ...(painted ? [`background:${painted[side]}`] : [])].join(';');
+  };
   return `<style>:root{${block('light')}}@media(prefers-color-scheme:dark){:root{${block('dark')}}}</style>`;
 }
 
@@ -168,7 +191,7 @@ export function svgMarkup(
   height: number,
   options: SvgMarkupOptions = {}
 ): string {
-  const style = options.theme ? themeStyle(options.theme) : '';
+  const style = themeStyle(options.theme, options.ground);
   const body = svgElements(marks, view, options)
     .map((element) => {
       const attributes = Object.entries(element.attributes)

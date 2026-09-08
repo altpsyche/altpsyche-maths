@@ -102,6 +102,20 @@ describe('the committed pictures', () => {
     }
   });
 
+  it('paint the ground each half of the theme was measured against', () => {
+    // Inside an `<img>` the colour scheme query answers for the browser rather
+    // than for the page, so a sheet that paints no ground can land its dark half
+    // on a light page. Every reading colour falls under 2.81:1 when it does.
+    for (const sheet of sheets) {
+      const style = sheet.markup();
+      const [light, dark] = style
+        .slice(style.indexOf('<style>'), style.indexOf('</style>'))
+        .split('@media(prefers-color-scheme:dark)');
+      expect(light).toContain(`background:${GROUND.light}`);
+      expect(dark).toContain(`background:${GROUND.dark}`);
+    }
+  });
+
   it('draw no glyph under the floor on the page, and leave every still where it was', () => {
     // A sheet scales from its view box, so the width the page shows it at is what
     // turns a written size into a size a reader sees.
@@ -942,6 +956,16 @@ describe("the demos' palette", () => {
         expect(contrast(THEME[name][ground], GROUND[ground])).toBeGreaterThan(1.1);
       }
     }
+  });
+
+  it('leaves every reading colour unreadable on the ground it was not measured against', () => {
+    // What a sheet painting no ground of its own can be shown on, since the
+    // colour scheme query inside an `<img>` answers for the browser.
+    const onLight = READING.map((name) => contrast(THEME[name].dark, GROUND.light));
+    const onDark = READING.map((name) => contrast(THEME[name].light, GROUND.dark));
+    expect(Math.max(...onLight)).toBeLessThan(2.81);
+    expect(Math.max(...onDark)).toBeLessThan(3.92);
+    expect(contrast(THEME.ink.dark, GROUND.light)).toBeCloseTo(1.19, 2);
   });
 
   // No luminance clears 4.5:1 against both grounds at once, which is why a colour

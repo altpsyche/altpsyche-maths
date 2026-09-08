@@ -11,8 +11,11 @@
  * clear 4.5:1 against white a colour needs a relative luminance of 0.183333 or
  * less, and to clear it against `#0d1117` it needs 0.199675 or more. Every
  * colour is painted as `var(--name, light)`, so a sheet carrying the theme takes
- * the value of the ground it is read on and a sheet whose style element was
- * stripped falls back to the light value it shipped with.
+ * the half the reader's colour scheme asks for and a sheet whose style element
+ * was stripped falls back to the light value it shipped with. Each sheet paints
+ * the matching ground behind itself, since inside an `<img>` that scheme answers
+ * for the browser and not for the page, and a half landing on the other ground
+ * reads at 1.19:1 where it was measured at 15.87:1.
  *
  * Anything a reader takes a value or a label off clears 4.5:1 against both
  * grounds, and the rest are washes and fields that carry no reading of their
@@ -35,7 +38,8 @@ export const THEME = {
   moss: { light: '#15803d', dark: '#3ec46d' },
 } as const;
 
-/** The grounds the two halves of the theme are measured against. */
+/** The grounds the two halves of the theme are measured against, and what each
+ * sheet paints behind its own marks so the measurement holds where it is shown. */
 export const GROUND = { light: '#ffffff', dark: '#0d1117' } as const;
 
 /** One colour as a mark takes it, with the light value written in as what it

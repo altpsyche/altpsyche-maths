@@ -185,6 +185,38 @@ describe('svg', () => {
   });
 });
 
+describe('the style a sheet carries', () => {
+  const theme = { ink: { light: '#1b1b1b', dark: '#ebebeb' } };
+  const ground = { light: '#ffffff', dark: '#0d1117' };
+  const styleOf = (markup: string) => markup.slice(markup.indexOf('<style>'), markup.indexOf('</style>'));
+
+  it('writes each half of the theme against the ground it was measured on', () => {
+    const style = styleOf(svgMarkup(marks, view, 200, 100, { theme, ground }));
+    const [light, dark] = style.split('@media(prefers-color-scheme:dark)');
+    expect(light).toContain('--ink:#1b1b1b');
+    expect(light).toContain('background:#ffffff');
+    expect(dark).toContain('--ink:#ebebeb');
+    expect(dark).toContain('background:#0d1117');
+  });
+
+  it('paints a ground with no theme beside it', () => {
+    const style = styleOf(svgMarkup(marks, view, 200, 100, { ground }));
+    expect(style).toContain('background:#ffffff');
+    expect(style).toContain('background:#0d1117');
+    expect(style).not.toContain('--');
+  });
+
+  it('writes no style element when neither is given', () => {
+    expect(svgMarkup(marks, view, 200, 100, { theme: {} }).includes('<style>')).toBe(false);
+  });
+
+  it('drops a ground whole when one half would close the element', () => {
+    const markup = svgMarkup(marks, view, 200, 100, { theme, ground: { light: '#fff', dark: '}</style>' } });
+    expect(markup).not.toContain('background');
+    expect(markup).toContain('--ink:#ebebeb');
+  });
+});
+
 describe('canvas', () => {
   it('wraps every mark so a dash or an opacity cannot leak into the next one', () => {
     const recorder = new Recorder();

@@ -17,7 +17,7 @@ import {
   type Mark,
   type Mat3,
 } from '../index.js';
-import { SHADE_THEME, THEME } from './palette.js';
+import { GROUND, SHADE_THEME, THEME } from './palette.js';
 import { FRAMES, stripMarks, tangent } from './tangent.js';
 import {
   FRAMES as BOOLEAN_FRAMES,
@@ -62,6 +62,7 @@ function writtenFloor(width: number, shownAt: number): number {
 export function stillMarkup(figure: Figure, seconds: number, width = WIDTH, height = HEIGHT): string {
   return svgMarkup(marksAt(figure, seconds), viewAt(figure, seconds, width, height), width, height, {
     theme: SHEET_THEME,
+    ground: GROUND,
     minTextSize: writtenFloor(width, SHOWN_AT),
   });
 }
@@ -120,6 +121,7 @@ function stripDrawn(strip: { marks: readonly Mark[]; extent: Extent }): Drawn {
 export function markupFor(drawn: Drawn): string {
   return svgMarkup(drawn.marks, drawn.matrix, drawn.width, drawn.height, {
     theme: SHEET_THEME,
+    ground: GROUND,
     minTextSize: writtenFloor(drawn.width, drawn.shownAt),
   });
 }

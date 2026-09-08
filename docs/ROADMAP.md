@@ -159,6 +159,15 @@ eight.
 **The lock file agrees with the manifest again**, and holding it there is one
 `npm install --package-lock-only` in whichever commit bumps a version.
 
+**0.14.0 is cut, and a sheet paints the ground it was measured against.** `SvgColour` is the door's
+name for a colour per ground, and `SvgMarkupOptions.ground` is what a sheet paints behind its own
+marks. Inside an `<img>` the colour scheme query answers for the browser rather than for the page
+around it, so npm's white page was shown the dark half: the six reading colours fell from 15.87:1
+through 6.75:1 to 1.19:1 through 2.80:1, and the typeset equation at 1.19:1 was the one a reader
+could not see. A ground is written as a `background` declaration on `:root` in each half of the style
+element rather than as a mark, so the bare-fraction readings of 0.13.0 are untouched. All eight
+sheets grew by 38 bytes. The door went from 229 names to 230 and the suite from 631 tests to 637.
+
 **0.13.0 is cut, and the eight sheets read on a dark page and are worth looking at.** Every colour is
 painted as `var(--name, light)` and `svgMarkup` writes the theme as a `<style>` element, so a sheet
 follows the reader's colour scheme through an `<img>` with no page CSS reaching it. A value per
@@ -178,14 +187,14 @@ the four stills draw text at 17.33, 20.0, 20.8 and 19.32 pixels on the page.
 written into the found list below. The sheet the README opens on no longer clears both readings, and
 the rotation strip draws its frames at two thirds the width the other three do.
 
-**1.0.0 is being worked and sixteen of its seventeen steps are ticked.** The door is 229 names, the
-suite is 631 tests over 40 files, and the four prose surfaces are a 175 line README, a 544 line
-guide, a 792 line reference and a 387 line DESIGN.md. **The next session starts at step 17**, which
+**1.0.0 is being worked and sixteen of its seventeen steps are ticked.** The door is 230 names, the
+suite is 637 tests over 40 files, and the four prose surfaces are a 175 line README, a 544 line
+guide, a 805 line reference and a 387 line DESIGN.md. **The next session starts at step 17**, which
 is one commit once the two open criteria above are answered.
 
 **Every done-criterion below is verified but one, and that one is Siva's.** The three gates pass, the
 lock file agrees with the manifest, `npm run demos` leaves all eight sheets byte for byte as
-committed, the reference has 229 entries against 229 names with a gate holding them equal, the
+committed, the reference has 230 entries against 230 names with a gate holding them equal, the
 README and the guide read at a sentence mean of 16.6 and 15.1 words with none over 30, the guide's
 seventeen code blocks compile in order, no comment in the tree carries a measurement nothing asserts,
 no inline comment run is longer than two lines, and DESIGN.md carries none of the banned phrases. What
