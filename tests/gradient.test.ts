@@ -120,6 +120,8 @@ describe('a gradient painted onto a canvas', () => {
     save() {}
     restore() {}
     beginPath() {}
+    rect() {}
+    clip() {}
     moveTo() {}
     bezierCurveTo() {}
     closePath() {}

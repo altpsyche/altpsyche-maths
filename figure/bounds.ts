@@ -126,3 +126,27 @@ export function boundsOfMarks(marks: readonly Mark[]): Bounds | null {
 export function centreOf(bounds: Bounds): Vec2 {
   return vec2(interval.at(bounds.x, 0.5), interval.at(bounds.y, 0.5));
 }
+
+/**
+ * The box both boxes hold, or nothing where they miss each other.
+ *
+ * Touching along an edge counts as meeting, so a box holds what sits exactly on
+ * its boundary. Refusing that would drop a mark drawn along the edge of its own
+ * clip, which is where an axis usually sits.
+ */
+export function overlapOf(one: Bounds, other: Bounds): Bounds | null {
+  const a = { x: interval.ordered(one.x), y: interval.ordered(one.y) };
+  const b = { x: interval.ordered(other.x), y: interval.ordered(other.y) };
+  const from = vec2(Math.max(a.x.from, b.x.from), Math.max(a.y.from, b.y.from));
+  const to = vec2(Math.min(a.x.to, b.x.to), Math.min(a.y.to, b.y.to));
+  if (from.x > to.x || from.y > to.y) return null;
+  return { x: interval(from.x, to.x), y: interval(from.y, to.y) };
+}
+
+/** The box reaching one margin further out on all four sides, which is what a
+ * stroke of a given width adds to the geometry it is drawn along. */
+export function grownBy(bounds: Bounds, margin: number): Bounds {
+  const x = interval.ordered(bounds.x);
+  const y = interval.ordered(bounds.y);
+  return { x: interval(x.from - margin, x.to + margin), y: interval(y.from - margin, y.to + margin) };
+}

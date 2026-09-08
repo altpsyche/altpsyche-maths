@@ -63,6 +63,8 @@ class Recorder implements CanvasLike {
   save() { this.note('save'); }
   restore() { this.note('restore'); }
   beginPath() { this.note('beginPath'); }
+  rect(x: number, y: number, width: number, height: number) { this.note('rect', x, y, width, height); }
+  clip() { this.note('clip'); }
   moveTo(x: number, y: number) { this.note('moveTo', x, y); }
   bezierCurveTo(a: number, b: number, c: number, d: number, e: number, f: number) { this.note('bezierCurveTo', a, b, c, d, e, f); }
   closePath() { this.note('closePath'); }

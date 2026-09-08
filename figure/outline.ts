@@ -440,6 +440,7 @@ export function outlinedMarks(marks: readonly Mark[]): readonly Mark[] {
       path: outlinePath(mark.path, stroke.width, { cap: stroke.cap, join: stroke.join }),
       fill: { colour: stroke.colour },
       opacity: mark.opacity,
+      clip: mark.clip,
     });
   }
   return drawn;

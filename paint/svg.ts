@@ -14,6 +14,7 @@
  * y axis over, and a mirrored transform mirrors the letters with it.
  */
 import { mat3, type Mat3 } from '../values/mat3.js';
+import { vec2 } from '../values/vec2.js';
 import type { Fill, Mark, PathMark, TextMark } from '../figure/mark.js';
 import type { Path } from '../figure/path.js';
 import { outlinedMarks } from '../figure/outline.js';
@@ -23,10 +24,11 @@ import { short } from './number.js';
 /** One element, described rather than built, so the same description can be
  * written as text or made in a document and the two cannot drift. */
 export interface SvgElement {
-  tag: 'path' | 'text' | 'defs' | 'linearGradient' | 'stop';
+  tag: 'path' | 'text' | 'defs' | 'linearGradient' | 'stop' | 'clipPath' | 'rect';
   attributes: Record<string, string>;
   text?: string;
-  /** The elements inside this one, which is how a gradient carries its stops. */
+  /** The elements inside this one, which is how a gradient carries its stops and
+   * a clip carries its rectangle. */
   children?: readonly SvgElement[];
 }
 
@@ -68,10 +70,10 @@ export interface SvgMarkupOptions {
    */
   minTextSize?: number;
   /**
-   * What every gradient id written here begins with.
+   * What every id written here begins with.
    *
-   * A gradient is named by an element carrying an id, and an id is unique across
-   * a whole document rather than inside one figure. A mark's own id is already
+   * A gradient and a clip are each named by an element carrying an id, and an id
+   * is unique across a whole document rather than inside one figure. A mark's own id is already
    * unique inside its figure and stable frame to frame, so what is left is
    * telling two figures on one page apart, which is this. Two figures in one
    * document want different prefixes.
@@ -98,40 +100,83 @@ export function pathToData(path: Path, view: Mat3): string {
 }
 
 /**
- * The id of the element naming one mark's gradient.
+ * The id of the element naming one thing about one mark.
  *
  * Every character an id may not carry is written as its own code point between
  * dashes, a literal dash included. Nothing is dropped and nothing is folded
  * together, so two mark ids that differ cannot arrive at one id here.
+ *
+ * The suffix is what tells a mark's gradient from its clip, and it cannot be
+ * reached by escaping any mark id: escaping writes a dash only around a code
+ * point, so no mark id becomes text ending in a word after a bare dash.
  */
-function gradientId(prefix: string, mark: string): string {
-  return prefix + mark.replace(/[^A-Za-z0-9_]/g, (letter) => `-${letter.codePointAt(0)!.toString(16)}-`);
+function elementId(prefix: string, mark: string, suffix = ''): string {
+  return prefix + mark.replace(/[^A-Za-z0-9_]/g, (letter) => `-${letter.codePointAt(0)!.toString(16)}-`) + suffix;
 }
 
 /** What a fill is painted with: the element naming its stops where it has them,
  * and its one colour otherwise. */
 function fillPaint(fill: Fill, mark: string, prefix: string): string {
-  return fill.gradient ? `url(#${gradientId(prefix, mark)})` : fill.colour;
+  return fill.gradient ? `url(#${elementId(prefix, mark)})` : fill.colour;
+}
+
+/** What every clip element's id ends with, so one mark's clip and its gradient
+ * are two ids rather than one. */
+const CLIP = '-clip';
+
+/**
+ * One mark's clip as a `<clipPath>` holding a `<rect>`, written in the units
+ * painted into.
+ *
+ * The rectangle is put through the same view the geometry is, and the corners
+ * are taken lowest first afterwards: the view turns the y axis over, so the top
+ * of the box in figure units is the smaller number on the surface and a width
+ * worked out before the flip would come out negative.
+ */
+function clipElement(mark: Mark, view: Mat3, prefix: string): SvgElement | null {
+  if (!mark.clip) return null;
+  const one = mat3.transformPoint(view, vec2(mark.clip.x.from, mark.clip.y.from));
+  const other = mat3.transformPoint(view, vec2(mark.clip.x.to, mark.clip.y.to));
+  const x = Math.min(one.x, other.x);
+  const y = Math.min(one.y, other.y);
+  return {
+    tag: 'clipPath',
+    attributes: { id: elementId(prefix, mark.id, CLIP), clipPathUnits: 'userSpaceOnUse' },
+    children: [
+      {
+        tag: 'rect',
+        attributes: {
+          x: short(x),
+          y: short(y),
+          width: short(Math.abs(other.x - one.x)),
+          height: short(Math.abs(other.y - one.y)),
+        },
+      },
+    ],
+  };
 }
 
 /**
- * Every gradient named once, inside the one `<defs>` the sheet carries.
+ * Every gradient and every clip named once, inside the one `<defs>` the sheet
+ * carries.
  *
- * The axis is written in the units painted into rather than the figure's own,
- * which is what `userSpaceOnUse` means, so the same view that moved the geometry
- * moves the axis with it.
+ * Both are written in the units painted into rather than the figure's own, which
+ * is what `userSpaceOnUse` means, so the same view that moved the geometry moves
+ * them with it.
  */
 function defsElement(marks: readonly Mark[], view: Mat3, prefix: string): SvgElement | null {
-  const gradients: SvgElement[] = [];
+  const named: SvgElement[] = [];
   for (const mark of marks) {
+    const clip = clipElement(mark, view, prefix);
+    if (clip) named.push(clip);
     const gradient = mark.kind === 'path' || mark.kind === 'text' ? mark.fill?.gradient : undefined;
     if (!gradient) continue;
     const from = mat3.transformPoint(view, gradient.from);
     const to = mat3.transformPoint(view, gradient.to);
-    gradients.push({
+    named.push({
       tag: 'linearGradient',
       attributes: {
-        id: gradientId(prefix, mark.id),
+        id: elementId(prefix, mark.id),
         gradientUnits: 'userSpaceOnUse',
         x1: short(from.x),
         y1: short(from.y),
@@ -144,7 +189,7 @@ function defsElement(marks: readonly Mark[], view: Mat3, prefix: string): SvgEle
       })),
     });
   }
-  return gradients.length > 0 ? { tag: 'defs', attributes: {}, children: gradients } : null;
+  return named.length > 0 ? { tag: 'defs', attributes: {}, children: named } : null;
 }
 
 function pathElement(mark: PathMark, view: Mat3, scale: number, prefix: string): SvgElement {
@@ -163,6 +208,7 @@ function pathElement(mark: PathMark, view: Mat3, scale: number, prefix: string):
     if (mark.stroke.dashOffset !== undefined) attributes['stroke-dashoffset'] = short(mark.stroke.dashOffset * scale);
   }
   if (mark.opacity !== undefined && mark.opacity !== 1) attributes.opacity = short(mark.opacity);
+  if (mark.clip) attributes['clip-path'] = `url(#${elementId(prefix, mark.id, CLIP)})`;
   return { tag: 'path', attributes };
 }
 
@@ -180,6 +226,7 @@ function textElement(mark: TextMark, view: Mat3, scale: number, lift: number, pr
   if (mark.align) attributes['text-anchor'] = mark.align;
   if (mark.baseline) attributes['dominant-baseline'] = mark.baseline;
   if (mark.opacity !== undefined && mark.opacity !== 1) attributes.opacity = short(mark.opacity);
+  if (mark.clip) attributes['clip-path'] = `url(#${elementId(prefix, mark.id, CLIP)})`;
   return { tag: 'text', attributes, text: mark.text };
 }
 
@@ -196,7 +243,7 @@ function textLift(marks: readonly Mark[], scale: number, floor: number): number 
 }
 
 /** Every mark described as an element, in the order they are drawn, behind the
- * one `<defs>` holding whatever gradients they name. */
+ * one `<defs>` holding whatever gradients and clips they name. */
 export function svgElements(marks: readonly Mark[], view: Mat3, options: SvgMarkupOptions = {}): SvgElement[] {
   const scale = mat3.scaleFactor(view);
   // A stroke of two widths is no attribute an element carries, so it arrives here

@@ -6,8 +6,13 @@
  * two-dimensional canvas can both do, rather than the union. A figure reaching
  * for something only one of them has would look right on the page and lose it
  * without a word in a recording, which is the worst way to find out. So there
- * are no filters, no blend modes and no clipping here, and adding one means
- * adding it to both painters in the same change.
+ * are no filters and no blend modes here, and adding one means adding it to
+ * both painters in the same change.
+ *
+ * A clip is a rectangle and no other shape. An arbitrary path clip is a stencil
+ * on a card and needs a winding number counted, where a box is the scissor test
+ * every device already has, so a rectangle is the shape all three painters draw
+ * and the type is what keeps a figure from asking for the other one.
  *
  * A gradient is refused for a different reason, since both painters draw one.
  * SVG names a gradient with an element carrying an id and a canvas names it with
@@ -16,6 +21,7 @@
  */
 import type { CurveName } from '../values/ease.js';
 import type { Vec2 } from '../values/vec2.js';
+import type { Bounds } from './bounds.js';
 import type { Path } from './path.js';
 
 /** A colour either painter accepts, which is any CSS colour written as text. A
@@ -104,6 +110,17 @@ interface Common {
    */
   id: string;
   opacity?: number;
+  /**
+   * The rectangle this mark is drawn inside, in the figure's own units, with
+   * everything of it outside that rectangle cut away.
+   *
+   * It is in the figure's units rather than the mark's own, which is the one
+   * place a mark departs from carrying its geometry through every transform
+   * above it. A transform that turns takes a rectangle to a shape with corners
+   * off the axes, and that shape is the path clip no device draws, so a clip
+   * that rode the transform down would be a rectangle only until a group turned.
+   */
+  clip?: Bounds;
 }
 
 export interface PathMark extends Common {

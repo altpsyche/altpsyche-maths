@@ -33,6 +33,8 @@ class Counter implements CanvasLike {
   save() {}
   restore() {}
   beginPath() {}
+  rect() {}
+  clip() {}
   moveTo() {}
   bezierCurveTo() {}
   closePath() {}

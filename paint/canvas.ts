@@ -11,6 +11,7 @@
  * the view turns the y axis over.
  */
 import { mat3, type Mat3 } from '../values/mat3.js';
+import { vec2 } from '../values/vec2.js';
 import type { Fill, Mark, PathMark, TextMark } from '../figure/mark.js';
 import type { Path } from '../figure/path.js';
 import { outlinedMarks } from '../figure/outline.js';
@@ -38,6 +39,11 @@ export interface CanvasLike {
   save(): void;
   restore(): void;
   beginPath(): void;
+  rect(x: number, y: number, width: number, height: number): void;
+  /** Required rather than optional, unlike the gradient above: a context that
+   * quietly skipped a clip would paint the marks a figure asked to have cut
+   * away, where one that skips a gradient paints the same shape in one colour. */
+  clip(): void;
   moveTo(x: number, y: number): void;
   bezierCurveTo(c1x: number, c1y: number, c2x: number, c2y: number, x: number, y: number): void;
   closePath(): void;
@@ -92,6 +98,27 @@ function fillPaint(context: CanvasLike, fill: Fill, view: Mat3): unknown {
   return made;
 }
 
+/**
+ * The mark's clip set on the context, in the units painted into.
+ *
+ * The rectangle goes through the same view the geometry does, and the corners
+ * are taken lowest first afterwards: the view turns the y axis over, so a width
+ * worked out before the flip would come out negative.
+ */
+function clipTo(context: CanvasLike, mark: Mark, view: Mat3): void {
+  if (!mark.clip) return;
+  const one = mat3.transformPoint(view, vec2(mark.clip.x.from, mark.clip.y.from));
+  const other = mat3.transformPoint(view, vec2(mark.clip.x.to, mark.clip.y.to));
+  context.beginPath();
+  context.rect(
+    Math.min(one.x, other.x),
+    Math.min(one.y, other.y),
+    Math.abs(other.x - one.x),
+    Math.abs(other.y - one.y)
+  );
+  context.clip();
+}
+
 function paintPath(context: CanvasLike, mark: PathMark, view: Mat3, scale: number): void {
   tracePath(context, mark.path, view);
   if (mark.fill) {
@@ -124,9 +151,10 @@ function paintText(context: CanvasLike, mark: TextMark, view: Mat3, scale: numbe
 /**
  * Every mark painted, in order.
  *
- * Each one is wrapped in a save and a restore, so a mark that sets an opacity or
- * a dash cannot leak it into the mark after it. A frame drawn on a context that
- * has been used before therefore looks the same as one drawn on a fresh context.
+ * Each one is wrapped in a save and a restore, so a mark that sets an opacity, a
+ * dash or a clip cannot leak it into the mark after it. A frame drawn on a
+ * context that has been used before therefore looks the same as one drawn on a
+ * fresh context.
  */
 export function paintCanvas(context: CanvasLike, marks: readonly Mark[], view: Mat3): void {
   const scale = mat3.scaleFactor(view);
@@ -135,6 +163,7 @@ export function paintCanvas(context: CanvasLike, marks: readonly Mark[], view: M
   for (const mark of outlinedMarks(marks)) {
     context.save();
     context.globalAlpha = mark.opacity ?? 1;
+    clipTo(context, mark, view);
     if (mark.kind === 'path') paintPath(context, mark, view, scale);
     else paintText(context, mark, view, scale);
     context.restore();

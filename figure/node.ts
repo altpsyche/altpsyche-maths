@@ -10,8 +10,9 @@ import { mat3, type Mat3 } from '../values/mat3.js';
 import { transformPath } from './path.js';
 import type { Path } from './path.js';
 import { vec2, type Vec2 } from '../values/vec2.js';
-import { scaledWidth } from './width.js';
+import { scaledWidth, widestWidth } from './width.js';
 import { transformFill } from './gradient.js';
+import { boundsOf, grownBy, overlapOf, type Bounds } from './bounds.js';
 import type { Fill, Mark, Stroke } from './mark.js';
 
 /** What a group hands down and a child may override. */
@@ -21,6 +22,10 @@ export interface Style {
   opacity?: number;
   family?: string;
   weight?: number;
+  /** The rectangle everything under here is drawn inside, in the figure's own
+   * units. A clip inside a clip is the box both of them hold, since a group
+   * cannot show what the group above it has already cut away. */
+  clip?: Bounds;
 }
 
 interface Named {
@@ -93,6 +98,22 @@ function inherited(parent: Style, own: Style): Style {
 }
 
 /**
+ * The clip a child is drawn inside, given the one handed down and its own.
+ *
+ * Nothing is three states rather than two: no clip at all, and two clips that
+ * miss each other, which leaves nothing to draw and is not a rectangle. The
+ * second is carried as `null` rather than as a box of no width, since a box has
+ * a place and a mark sitting on that place would survive a rectangle standing
+ * for emptiness.
+ */
+function clipped(handed: Bounds | null | undefined, own: Bounds | undefined): Bounds | null | undefined {
+  if (handed === null) return null;
+  if (!handed) return own;
+  if (!own) return handed;
+  return overlapOf(handed, own);
+}
+
+/**
  * Sibling names made unique, so two shapes called the same thing do not become
  * one id.
  *
@@ -110,17 +131,27 @@ function uniqueNames(children: readonly Node[]): string[] {
   });
 }
 
-function walk(node: Node, prefix: string, transform: Mat3, style: Style, into: Mark[]): void {
+function walk(
+  node: Node,
+  prefix: string,
+  transform: Mat3,
+  style: Style,
+  clip: Bounds | null | undefined,
+  into: Mark[]
+): void {
   const id = prefix === '' ? node.name : `${prefix}/${node.name}`;
 
   if (node.kind === 'group') {
     const next = node.transform ? mat3.multiply(transform, node.transform) : transform;
     const handed = inherited(style, node.style ?? {});
+    const inside = clipped(clip, node.style?.clip);
     const names = uniqueNames(node.children);
-    node.children.forEach((child, at) => walk({ ...child, name: names[at] }, id, next, handed, into));
+    node.children.forEach((child, at) => walk({ ...child, name: names[at] }, id, next, handed, inside, into));
     return;
   }
 
+  const inside = clipped(clip, node.clip);
+  if (inside === null) return;
   const settled = inherited(style, node);
   const opacity = settled.opacity ?? 1;
   // A group that scales makes the lines inside it thicker, the way it makes everything else bigger,
@@ -129,13 +160,20 @@ function walk(node: Node, prefix: string, transform: Mat3, style: Style, into: M
 
   if (node.kind === 'shape') {
     if (!settled.fill && !settled.stroke) return;
+    const path = transformPath(node.path, transform);
+    // A stroke reaches half its width past the geometry, so a line lying along the
+    // edge of its clip has half of it inside and is dropped by the box alone.
+    const reach = settled.stroke ? widestWidth(settled.stroke.width) * scale : 0;
+    const box = boundsOf(path);
+    if (inside && box && !overlapOf(grownBy(box, reach / 2), inside)) return;
     into.push({
       kind: 'path',
       id,
-      path: transformPath(node.path, transform),
+      path,
       fill: settled.fill ? transformFill(settled.fill, transform) : undefined,
       stroke: settled.stroke ? { ...settled.stroke, width: scaledWidth(settled.stroke.width, scale) } : undefined,
       opacity,
+      clip: inside,
     });
     return;
   }
@@ -159,6 +197,7 @@ function walk(node: Node, prefix: string, transform: Mat3, style: Style, into: M
       baseline: node.baseline,
       fill: transformFill(fill, transform),
       opacity,
+      clip: inside,
     });
   });
 }
@@ -167,13 +206,18 @@ function walk(node: Node, prefix: string, transform: Mat3, style: Style, into: M
  * The tree resolved into the list a painter draws.
  *
  * A shape with neither a fill nor a stroke is left out rather than emitted
- * invisible, and so is a text with no fill. An invisible mark still costs a
- * painter an element and still turns up in a comparison between two frames as
- * something that changed, so a picture that draws nothing should be a list with
- * nothing in it.
+ * invisible, and so is a text with no fill, and so is a shape whose whole reach
+ * falls outside its clip. An invisible mark still costs a painter an element and
+ * still turns up in a comparison between two frames as something that changed,
+ * so a picture that draws nothing should be a list with nothing in it.
+ *
+ * A text mark outside its clip stays in the list. How wide some text is depends
+ * on which fonts the machine has, so a text mark reaches only as far as its own
+ * anchor here, and dropping one on an anchor outside the clip would cut a line
+ * whose letters run back inside on the machine that has the font.
  */
 export function flatten(root: Node, transform: Mat3 = mat3.IDENTITY, style: Style = {}): readonly Mark[] {
   const marks: Mark[] = [];
-  walk(root, '', transform, style, marks);
+  walk(root, '', transform, style, style.clip, marks);
   return marks;
 }
