@@ -43,6 +43,8 @@ import {
   scene3,
   streamlineOf,
   surfaceCells,
+  text,
+  textScale,
   vec2,
   vec3,
   Timeline,
@@ -190,6 +192,10 @@ export function eyeAt(along: number) {
   });
 }
 
+/** The sizes this figure's text takes, from the numbers on its axes, which are
+ * the smallest text it draws. */
+const TEXT = textScale(0.22);
+
 /** The equation of the surface, typeset when this module loads rather than at
  * every frame, since its geometry is the same at every time. */
 const written = await equationFromTex('z = \\frac{x^2 - y^2}{2}');
@@ -236,11 +242,12 @@ export function sceneAt(along: number): Node {
       z: interval(-1.2, 1.2),
       stroke: pen,
       fill: ink,
-      size: 0.22,
+      size: TEXT.tick,
       tickLength: 0.08,
       ticks: 4,
       names: { x: 'x', y: 'y', z: 'z' },
     }),
+    text('title', fractionOf(extent, 0.98, 0.9156), 'a saddle', TEXT.title, { fill: ink, align: 'end' }),
     equationNode('rule', written, {
       at: fractionOf(extent, 0.02, 0.93),
       align: 'start',

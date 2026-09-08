@@ -100,7 +100,7 @@ describe('a walk of the solid demo', () => {
       const counted = drawn(frame);
       expect(counted.fills).toBe(193);
       expect(counted.strokes).toBe(57);
-      expect(counted.texts).toBe(10);
+      expect(counted.texts).toBe(11);
       // Sixteen more calls than marks, which are the panes of glass: a mark
       // carrying both a fill and a stroke is painted twice and written once.
       expect(counted.fills + counted.strokes + counted.texts).toBe(frame.marks.length + 16);

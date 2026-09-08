@@ -45,7 +45,12 @@ export const ROWS = 12;
  * serif families these sheets name, and the error it leaves is under one cell on
  * the longest caption any sheet carries.
  */
-const ADVANCE = 0.55;
+export const ADVANCE = 0.55;
+
+/** How much of a line of type stands above its baseline, against its size. A
+ * text mark's anchor sits on the baseline unless it says otherwise, so this is
+ * what puts an anchored line of text in a box. */
+export const CAP = 0.8;
 
 /** How far a straight run is walked between stamps, in cells, so no cell a run
  * passes through is stepped over. */
@@ -116,9 +121,7 @@ function stampText(grid: Grid, mark: Mark & { kind: 'text' }, matrix: Mat3): voi
   const size = mark.size * mat3.scaleFactor(matrix);
   const width = ADVANCE * size * mark.text.length;
   const left = mark.align === 'middle' ? at.x - width / 2 : mark.align === 'end' ? at.x - width : at.x;
-  // A text mark's anchor sits on the baseline unless it says otherwise, and the
-  // part of a line of type that stands above the baseline is four fifths of it.
-  const top = mark.baseline === 'middle' ? at.y - size / 2 : mark.baseline === 'hanging' ? at.y : at.y - size * 0.8;
+  const top = mark.baseline === 'middle' ? at.y - size / 2 : mark.baseline === 'hanging' ? at.y : at.y - size * CAP;
   const reach = Math.min(grid.cellWidth, grid.cellHeight) * STEP;
   for (let down = 0; down <= size; down += reach) {
     along(grid, vec2(left, top + down), vec2(left + width, top + down), 0);

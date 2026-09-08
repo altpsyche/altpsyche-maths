@@ -68,6 +68,8 @@ export { coordsOf, pointOf, scaleOf, toGraph, toUnits } from './figure/scale.js'
 export type { Coords, Scale } from './figure/scale.js';
 export { labelFor, tickStep, ticksOn } from './figure/ticks.js';
 export type { Tick } from './figure/ticks.js';
+export { TEXT_RATIO, textScale } from './figure/type-scale.js';
+export type { TextRole, TextScale } from './figure/type-scale.js';
 export { flatten, group, shape, text } from './figure/node.js';
 export type { GroupNode, Node, ShapeNode, Style, TextNode, TextOptions } from './figure/node.js';
 export { circumscribe, countTo, fadeIn, fadeOut, fadeTo, draw, flash, growFrom, indicate, morph, morphEquation, moveAlong, moveBy, rotate, scale } from './figure/animation.js';

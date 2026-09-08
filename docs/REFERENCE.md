@@ -363,6 +363,17 @@ never drawn works.
   neither a fill nor a stroke is left out rather than emitted invisible. An invisible mark costs a
   painter an element and turns up in a comparison between two frames as a change.
 
+## Text sizes
+
+- `TextRole` — what a piece of text is doing: `title`, `note`, `label` or `tick`. A title says what
+  the picture is, a note is a remark beside the picture, a label is a tag on a mark, and a tick is a
+  number on an axis.
+- `TextScale` — the four sizes, one per role, largest to smallest.
+- `TEXT_RATIO` — the step between one role and the next, which is the square root of two, so a note
+  is twice a tick and a title is twice a label.
+- `textScale(tick, ratio)` — the four sizes built up from the size the ticks take. `ratio` defaults
+  to `TEXT_RATIO`.
+
 ## Graphs
 
 - `plot(coords, of, options)` — the curve of a function over a run of x, as one subpath per stretch

@@ -29,6 +29,8 @@ import {
   rotate,
   shape,
   text,
+  TEXT_RATIO,
+  textScale,
   vec2,
   Timeline,
   marksAt,
@@ -52,13 +54,14 @@ const marker = { colour: EMBER };
  * word that rides round outside it.
  *
  * The frame is shaped and placed from what the picture reaches over the whole
- * turn, which is x -3.60 to 4.94 and y -2.75 to 2.54. It is off the origin
- * because only the right panel swings, so the marks stand further right than
- * left, and a frame centred on the origin would leave the whole of that
- * difference bare down the left edge.
+ * turn, which is x -4.44 to 5.51 and y -2.83 to 2.77 once the captions and the
+ * riding word are counted at their own sizes. It is off the origin because only
+ * the right panel swings, so the marks stand further right than left, and a
+ * frame centred on the origin would leave the whole of that difference bare down
+ * the left edge.
  */
-export const CENTRE = vec2(0.67, -0.1);
-const extent: Extent = { width: 9, height: 5.8, centre: CENTRE };
+export const CENTRE = vec2(0.53, -0.08);
+const extent: Extent = { width: 10.15, height: 5.8, centre: CENTRE };
 
 /**
  * The shape, written about its own box centre.
@@ -94,6 +97,11 @@ const ell = (centre: Vec2): Path => polygon(LOCAL.map((point) => vec2.add(point,
 const PANEL = 2.6;
 const SHAPE_Y = 0.2;
 const LABEL_Y = -2.75;
+/** The sizes this figure's text takes, pinned by the word riding the shape since
+ * this figure draws no axis to pin them by. The word is the size that holds the
+ * smallest glyph at 21.02 pixels on the page in a frame ten units wide. */
+const TEXT = textScale(0.296 / TEXT_RATIO);
+
 
 /** The left panel's pivot, which is also its shape's centre, because a turn
  * about the middle of the box round the marks is a turn about that point. */
@@ -110,9 +118,9 @@ function panel(name: string, pivot: Vec2, swing: number, label: string): Node {
     dot('pivot', pivot, 0.07, marker),
     group('rider', [
       shape('ell', ell(centre), { fill: wash, stroke: edge }),
-      text('word', vec2.add(centre, RIDER), 'upright', 0.26, { fill: ink, align: 'middle' }),
+      text('word', vec2.add(centre, RIDER), 'upright', TEXT.label, { fill: ink, align: 'middle' }),
     ]),
-    text('label', vec2(pivot.x, LABEL_Y), label, 0.3, { fill: ink, align: 'middle' }),
+    text('label', vec2(pivot.x, LABEL_Y), label, TEXT.note, { fill: ink, align: 'middle' }),
   ]);
 }
 

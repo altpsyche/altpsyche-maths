@@ -60,6 +60,7 @@ import {
   slopeOf,
   tangentAt,
   text,
+  textScale,
   toGraph,
   vec2,
   vectorField,
@@ -212,6 +213,10 @@ const RISE = curve(3);
  * the perpendicular of a downward span points, which is away from the curve. */
 const RISE_DEPTH = 0.3;
 
+/** The sizes this figure's text takes, from the numbers on its axes, which are
+ * the smallest text it draws. */
+const TEXT = textScale(0.32);
+
 /** Every label along the x axis, named after the number it shows, which is what
  * lets them arrive one after another. */
 const acrossLabels = ['-1', '0', '1', '2', '3', '4'].map((label) => `tangent/axes/x/labels/${label}`);
@@ -230,7 +235,7 @@ export function sceneAt(along: number): Node {
   const x = toGraph(coords.x, point.x);
   return group('tangent', [
     numberPlane('grid', coords, { stroke: faint, minors: 4, minorOpacity: 0.45 }),
-    axes('axes', coords, { stroke: pen, fill: ink, size: 0.32, tip: TIP }),
+    axes('axes', coords, { stroke: pen, fill: ink, size: TEXT.tick, tip: TIP }),
     shape('area', areaUnder(coords, curve, interval(0, x)), { fill: wash }),
     vectorField('field', coords, slopeField, {
       resolution: FIELD,
@@ -242,7 +247,7 @@ export function sceneAt(along: number): Node {
     shape('curve', plot(coords, curve), { stroke: drawn }),
     shape('tangent', tangentAt(coords, curve, x, { reach: 1.2 }), { stroke: accent }),
     dot('point', point, 0.08, ink),
-    text('reading', fractionOf(frame, 0.02, 0.925), `slope ${labelFor(slopeOf(curve, x), 0.01)}`, 0.34, {
+    text('reading', fractionOf(frame, 0.02, 0.91), `slope ${labelFor(slopeOf(curve, x), 0.01)}`, TEXT.note, {
       fill: ink,
     }),
     group('equation', [rule('at-rest', atRest, frame), rule('moving', moving, frame)]),
@@ -251,7 +256,7 @@ export function sceneAt(along: number): Node {
       padding: 0.28,
       stroke: pen,
       fill: ink,
-      size: 0.32,
+      size: TEXT.tick,
     }),
   ]);
 }

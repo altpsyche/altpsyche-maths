@@ -27,8 +27,17 @@ import {
   type Mark,
   type Vec2,
 } from '../index.js';
-import { PAGE_FLOOR, PER_UNIT, SHOWN_AT, SHOWN_AT_STRIP, sheets, stillMarkup } from '../demos/render.js';
-import { bareShare } from '../demos/cover.js';
+import {
+  HEIGHT as STILL_HEIGHT,
+  PAGE_FLOOR,
+  PER_UNIT,
+  SHOWN_AT,
+  SHOWN_AT_STRIP,
+  WIDTH as STILL_WIDTH,
+  sheets,
+  stillMarkup,
+} from '../demos/render.js';
+import { ADVANCE, CAP, bareShare } from '../demos/cover.js';
 import {
   FRAMES as SOLID_FRAMES,
   HEIGHT,
@@ -142,11 +151,35 @@ describe('the committed pictures', () => {
     const stills = ['tangent', 'boolean', 'rotate', 'surface'].map((name) => onPage(`docs/${name}.svg`));
     expect(stills[0]).toBeCloseTo(21.33, 2);
     expect(stills[1]).toBeCloseTo(20.0, 2);
-    expect(stills[2]).toBeCloseTo(20.8, 2);
+    expect(stills[2]).toBeCloseTo(21.0, 2);
     expect(stills[3]).toBeCloseTo(19.32, 2);
     // The README opens on the still that clears both readings by the most, so the
     // one it opens on draws the largest smallest glyph as well as the least bare frame.
     expect(Math.max(...stills)).toBe(stills[0]);
+  });
+
+  it('give each figure room for the sizes its own scale asks for', () => {
+    // A text mark carries no measured extent, so its box is its size, how many
+    // characters it has and the same advance the coverage measure counts by. The
+    // whole run is walked, since a word riding a turning shape leaves the frame
+    // between two named frames and not at either of them.
+    for (const figure of [tangent, booleans, turns, solid]) {
+      const end = durationOf(figure);
+      for (let step = 0; step <= 240; step += 1) {
+        const seconds = (step / 240) * end;
+        const extent = resolveExtent(figure.extent, STILL_WIDTH / STILL_HEIGHT, seconds);
+        const centre = extent.centre ?? vec2(0, 0);
+        for (const mark of marksAt(figure, seconds)) {
+          if (mark.kind !== 'text') continue;
+          const width = ADVANCE * mark.size * mark.text.length;
+          const left = mark.align === 'middle' ? mark.at.x - width / 2 : mark.align === 'end' ? mark.at.x - width : mark.at.x;
+          expect(left, mark.id).toBeGreaterThanOrEqual(centre.x - extent.width / 2);
+          expect(left + width, mark.id).toBeLessThanOrEqual(centre.x + extent.width / 2);
+          expect(mark.at.y - (1 - CAP) * mark.size, mark.id).toBeGreaterThanOrEqual(centre.y - extent.height / 2);
+          expect(mark.at.y + CAP * mark.size, mark.id).toBeLessThanOrEqual(centre.y + extent.height / 2);
+        }
+      }
+    }
   });
 
   it('leave under four fifths of the frame bare, on the ink rather than on the box', () => {
@@ -812,10 +845,11 @@ describe('the solid demo', () => {
     expect(named3).toEqual(['x', 'y', 'z']);
   });
 
-  it('draws the same 244 marks at every time', () => {
+  it('draws the same 245 marks at every time', () => {
     // A hundred and forty-four cells of saddle, sixteen panes of glass and the
-    // field's thirty-six arrows at two marks each, with the rest the axes and rule.
-    for (const seconds of [0, ...SOLID_FRAMES, SOLID_TIMES.round]) expect(solidAt(seconds)).toHaveLength(244);
+    // field's thirty-six arrows at two marks each, with the rest the axes, the
+    // title and the rule.
+    for (const seconds of [0, ...SOLID_FRAMES, SOLID_TIMES.round]) expect(solidAt(seconds)).toHaveLength(245);
   });
 
   it('runs its three descents down the saddle and never off it', () => {
@@ -908,7 +942,7 @@ describe('the solid demo', () => {
 describe('the solid strip', () => {
   it('carries every frame with no two marks sharing an id', () => {
     const { marks } = solidStripMarks(SOLID_FRAMES, 2);
-    expect(marks).toHaveLength(244 * SOLID_FRAMES.length);
+    expect(marks).toHaveLength(245 * SOLID_FRAMES.length);
     expect(new Set(marks.map((mark) => mark.id)).size).toBe(marks.length);
   });
 });

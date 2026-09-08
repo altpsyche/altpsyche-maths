@@ -26,6 +26,8 @@ import {
   intersectionOf,
   shape,
   text,
+  TEXT_RATIO,
+  textScale,
   unionOf,
   vec2,
   Timeline,
@@ -56,6 +58,10 @@ const PANEL = 3.6;
 
 const DISC_Y = 0.5;
 const LABEL_Y = -1.35;
+
+/** The sizes this figure's text takes, pinned by the panel names, since each one
+ * names a drawn shape and this figure draws no tick to pin the scale by. */
+const TEXT = textScale(0.3 / TEXT_RATIO);
 
 /** The still disc and the walking one. The walker is the smaller of the two
  * because a disc the same size can never sit wholly inside another, and
@@ -102,7 +108,7 @@ export function sceneAt(apart: number): Node {
       return group(panel.name, [
         shape('result', panel.combine(first, second), { fill: wash }),
         group('discs', [shape('first', first, { stroke: still }), shape('second', second, { stroke: walker })]),
-        text('label', vec2(middle, LABEL_Y), panel.name, 0.3, { fill: ink, align: 'middle' }),
+        text('label', vec2(middle, LABEL_Y), panel.name, TEXT.label, { fill: ink, align: 'middle' }),
       ]);
     })
   );

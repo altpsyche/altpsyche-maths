@@ -425,7 +425,7 @@ demos the sizes are 0.22, 0.26, 0.30, 0.32 and 0.34, a span of 1.55:1.
 `family` and `weight` and both painters already write them. What is missing is a figure using them
 and a size that says which text matters.
 
-- [ ] **1. A size scale, named by role.** A figure names a title, a label, a tick or a note rather
+- [x] **1. A size scale, named by role.** A figure names a title, a label, a tick or a note rather
   than a number, and the scale is one ratio applied throughout. **The scale is a name at the door and
   not a set of constants in the demos**, since a consumer drawing their own figure needs the same
   hierarchy the demos get or the package has taught nothing, and that makes it a value type the
@@ -434,6 +434,23 @@ and a size that says which text matters.
   flat demo's largest text against its smallest, from 1.06:1 to at least 2:1; the smallest glyph on
   each of the eight sheets at or above what 0.13.0 measured, and `tangent.svg` still leading at 21.33
   pixels, which is the gate that already asserts the lead; the door from 230 names.
+
+  **Landed.** `textScale`, `TextScale`, `TextRole` and `TEXT_RATIO` are the four names it added, and
+  the ratio is the square root of two, so two steps double: a note is twice a tick and a title is
+  twice a label. The four roles are `title`, `note`, `label` and `tick`, largest first, and a note
+  sits above a label because a note is written beside the picture while a label has to fit next to
+  the mark it names. Each figure builds its own scale, since a size in figure units means a different
+  size on the page in each of them. The flat demo went from 1.06:1 to 2.000:1 and the solid demo from
+  1.000:1 to 2.828:1, which is the title it gained. The rotation demo went from 1.154:1 to 1.414:1 and
+  the boolean demo stayed at 1.000:1, since its panel names are the only text it draws. The eight
+  sheets read 21.33, 20.00, 21.00 and 19.32 pixels for the four stills against 21.33, 20.00, 20.80 and
+  19.32 before, and 14.00 for all four strips, so `tangent.svg` still leads. The rotation demo's frame
+  went from 9 units wide to 10.15 and its centre from (0.67, -0.1) to (0.53, -0.08), which is the room
+  its captions and its swinging word need at the sizes the scale gives them, and its word went from
+  0.26 to 0.296 to hold the page floor in the wider frame. A gate reads every text mark's box against
+  its figure's extent over the whole run of all four figures, which the rotation demo's left caption
+  already failed before this by 0.09 units.
+  The door went from 230 names to 234 and the suite from 637 tests over 40 files to 644 over 41.
 
 - [ ] **2. A family and a weight the demos name.** Neither painter needs a change: `paint/svg.ts`
   already writes `font-family` and `font-weight` and `paint/canvas.ts` already builds its `font`
