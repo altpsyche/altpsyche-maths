@@ -744,10 +744,21 @@ describe('the solid demo', () => {
   const solidAt = (seconds: number) => marksAt(solid, seconds);
   const named = [SOLID_TIMES.entrance, SOLID_TIMES.quarter, SOLID_TIMES.half, SOLID_TIMES.round];
 
-  it('draws the same 265 marks at every time', () => {
+  it('names each of its three axes at the far end of the line', () => {
+    // Nothing in a picture of three axes says which way is x, so each carries its
+    // name past its last tick, leaning the way that tick's own label leans.
+    const named3 = ['x', 'y', 'z'].map((axis) => {
+      const mark = solidAt(solid.still).find((each) => each.id === `solid/axes/${axis}/name/label`);
+      if (mark?.kind !== 'text') throw new Error('an axis name is text');
+      return mark.text;
+    });
+    expect(named3).toEqual(['x', 'y', 'z']);
+  });
+
+  it('draws the same 268 marks at every time', () => {
     // A hundred and forty-four cells of saddle, sixteen panes of glass and the
     // field's thirty-six arrows at two marks each, with the rest the axes and rule.
-    for (const seconds of [0, ...SOLID_FRAMES, SOLID_TIMES.round]) expect(solidAt(seconds)).toHaveLength(265);
+    for (const seconds of [0, ...SOLID_FRAMES, SOLID_TIMES.round]) expect(solidAt(seconds)).toHaveLength(268);
   });
 
   it('runs its three descents down the saddle and never off it', () => {
@@ -837,7 +848,7 @@ describe('the solid demo', () => {
 describe('the solid strip', () => {
   it('carries every frame with no two marks sharing an id', () => {
     const { marks } = solidStripMarks(SOLID_FRAMES, 2);
-    expect(marks).toHaveLength(265 * SOLID_FRAMES.length);
+    expect(marks).toHaveLength(268 * SOLID_FRAMES.length);
     expect(new Set(marks.map((mark) => mark.id)).size).toBe(marks.length);
   });
 });

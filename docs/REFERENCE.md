@@ -549,7 +549,8 @@ animations reach a picture in space and a picture on a graph.
     that changes as the camera turns is a count no gate can hold.
   - `stroke` — how the edge of each cell is drawn.
 - `axes3(name, camera, options)` — the three axes as a group, one child per axis, each holding its
-  line under `line`, its ticks under `ticks` and its labels under `labels`.
+  line under `line`, its ticks under `ticks`, its labels under `labels` and, where it is named, its
+  name under `name`.
 - `Axes3Options` — what the axes take.
   - `x`, `y`, `z` — the run of each axis in world units, minus one to one unless named.
   - `stroke` — the lines and their ticks.
@@ -558,6 +559,8 @@ animations reach a picture in space and a picture on a graph.
   - `ticks` — about how many are wanted on each axis.
   - `tickLength` — how far a tick reaches across its axis in world units, half either side.
   - `gap` — from the projected tick to the label's own anchor, in figure units.
+  - `names` — what each axis is called, written past its far end under `name`. An axis this does not
+    name carries no name.
   - `family`, `weight` — the font the labels are asked for.
 - `sectionOf(of, plane, options)` — the runs of points where a plane cuts a surface, in space. A run
   whose two ends meet comes back with its first point repeated at the end, so drawing the points as

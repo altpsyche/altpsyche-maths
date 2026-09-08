@@ -229,6 +229,7 @@ export function sceneAt(along: number): Node {
       size: 0.22,
       tickLength: 0.08,
       ticks: 4,
+      names: { x: 'x', y: 'y', z: 'z' },
     }),
     equationNode('rule', written, {
       at: fractionOf(extent, 0.02, 0.86),

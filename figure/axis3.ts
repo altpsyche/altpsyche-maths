@@ -36,6 +36,10 @@ export interface Axes3Options {
   tickLength?: number;
   /** From the projected tick to the label's own anchor, in figure units. */
   gap?: number;
+  /** What each axis is called, written past its far end. An axis this does not
+   * name carries no name, and nothing is written at all without a `fill` and a
+   * `size`. */
+  names?: { x?: string; y?: string; z?: string };
   family?: string;
   weight?: number;
 }
@@ -84,6 +88,22 @@ function oneAxis(which: 'x' | 'y' | 'z', bounds: Interval, camera: Camera3, opti
       ),
     ),
   );
+
+  const name = options.names?.[which];
+  if (options.fill && size > 0 && name !== undefined) {
+    // Set beyond the label of the last tick, which stands at the same point and
+    // leans the same way, so the two would be written over each other.
+    parts.push(
+      text3('name', at(high), name, size, camera, {
+        fill: options.fill,
+        family: options.family,
+        weight: options.weight,
+        align: 'middle',
+        baseline: 'middle',
+        offset: leaning(origin, camera.project(at(high)).at, gap + size),
+      }),
+    );
+  }
 
   if (options.fill && size > 0) {
     // The three lines cross at the origin, so only one of them writes the number

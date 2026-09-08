@@ -160,7 +160,7 @@ eight.
 **The lock file agrees with the manifest again**, and holding it there is one
 `npm install --package-lock-only` in whichever commit bumps a version.
 
-**0.13.0 is being worked and six of its eleven steps are ticked.** Siva read the eight sheets and
+**0.13.0 is being worked and seven of its eleven steps are ticked.** Siva read the eight sheets and
 rejected them, so 1.0.0 waits behind it: the cut's last criterion is Siva reading the README, the
 guide and the pictures, and the pictures are being redrawn.
 
@@ -171,7 +171,7 @@ reaching it. The six colours a reader takes a value off went from 1.10:1 through
 luminance a colour needs to clear 4.5:1 on white is 0.183333 or less and on `#0d1117` is 0.199675 or
 more. The suite went from 618 tests to 620 and the door from 227 names to 229.
 
-**The next session starts at step 7.** Siva made the one call this version had, the dark ramp's hue,
+**The next session starts at step 8.** Siva made the one call this version had, the dark ramp's hue,
 and answered it with slate. He also put three defects of the solid sheet into this version rather
 than after it, which are steps 7, 8 and 9, so the plan is eleven steps rather than eight.
 
@@ -403,10 +403,13 @@ name to the door, and 0.13.0 lands before the surface is frozen at 1.0.0 for tha
   none over 4.4:1 of its ground and none under 1.2:1, leaving the ends 3.15 and 3.19 apart. The
   shading's used range went from 0.32 to 2.75 against white. The suite went from 625 tests to 627.
 
-- [ ] **7. The three axes named.** The axes of both solid sheets carry tick numbers and no names, so
-  nothing in the picture says which way is x. `axes3` gains a way to name an axis at its far end,
-  which adds a field to `Axes3Options` at the door. **Measures:** the axis names from none to three;
-  the door from 229 names.
+- [x] **7. The three axes named.** `Axes3Options` gains `names`, and an axis it names writes that
+  name past its own far end under `name`, leaning the way the label of the last tick leans and set
+  clear of it by the label's own size so the two are not written over each other. The solid sheets
+  went from no names to three, and the door is unchanged at 229 names, since `Axes3Options` was
+  already there and gained a field. The solid figure went from 265 marks to 268 and the strip from
+  1,060 to 1,072, and a walk of it paints 10 pieces of text where it painted 7. The suite went from
+  627 tests to 628.
 
 - [ ] **8. The descent run's curl.** One of the three runs of steepest descent makes a small loop
   near the origin on both solid sheets, which reads as an artifact rather than as a run down a
