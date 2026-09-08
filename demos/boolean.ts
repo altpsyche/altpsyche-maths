@@ -75,15 +75,16 @@ export const TOUCH_OUTSIDE = BIG + SMALL;
 export const TOUCH_INSIDE = BIG - SMALL;
 
 interface Panel {
+  /** The standard name of the operation, which is both the caption under the
+   * panel and the name its marks are grouped under. */
   readonly name: string;
-  readonly label: string;
   readonly combine: (first: Path, second: Path) => Path;
 }
 
 export const PANELS: readonly Panel[] = [
-  { name: 'union', label: 'either one', combine: unionOf },
-  { name: 'overlap', label: 'both at once', combine: intersectionOf },
-  { name: 'difference', label: 'first without second', combine: differenceOf },
+  { name: 'union', combine: unionOf },
+  { name: 'intersection', combine: intersectionOf },
+  { name: 'difference', combine: differenceOf },
 ];
 
 /** The whole picture with the walking disc's centre this far from the still
@@ -100,7 +101,7 @@ export function sceneAt(apart: number): Node {
       return group(panel.name, [
         shape('result', panel.combine(first, second), { fill: wash }),
         group('discs', [shape('first', first, { stroke: still }), shape('second', second, { stroke: walker })]),
-        text('label', vec2(middle, LABEL_Y), panel.label, 0.3, { fill: ink, align: 'middle' }),
+        text('label', vec2(middle, LABEL_Y), panel.name, 0.3, { fill: ink, align: 'middle' }),
       ]);
     })
   );

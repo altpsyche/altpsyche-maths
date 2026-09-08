@@ -137,6 +137,12 @@ describe('the committed pictures', () => {
     }
   });
 
+  it('carry no placeholder word', () => {
+    // A sheet in a README is read by someone deciding whether to install the
+    // package, so a word standing in for a real one is worse than no word.
+    for (const sheet of sheets) expect(sheet.markup()).not.toMatch(/>label</);
+  });
+
   it('are all eight there', () => {
     expect(sheets.map((sheet) => sheet.file)).toEqual([
       'docs/tangent.svg',
@@ -519,7 +525,7 @@ describe('the boolean demo', () => {
 
   it('leaves the overlap empty until the discs meet and empty again after they part', () => {
     const overlapAt = (seconds: number) => {
-      const mark = marksAt(booleans, seconds).find((each) => each.id === 'booleans/overlap/result');
+      const mark = marksAt(booleans, seconds).find((each) => each.id === 'booleans/intersection/result');
       if (mark?.kind !== 'path') throw new Error('the result is a path');
       return mark.path;
     };
@@ -539,9 +545,9 @@ describe('the boolean demo', () => {
     const opacityOf = (seconds: number, id: string) =>
       marksAt(booleans, seconds).find((mark) => mark.id === id)?.opacity ?? 1;
     expect(opacityOf(0, 'booleans/union/discs/first')).toBeCloseTo(0, 12);
-    expect(opacityOf(0, 'booleans/overlap/result')).toBeCloseTo(0, 12);
+    expect(opacityOf(0, 'booleans/intersection/result')).toBeCloseTo(0, 12);
     expect(opacityOf(BOOLEAN_TIMES.entrance, 'booleans/union/discs/first')).toBeCloseTo(1, 12);
-    expect(opacityOf(BOOLEAN_TIMES.entrance, 'booleans/overlap/result')).toBeCloseTo(1, 12);
+    expect(opacityOf(BOOLEAN_TIMES.entrance, 'booleans/intersection/result')).toBeCloseTo(1, 12);
   });
 
   it('keeps every mark inside the extent it declares', () => {
@@ -569,7 +575,7 @@ describe('the boolean strip', () => {
 
   it('shows the walk from clear of the disc to wholly inside it', () => {
     const loops = BOOLEAN_FRAMES.map((seconds) => {
-      const mark = booleanStripMarks([seconds]).marks.find((each) => each.id.endsWith('/overlap/result'));
+      const mark = booleanStripMarks([seconds]).marks.find((each) => each.id.endsWith('/intersection/result'));
       return mark?.kind === 'path' ? mark.path.length : -1;
     });
     expect(loops).toEqual([0, 0, 1, 1]);

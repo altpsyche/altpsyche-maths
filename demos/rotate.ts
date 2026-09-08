@@ -102,15 +102,15 @@ function panel(name: string, pivot: Vec2, swing: number, label: string): Node {
     dot('pivot', pivot, 0.07, marker),
     group('rider', [
       shape('ell', ell(centre), { fill: wash, stroke: edge }),
-      text('word', vec2.add(centre, RIDER), 'label', 0.26, { fill: ink, align: 'middle' }),
+      text('word', vec2.add(centre, RIDER), 'upright', 0.26, { fill: ink, align: 'middle' }),
     ]),
     text('label', vec2(pivot.x, LABEL_Y), label, 0.3, { fill: ink, align: 'middle' }),
   ]);
 }
 
 export const scene: Node = group('turns', [
-  panel('own', OWN, 0, 'about its own middle'),
-  panel('given', GIVEN, SWING, 'about a point it is given'),
+  panel('own', OWN, 0, 'about its centre'),
+  panel('given', GIVEN, SWING, 'about a given point'),
 ]);
 
 /** How long the whole circle takes. */

@@ -160,7 +160,7 @@ eight.
 **The lock file agrees with the manifest again**, and holding it there is one
 `npm install --package-lock-only` in whichever commit bumps a version.
 
-**0.13.0 is being worked and one of its eight steps is ticked.** Siva read the eight sheets and
+**0.13.0 is being worked and three of its eight steps are ticked.** Siva read the eight sheets and
 rejected them, so 1.0.0 waits behind it: the cut's last criterion is Siva reading the README, the
 guide and the pictures, and the pictures are being redrawn.
 
@@ -171,8 +171,8 @@ reaching it. The six colours a reader takes a value off went from 1.10:1 through
 luminance a colour needs to clear 4.5:1 on white is 0.183333 or less and on `#0d1117` is 0.199675 or
 more. The suite went from 618 tests to 620 and the door from 227 names to 229.
 
-**The next session starts at step 2**, which is the text size, and step 6 carries the one call that
-is Siva's.
+**The next session starts at step 4**, which is the frames a strip shows, and step 6 carries the one
+call that is Siva's.
 
 **1.0.0 is being worked and sixteen of its seventeen steps are ticked.** The library is 6,794 lines,
 the door is 227 names, the suite is 618 tests over 40 files, and the four prose surfaces are a 175
@@ -325,11 +325,17 @@ name to the door, and 0.13.0 lands before the surface is frozen at 1.0.0 for tha
   `surface-strip`'s tick numbers crowd their own axis. Text is never measured here, so nothing can
   know a caption's width, and the fix is a shorter caption rather than a smaller glyph.
 
-- [ ] **3. The rotation's placeholder word, and every caption.** `demos/rotate.ts` draws the literal
-  string `label` as the word riding the shape, twice in `rotate.svg` and eight times in
-  `rotate-strip.svg`. The boolean captions read "either one", "both at once" and "first without
-  second" where the register asks for the standard name. **Measures:** the count of sheets carrying
-  the string `label` from two to zero, with a gate; the caption text of six panels.
+- [x] **3. The rotation's placeholder word, and every caption.** The word riding the shape was the
+  literal string `label`, twice in `rotate.svg` and eight times in `rotate-strip.svg`, and it is
+  `upright` now, which is what the mark is there to show. The three boolean captions read "either
+  one", "both at once" and "first without second" and read `union`, `intersection` and `difference`
+  now, which are the standard names. The two rotation captions went from "about its own middle" and
+  "about a point it is given" to "about its centre" and "about a given point", **which is what
+  cleared the collision step 2 made**: the two no longer run together in a strip frame. The panel's
+  `label` field went with the change, since a caption that is the operation's standard name is the
+  name the marks are already grouped under, and `overlap` became `intersection` in three mark ids the
+  suite reads. A gate holds no sheet carrying the placeholder, and the suite went from 622 tests to
+  623.
 
 - [ ] **4. The frames a strip shows.** `tangent-strip.svg` draws its first two frames at slope 0.00
   and they look alike, and `surface-strip.svg` draws four frames that are two near-identical pairs. A
@@ -765,7 +771,10 @@ demo is recompiled by steps 6 and 7 against the renamed door.
 
 ## Found while working, not yet queued
 
-Nothing is queued here. The strips' text size is 0.13.0's step 2.
+- **The word riding the shape crosses it in two of the eight rotation frames.** `upright` sits at a
+  fixed offset from the shape's centre and the shape turns under it, so at two of the eight times in
+  `rotate-strip.svg` the word overlaps the drawn edge. The offset is one vector in `demos/rotate.ts`
+  and what it wants is a place the turn cannot reach. Found while cutting 0.13.0's step 3.
 
 ## Someday
 
