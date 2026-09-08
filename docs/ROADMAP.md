@@ -482,10 +482,20 @@ demo is recompiled by steps 6 and 7 against the renamed door.
   four rounds of checking took, since a term glossed pages after a plain use of it is the defect this
   measures; sixteen of sixteen code blocks compile.
 
-- [ ] **13. The README written.** A full rewrite against the step 11 outline rather than a pass with a
-  comb, and it sells rather than teaches. **Measures:** sentence mean from 24.7 words and the count
-  over 30 from 46; prose paragraph mean from 66.5 words; the install line from absent to present; the
-  opening picture from step 10; the banned-phrase count still zero.
+- [x] **13. The README written.** 96 lines from 402, in six sections: what the package is with the
+  picture that reads best, how to install it, one example in full, what it draws with three pictures,
+  what it refuses and why, and where to go next. It sells and hands the reader on to the guide. No
+  option bag is explained anywhere on it.
+
+  **The four strips ended up shown by nothing and moved into the guide.** The README dropped the nine
+  feature sections that carried them, and a committed sheet with a byte gate that no page shows is a
+  picture nobody checks. Each strip now sits in the guide beside the motion it shows, and what a
+  strip is gets said once where the first one appears.
+
+  **Measured:** 402 lines to 96; 44 sentences at a mean of 13.8 words from 148 at 24.7, none over 30
+  from 46; 18 paragraphs at a mean of 33.8 words from 55 at 66.5; an install line from absent to
+  present; nine of fifteen sections sharing one shape to six sections with six different shapes; the
+  one code block compiles; all eight sheets referenced, four by the README and four by the guide.
 
 - [ ] **14. The reference for the door.** One entry per name at the door, each saying what it is and
   what it takes, and a gate that fails when a name at the door has no entry or an entry names nothing
@@ -526,7 +536,8 @@ demo is recompiled by steps 6 and 7 against the renamed door.
 - Every technical word in the guide has its everyday meaning where it first appears.
 - Every code block in the guide compiles.
 - The reference has one entry per name at the door, and a gate in the suite says so.
-- All eight pictures, or nine, are referenced and regenerate to identical bytes.
+- All eight pictures, or nine, are referenced by the README or the guide and regenerate to identical
+  bytes.
 - DESIGN.md carries none of the banned phrases and every claim in it is true of the tree.
 - The byte gate's rounding boundary is written down as a known gap.
 - `npm test`, `npm run type-check` and `npm run build` pass, and the lock file agrees with the manifest.

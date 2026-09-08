@@ -180,6 +180,12 @@ const timeline = Timeline.empty()
 `play` runs one animation after the last. `together` runs several over one stretch. `stagger` runs a
 row of them so the parts arrive one after another.
 
+<img src="tangent-strip.svg" width="820" alt="Four frames of the same figure in two rows, the point walking up the curve over the field of slope arrows, the shaded region growing behind it, and a brace measuring the rise in the last frame.">
+
+Four times of one figure. A moving picture needs a GIF and this package has no encoder. What shows
+the motion in a still is a strip, which is several times of one figure laid out side by side. Every
+strip on this page is drawn by the same walk a recorder uses.
+
 An animation before its span has started applies at nothing. One already finished applies in full.
 That is what makes a figure's answer depend on the time asked for and nothing else.
 
@@ -201,6 +207,11 @@ has moved them.
 
 A turn does not thicken a line. A stroke's width is multiplied by how much the transform stretches a
 length, and a rotation stretches nothing.
+
+<img src="rotate-strip.svg" width="820" alt="Four frames in two rows, each showing both panels, at nothing, a quarter, a half and three quarters of the way round.">
+
+The quarters of the turn. The whole turn is left off, because it draws the picture that nothing
+draws: this figure declares itself a loop, so its last frame is its first.
 
 ## Tracks
 
@@ -342,6 +353,11 @@ When the pieces kept will not join into a loop, the operation stops. It says how
 ends of the run it had are. A shape drawn with a gap in it and nothing said about it is the one
 failure a caller cannot see.
 
+<img src="boolean-strip.svg" width="820" alt="Four moments in two rows, each showing the three panels, as the small disc walks from clear of the large one, through touching it at one point, through overlapping it, to sitting wholly inside it.">
+
+A small disc walks across a larger one: clear of it, touching it at one point, crossing it at two,
+and wholly inside it. Those are the four cases this kind of code gets silently wrong.
+
 ## Fields
 
 A **field** is a function from a place to a vector. Nothing here stores one. What the package holds
@@ -415,6 +431,11 @@ of the same magnitude is what says which is far.
 
 Drive a camera with a track and never with an animation. They are two clocks, for the reason tracks
 give above.
+
+<img src="surface-strip.svg" width="820" alt="Four frames in two rows, showing the same saddle, pane, field arrows and runs of descent from four points around one orbit of the eye.">
+
+The quarters of one orbit. The eye comes back to where it started. A test holds that by comparing
+the marks at the end of the entrance against the marks one orbit later, mark for mark by name.
 
 ## Frames out
 
