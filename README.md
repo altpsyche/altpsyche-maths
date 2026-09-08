@@ -163,9 +163,37 @@ something a figure can name. Colour enters as text, `'#1b1b1b'` or `'rgb(27, 27,
 `colourOf` parses hex and `rgb()` for interpolation in sRGB and rejects every other form rather than
 guessing. Nothing reads the page, and `getComputedStyle` appears nowhere in the tree.
 
-No screenshot gates this package. Every assertion reads a mark list or a number, so the suite of 782
+No screenshot gates this package. Every assertion reads a mark list or a number, so the suite of 785
 tests runs in Node without a browser. Comparisons are by tolerance rather than by hash, because
 `Math.sin`, `Math.cos` and `Math.pow` are not specified to the last bit and differ between engines.
+
+## Moving from 1.0.0
+
+1.0.0 was the version before this one on npm, and 1.6.0 arrives with the whole 1.x band behind it:
+the typography, the pacing, the variable-width stroke, the gradient, the view as a timeline entry,
+and the rectangular clip with the inset it makes possible.
+
+**The door is additive.** It went from 230 names to 266 and no name was removed or renamed.
+
+**Four types a caller may read or implement changed shape**, so this is a minor version carrying
+changes a major usually announces.
+
+| type | at 1.0.0 | at 1.6.0 |
+| --- | --- | --- |
+| `Span` | `animation: Animation` | `entry: Entry`, which is an `Animation` or a `ViewChange` |
+| `CanvasLike` | neither `rect` nor `clip` | both, required |
+| `PaintNode` | no `append` | required |
+| `Stroke.width` | `number` | `number \| Taper` |
+
+`rect`, `clip` and `append` are required rather than optional because a context that skipped a clip
+would paint the marks a figure asked to have cut away, and a `<clipPath>` holding no `<rect>` clips
+away everything that references it. A real `CanvasRenderingContext2D` and a real element in a
+document each satisfy them, so what this reaches is a hand-written stand-in.
+
+**Two new optional fields change what a painter has to honour.** `Fill.gradient` and `Mark.clip` are
+each read by the two painters here. A caller painting marks with a painter of its own draws the wrong
+picture rather than an error where it ignores them: a washed fill comes out flat, and a clipped mark
+comes out whole.
 
 ## Further reading
 
