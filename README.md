@@ -146,14 +146,16 @@ thousandth of a pixel, and to the same style exactly.
 
 ## Restrictions
 
-A mark may request only what both painters implement: no filters and no blend modes, and a clip is
-a rectangle and no other shape. A
-figure using an SVG filter would render correctly on a page and lose the effect silently in a
-recording.
+A mark may request only what both painters implement: no filters and no blend modes. A figure using
+an SVG filter would render correctly on a page and lose the effect silently in a recording.
 
-Gradients are excluded for a different reason, since both painters draw them. SVG names a gradient
-with an element carrying a document-unique identifier, and a canvas with an object built from the
-context. A colour here is text that both accept unchanged.
+A clip is a rectangle and no other shape, and that exclusion is not the rule above. Both painters
+clip, with `clip-path` and with `clip()`. An arbitrary path clip needs a winding number counted,
+which is a stencil on a card, where a box is the scissor test every device already has.
+
+A fill carries one colour and a gradient beside it. SVG names a gradient with an element carrying a
+document-unique identifier and a canvas with an object built from the context, and the one colour
+stays because a contrast reading and anything else needing a single colour has to have one.
 
 A stroke's width is one number or a taper between two numbers along a named curve, drawn as the
 filled outline of its own path, since neither painter strokes at two widths. A width per point is not
@@ -161,7 +163,7 @@ something a figure can name. Colour enters as text, `'#1b1b1b'` or `'rgb(27, 27,
 `colourOf` parses hex and `rgb()` for interpolation in sRGB and rejects every other form rather than
 guessing. Nothing reads the page, and `getComputedStyle` appears nowhere in the tree.
 
-No screenshot gates this package. Every assertion reads a mark list or a number, so the suite of 701
+No screenshot gates this package. Every assertion reads a mark list or a number, so the suite of 782
 tests runs in Node without a browser. Comparisons are by tolerance rather than by hash, because
 `Math.sin`, `Math.cos` and `Math.pow` are not specified to the last bit and differ between engines.
 

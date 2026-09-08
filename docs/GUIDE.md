@@ -596,7 +596,8 @@ Nothing here writes a file. What a consumer does with a painted frame is the con
 figure using an SVG filter would render correctly on a page and lose the effect silently in a
 recording.
 
-**A clip is a rectangle and no other shape.** A path clip needs a winding number counted, which is a
+**A clip is a rectangle and no other shape, and that exclusion is not the rule above.** Both painters
+clip, with `clip-path` and with `clip()`. A path clip needs a winding number counted, which is a
 stencil on a card, where a box is the scissor test every device already has. So a rectangle is what
 all three painters draw and the type is what keeps a figure from asking for the other one.
 

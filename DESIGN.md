@@ -302,10 +302,22 @@ shader's size.
 the 2D canvas it already builds. The recorded clip is painted rather than rasterised from the page,
 which is why the two painters have to agree.
 
-**A mark may request only what both painters implement.** SVG has filters, blend modes and clip
-paths that a 2D canvas either lacks or supports partially. A figure using one of them would render
-correctly on the page and lose the effect silently in the export. The mark vocabulary is therefore
-the intersection of the two painters rather than the union, and the type is the contract.
+**A mark may request only what both painters implement.** SVG has filters and blend modes that a 2D
+canvas either lacks or supports partially. A figure using one of them would render correctly on the
+page and lose the effect silently in the export. The mark vocabulary is therefore the intersection of
+the two painters rather than the union, and the type is the contract.
+
+**A clip is inside that intersection and it is a rectangle.** SVG clips with `clip-path` and a canvas
+with `clip()`, so a mark carries the rectangle it is drawn inside and both painters write it. An
+arbitrary path clip is refused for a reason the rule above does not cover: a path needs a winding
+number counted, which is a stencil on a card, where a box is the scissor test every device already
+has. So a rectangle is what all three painters draw and a path is what two of them do.
+
+**An inset is a second view of the same figure, magnified into a rectangle of its own frame.** It is
+what the clip exists for, and it reads the marks the figure has already built rather than building
+the tree again, so what it shows is the picture at that time and not a second picture that could
+disagree about it. Its own view is one of the forms a timeline carries, applied in full at every time,
+so nothing about an inset is a function of the clock.
 
 **One gate paints a single mark array both ways and holds both painters to consuming every mark and
 emitting the same geometry and style.** It is not a comparison of pixels. SVG text and a canvas
