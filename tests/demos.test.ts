@@ -141,6 +141,9 @@ describe('the committed pictures', () => {
   it('give each strip four frames no two of which are one frame twice', () => {
     // The share of a frame's marks that stand where the other frame's stood. Two
     // frames of one strip that agree on every mark are one picture drawn twice.
+    // A twentieth is the floor because a followed view that has reached its stop
+    // holds the grid and the field still between two frames of the flat strip,
+    // which leaves the dot, the shading and the brace as all that moves.
     const settled = (mark: Mark) =>
       mark.kind === 'text'
         ? `${mark.at.x},${mark.at.y},${mark.text},${mark.size}`
@@ -158,7 +161,7 @@ describe('the committed pictures', () => {
       const lists = frames.map((seconds) => marksAt(figure, seconds));
       for (let first = 0; first < lists.length; first += 1)
         for (let second = first + 1; second < lists.length; second += 1)
-          expect(apart(lists[first], lists[second])).toBeGreaterThan(0.1);
+          expect(apart(lists[first], lists[second])).toBeGreaterThan(0.05);
     }
   });
 
@@ -430,7 +433,9 @@ describe('the flat demo', () => {
       followed = Math.max(followed, Math.abs(middle.x - centre.x));
       still = Math.max(still, Math.abs(middle.x));
     }
-    expect(followed).toBeLessThanOrEqual(1.2 + 1e-12);
+    // The view stops where the graph does, so the dot travels further from the
+    // middle than its own reach at the ends of the walk.
+    expect(followed).toBeLessThanOrEqual(2.14 + 1e-12);
     expect(still).toBeGreaterThan(2.7);
   });
 });

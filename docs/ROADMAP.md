@@ -160,7 +160,7 @@ eight.
 **The lock file agrees with the manifest again**, and holding it there is one
 `npm install --package-lock-only` in whichever commit bumps a version.
 
-**0.13.0 is being worked and four of its eight steps are ticked.** Siva read the eight sheets and
+**0.13.0 is being worked and five of its eight steps are ticked.** Siva read the eight sheets and
 rejected them, so 1.0.0 waits behind it: the cut's last criterion is Siva reading the README, the
 guide and the pictures, and the pictures are being redrawn.
 
@@ -171,7 +171,7 @@ reaching it. The six colours a reader takes a value off went from 1.10:1 through
 luminance a colour needs to clear 4.5:1 on white is 0.183333 or less and on `#0d1117` is 0.199675 or
 more. The suite went from 618 tests to 620 and the door from 227 names to 229.
 
-**The next session starts at step 5**, which is the clipping, and step 6 carries the one call that is
+**The next session starts at step 6**, which is the surface, and it carries the one call that is
 Siva's.
 
 **1.0.0 is being worked and sixteen of its seventeen steps are ticked.** The library is 6,794 lines,
@@ -357,9 +357,26 @@ name to the door, and 0.13.0 lands before the surface is frozen at 1.0.0 for tha
   which is what caught the flat strip, and no two eyes of the solid strip are a half turn apart, with
   the saddle's own invariance asserted beside it. The suite went from 623 tests to 625.
 
-- [ ] **5. The curve clipped to its frame.** The parabola runs out of the top of all four
-  `tangent-strip` frames and off the left edge of `tangent.svg`. **Measures:** the share of drawn
-  geometry outside the view box, from its value on the two tangent sheets to zero.
+- [x] **5. The curve clipped to its frame.** **The premise was half wrong and the measurement said
+  so.** `tangent-strip` had nothing outside its view box at all: the parabola ends where it is
+  plotted, at three across and nine up, rather than being cut. `tangent.svg` had 65 of its 3,421
+  drawn points outside, 1.90%, and every one of them at the left edge.
+
+  **What was outside was the graph's own left side.** The grid's major at minus one and its minor at
+  minus three quarters, the left end of every horizontal grid line, the x axis line, its low arrow
+  head at 10 points of 10, the tick at minus one, five field arrow shafts and 16 of the curve's 232
+  points. The cause is the followed view: the frame's middle travelled to 1.56 figure units where the
+  graph's own margin allows 0.62, which is the frame's half-width of 5.4 less the graph's 4.6 less
+  the 0.18 the axis reaches past its last tick. The follow stops there now and the sheet has 0 of
+  3,421 points outside.
+
+  **The trade is the dot sitting further from the middle and it is worth naming.** Its greatest
+  distance from the middle of the frame went from 1.2 figure units to 2.14, and from the middle of
+  the world it is unchanged at 2.76. The view's travel across went from 312 written units to 124 and
+  its distinct places over a walk at thirty frames a second from 78 to 21. Step 4's floor for how
+  much a strip's closest pair must move went from a tenth to a twentieth, since a view stopped at the
+  graph's edge holds the grid and the field still between the last two frames and took that pair from
+  14.9% to 7.9%. The two sheets went from 72,475 and 293,072 bytes to 71,616 and 292,197.
 
 - [ ] **6. The surface lit so its depth reads, and its axes named.** `shadeOf` covers a contrast range
   of 2.19 against white, from 3.46:1 to 1.27:1. The three axes carry tick numbers and no names, the

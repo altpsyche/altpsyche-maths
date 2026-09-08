@@ -102,18 +102,6 @@ const size = { width: 10.8, height: 6 };
 const REACH = 1.2;
 
 /**
- * Where the middle of the frame sits when the dot is at this point.
- *
- * The view follows across and not up and down, because the reading and the rule
- * are placed against the frame and the graph is not: a view that dropped to
- * follow the dot at the stationary point would carry that band down over the top
- * of the grid.
- */
-function frameAt(point: Vec2): Extent {
-  return { ...size, centre: vec2(point.x - clamp(point.x, -REACH, REACH), 0) };
-}
-
-/**
  * Nine graph units up against five across, so the parabola is cut where it meets
  * the top of its own axis rather than running off the picture.
  *
@@ -125,6 +113,32 @@ export const coords = coordsOf(
   scaleOf(interval(-1, 4), interval(-4.6, 4.6)),
   scaleOf(interval(-1, 9), interval(-2.55, 1.6))
 );
+
+/** How long each axis reaches past its last tick, and how wide the arrow head
+ * there is. */
+const TIP = 0.18;
+
+/** How far the middle of the frame may travel before the graph's own edge would
+ * leave it: the frame's half-width, less the graph's, less the arrow head the
+ * axis ends in. */
+const ROOM = size.width / 2 - coords.x.units.to - TIP;
+
+/**
+ * Where the middle of the frame sits when the dot is at this point.
+ *
+ * The view follows across and not up and down, because the reading and the rule
+ * are placed against the frame and the graph is not: a view that dropped to
+ * follow the dot at the stationary point would carry that band down over the top
+ * of the grid.
+ *
+ * It stops where the graph does. A view that followed the dot the whole way
+ * carried the grid's left edge, the x axis and its arrow head off the frame, so
+ * the axis ran out of the picture instead of ending in a tip.
+ */
+function frameAt(point: Vec2): Extent {
+  const followed = point.x - clamp(point.x, -REACH, REACH);
+  return { ...size, centre: vec2(clamp(followed, -ROOM, ROOM), 0) };
+}
 
 export const curve = (x: number) => x * x;
 
@@ -202,7 +216,7 @@ export function sceneAt(along: number): Node {
   const x = toGraph(coords.x, point.x);
   return group('tangent', [
     numberPlane('grid', coords, { stroke: faint, minors: 4, minorOpacity: 0.45 }),
-    axes('axes', coords, { stroke: pen, fill: ink, size: 0.26, tip: 0.18 }),
+    axes('axes', coords, { stroke: pen, fill: ink, size: 0.26, tip: TIP }),
     shape('area', areaUnder(coords, curve, interval(0, x)), { fill: wash }),
     vectorField('field', coords, slopeField, {
       resolution: FIELD,

@@ -83,10 +83,11 @@ describe('a walk of the flat demo', () => {
 
   it('carries a matrix that moves with the view, frame by frame', () => {
     const across = frames.map((frame) => frame.view[6]);
-    expect(Math.max(...across) - Math.min(...across)).toBeCloseTo(312, 6);
-    // The view holds still while the dot is inside its own reach of the middle
-    // of the frame, so a quarter of the walk is one place and the rest is not.
-    expect(new Set(across).size).toBe(78);
+    expect(Math.max(...across) - Math.min(...across)).toBeCloseTo(124, 6);
+    // The view holds still while the dot is inside its own reach of the middle of
+    // the frame and again once it has reached the graph's own edge, so most of the
+    // walk is one of a few places rather than a new one each frame.
+    expect(new Set(across).size).toBe(21);
   });
 });
 
