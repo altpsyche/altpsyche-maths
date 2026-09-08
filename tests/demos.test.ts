@@ -28,8 +28,10 @@ import {
   tangentAt,
   toGraph,
   vec2,
+  widthAt,
   type Figure,
   type Mark,
+  type Taper,
   type Vec2,
 } from '../index.js';
 import {
@@ -298,6 +300,27 @@ describe('the committed pictures', () => {
 });
 
 describe('the flat demo', () => {
+  it('draws its tangent as an outline that swells in the middle and ends at nothing', () => {
+    const mark = marksAt(tangent, TIMES.beat).find((each) => each.id === 'tangent/tangent');
+    if (mark?.kind !== 'path') throw new Error('the tangent is a path');
+    // A stroke of two widths is a filled outline, so the tangent carries no
+    // stroke of its own.
+    expect(mark.stroke).toBeUndefined();
+    expect(mark.fill).toBeDefined();
+    // The curve is flat where the beat holds it, so the outline's height is the
+    // width across the tangent and its widest place is halfway along.
+    const box = boundsOf(mark.path);
+    if (!box) throw new Error('an outline has bounds');
+    expect(box.y.to - box.y.from).toBeCloseTo(0.035, 12);
+    const middle = (box.y.from + box.y.to) / 2;
+    const loops = flattenPath(mark.path);
+    const taper: Taper = { from: 0, to: 0.035, curve: 'thereAndBack' };
+    for (const share of [0.25, 0.5, 0.75]) {
+      const across = box.x.from + (box.x.to - box.x.from) * share;
+      expect(nearestEdge(loops, vec2(across, middle))!.gap).toBeCloseTo(widthAt(taper, share) / 2, 5);
+    }
+  });
+
   it('draws the same 144 marks at every time', () => {
     // Forty-two of the 144 are the field's twenty-one arrows and fifteen the two
     // rules, and nothing arrives or leaves part way through, so every time alike.
@@ -997,6 +1020,29 @@ describe('the solid demo', () => {
       for (let step = 1; step < run.length; step += 1) expect(run[step].z).toBeLessThan(run[step - 1].z);
     }
     expect(worst).toBe(0);
+  });
+
+  it('thins each run of descent from its seed to nothing where it leaves', () => {
+    for (const at of [0, 1, 2]) {
+      const run = solidAt(SOLID_TIMES.quarter).find((mark) => mark.id === `solid/descent/run${at}/run`);
+      if (run?.kind !== 'path') throw new Error('a run of descent is a path');
+      // A stroke of two widths is a filled outline, so the run carries no stroke
+      // of its own and the two sides of it are one loop.
+      expect(run.stroke).toBeUndefined();
+      expect(run.fill).toBeDefined();
+      const side = [run.path[0].start, ...run.path[0].curves.slice(0, -1).map((piece) => piece.to)];
+      const last = side.length - 1;
+      // The loop walks out along one side and back along the other, so the point
+      // this far from each end is the same station of the run on both sides.
+      expect(vec2.distance(side[0], side[last])).toBeCloseTo(0.035, 12);
+      let before = Infinity;
+      for (let station = 0; station * 2 <= last; station++) {
+        const across = vec2.distance(side[station], side[last - station]);
+        expect(across).toBeLessThanOrEqual(before + 1e-12);
+        before = across;
+      }
+      expect(before).toBeCloseTo(0, 12);
+    }
   });
 
   it('names a surface, a plane, a curve, a field, three runs and three axes', () => {

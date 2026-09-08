@@ -71,8 +71,10 @@ describe('a walk of the flat demo', () => {
     expect(frames).toHaveLength(308);
     for (const frame of frames) {
       const counted = drawn(frame);
-      expect(counted.fills).toBe(42);
-      expect(counted.strokes).toBe(90);
+      // The tangent is one of the fills rather than one of the strokes, since a
+      // stroke of two widths is drawn as the filled outline of its own path.
+      expect(counted.fills).toBe(43);
+      expect(counted.strokes).toBe(89);
       expect(counted.texts).toBe(12);
       // Every mark is one element and one drawing call, so the two painters
       // agree about what the frame holds.
@@ -98,8 +100,10 @@ describe('a walk of the solid demo', () => {
     expect(frames).toHaveLength(354);
     for (const frame of frames) {
       const counted = drawn(frame);
-      expect(counted.fills).toBe(193);
-      expect(counted.strokes).toBe(57);
+      // The three runs of descent are among the fills rather than the strokes,
+      // since a stroke of two widths is drawn as the filled outline of its path.
+      expect(counted.fills).toBe(196);
+      expect(counted.strokes).toBe(54);
       expect(counted.texts).toBe(11);
       // Sixteen more calls than marks, which are the panes of glass: a mark
       // carrying both a fill and a stroke is painted twice and written once.

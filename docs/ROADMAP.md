@@ -565,9 +565,27 @@ than trim the outline and open it.
   699 and the door is unchanged at 247, since where a call is made is not a name. The eight sheets
   are byte-identical.
 
-- [ ] **4. The demos taper.** The flat demo's tangent and the solid demo's three runs of descent.
+- [x] **4. The demos taper.** The flat demo's tangent and the solid demo's three runs of descent.
   **Measures:** the mark count and the bytes of each affected sheet, re-committed with both numbers
   quoted; the marks at the named times.
+
+  **Landed.** The flat demo's tangent is nothing at both ends and 0.035 in the middle, along
+  `thereAndBack`. A tangent is a claim about one place on the curve, and a line drawn at one weight
+  to the edge of the graph reads as a line that carries on past it. The solid demo's three runs of
+  descent are 0.035 at their seeds and nothing where they leave, since every run is stopped by the
+  edge of the region rather than by arriving anywhere.
+
+  The mark counts are unchanged, 144 in the flat demo and 245 in the solid, because a stroke with no
+  fill beside it leaves one mark whichever way it is drawn. What moved is which call draws them:
+  the flat demo paints 43 fills and 89 strokes a frame where it painted 42 and 90, and the solid
+  demo 196 and 54 where it painted 193 and 57. The four affected sheets grew: tangent.svg from 61397
+  to 62080 bytes, tangent-strip.svg from 247844 to 250542, surface.svg from 87987 to 92608, and
+  surface-strip.svg from 354264 to 372675. The other four are byte-identical.
+
+  At the beat the tangent is flat, so its outline is 0.035 tall, and the half width read across it a
+  quarter, a half and three quarters of the way along is within 6.2e-7 of what the taper asks for.
+  Each run of descent is 0.035 across at its seed, narrows at every one of its stations and closes to
+  nothing at the far end. The suite went from 699 tests to 701.
 
 - [ ] **5. Cut 1.3.0.** **Measures:** the three gates; the eight sheets identical after
   `npm run demos`; the door and the suite from 240 names and 668 tests.

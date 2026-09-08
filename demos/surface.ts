@@ -53,6 +53,7 @@ import {
   type Figure,
   type Mark,
   type Node,
+  type Stroke,
   type Track,
   type Vec2,
 } from '../index.js';
@@ -64,7 +65,15 @@ const pen = { colour: INK, width: 0.014 };
 const cut = { colour: EMBER, width: 0.05 };
 const glass = { colour: SKY, width: 0.008 };
 const flow = { colour: DEEP, width: 0.022 };
-const fall = { colour: MOSS, width: 0.035 };
+/**
+ * The weight of a run of steepest descent, full at the seed it starts from and
+ * nothing where it leaves.
+ *
+ * Every run here is stopped by the edge of the region rather than by arriving
+ * anywhere, so a run that thins to nothing says it carries on and a run ending
+ * at its full width would say it stops.
+ */
+const fall: Stroke = { colour: MOSS, width: { from: 0.035, to: 0 } };
 
 /** Shaped like the projection rather than like the other two demos. A
  * perspective view of a saddle comes out roughly square, and over the whole

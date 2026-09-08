@@ -74,6 +74,7 @@ import {
   type Figure,
   type Mark,
   type Node,
+  type Stroke,
   type Vec2,
   type Track,
 } from '../index.js';
@@ -85,6 +86,17 @@ const pen = { colour: INK, width: 0.02 };
 const faint = { colour: MIST, width: 0.012 };
 const drawn = { colour: EMBER, width: 0.05 };
 const accent = { colour: DEEP, width: 0.035 };
+
+/**
+ * The tangent's own weight, nothing at both ends and the accent's full width in
+ * the middle.
+ *
+ * A tangent is a claim about one place on the curve, and a line drawn at one
+ * weight all the way to the edge of the graph reads as a line that carries on
+ * past it. Thinning to nothing at both ends says the piece that is drawn is the
+ * whole of it.
+ */
+const slope: Stroke = { colour: DEEP, width: { from: 0, to: 0.035, curve: 'thereAndBack' } };
 const wash = { colour: PEACH };
 const lit = AMBER;
 
@@ -251,7 +263,7 @@ export function sceneAt(along: number): Node {
       head: FIELD_HEAD,
     }),
     shape('curve', plot(coords, curve), { stroke: drawn }),
-    shape('tangent', tangentAt(coords, curve, x, { reach: 1.2 }), { stroke: accent }),
+    shape('tangent', tangentAt(coords, curve, x, { reach: 1.2 }), { stroke: slope }),
     dot('point', point, 0.08, ink),
     text('reading', fractionOf(frame, 0.02, 0.91), `slope ${labelFor(slopeOf(curve, x), 0.01)}`, TEXT.note, {
       fill: ink,
