@@ -45,7 +45,7 @@ export { curveCrossings } from './figure/intersect.js';
 export type { Crossing, CrossingOptions } from './figure/intersect.js';
 export type { Colour, Fill, Gradient, Mark, PathMark, Stop, Stroke, Taper, TextMark, Width } from './figure/mark.js';
 export { byAspect, fractionOf, matchingAspect, resolveExtent, viewMatrix } from './figure/extent.js';
-export type { Extent, ExtentChoice, Fit } from './figure/extent.js';
+export type { Extent, ExtentChoice, Fit, ViewAnimation, ViewChange } from './figure/extent.js';
 export { boundsOf, boundsOfMarks, centreOf } from './figure/bounds.js';
 export type { Bounds } from './figure/bounds.js';
 export { areaUnder, plot, riemannBars, slopeOf, tangentAt } from './figure/plot.js';
@@ -79,7 +79,7 @@ export type { GroupNode, Node, ShapeNode, Style, TextNode, TextOptions } from '.
 export { circumscribe, countTo, fadeIn, fadeOut, fadeTo, draw, flash, growFrom, indicate, morph, morphEquation, moveAlong, moveBy, rotate, scale } from './figure/animation.js';
 export type { AboutOptions, Animation, CircumscribeOptions, FlashOptions, IndicateOptions, ScaleOptions } from './figure/animation.js';
 export { Timeline } from './figure/timeline.js';
-export type { PlayOptions, Span, StaggerOptions } from './figure/timeline.js';
+export type { Entry, PlayOptions, Span, StaggerOptions } from './figure/timeline.js';
 export { lengthOf, pointAlong } from './figure/length.js';
 export { trimPath } from './figure/trim.js';
 export { alignPaths, lerpPath } from './figure/morph.js';

@@ -585,11 +585,46 @@ against the action.
 **What this changes is the shape of `Figure`**, which is why it goes in front of the format rather
 than after it.
 
-- [ ] **1. A view animation, and the timeline carrying it.** An entry that changes the extent over
+- [x] **1. A view animation, and the timeline carrying it.** An entry that changes the extent over
   its span, played and staggered like any other. The extent a figure declares stays what the view is
   before the first entry and after the last. **Measures:** `viewAt` answering the same matrix at
   every named time as it does today for a figure with no view entry; a view entry with a negative
   `after` overlapping the entrance and the matrix at eleven times through the overlap.
+
+  **Landed.** A `ViewAnimation` is the extent the entries before it left and how far along, to the
+  extent at that point, and a `ViewChange` is one as a timeline entry, holding it under `view`. The
+  wrapper is what lets one span list carry both kinds: an animation and a view animation are both
+  functions of two arguments and nothing at runtime tells them apart, so the object is the whole of
+  the test. **One list is the point of the item**, since `after` and `stagger` read that list and a
+  second timeline for the view could not sequence a camera move against an entrance at all.
+
+  `Span.animation` is `Span.entry`, and `play`, `together` and `stagger` take an `Entry`. `at` skips
+  the view entries and a new `extentAt` folds only those, over the extent it is given. `viewAt`
+  resolves the declared extent and hands it to `extentAt`, so a declared extent chosen from the shape
+  of the surface still chooses under a view that moves: `byAspect` picks 20 by 10 at a surface of 400
+  by 200 and 10 by 10 at 200 by 200 with a view entry in the timeline.
+
+  **Which reading of "and after the last" this took.** The declared extent is the base of the fold at
+  every time rather than the answer, so a figure with no view entry keeps it throughout and a
+  finished view entry stays applied in full. The other reading, that the view returns to the declared
+  extent once the last entry ends, would make a camera move snap back and would be the one rule a
+  span follows that no mark animation follows. A move to 4 over the span 1 to 3 reads the origin at
+  100 pixels at 0 and at 1, and at 20 at 3 and at 30.
+
+  **A move overlapping the entrance by half its own length**, which is what no view outside the
+  timeline could express, gives the spans (0, 2) and (1, 3) and a duration of 3. Over eleven times
+  through the overlap the fade reads against its own span and the move against its own, so one
+  entry's overlap shifts neither clock: the opacity is `seconds / 2` and the origin is
+  100 − 80·(seconds − 1)/2, both to 1e-10. Played `together` instead, both spans are (0, 2) and at
+  one second the opacity is 0.5 and the origin is 60.
+
+  **Every demo's view is unchanged, which is the other half of the measure.** None of the four holds
+  a view entry, so each is the matrix its own extent gives: the flat demo at (100, 0, 0, 0, -100, 0,
+  602, 300, 1) at the entrance and the beat and 478 across at the walk and the end, the solid demo at
+  93.75 with 540 across at all four of its named times, the boolean demo at 100 with 540, and the
+  rotation demo at 103.448276 with 485.172414 and 291.724138. The eight sheets are byte-identical.
+
+  The door went from 252 names to 255 and the suite from 722 tests to 732 over 45 files.
 
 - [ ] **2. The named view moves.** A move to a fixed extent, a follow with a margin, a framing of
   named marks, and a hold. These are the same forms step 7 of the format needs, written here first so

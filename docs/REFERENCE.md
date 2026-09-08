@@ -356,6 +356,11 @@ A mark is what a painter draws. It may request only what both painters implement
   - `centre` — where the middle of the frame sits, the origin unless named. A figure whose view
     follows something moves this rather than moving everything it draws.
 - `ExtentChoice` — an extent, or a function of the surface's aspect and the time that returns one.
+- `ViewAnimation` — the function a view entry holds: the extent the entries before it left and how
+  far along, to the extent at that point.
+- `ViewChange` — a view animation as a timeline entry, holding it under `view`. The wrapper is what
+  lets one span list carry a change to the marks and a change to the view, since both are functions
+  of two arguments and nothing at runtime tells them apart.
 - `Fit` — `contain` fits the whole extent inside the surface; `cover` fills the surface and lets the
   extent run off the edges.
 - `resolveExtent(choice, aspect, seconds)` — the extent a choice comes to at one shape of surface
@@ -721,17 +726,21 @@ a group of that name.
 - `Timeline` — the animations a figure plays and when. Every method hands back a new timeline rather
   than changing this one.
   - `Timeline.empty()` — a timeline with nothing in it.
-  - `play(animation, seconds, options)` — one change over a span of that length.
-  - `together(animations, seconds, options)` — several changes over one span, which is how two
+  - `play(entry, seconds, options)` — one change over a span of that length.
+  - `together(entries, seconds, options)` — several changes over one span, which is how two
     things move at once.
-  - `stagger(animations, seconds, options)` — a row of changes, each starting a gap after the one
+  - `stagger(entries, seconds, options)` — a row of changes, each starting a gap after the one
     before and each running the same length.
   - `wait(seconds)` — a gap before the next entry.
   - `at(marks, seconds)` — the marks as every span leaves them at a time. A span that has not
     started is applied at 0 and one already finished is applied in full. That is what makes
-    this a function of time rather than a record of what has been played.
+    this a function of time rather than a record of what has been played. View entries are
+    skipped, since they change no mark.
+  - `extentAt(extent, seconds)` — the extent as every view entry leaves it at a time, starting from
+    the one given. A timeline with no view entry hands back the extent it was given.
   - `spans` — the spans it holds. `duration` — how long the whole thing runs.
-- `Span` — one entry: its `animation`, the seconds it runs `from` and `to`, and the `curve` pacing
+- `Entry` — what one entry changes: an `Animation` over the marks, or a `ViewChange` over the view.
+- `Span` — one entry: its `entry`, the seconds it runs `from` and `to`, and the `curve` pacing
   it.
 - `PlayOptions` — what playing one change takes.
   - `curve` — how the change is paced. Still at both ends unless a figure says otherwise, because a

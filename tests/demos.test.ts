@@ -28,6 +28,7 @@ import {
   tangentAt,
   toGraph,
   vec2,
+  viewAt,
   widthAt,
   type Figure,
   type Mark,
@@ -110,6 +111,38 @@ const reading = (marks: readonly Mark[]) => {
 const walkPath = plot(coords, curve, { over: interval(0, 3) });
 const gaps = (points: readonly { x: number; y: number }[]) =>
   points.slice(1).map((point, at) => Math.hypot(point.x - points[at].x, point.y - points[at].y));
+
+describe("every demo's view", () => {
+  // None of the four holds a view entry, so each one's matrix is the extent it
+  // declares and nothing else. These are the numbers the timeline gaining a view
+  // entry had to leave alone.
+  const wanted: readonly [string, Figure, readonly number[], readonly number[]][] = [
+    ['tangent', tangent, [TIMES.entrance, TIMES.beat], [100, 0, 0, 0, -100, 0, 602, 300, 1]],
+    ['tangent', tangent, [TIMES.walkTo, durationOf(tangent)], [100, 0, 0, 0, -100, 0, 478, 300, 1]],
+    [
+      'solid',
+      solid,
+      [SOLID_TIMES.entrance, SOLID_TIMES.quarter, SOLID_TIMES.half, SOLID_TIMES.round],
+      [93.75, 0, 0, 0, -93.75, 0, 540, 300, 1],
+    ],
+    ['booleans', booleans, [booleans.still, durationOf(booleans)], [100, 0, 0, 0, -100, 0, 540, 300, 1]],
+    [
+      'turns',
+      turns,
+      [turns.still, durationOf(turns)],
+      [103.448276, 0, 0, 0, -103.448276, 0, 485.172414, 291.724138, 1],
+    ],
+  ];
+
+  it('is the matrix its own extent gives, at every named time', () => {
+    for (const [name, figure, times, matrix] of wanted) {
+      for (const seconds of times) {
+        const read = Array.from(viewAt(figure, seconds, 1080, 600));
+        read.forEach((value, at) => expect(value, `${name} at ${seconds}`).toBeCloseTo(matrix[at], 6));
+      }
+    }
+  });
+});
 
 describe('the committed pictures', () => {
   it('are what the code draws now', () => {

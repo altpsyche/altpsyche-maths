@@ -30,6 +30,29 @@ export function resolveExtent(choice: ExtentChoice, aspect: number, seconds = 0)
 }
 
 /**
+ * A change to the view over a span of time.
+ *
+ * It is handed the extent the entries before it left rather than the one the
+ * figure declares, so two view entries over one span compose the way two changes
+ * to the marks do. Like an animation it is given how far through its own span
+ * the clock is, already eased, which is what makes the view a function of time
+ * rather than a record of what has been played.
+ */
+export type ViewAnimation = (extent: Extent, along: number) => Extent;
+
+/**
+ * A view animation as a timeline entry.
+ *
+ * The wrapper is what lets one span list hold a change to the marks and a change
+ * to the view. Both are functions of two arguments and nothing at runtime tells
+ * them apart, and one list is what lets `after` and `stagger` sequence a camera
+ * move against an entrance.
+ */
+export interface ViewChange {
+  view: ViewAnimation;
+}
+
+/**
  * An extent per shape, for a figure whose composition does not survive being
  * reframed.
  *

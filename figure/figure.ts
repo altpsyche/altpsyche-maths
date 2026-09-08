@@ -69,9 +69,14 @@ export function marksAt(figure: Figure, seconds: number): readonly Mark[] {
  * extent at the same time its marks were asked for, and a consumer writing that
  * as two calls has two chances to pass different times. What the painter is
  * handed is the matrix, so the extent and the centring stay in here.
+ *
+ * The extent the figure declares is the base the timeline's view entries are
+ * folded over rather than the answer, so a declared extent chosen from the shape
+ * of the surface still chooses under a view that moves.
  */
 export function viewAt(figure: Figure, seconds: number, width: number, height: number): Mat3 {
-  const extent = resolveExtent(figure.extent, width / height, seconds);
+  const declared = resolveExtent(figure.extent, width / height, seconds);
+  const extent = figure.timeline ? figure.timeline.extentAt(declared, seconds) : declared;
   return viewMatrix(extent, figure.fit ?? 'contain', width, height);
 }
 

@@ -7,10 +7,20 @@
  */
 import { curveFor, type Curve } from '../values/ease.js';
 import type { Animation } from './animation.js';
+import type { Extent, ViewChange } from './extent.js';
 import type { Mark } from './mark.js';
 
+/** What one entry of a timeline changes: some of the marks, or the view. */
+export type Entry = Animation | ViewChange;
+
+/** A change to the marks rather than to the view. An animation is a function and
+ * a view change is an object holding one, which is the whole of the test. */
+function changesMarks(entry: Entry): entry is Animation {
+  return typeof entry === 'function';
+}
+
 export interface Span {
-  animation: Animation;
+  entry: Entry;
   from: number;
   to: number;
   curve: Curve;
@@ -49,18 +59,18 @@ export class Timeline {
     return new Timeline([], 0);
   }
 
-  play(animation: Animation, seconds: number, options: PlayOptions = {}): Timeline {
+  play(entry: Entry, seconds: number, options: PlayOptions = {}): Timeline {
     const from = this.duration + (options.after ?? 0);
     const to = from + seconds;
-    const span: Span = { animation, from, to, curve: options.curve ?? curveFor(true, true) };
+    const span: Span = { entry, from, to, curve: options.curve ?? curveFor(true, true) };
     return new Timeline([...this.spans, span], Math.max(this.duration, to));
   }
 
   /** Several changes over one span, which is how two things move at once. */
-  together(animations: readonly Animation[], seconds: number, options: PlayOptions = {}): Timeline {
+  together(entries: readonly Entry[], seconds: number, options: PlayOptions = {}): Timeline {
     let built: Timeline = this;
-    animations.forEach((animation, at) => {
-      built = built.play(animation, seconds, at === 0 ? options : { ...options, after: -seconds });
+    entries.forEach((entry, at) => {
+      built = built.play(entry, seconds, at === 0 ? options : { ...options, after: -seconds });
     });
     return built;
   }
@@ -73,11 +83,11 @@ export class Timeline {
    * them, and getting that arithmetic right at every entry is what a row of six
    * things arriving one after another used to cost.
    */
-  stagger(animations: readonly Animation[], seconds: number, options: StaggerOptions = {}): Timeline {
+  stagger(entries: readonly Entry[], seconds: number, options: StaggerOptions = {}): Timeline {
     const gap = Math.max(0, options.gap ?? seconds / 4);
     let built: Timeline = this;
-    animations.forEach((animation, at) => {
-      built = built.play(animation, seconds, at === 0 ? options : { ...options, after: gap - seconds });
+    entries.forEach((entry, at) => {
+      built = built.play(entry, seconds, at === 0 ? options : { ...options, after: gap - seconds });
     });
     return built;
   }
@@ -97,11 +107,35 @@ export class Timeline {
   at(marks: readonly Mark[], seconds: number): readonly Mark[] {
     let built = marks;
     for (const span of this.spans) {
-      const width = span.to - span.from;
-      const raw = width <= 0 ? (seconds >= span.to ? 1 : 0) : (seconds - span.from) / width;
-      const held = raw <= 0 ? 0 : raw >= 1 ? 1 : raw;
-      built = span.animation(built, span.curve(held));
+      if (!changesMarks(span.entry)) continue;
+      built = span.entry(built, span.curve(this.along(span, seconds)));
     }
     return built;
+  }
+
+  /**
+   * The extent as every view entry leaves it at a time, starting from the one
+   * the figure declares.
+   *
+   * A figure with no view entry gets the declared extent back at every time. One
+   * that has view entries gets it as the base of the fold rather than as the
+   * answer, so a declared extent chosen from the shape of the surface still
+   * chooses under a view that moves.
+   */
+  extentAt(extent: Extent, seconds: number): Extent {
+    let built = extent;
+    for (const span of this.spans) {
+      if (changesMarks(span.entry)) continue;
+      built = span.entry.view(built, span.curve(this.along(span, seconds)));
+    }
+    return built;
+  }
+
+  /** How far through its own span the clock is, held inside nothing to one. A
+   * span of no width is over the instant it is reached. */
+  private along(span: Span, seconds: number): number {
+    const width = span.to - span.from;
+    const raw = width <= 0 ? (seconds >= span.to ? 1 : 0) : (seconds - span.from) / width;
+    return raw <= 0 ? 0 : raw >= 1 ? 1 : raw;
   }
 }
