@@ -24,6 +24,7 @@ import {
   toGraph,
   vec2,
   type Mark,
+  type Vec2,
 } from '../index.js';
 import { PAGE_FLOOR, SHOWN_AT, SHOWN_AT_STRIP, sheets, stillMarkup } from '../demos/render.js';
 import {
@@ -743,6 +744,30 @@ describe('the rotation strip', () => {
 describe('the solid demo', () => {
   const solidAt = (seconds: number) => marksAt(solid, seconds);
   const named = [SOLID_TIMES.entrance, SOLID_TIMES.quarter, SOLID_TIMES.half, SOLID_TIMES.round];
+
+  it('holds its three runs of descent apart, so none reads as a tangle', () => {
+    // The field is nothing at the middle and every run bends hardest near it, so
+    // three runs seeded close to an axis all sweep the same small region.
+    const nearest = (first: readonly Vec2[], second: readonly Vec2[]) =>
+      Math.min(...first.map((one) => Math.min(...second.map((other) => vec2.distance(one, other)))));
+    const flat = descents.map((run) => run.map((at) => vec2(at.x, at.y)));
+    for (let first = 0; first < flat.length; first += 1)
+      for (let second = first + 1; second < flat.length; second += 1)
+        expect(nearest(flat[first], flat[second])).toBeGreaterThan(0.4);
+    for (const run of flat) expect(Math.min(...run.map((at) => vec2.magnitude(at)))).toBeGreaterThan(0.5);
+  });
+
+  it('turns no run of descent back on itself', () => {
+    for (const run of descents) {
+      const flat = run.map((at) => vec2(at.x, at.y));
+      for (let at = 1; at < flat.length - 1; at += 1) {
+        const before = vec2.sub(flat[at], flat[at - 1]);
+        const after = vec2.sub(flat[at + 1], flat[at]);
+        const turn = Math.abs(Math.atan2(vec2.cross(before, after), vec2.dot(before, after)));
+        expect(turn).toBeLessThan(Math.PI / 18);
+      }
+    }
+  });
 
   it('names each of its three axes at the far end of the line', () => {
     // Nothing in a picture of three axes says which way is x, so each carries its

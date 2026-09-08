@@ -160,7 +160,7 @@ eight.
 **The lock file agrees with the manifest again**, and holding it there is one
 `npm install --package-lock-only` in whichever commit bumps a version.
 
-**0.13.0 is being worked and seven of its eleven steps are ticked.** Siva read the eight sheets and
+**0.13.0 is being worked and eight of its eleven steps are ticked.** Siva read the eight sheets and
 rejected them, so 1.0.0 waits behind it: the cut's last criterion is Siva reading the README, the
 guide and the pictures, and the pictures are being redrawn.
 
@@ -171,7 +171,7 @@ reaching it. The six colours a reader takes a value off went from 1.10:1 through
 luminance a colour needs to clear 4.5:1 on white is 0.183333 or less and on `#0d1117` is 0.199675 or
 more. The suite went from 618 tests to 620 and the door from 227 names to 229.
 
-**The next session starts at step 8.** Siva made the one call this version had, the dark ramp's hue,
+**The next session starts at step 9.** Siva made the one call this version had, the dark ramp's hue,
 and answered it with slate. He also put three defects of the solid sheet into this version rather
 than after it, which are steps 7, 8 and 9, so the plan is eleven steps rather than eight.
 
@@ -411,11 +411,20 @@ name to the door, and 0.13.0 lands before the surface is frozen at 1.0.0 for tha
   1,060 to 1,072, and a walk of it paints 10 pieces of text where it painted 7. The suite went from
   627 tests to 628.
 
-- [ ] **8. The descent run's curl.** One of the three runs of steepest descent makes a small loop
-  near the origin on both solid sheets, which reads as an artifact rather than as a run down a
-  saddle. The cause is not diagnosed: the seed at `(0.5, -0.04)` starts near the y axis, where the
-  field this saddle gives is `(-x, y)` and the run turns hard. **Measures:** the greatest turn
-  between two steps of a run, from its value today.
+- [x] **8. The descent run's curl.** **Nothing was wrong with any one run.** The worst turn between
+  two steps of the three was 13.5 degrees and the field's magnitude along them never fell below
+  0.202, so the integration was sound and the curl was not an artifact of it. What made the curl is
+  three runs in one place: seeded a twentieth off the x axis at `(1.3, 0.06)`, `(-1.3, 0.06)` and
+  `(0.5, -0.04)`, all three swept the region round the middle and came within 0.106 of each other,
+  one of them passing 0.202 from the middle itself. Projected onto the saddle three curves that
+  close read as one tangle.
+
+  **The field is nothing at the middle and every run bends hardest near it**, which is why a seed
+  near an axis is a seed that crowds. Three tenths off, at `(1.3, 0.3)`, `(-1.3, 0.3)` and
+  `(0.6, -0.3)`, the closest two runs hold 0.528 apart and the nearest any comes to the middle is
+  0.600. The worst turn fell from 13.5 degrees to 4.7 and the smallest magnitude rose from 0.202 to
+  0.600. The runs are shorter for it, 35, 35 and 28 points where they were 47, 47 and 36. The suite
+  went from 628 tests to 630.
 
 - [ ] **9. The typeset rule placed against its picture.** All four tangent and surface sheets put the
   equation in the top-left corner with a column of white between it and the graph it describes.

@@ -101,10 +101,17 @@ export const section = sectionOf(surfaceAt, { point: vec3(0, 0, HEIGHT), normal:
  */
 const descent = (at: Vec2) => vec2(-at.x, at.y);
 
-/** Where the three runs start. None is on either axis: a run started on one
- * stays on it, and a straight line down a saddle says nothing about how the run
- * was found. */
-const SEEDS = [vec2(1.3, 0.06), vec2(-1.3, 0.06), vec2(0.5, -0.04)];
+/**
+ * Where the three runs start.
+ *
+ * None is on either axis: a run started on one stays on it, and a straight line
+ * down a saddle says nothing about how the run was found. None is near one
+ * either. Seeded a twentieth off the x axis the three runs all swept the same
+ * small region round the middle, passing within 0.106 of each other, and three
+ * runs that close read as one tangle rather than as three descents. Three
+ * tenths off, the closest two hold 0.528 apart.
+ */
+const SEEDS = [vec2(1.3, 0.3), vec2(-1.3, 0.3), vec2(0.6, -0.3)];
 
 /** How far each step of a run moves, in the units the surface is drawn in, and
  * how many steps one may take before the region's own edge stops it. */
