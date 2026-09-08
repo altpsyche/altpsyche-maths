@@ -473,7 +473,7 @@ frozen door is what a major exists for, so either the old calls keep working bes
 which means two APIs and two things to test, or the version goes to two. **That is Siva's call and
 this plan assumed a minor without asking.**
 
-**Realistic shape: at least thirty-one commits over the vocabulary and the surfaces, plus the
+**Realistic shape: at least thirty-two commits over the vocabulary and the surfaces, plus the
 site.** Against evenings and weekends that is months rather than weeks. The plan is still worth doing
 and the reasons in this document are unchanged. What was wrong was the size written next to them.
 
@@ -483,14 +483,14 @@ Each is commit-sized and names what its commit will measure. **The measurement i
 and it is the reason this plan is checkable: a figure as data draws mark for mark what the TypeScript
 figure draws, compared by tolerance.** The demos are already the conformance suite.
 
-**Steps 3 and 4 are written out, which is what the session of 2026-09-08 did.** Step 3 is twelve
+**Steps 3 and 4 are written out, which is what the session of 2026-09-08 did.** Step 3 is thirteen
 commits and step 4 is five, each named below with the demo whose marks measure it. Step 11 cuts the
 version and there is no step between it and step 10. **Step 7.5 was added by the audit of the 1.x
 band**, since 1.6.0 gave a figure insets and nothing here carried them.
 
-**The honest count is at least thirty-one commits rather than twelve to sixteen.** Eight of the
+**The honest count is at least thirty-two commits rather than twelve to sixteen.** Eight of the
 twelve steps are one commit each, which is the seven this plan was written with and the inset step
-1.6.0 added to it. Step 3 is twelve and step 4 is five. Step 8 rewrites four demos and is four. Step 9
+1.6.0 added to it. Step 3 is thirteen and step 4 is five. Step 8 rewrites four demos and is four. Step 9
 rewrites the guide and the reference and is two. The site is not counted here at all, since it is a
 release away and has a document of its own.
 
@@ -530,10 +530,10 @@ release away and has a document of its own.
   drawn. That refusal is the price of the format being closed and it is the one place the price
   shows.
 
-- [ ] **3. The node vocabulary, which is twelve commits.** Twenty-one node kinds, two item producers,
+- [ ] **3. The node vocabulary, which is thirteen commits.** Twenty-one node kinds, two item producers,
   eleven path producers and two point producers as records with parameters, and a resolver from a record to the nodes that exist now. The
   authoring calls keep their names and their arguments and return records. **The measurement every
-  one of the twelve quotes is the same:** the demo that draws the kinds of that commit gives the same
+  one of the thirteen quotes is the same:** the demo that draws the kinds of that commit gives the same
   marks at its own named times, within tolerance, built through records rather than calls, and the
   suite grows. A kind no demo draws is measured against its own call at one time instead.
 
