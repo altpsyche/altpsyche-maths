@@ -1,54 +1,90 @@
 # @altpsyche/maths
 
-The design of this package: what a figure is, the rule every part of it follows, the line through the
-middle of it, and the seam everything above rests on. It queues nothing. [docs/ROADMAP.md](docs/ROADMAP.md) is
-the only place work is queued.
+This document states the design. It covers what a figure is, the rule every part of the package
+follows, the line through the middle of it, and the seam everything above that line rests on. It
+queues nothing. [docs/ROADMAP.md](docs/ROADMAP.md) is the only place work is queued.
 
-It was written before the code, so the shape could be argued about while arguing was cheap, and it
-lived in the website that consumes the package until the package had a repository of its own. What
-is here now is the package's half of it. The website keeps what the website owns.
+It was written before the code, so the shape could be argued about while arguing was cheap. It lived
+in the website that consumes the package until the package had a repository of its own. What remains
+here is the package's half. The website keeps what the website owns.
 
-## What it is for
+## Purpose
 
-A **figure** is a picture that moves and explains itself. A chapter can show a ray walking toward a surface, with the length of each step drawn beside it and a label that follows the ray. The same figure can be recorded to a video file at the sizes the export dialog already offers.
+A **figure** is a picture that moves and explains itself. A chapter can show a ray advancing toward
+a surface, with the length of each step drawn beside it and a label following the ray. The same
+figure records to a video file at the sizes the export dialog already offers.
 
-The site cannot draw a picture like that today. A shader draws light and prose describes it, and there is nothing in between that can point at a thing on screen and name it.
+The site cannot draw such a picture today. A shader draws light and prose describes it, and nothing
+between the two can point at a thing on screen and name it.
 
-The idea comes from Manim, the Python library Grant Sanderson wrote for 3Blue1Brown's videos. Two ideas are taken from it. A picture is a timeline of animations over named objects, and those objects are measured in the picture's own units rather than in pixels. The rest is not taken, including Python.
+The idea comes from Manim, the Python library Grant Sanderson wrote for 3Blue1Brown. Two ideas are
+taken from it: a picture is a timeline of animations over named objects, and those objects are
+measured in the picture's own units rather than in pixels. The rest is not taken, Python included.
 
-Running real Manim would put Python, LaTeX and ffmpeg into the build, and the build would fail on a machine without them. What comes out is a video file. A video file cannot follow the reader's light or dark theme, and it cannot be scrubbed. It is not something the page renders, and the site's argument is that the picture is live.
+Manim itself would put Python, LaTeX and ffmpeg into the build, and the build would fail on a
+machine without them. Its output is a video file. A video file cannot follow the reader's light or
+dark theme and cannot be scrubbed. The page does not render it, and the site's argument is that the
+picture is live.
 
-## The rule that shapes everything
+## The rule for numbers a shader owns
 
 **A number a figure shows, that a shader also decides, comes from that shader's entry.**
 
-A ray marcher drawn in TypeScript to explain a ray marcher written in GLSL is the same marcher written twice, in two languages, free to disagree. This site has paid for that shape more than once. The canvas and the export once answered "what is this value now" in two places, and the website's shader keyframes carry the scar of it.
+A ray marcher written in TypeScript to explain a ray marcher written in GLSL is one marcher
+implemented twice, in two languages, free to disagree. This site has paid for that arrangement more
+than once. The canvas and the export once answered "what is this value now" in two places, and the
+website's shader keyframes still show the cost.
 
-An earlier draft said a figure may never re-implement shader mathematics at all, and that rule cannot survive a series about shader mathematics. A figure explaining a circle's distance function has to draw `length(p) - r`, and writing that in TypeScript is not a risk worth a rule.
+An earlier draft forbade a figure from re-implementing shader mathematics at all, and that rule
+cannot survive a series about shader mathematics. A figure explaining a circle's distance function
+has to draw `length(p) - r`, and writing that in TypeScript is not a risk worth a rule.
 
-What is a risk is a number. "It converges in twelve steps" is true because of a step count and an epsilon that live in the shader. A figure that types twelve into itself is wrong the day either of them changes. So a formula may be re-derived and a constant may not. `check:code-parity` already holds an article's code to the shader it documents, and this is the same rule about a different kind of text.
+The risk is a number. "It converges in twelve steps" is true because of a step count and an epsilon
+that live in the shader. A figure holding twelve of its own is wrong the day either changes. A
+formula may be re-derived; a constant may not. `check:code-parity` already holds an article's code
+to the shader it documents, and this is that rule applied to a different kind of text.
 
-**A figure also never reads a shader's current state**, which is the same rule reached from the other side. An overlay does not know whether the disc is edge on right now, because the picture underneath it might be a still.
+**A figure never reads a shader's current state**, which is the same rule from the other side. An
+overlay does not know whether the disc is edge on at this moment, because the picture underneath may
+be a still.
 
-That decides where the work starts. **Drawing over a live shader is the first case, not the advanced one.** An arrow on the photon ring while the disc turns cannot contradict the shader, because the shader is underneath it.
+That fixes where the work starts. **Drawing over a live shader is the first case rather than the
+advanced one.** An arrow on the photon ring while the disc turns cannot contradict the shader,
+because the shader is underneath it.
 
-**A figure was flat, and that refusal was lifted at 0.10.0.** The argument for it was that a perspective view belongs to a shader, that the engine already owns a camera and a view projection, and that a figure growing its own would put two of each in the tree by the back door. What answered it is the goal: a large share of the pictures this package is meant to be able to draw are surfaces and vectors in space, so a package that refuses them refuses the goal. The camera here is a figure's camera and not the engine's, and the two stay separate for the reason the next section gives. Every builder that works in space hands back the flat nodes the rest of the package already draws.
+**A figure was flat, and that restriction was lifted at 0.10.0.** The argument for it was that a
+perspective view belongs to a shader and that the engine already owns a camera and a view
+projection. A figure growing its own would place two of each in the tree. The goal answers it: a
+large share of the pictures this package is meant to draw are surfaces and vectors in space, so a
+package refusing them refuses the goal. The camera here is a figure's camera and not the engine's,
+and the two stay separate for the reason the next section gives. Every builder that works in space
+returns the flat nodes the rest of the package already draws.
 
-## The engine is left alone
+## Relationship to the engine
 
-An earlier draft had the engine depend on this package, so that one `Vec3` existed in the tree. That was wrong, and the reason is worth keeping.
+An earlier draft had the engine depend on this package, so that one `Vec3` existed across the tree.
+That was wrong, and the reason is worth keeping.
 
-The engine publishes `mat3`, `mat4`, `vec3`, a `Scene`, a `Transform` and a draw list from its one door. A duplicate type costs something only where values cross the boundary, and nothing crosses it. A figure drawn over a shader in screen space passes no vector to the engine. The crossing appears when a shader declares a camera, which is separate work that has not been done.
+The engine publishes `mat3`, `mat4`, `vec3`, a `Scene`, a `Transform` and a draw list from its one
+door. A duplicate type costs something only where values cross the boundary, and nothing crosses it.
+A figure drawn over a shader in screen space passes no vector to the engine. The crossing appears
+when a shader declares a camera, which is separate work not yet done.
 
-Moving the engine's maths now would buy two things, and neither is worth having. A fixed release order across two repositories on the first step, and the renderer inside the blast radius of early figure work.
+Moving the engine's mathematics now would buy a fixed release order across two repositories on the
+first step. It would also place the renderer inside the reach of early figure work. Neither is worth
+having.
 
-**So the engine is untouched.** The duplicate is real and it is free while nothing crosses.
+**The engine is therefore untouched.** The duplication is real and it costs nothing while nothing
+crosses.
 
-One thing does carry over from that draft. The engine's `Scene` is entities and a camera for the renderer. A figure is a flat picture on a timeline. Two `Scene` types imported from two packages into one file is a reader's problem even when it is not a compiler's, so the word here is **figure** and never scene.
+One decision carries over from that draft. The engine's `Scene` is entities and a camera for the
+renderer. A figure is a flat picture on a timeline. Two `Scene` types imported from two packages
+into one file is a reader's problem even where it is not a compiler's, so the word here is
+**figure** and never scene.
 
-## The names
+## Terminology
 
-Six words are used throughout, and each means one thing.
+Six words are used throughout, each with one meaning.
 
 A **figure** is the description of a picture over time. It has no canvas and no clock.
 
@@ -58,11 +94,11 @@ A **group** holds marks and other groups under one transform.
 
 An **animation** changes marks over a span of time.
 
-The **timeline** is the ordered list of animations and pauses that gives a figure its duration.
+The **timeline** is the ordered list of animations and pauses giving a figure its duration.
 
 A **painter** turns marks into something a reader can see.
 
-## The three packages
+## The package graph
 
 ```mermaid
 graph TD
@@ -103,143 +139,249 @@ graph TD
 
 An arrow means "depends on".
 
-**The website depends on both packages and they do not know each other.** It reaches the engine for every shader it draws. It reaches maths for the figures, and for the track sampling its shader controls already do by hand.
+**The website depends on both packages and the two do not know each other.** It reaches the engine
+for every shader it draws. It reaches maths for the figures, and for the track sampling its shader
+controls perform by hand.
 
-**Maths depends on no other package here.** No renderer, no framework, no browser API beyond what a painter is handed. That is what lets it be tested without a browser. Its one runtime dependency is MathJax, which the typesetting call loads and nothing else reaches.
+**Maths depends on no other package here.** No renderer, no framework, no browser API beyond what a
+painter is handed, which is what allows testing without a browser. Its one runtime dependency is
+MathJax, loaded by the typesetting call and reached by nothing else.
 
-**Maths must never import the engine.** A painter that handed marks to the engine, so that a figure and a shader shared one surface, would look like it belongs beside the other painters. It would become a cycle the day the grey arrow above is drawn for real. That painter lives in the website, which knows both.
+**Maths must never import the engine.** A painter handing marks to the engine, so that a figure and
+a shader shared one surface, would appear to belong beside the other painters. It would become a
+cycle on the day the grey arrow above is drawn for real. That painter lives in the website, which
+knows both.
 
-**Neither package may import the website.** The palette, the content and the theme tokens are arguments passed in. That is why a palette is handed to a figure rather than read from the page.
+**Neither package may import the website.** The palette, the content and the theme tokens are
+arguments passed in, which is why a palette is handed to a figure rather than read from the page.
 
-## Inside the package
+## Structure
 
-The engine has one door and a test that keeps it that way, so this package has one door too. It is ESM with `sideEffects: false`, which is what lets a page that draws nothing avoid paying for a painter.
+The engine has one door and a test that keeps it that way, so this package has one door as well. It
+is ESM with `sideEffects: false`, which allows a page drawing nothing to avoid paying for a painter.
 
-There is a line through the middle of it, and it is named now so that a split later is mechanical.
+A line runs through the middle of the package, named now so that a split later is mechanical.
 
-**Below the line: values and timing.** Vectors, matrices, angles, intervals, easing curves, interpolation and colour. Keys, tracks and sampling. This half changes almost never.
+**Below the line: values and timing.** Vectors, matrices, angles, intervals, easing curves,
+interpolation and colour. Keys, tracks and sampling. This half changes almost never.
 
-**Above the line: figures and painters.** Paths and the geometry over them, marks, groups, the timeline, the animations, and the two painters. This half changes weekly for months.
+**Above the line: figures and painters.** Paths and the geometry over them, marks, groups, the
+timeline, the animations, and the two painters. This half changes weekly for months.
 
-Nothing below the line imports anything above it. Things that change at different rates should not share a release number, and if that pressure ever arrives the cut is already drawn.
+Nothing below the line imports anything above it. Halves changing at different rates should not
+share a release number, and the cut is already drawn against the day that pressure arrives.
 
-**Timing came out of the website and into this package.** The website already sampled a track of keys with a flat or a straight approach, and nothing about that is shader-specific. A figure's timeline asks the same question, so the website's keyframes read this sampler and carry none of their own.
+**Timing moved out of the website and into this package.** The website already sampled a track of
+keys with a flat or a straight approach, and nothing about that is shader-specific. A figure's
+timeline asks the same question, so the website's keyframes read this sampler and carry none of
+their own.
 
-That move mattered beyond tidiness. It gave the package a consumer that shipped before a single figure existed, which is the test of whether a package is real or a wrapper around one idea, and it is the test every addition since has been held to.
+That move gave the package a consumer shipping before a single figure existed, which is the test of
+whether a package is real or a wrapper around one idea. Every addition since has been held to it.
 
-## The seam: a figure at a time is data
+## The seam
 
 ```ts
 marksAt(figure, seconds): readonly Mark[]
 ```
 
-Asking a figure for a time gives back a flat list of resolved marks. Transforms are applied. Styles are resolved. Coordinates are in the figure's own units. Nothing has touched a screen.
+Evaluating a figure at a time yields a flat array of resolved marks. Transforms are applied, styles
+are resolved, coordinates are in the figure's own units, and nothing has touched a screen.
 
-The obvious alternative is `draw(context, seconds)`, and it is worse for four reasons that each cost something real.
+The obvious alternative is `draw(context, seconds)`. It is worse for four reasons, each costing
+something real.
 
-**One picture reaches every surface.** The page paints marks into SVG. The recorder paints the same marks into a canvas. A test paints nothing at all. None of the three can drift from another, because none of them is a second implementation.
+**One picture reaches every surface.** The page paints marks into SVG, the recorder paints the same
+marks into a canvas, and a test paints nothing at all. None of the three can drift from another,
+since none is a second implementation.
 
-**Manim's harder animations are the default rather than a feature.** `Transform` interpolates two paths point by point, so the geometry is rebuilt every frame rather than moved. `always_redraw` rebuilds a shape from a changing value every frame. Both of those are geometry as a function of time, which is what this signature already is. In a design where marks were long-lived objects being mutated, each one would be a special case.
+**Manim's harder animations are the default rather than a feature.** `Transform` interpolates two
+paths point by point, rebuilding the geometry every frame rather than moving it. `always_redraw`
+rebuilds a shape from a changing value every frame. Both are geometry as a function of time, which
+is what this signature already is. Where marks were long-lived objects under mutation, each would be
+a special case.
 
-**Text has somewhere to go.** The text marks sit in the list, in order, so a text alternative comes out of the picture rather than being written twice and going stale.
+**Text has somewhere to go.** Text marks sit in the array in order, so a text alternative is derived
+from the picture rather than written twice and left to go stale.
 
-**A painter is cheap to add.** The SVG painter and the canvas painter are the proof: adding the second changed nothing above it.
+**A painter is cheap to add.** The SVG painter and the canvas painter are the evidence: adding the
+second changed nothing above it.
 
-Four things follow from this seam and are part of it.
+Four properties follow from this seam and are part of it.
 
-**A figure is a pure function of time.** Ask for four seconds and it gives the picture at four seconds, whatever it gave before. Three consumers arrive at times in three different orders. The page plays forward. A reader dragging the scrub bar jumps backward. The recorder walks a fixed step and never skips. A figure holding state between frames would answer differently for each of them.
+**A figure is a pure function of time.** An evaluation at four seconds yields the picture at four
+seconds, whatever it yielded before. Three consumers arrive at times in three different orders. The
+page plays forward, a reader dragging the scrub bar jumps backward, and the recorder steps at a
+fixed rate. A figure holding state between frames would answer each of them differently.
 
-**Nothing here draws a random number.** A figure that wants one carries its own seed, so the picture at four seconds is the picture at four seconds however many times it is asked for.
+**Nothing here draws a random number.** A figure requiring one carries its own seed, so the picture
+at four seconds is the picture at four seconds however many times it is requested.
 
-**Every mark carries an id.** Hit testing reads the list, the way everything else does. Without ids it would have to walk the figure instead, which is two traversals of one structure.
+**Every mark carries an identifier.** Hit testing reads the array, as everything else does. Without
+identifiers it would walk the figure instead, which is two traversals of one structure.
 
-**Marks are for explanation and not for data.** A figure of a few hundred marks redrawn sixty times a second is comfortable. The flat demo is 202 marks and the solid one 265, and reading a frame and writing its SVG at 1280 by 720 costs 2.5 and 2.7 milliseconds each. A sixtieth of a second is 16.7. Ten thousand is not, and a figure that wants ten thousand wants a shader.
+**Marks are for explanation and not for data.** A figure of a few hundred marks redrawn sixty times
+a second is comfortable. The flat demo is 202 marks and the solid one 265. Reading a frame and
+writing its SVG at 1280 by 720 costs 2.5 and 2.7 milliseconds each, against the 16.7 a sixtieth of a
+second allows. Ten thousand marks is not comfortable, and a figure wanting ten thousand wants a
+shader.
 
 ## Units and the frame
 
-A figure is measured in its own units. It declares an extent, the way Manim declares a frame eight units high, and one matrix maps that extent onto whatever surface is asked for.
+A figure is measured in its own units. It declares an extent, as Manim declares a frame eight units
+high, and one matrix maps that extent onto whatever surface is requested.
 
-One figure then draws at 640 pixels wide in a chapter and at 2160 by 3840 in a reel. There is no second version of the picture. Stroke widths and font sizes are in figure units too and multiply up with everything else, so a line that reads well in the chapter reads well in the reel.
+One figure then draws at 640 pixels wide in a chapter and at 2160 by 3840 in a reel. There is no
+second version of the picture. Stroke widths and font sizes are in figure units and scale with
+everything else, so a line reading well in the chapter reads well in the reel.
 
-**A figure declares what to do about shape, rather than being cropped.** The export offers three shapes, and `accretion` already showed what a wide composition does in a square frame. It needed a zoom of 0.6 rather than a crop. So a figure gives an extent per shape where it wants one, and a single extent where the picture works everywhere.
+**A figure declares what to do about aspect ratio rather than being cropped.** The export offers
+three shapes, and `accretion` demonstrated what a wide composition does in a square frame: it needed
+a zoom of 0.6 rather than a crop. A figure therefore supplies an extent per shape where it wants
+one, and a single extent where the picture works at every shape.
 
-**A figure may declare itself a loop.** The export already offers a looping clip, and a reader can tick it today. A figure that ends somewhere other than where it started would give them a clip that jumps once a second. A looping figure is one whose marks at its duration match its marks at zero. That is a gate rather than a promise, because the two lists are already there to compare.
+**A figure may declare itself a loop.** The export offers a looping clip and a reader can select it
+today. A figure ending somewhere other than where it started would give them a clip that jumps once
+a second. A looping figure is one whose marks at its duration match its marks at zero. That is a
+gate rather than a promise, since the two arrays are already available for comparison.
 
 ## Time
 
-Three numbers are involved, and the site currently works out the relation between them inside the recorder's loop:
+Three quantities are involved, and the site currently derives the relation between them inside the
+recorder's loop:
 
 ```ts
 image.data.set(await source.frameAt(time + settle / this.settings.fps, settle + frame + 1, time));
 ```
 
-**Clip time** runs from zero to the duration. Keys are sampled at it, and a figure's timeline is sampled at it.
+**Clip time** runs from zero to the duration. Keys are sampled at it, and a figure's timeline is
+evaluated at it.
 
-**Source time** is what a shader's clock is given. It leads clip time by the settling period.
+**Source time** is what a shader's clock receives. It leads clip time by the settling period.
 
-**Settling** is the frames a shader draws and throws away before clip time zero. A shader that builds its picture out of its own last frame opens on an empty one.
+**Settling** is the frames a shader draws and discards before clip time zero. A shader building its
+picture from its own last frame opens on an empty one.
 
-That arithmetic is the consumer's, and this package holds no clock of its own: a figure is asked for a time in clip seconds and answers. The three numbers are one type declared once in the website, which hands the same type to the page and to the recorder. A figure over a shader needs the same arithmetic, and a second copy is how the two would come to disagree.
+That arithmetic belongs to the consumer, and this package holds no clock: a figure is evaluated at a
+time in clip seconds. The three quantities are one type declared once in the website, which hands
+the same type to the page and to the recorder. A figure over a shader needs the same arithmetic, and
+a second copy is how the two would come to disagree.
 
-## The two painters
+## Painters
 
-**SVG on the page.** A figure on the page is SVG, and the reasons are all things this site has already been bitten by.
+**SVG on the page.** A figure on the page is SVG, for four reasons this site has already paid to
+learn.
 
-The screenshot sweep paints its mask over a whole canvas element, so a figure in a canvas is a rectangle of nothing to it. That blindness hid a defect in the website this was written for through five layers of it. SVG is in the document, so the sweep reads the real thing rather than a stand-in for it.
+The screenshot sweep paints its mask over a whole canvas element, so a figure inside a canvas is a
+blank rectangle to it. That blindness concealed a defect in the website through five layers of it.
+SVG is in the document, so the sweep reads the picture itself.
 
-Text in SVG is text. A screen reader gets it, a reader can select it, and the hand-written alternative is a fallback rather than the only route.
+Text in SVG is text. A screen reader reads it, a reader selects it, and the hand-written alternative
+is a fallback rather than the only route.
 
-CSS custom properties reach SVG, so a figure follows the theme toggle without anything watching for it.
+CSS custom properties reach SVG, so a figure follows the theme toggle with nothing watching for it.
 
-An overlay is sharper. A figure over a shader is a transparent SVG above a canvas, composited by the browser and crisp at any device pixel ratio. There is no second canvas to keep in step with the shader's size.
+An overlay stays sharp. A figure over a shader is a transparent SVG above a canvas, composited by
+the browser and crisp at any device pixel ratio. There is no second canvas to keep in step with the
+shader's size.
 
-**Canvas for recording.** The encoder takes one surface, so the recorder paints the same marks into the 2D canvas it already builds. The recorded clip is painted rather than rasterised from the page, which is why the two painters have to agree.
+**Canvas for recording.** The encoder takes one surface, so the recorder paints the same marks into
+the 2D canvas it already builds. The recorded clip is painted rather than rasterised from the page,
+which is why the two painters have to agree.
 
-**A mark may only ask for what both painters can do.** SVG has filters, blend modes and clip paths that a 2D canvas either lacks or supports patchily. A figure reaching for one of those would look right on the page and lose it silently in the export, which is the worst way to find out. So the mark vocabulary is the intersection of the two painters rather than the union of them. The type is the contract.
+**A mark may request only what both painters implement.** SVG has filters, blend modes and clip
+paths that a 2D canvas either lacks or supports partially. A figure using one of them would render
+correctly on the page and lose the effect silently in the export. The mark vocabulary is therefore
+the intersection of the two painters rather than the union, and the type is the contract.
 
-**A gate paints one mark list both ways and checks that both painters consumed every mark and emitted the same geometry and style.** It is not a comparison of pixels. SVG text and a canvas `fillText` do not rasterise identically, and holding them to that would be a gate failing over antialiasing.
+**One gate paints a single mark array both ways and holds both painters to consuming every mark and
+emitting the same geometry and style.** It is not a comparison of pixels. SVG text and a canvas
+`fillText` do not rasterise identically, and holding them to that would be a gate failing over
+antialiasing.
 
-There is no per-figure choice between them. A figure that genuinely needed canvas on the page would be a change made against evidence, and none exists yet.
+There is no per-figure choice between the two. A figure genuinely requiring canvas on the page would
+be a change made against evidence, and no such evidence exists.
 
-**The still frame is painted into the page before any JavaScript runs.** `marksAt` is a pure function with no framework and no browser under it, so the SVG painter can write markup as a string during the static export. A figure then arrives in the HTML, at its still time, and starts moving when the page hydrates. A reader with no JavaScript sees the picture, a feed reader sees the picture, and nothing flashes empty on first paint. A canvas cannot do any of that, and this is the strongest reason SVG is the page painter rather than a narrow one.
+**The still frame is painted into the page before any JavaScript runs.** `marksAt` is a pure
+function with no framework and no browser beneath it, so the SVG painter writes markup as a string
+during the static export. A figure arrives in the HTML at its still time and begins moving when the
+page hydrates. A reader with no JavaScript sees the picture, a feed reader sees the picture, and
+nothing flashes empty on first paint. A canvas does none of that, and this is the strongest reason
+SVG is the page painter.
 
 ## Colour
 
 **A figure never reads the page.** It is given a palette and draws with it.
 
-On the page the palette can be CSS custom properties, which SVG reads directly. In a recording it cannot. The recorder draws into a canvas that is not in the document, and no theme reaches it. A figure that called `getComputedStyle` would work on the page and fail in an export. The palette is resolved once and handed over when the export starts.
+On the page the palette may be CSS custom properties, which SVG reads directly. In a recording it
+may not: the recorder draws into a canvas outside the document, which no theme reaches. A figure
+calling `getComputedStyle` would work on the page and fail in an export. The palette is resolved
+once and handed over when the export starts.
 
-The palette names roles rather than colours, and the names match the site's own tokens so a figure looks like the page around it.
+The palette names roles rather than colours, and the names match the site's own tokens, so a figure
+matches the page around it.
 
-**A colour is read only out of the text it was handed.** `colourOf` reads hex and `rgb()`, which is what lets two colours be walked between, and it refuses every other form rather than guessing at one. A named colour read as black would be a wrong picture with nothing to say it went wrong.
+**A colour is parsed only out of the text it was handed.** `colourOf` reads hex and `rgb()`, which
+is what permits interpolation between two colours, and rejects every other form rather than guessing
+at one. A named colour parsed as black would be a wrong picture with nothing reporting the error.
 
 ## Text and equations
 
 A text mark is text, and on the page it is a real SVG text node.
 
-**Nothing about a figure's layout may depend on how wide some text is.** Measuring text gives an answer that depends on which fonts the machine has, so a box sized to fit a label would be a different box on two machines. A label is placed by an anchor and an alignment, and it never pushes anything else around.
+**No part of a figure's layout may depend on the width of text.** Measuring text yields an answer
+depending on which fonts the machine has, so a box sized to fit a label would be a different box on
+two machines. A label is placed by an anchor and an alignment, and it moves nothing else.
 
-**An equation is paths, and it is paths on the page as well as in a recording.** The draft of this file said the choice was KaTeX in the document for a page and MathJax in Node for a recording. That is one equation with two pictures free to disagree, which is the problem this file's opening rule exists to refuse. One typesetter, one geometry, both surfaces.
+**An equation is paths, on the page as well as in a recording.** The draft of this document chose
+KaTeX in the document for a page and MathJax in Node for a recording. That is one equation with two
+pictures free to disagree, which is the case this document's opening rule exists to refuse. One
+typesetter, one geometry, both surfaces.
 
-What follows from that is what a reader is given instead of selectable text. A figure is one picture carrying one label, so an equation inside it was never going to be text a character could be selected out of, and the LaTeX is that label.
+What follows is what a reader receives instead of selectable text. A figure is one picture carrying
+one label, so an equation inside it was never going to be text a character could be selected out of.
+The LaTeX is that label.
 
-**The typesetter is in this package and the way in for its output was already here.** `pathFromData` reads an SVG `d` attribute back as a path, the inverse of what the SVG painter writes, so a glyph from a typesetter, an icon from a designer or an outline a drawing program exported can all be trimmed, aligned and walked into another shape. Without it the only shapes that existed were the ones the builders here make.
+**The typesetter is in this package, and the route in for its output was already here.**
+`pathFromData` reads an SVG `d` attribute back as a path, which is the inverse of what the SVG
+painter writes. A glyph from a typesetter, an icon from a designer and an outline exported by a
+drawing program can each therefore be trimmed, aligned and interpolated into another shape. Without
+it the only available shapes are the ones the builders here produce.
 
-**The typesetter goes behind the one door rather than behind a second one**, which costs this package its freedom from runtime dependencies. Siva's reason is that nobody installs a figures package without needing to label a picture with mathematics, so a consumer who pays for MathJax and never typesets is a consumer who does not exist. It runs at build time rather than in a browser, so what a reader downloads does not change.
+**The typesetter goes behind the one door rather than behind a second one**, which costs this
+package its freedom from runtime dependencies. Siva's reason: nobody installs a figures package
+without needing to label a picture with mathematics, so a consumer paying for MathJax and never
+typesetting does not exist. It runs at build time rather than in a browser, so what a reader
+downloads is unchanged.
 
-**What the door does not cost is the load.** MathJax is reached by an import written as a call inside the typesetting function, so importing the door reaches none of it and a consumer who draws figures and typesets nothing pays nothing. Written as a line at the top of the file instead, 41 MB of CommonJS would sit in the graph of every consumer that draws a circle. What it costs is that typesetting answers with a promise.
+**The door does not cost the load.** MathJax is reached by a dynamic import inside the typesetting
+function, so importing the door reaches none of it and a consumer drawing figures without
+typesetting pays nothing. Written as a static import instead, 41 MB of CommonJS would sit in the
+graph of every consumer that draws a circle. The cost is that typesetting returns a promise.
 
-## Motion the reader did not ask for
+## Reduced motion
 
-A reader who has asked their system to reduce motion gets one still time rather than a loop, and every figure declares which time that is. The last frame is not always the one that explains the most.
+A reader who has asked their system to reduce motion receives one still time rather than a loop, and
+every figure declares which time that is. The last frame is not always the one explaining the most.
 
-The prose has to work with the figure removed. A picture carrying a step of the argument on its own is a picture a reader can lose.
+The prose has to work with the figure removed. A picture carrying a step of the argument alone is a
+picture a reader can lose.
 
-## What becomes measurable
+## What is measurable
 
 - **Values and timing are pure functions**, tested without a canvas or a browser.
-- **A figure at a time is a list of marks.** A gate samples named times and compares lists, and names the mark that moved.
-- **The comparison is by tolerance and not by hash.** `Math.sin`, `Math.cos` and `Math.pow` are not specified to the last bit in JavaScript, and they differ between engines and versions. An exact match would be a gate that passes on one machine and fails on another for no reason a reader could see.
-- **One gate compares bytes, and it has a known boundary.** The committed pictures are held to the markup the demos write now, which is what lets a picture in the README go stale loudly rather than silently. A coordinate is written to three decimal places, so the differences between engines are invisible in the bytes. A value landing exactly on a half in the fourth place would still round two ways, and nothing has landed there yet. The fix if anything ever does is a picture gate comparing marks by tolerance, which costs the gate its ability to say a committed file is stale, so it is not made in advance.
-- **The two painters are held together** by one test that paints the same list both ways.
-- **A consumer's own screenshot gate can see a figure**, because SVG is in the document rather than inside a canvas, which is what a gate painting a mask over a whole canvas is blind to.
+- **A figure at a time is an array of marks.** A gate samples named times, compares arrays, and
+  names the mark that moved.
+- **Comparison is by tolerance rather than by hash.** `Math.sin`, `Math.cos` and `Math.pow` are not
+  specified to the last bit in JavaScript and differ between engines and versions. An exact match
+  would be a gate passing on one machine and failing on another for no reason a reader could see.
+- **One gate compares bytes, and it has a known boundary.** The committed pictures are held to the
+  markup the demos write now, which is what makes a stale picture in the README fail loudly.
+  Coordinates are written to three decimal places, so differences between engines do not reach the
+  bytes. A value landing exactly on a half in the fourth place would still round two ways, and
+  nothing has landed there. The fix, if anything ever does, is a picture gate comparing marks by
+  tolerance. That costs the gate its ability to report a stale committed file, so it is not made in
+  advance.
+- **The two painters are held together** by one test painting the same array both ways.
+- **A consumer's own screenshot gate can see a figure**, because SVG is in the document rather than
+  inside a canvas. A gate painting a mask over a whole canvas cannot read one.
