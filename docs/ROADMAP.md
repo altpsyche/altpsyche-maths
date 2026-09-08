@@ -337,10 +337,18 @@ no box test in front of it and the quadratic over piece pairs is not worth remov
 
 Each is a version above. What follows is what each one covers.
 
-### The figure format, and it is planned before anything is worked
+### The figure language, and it is planned before anything is worked
 
-**[`FIGURE-FORMAT.md`](FIGURE-FORMAT.md) is the shape this is built to**, and it is one of three
+**[`FIGURE-LANGUAGE.md`](FIGURE-LANGUAGE.md) is the shape this is built to**, and it is one of three
 documents of that name, one in each repository the change crosses.
+
+**Three more decisions, Siva's, taken on 2026-09-08 after he said the name undersold the work.** It
+is a language with a specification rather than a format, since a parameter may be an expression and a
+format has fields where this evaluates. The specification lives in its own repository, apart from
+every implementation, carrying the conformance suite and its own version, and this package becomes
+the reference implementation of it. That repository is made when there is a specification to put in
+it. And the specification's version is its own, so a figure declares which version of the language it
+is written in and a renderer declares which it reads.
 
 **This is the next session and it is a planning session.** No code is touched in it. What it produces
 is the format written down, the questions below answered, and a step list Siva reads before anything
@@ -385,7 +393,7 @@ and it answered the questions above. "A function" turned out to be three problem
 and only the smallest needs the format to grow anything: geometry-making functions do not survive
 serialisation and do not need to, geometry-reading functions should take geometry instead, and what
 is left is a handful of operations over a track value. The three hard problems, the inventory, and a
-six-step list with its done-criteria are all in [`FIGURE-FORMAT.md`](FIGURE-FORMAT.md).
+six-step list with its done-criteria are all in [`FIGURE-LANGUAGE.md`](FIGURE-LANGUAGE.md).
 
 **The vocabulary is nineteen node kinds, five path producers and fifteen animation kinds**, counted
 from the door, and **nine of those thirty-nine carry a function**. Only three shapes of function

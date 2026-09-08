@@ -9,7 +9,7 @@ MathJax is loaded by the typesetting call, so a consumer who never typesets neve
 never loads a renderer. **The engine must never import this package**, which is what keeps the two
 from forming a cycle.
 
-**Where things are.** [`docs/FIGURE-FORMAT.md`](docs/FIGURE-FORMAT.md) is the change in flight and
+**Where things are.** [`docs/FIGURE-LANGUAGE.md`](docs/FIGURE-LANGUAGE.md) is the change in flight and
 what this package refactors for it, with a document of that name in each of the three repositories it
 crosses. [`DESIGN.md`](DESIGN.md) is the design: what a figure is, the rule every part
 of it follows, the line through the middle of the package, and the seam everything rests on.

@@ -1,23 +1,40 @@
-# The figure format
+# The figure language
+
+**A figure language is a declarative language for describing a picture over time.** It carries nodes,
+a timeline, value types and expressions, and a program reads one rather than running it. The
+specification is the product; `@altpsyche/maths` is its reference implementation.
+
+**It is a language and not a format**, because a parameter may be an expression: arithmetic, a
+comparison with a choice, a bound variable, and a call into a named function vocabulary. A format has
+fields. This evaluates.
 
 **This document is one of three.** The change it describes crosses three repositories, and each one
 carries the half of it that repository does. This is the `@altpsyche/maths` half, and it is most of
 the work.
 
 - **This document** — what `@altpsyche/maths` refactors.
-- [`@altpsyche/engine`](https://github.com/altpsyche/altpsyche-engine/blob/main/docs/FIGURE-FORMAT.md)
+- [`@altpsyche/engine`](https://github.com/altpsyche/altpsyche-engine/blob/main/docs/FIGURE-LANGUAGE.md)
   — what the renderer refactors, which is almost nothing.
-- [`altpsyche.dev`](https://github.com/altpsyche/altpsyche-dev/blob/master/docs/FIGURE-FORMAT.md) —
+- [`altpsyche.dev`](https://github.com/altpsyche/altpsyche-dev/blob/master/docs/FIGURE-LANGUAGE.md) —
   what the website refactors.
 
 **Nothing here is built.** [`ROADMAP.md`](ROADMAP.md) is the queue and this document is the shape the
-queued work is built to. Siva took these decisions on 2026-09-08.
+queued work is built to. It moves to the specification's own repository once that exists. Siva took these decisions on 2026-09-08.
 
-## What a figure format is
+## Three decisions about what this is
 
-A figure format is a description of a picture over time that a program reads rather than runs. It
-carries nodes, tracks and animations. Each of those is a named thing with parameters, and none of
-them is a function.
+**It is a language with a specification, not a format.** Siva's call on 2026-09-08, taken because the
+earlier name hid what is being built. A second implementer needs a thing they can name, and "a figure
+language renderer" is a sentence somebody can say.
+
+**The specification lives in its own repository.** Apart from every implementation, the way a language
+standard does, carrying the specification, the conformance suite and its own version.
+`@altpsyche/maths` becomes the reference implementation of it rather than the place it is defined. The
+repository is made when there is a specification to put in it, and not before.
+
+**The specification carries its own version.** A figure declares which version of the language it is
+written in and a renderer declares which versions it reads. That number and the package's are
+separate, which is what every format that outlived its first implementation did.
 
 ## Why this is being done
 
