@@ -217,39 +217,6 @@ the motion in a still.
 
 ## Now
 
-**0.12.0 is cut, and a figure walks out of this package as frames.** `frameTimes` and `framesOf` are
-the two calls it added. A frame is its index, its time, its marks and the view they are painted
-through, read together at one moment, which is what stops a consumer painting a figure whose view
-moves through the matrix of some other moment. Frames come back one at a time, since ten seconds at
-sixty frames a second is six hundred frames of every mark a figure draws. The step is a rate or a
-count, and a walk stops strictly before the duration, so a loop never hands back its own first frame
-twice. The rotation strip is a walk now and draws the same bytes it drew when its four times were
-written out by hand. Every frame of both demos is painted through both painters in the suite, which
-went from 575 tests to 590.
-
-**0.11.0 is cut, and this package draws fields.** `vectorField`, `streamlineOf`, `arrow3`,
-`fieldArrows3` and `vectorField3` are the five calls it added. A field is a function from a place to a
-vector and nothing here stores one: what the package holds is the sampling, the drawing and the
-integration. An arrow's length is the author's, taken from the magnitude at its own sample, and it is
-in figure units on a graph and in the world's own units in space. The streamline's step is a distance
-rather than a time, which keeps the points evenly spaced, and halving it divides the error along the
-curve by 15.1 and then 15.6. Both demos draw against it: the flat one carries the slope field its own
-curve is a streamline of, and the solid one three runs of steepest descent down its saddle. The suite
-went from 540 tests to 574.
-
-**0.10.0 is cut, and this package draws in space.** `mat4` is below the line, and `camera3`,
-`polyline3`, `dot3`, `text3`, `space`, `surface3`, `surfaceCells`, `axes3`, `sectionOf` and `viewAt`
-are above it. A camera is a value the caller holds, a builder that works in space hands back the flat
-nodes the rest of the package already draws, and nothing in the marks, the tree, the flattening or
-either painter was touched to make that work. `demos/surface.ts` is the solid demo Siva asked for: a
-saddle, a plane cutting through it, the curve of the crossing, three axes, a typeset equation and an
-orbiting eye. An extent carries a centre and may be a function of the clock, and the flat demo's view
-follows its dot across. The suite went from 479 tests to 540 and the sheet list from six pictures to
-eight.
-
-**The lock file agrees with the manifest again**, and holding it there is one
-`npm install --package-lock-only` in whichever commit bumps a version.
-
 **1.0.0 is cut, and the door is a promise.** Seventeen steps closed it: the comments holding a
 measurement became assertions, the door was read name by name against three questions and ten names
 were renamed and two removed, the option bags took one shape, the demos took one palette, the strips
@@ -296,31 +263,38 @@ opens on draws the largest smallest glyph now: `tangent.svg` went from 17.33 pix
 The strip criterion names the slot rather than the fill, since a frame holding two panels needs a gap
 between frames wider than the gap inside one.
 
-**1.0.0 is being worked and sixteen of its seventeen steps are ticked.** The door is 230 names, the
-suite is 637 tests over 40 files, and the four prose surfaces are a 175 line README, a 544 line
-guide, a 805 line reference and a 387 line DESIGN.md. **The next session starts at step 17**, which
-is one commit once Siva has read the README and the guide.
+**0.12.0 is cut, and a figure walks out of this package as frames.** `frameTimes` and `framesOf` are
+the two calls it added. A frame is its index, its time, its marks and the view they are painted
+through, read together at one moment, which is what stops a consumer painting a figure whose view
+moves through the matrix of some other moment. Frames come back one at a time, since ten seconds at
+sixty frames a second is six hundred frames of every mark a figure draws. The step is a rate or a
+count, and a walk stops strictly before the duration, so a loop never hands back its own first frame
+twice. The rotation strip is a walk now and draws the same bytes it drew when its four times were
+written out by hand. Every frame of both demos is painted through both painters in the suite, which
+went from 575 tests to 590.
 
-**Every done-criterion below is verified but one, and that one is Siva's.** The three gates pass, the
-lock file agrees with the manifest, `npm run demos` leaves all eight sheets byte for byte as
-committed, the reference has 230 entries against 230 names with a gate holding them equal, the
-README and the guide read at a sentence mean of 16.6 and 15.1 words with none over 30, the guide's
-seventeen code blocks compile in order, no comment in the tree carries a measurement nothing asserts,
-no inline comment run is longer than two lines, and DESIGN.md carries none of the banned phrases. What
-is left is **Siva reading the README, the guide and the pictures once and saying so**. On his word,
-step 17 is one commit: the version to 1.0.0, `npm install --package-lock-only` in the same commit,
-and `npm publish` asked for rather than assumed.
+**0.11.0 is cut, and this package draws fields.** `vectorField`, `streamlineOf`, `arrow3`,
+`fieldArrows3` and `vectorField3` are the five calls it added. A field is a function from a place to a
+vector and nothing here stores one: what the package holds is the sampling, the drawing and the
+integration. An arrow's length is the author's, taken from the magnitude at its own sample, and it is
+in figure units on a graph and in the world's own units in space. The streamline's step is a distance
+rather than a time, which keeps the points evenly spaced, and halving it divides the error along the
+curve by 15.1 and then 15.6. Both demos draw against it: the flat one carries the slope field its own
+curve is a streamline of, and the solid one three runs of steepest descent down its saddle. The suite
+went from 540 tests to 574.
 
-**The four prose surfaces were rewritten in one register, which is Siva's call and not a step.** He
-read the pages, rejected the tone twice, and named the model: Eric Lengyel. Definitions first, third
-person, the standard name for anything that has one, and every number with the expression behind it.
-CLAUDE.md's voice brief carries the rule. All four read at a sentence mean between 15.1 and 16.6 with
-none over 30, no banned phrases and no second person. The guide's seventeen code blocks still compile
-in order and the reference gate still holds 227 entries against 227 names.
+**0.10.0 is cut, and this package draws in space.** `mat4` is below the line, and `camera3`,
+`polyline3`, `dot3`, `text3`, `space`, `surface3`, `surfaceCells`, `axes3`, `sectionOf` and `viewAt`
+are above it. A camera is a value the caller holds, a builder that works in space hands back the flat
+nodes the rest of the package already draws, and nothing in the marks, the tree, the flattening or
+either painter was touched to make that work. `demos/surface.ts` is the solid demo Siva asked for: a
+saddle, a plane cutting through it, the curve of the crossing, three axes, a typeset equation and an
+orbiting eye. An extent carries a centre and may be a function of the clock, and the flat demo's view
+follows its dot across. The suite went from 479 tests to 540 and the sheet list from six pictures to
+eight.
 
-**Step 17's last criterion is Siva reading those four pages once and saying so**, and the pages
-changed under it after this rewrite, so that read is of the current text rather than of what was
-there before.
+**The lock file agrees with the manifest again**, and holding it there is one
+`npm install --package-lock-only` in whichever commit bumps a version.
 
 **Four findings landed on the way through steps 14 and 15**, each in its own commit. `indicate` walks
 into a colour and two comments still said it swaps. Gradients are refused for a reason three files
@@ -334,6 +308,7 @@ and `difference = A less the overlap` to 1.776e-15. Two circles crossed at every
 1e4 answer 4.11e-4 of the closed form, the same share at every one, so nothing there turns on the
 tolerance being an absolute distance. Two 400-piece paths unite in 48ms, so the crossing search needs
 no box test in front of it and the quadratic over piece pairs is not worth removing.
+
 
 ## The items
 
