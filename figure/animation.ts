@@ -301,16 +301,18 @@ function paintedTowards(mark: Mark, colour: Colour, along: number): Mark {
 export interface IndicateOptions extends AboutOptions {
   /** How big it gets at the middle of the span. */
   factor?: number;
-  /** Held for the length of the span and then let go. */
+  /** Walked towards over the span and back again, so the mark ends in the colour
+   * it started in. */
   colour?: Colour;
 }
 
 /**
  * Swelled and settled, to point at something without moving it.
  *
- * The colour is swapped for the length of the span rather than walked into. A
- * colour here is any CSS colour written as text, and walking between two of them
- * needs a reader for every form one can take, which does not exist here yet.
+ * Each of the mark's own colours is walked towards the colour named and back
+ * again, so the swell and the colour reach their furthest at the same moment. A
+ * colour `colourOf` cannot read is held at the far end rather than mixed towards
+ * a guess.
  */
 export function indicate(target: string, options: IndicateOptions = {}): Animation {
   const peak = options.factor ?? 1.2;

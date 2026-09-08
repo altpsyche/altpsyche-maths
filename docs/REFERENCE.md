@@ -611,10 +611,12 @@ a group of that name.
 - `countTo(target, from, to, write)` — a number ticking from one value to another, written into a
   text mark. How the value is written is the caller's, so a count of a length and a count of a
   population can round differently.
-- `indicate(target, options)` — swelled and settled, to point at something without moving it.
+- `indicate(target, options)` — swelled and settled, to point at something without moving it. Each
+  of the mark's own colours is walked towards the colour named and back again.
 - `IndicateOptions` — `AboutOptions`, plus:
   - `factor` — how big it gets at the middle of the span.
-  - `colour` — a colour held for the length of the span and then let go.
+  - `colour` — the colour it is walked towards, reached at the middle of the span. A colour
+    `colourOf` cannot read is held at the far end rather than mixed towards a guess.
 - `flash(target, options)` — rays out from a point and gone, for a moment a figure wants a reader to
   look at.
 - `FlashOptions` — what a flash takes.
