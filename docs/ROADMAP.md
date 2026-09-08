@@ -222,6 +222,15 @@ followed by an invalid render bundle and an invalid command buffer every frame. 
 pure readings a caller has before submitting both pass a description that cannot draw. The form that
 draws a mark is `{ instances: 1 }`.
 
+**Gap 5: a pass that draws the frame the reader sees keeps one sample of each pixel.** `PipelineSpec`
+carries `samples?: 4` and its own comment says "a pipeline drawing the frame the reader sees never
+carries one, because the frame's own target keeps a single sample". So every edge in every reading
+above is hard. The axis measures it: 0.02 figure units in a window 5.6 units across at 800 pixels is
+2.857 pixels wide, and it drew as exactly 2, covering 1,600 pixels where the outline's area of
+0.184314 asks for 3,761. **A painter wanting a smooth edge cannot ask the frame for it** and has to
+draw into a multisampled texture of its own and name it in `present`, which is two resources and a
+copy rather than one pass. The SVG painter has the browser's own antialiasing and pays nothing for it.
+
 **The known stencil gap, re-measured rather than re-found.** `StencilMode` is `'mark' | 'inside'` and
 its own comment says what each is: `mark` leaves the reference behind everywhere it draws, and
 `inside` draws only where the reference is already there. Neither counts, and no increment or
@@ -256,9 +265,27 @@ it.
   area, with the middle pixel filled where the winding is 0. `resolve` answered `{ backend: 'webgpu' }`
   for that frame and the card drew it without a word.
 
-- [ ] **3. One stroked path.** The flat demo's axis at width 0.02 with a round cap. **Measures:** the
+- [x] **3. One stroked path.** The flat demo's axis at width 0.02 with a round cap. **Measures:** the
   two ends and the cap against the same mark's filled outline from `outlinePath`, which is what the
-  SVG painter writes for a tapered stroke and is the shape a shader would have to want.
+  SVG painter writes for a tapered stroke and is the shape a shader would have to want. **Read on
+  2026-09-09.** The demo's own `axes` over its own coords flattens to 27 marks, 13 of them stroked at
+  width 0.02, and `axes/x/line` runs from (-4.600000, -2.135000) to (4.600000, -2.135000), which is
+  9.2 figure units. `outlinePath` of it at width 0.02 with a round cap gives one subpath of one loop
+  of 11 points, reaching x -4.610000 to 4.610000 and y -2.145000 to -2.125000, so the cap stands
+  exactly 0.010000000 past each end and the sides exactly 0.010000000 either side of the line.
+  **The round cap is a four-segment polygon and not a curve.** Its five points sit at bearings 90, 45,
+  0, -45 and -90 from the end, each exactly 0.010000000 away, so the vertices are on the semicircle
+  and the chords between them sag to 0.009238795, which is 7.612e-04 units inside it. That is
+  `outlinePath`'s own `FLATNESS` of 1e-3 spent, and its comment says what 1e-3 buys: a tenth of a
+  pixel at the hundred pixels to the unit the demos draw at.
+  The outline drew as 10 triangles of 240 geometry bytes at 1 pass and 1 draw. **Against the outline,
+  the card is exact where the outline has a vertex and half a pixel out where it has an edge.** The
+  cap's vertices at bearings 0 and 45 read 0.010000000 and 0.010000000 in windows spanning 7.8125e-06
+  units a pixel, off by 0.00 of a pixel. The top side reads y -2.125003906 against -2.125000000, which
+  is half a pixel. Radially across the whole cap, in a window spanning 3.125e-05 units a pixel, the
+  drawn edge tracks the polygon from +0.44 to -0.39 of a pixel at every bearing and never the
+  semicircle, which stands 24.4 pixels outside the polygon at the chord midpoints. **So the shape a
+  shader would have to want is `outlinePath`'s polygon, and the card already draws it.**
 
 - [ ] **4. Text, or the gap where text is.** A `TextMark` at a size and a family. **Measures:**
   whether it can be drawn at all before 2.3.0's outlines for plain text exist, written down as a gap
@@ -448,19 +475,24 @@ README that plays a video on load is a README nobody can read.
 scheduling argument is that its window is the slack of 1.x and 2.0.0, and 1.x is spent, so what is
 left is 2.0.0's twenty-nine commits. Its steps are the section in front of the ladder.
 
-**The spike's first two steps are read, the seam holds and a filled path is right to the pixel.** One
+**The spike's first three steps are read, the seam holds and both a filled path and a stroke are
+right to the pixel.** One
 triangle drew through the one door on a `blackwell` adapter, at 1 pass and 1 draw, with 34,634 of an
 expected 34,656 pixels filled. Then a disc of radius 1 from this package's own `circle`, flattened
 and fan-triangulated, drew with its edge at +2.7340 parts in ten thousand of the true radius at the
 bearing where the cubic's error peaks, **inside the 2.6 to 2.8 the suite already holds `circle` to**,
-read in a window where one pixel spans 0.0781 parts.
+read in a window where one pixel spans 0.0781 parts. Then the demo's own x axis at width 0.02 with a
+round cap, whose drawn edge tracks the polygon `outlinePath` writes within half a pixel everywhere and
+lands exactly on its vertices.
 
-**Four gaps have come out of it so far**, each written under the step that found it with its reading.
+**Five gaps have come out of it so far**, each written under the step that found it with its reading.
 Nothing at the door joins a selection to a renderer. A canvas the engine drew cannot be read. Every
-`probe()` leaves two canvases pinned over the top-left corner of the page. And a draw naming a vertex
-count binds no geometry while `resolve` and `cost` both pass the description. **The known stencil gap
-is re-measured**: `StencilMode` is `'mark' | 'inside'` and neither counts, so an annulus drew as a
-solid disc, 33.4 per cent too much area, and nothing refused it because nothing could be asked for.
+`probe()` leaves two canvases pinned over the top-left corner of the page. A draw naming a vertex
+count binds no geometry while `resolve` and `cost` both pass the description. And a pass drawing the
+frame the reader sees keeps one sample of each pixel, so a 2.857-pixel stroke drew as 2. **The known
+stencil gap is re-measured**: `StencilMode` is `'mark' | 'inside'` and neither counts, so an annulus
+drew as a solid disc, 33.4 per cent too much area, and nothing refused it because nothing could be
+asked for.
 
 **The second gap is what the remaining steps work around.** Every pixel reading above came from a
 screenshot of the canvas, because the engine's own `readPixels` is a backend method and the backends
