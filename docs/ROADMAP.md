@@ -150,44 +150,25 @@ as JSON with independent renderers on several platforms, and its known trouble i
 will meet: renderers drifting apart on the semantics the format left loose, text metrics worst of
 all.
 
-## The GPU spike, which is due now and is not a version
+## The eight gaps the GPU spike found, which are what it leaves behind
 
-**A throwaway painter over `@altpsyche/engine`, drawing a figure's marks as they stand.** It ships
-nothing, it adds nothing to the manifest, and what it produces is a list of gaps. Both repositories
-already agree on it: this file scheduled it after 1.6.0 and before the format work, and the engine's
-own roadmap says items may arrive from it in one batch, each still argued on that package's own
-merits or thrown out.
+**The spike is done and it was not a version.** It ran on 2026-09-09, drew a figure's marks as filled
+and stroked paths on a `blackwell` adapter, and closed in six commits whose bodies carry every number
+it read. Its steps and its done-criteria are in `git log` and are not repeated here. **What queues
+work is the eight gaps below**, each with the reading that found it.
 
-**Why it is early rather than at 2.6.0 where the painter is.** A gap found in the engine costs an
-item, a commit and a release there before a painter here can use it, and the roughly fifty-five
-commits of 1.x and 2.0.0 are the only slack that lead time has. 1.x is spent, so the slack left is
-2.0.0's twenty-nine commits. A gap found after 2.5.0 is found with none. Earlier than 1.6.0 was no
-better, since 1.3.0, 1.4.0 and 1.6.0 each changed what a `Mark` is and a spike paints marks.
+**Four of the eight went to the engine's roadmap as one batch**, argued on that package's own merits,
+which is the only argument it takes: gaps 1, 2, 3 and 7. **Gap 5 is documented behaviour there rather
+than a defect**, and is recorded under the batch there so the next session does not file it. **Gap 6
+is 2.3.0 on the ladder below and gap 8 is 2.0.0.** The counted stencil is that package's item 2
+already and was re-measured rather than re-found.
 
-**One gap is already known and is not what the spike is for.** The engine cannot count a winding
-number, which is filed there as its item 2. The spike re-measures it rather than re-finding it, and
-what it is for is everything else.
-
-**It needs a browser, and this repository has no browser gate.** WebGPU is a page's API, so the spike
-is a scratch page run by hand and its readings are quoted by hand into the entries below. That is the
-one thing about it that cannot be held by `npm test`, and it is why the spike is a session rather
-than a commit.
-
-- [x] **1. The seam, before any mark.** A scratch tree outside this repository that links
-  `@altpsyche/engine` and draws one triangle. **Measures:** what `selectBackend` offers and what
-  `readingOf` reads on this machine, both quoted; one frame submitted with the `FrameCost` the engine
-  costs it at. **Read on 2026-09-09.** The offering is `{ webgpu: true, webgl2: true }`, gathered by
-  asking for an adapter rather than by reading `navigator.gpu`. `selectBackend` answers `webgpu` for
-  a WGSL frame and `webgl2` for a GLSL one; with no adapter it refuses a WGSL frame with `no GLSL
-  translation is available to draw this WGSL frame on WebGL 2`, takes `webgl2` once that frame
-  carries `translated: 'glsl'`, and with nothing offered refuses with `WebGPU returned no adapter on
-  this device`. `readingOf`, through `probe()`, reads backend `webgpu` at tier `toy`, adapter
-  returned, survived on-screen compositing, renderer `nvidia`, architecture `blackwell` and not
-  SwiftShader, with 18 features and 36 limits. The frame costs 1 pass, 1 draw, 0 dispatches, 1
-  pipeline switch, 1 bind switch, 0 attachment loads, 1 attachment store and 0 transient bytes. The
-  triangle drew: its corners at (200, 36), (48, 264) and (352, 264) of a 400 by 300 canvas enclose
-  34,656 pixels and 34,634 read as the fill, which is 0.06 per cent short and is the boundary a pass
-  with no multisampling leaves. **Three gaps came with it and are counted below.**
+**What the spike settles about 2.6.0.** 117 of the flat demo's 181 marks at its still time drew, as
+2,915 triangles in one pass and one draw, and the picture is recognisably the demo: the grid, both
+axes with their arrow tips, the vector field, the area, the curve, the tangent, the point and the
+typeset equation. 53 were refused and 11 more have no area at all. **So the painter's shape is settled
+and what stands in front of it is the gaps**, of which the counted winding is the one that decides how
+much can be built before the engine moves.
 
 **Gap 1: nothing at the door joins a selection to a renderer.** `selectBackend` opens by saying which
 backend draws a frame is "answered inside the library rather than by the caller naming one", and
@@ -202,8 +183,8 @@ consumer would write them again.
 backend method and neither backend is exported. The canvas cannot answer either, because the context
 is configured `RENDER_ATTACHMENT | COPY_DST` with no `COPY_SRC`, so `drawImage` of the drawn canvas
 into a 2D context gives (0, 0, 0, 0) at every one of 120,000 pixels while a screenshot of that same
-canvas reads (240, 92, 51) inside the triangle. Every reading above came from a screenshot for that
-reason. **Step 2 measures a drawn edge against 2.6 to 2.8 parts in ten thousand of the true radius**,
+canvas reads (240, 92, 51) inside the triangle. Every pixel the spike read came from a screenshot for
+that reason. **Step 2 measures a drawn edge against 2.6 to 2.8 parts in ten thousand of the true radius**,
 which is a measurement in pixels, so this gap is in front of the next step rather than beside it.
 
 **Gap 3: `probe()` leaves its canvases on the page.** `onScreenCanvas` appends a 200 by 100 canvas at
@@ -224,8 +205,8 @@ draws a mark is `{ instances: 1 }`.
 
 **Gap 5: a pass that draws the frame the reader sees keeps one sample of each pixel.** `PipelineSpec`
 carries `samples?: 4` and its own comment says "a pipeline drawing the frame the reader sees never
-carries one, because the frame's own target keeps a single sample". So every edge in every reading
-above is hard. The axis measures it: 0.02 figure units in a window 5.6 units across at 800 pixels is
+carries one, because the frame's own target keeps a single sample". So every edge the spike drew is
+hard. The axis measures it: 0.02 figure units in a window 5.6 units across at 800 pixels is
 2.857 pixels wide, and it drew as exactly 2, covering 1,600 pixels where the outline's area of
 0.184314 asks for 3,761. **A painter wanting a smooth edge cannot ask the frame for it** and has to
 draw into a multisampled texture of its own and name it in `present`, which is two resources and a
@@ -263,135 +244,11 @@ read by a renderer in another language cannot carry a CSS custom property.
 its own comment says what each is: `mark` leaves the reference behind everywhere it draws, and
 `inside` draws only where the reference is already there. Neither counts, and no increment or
 decrement is in the type, so **a frame asking for a counted winding cannot be written down**. That is
-why no refusal arrived for the annulus above: a refusal names a capability a frame asked for, and this
-frame had no way to ask. The engine files this as its item 2 and this reading changes nothing about
+why no refusal arrived for the annulus that measured it: a refusal names a capability a frame asked
+for, and that frame had no way to ask. An outer circle of radius 1 with an inner one of radius 0.5
+wound the other way drew as a solid disc of 349,144 pixels against the 261,799 the rule wants, 33.4
+per cent too much area, and `resolve` answered `{ backend: 'webgpu' }` for it. The engine files this as its item 2 and this reading changes nothing about
 it.
-
-- [x] **2. One filled path.** A disc of radius 1 as a `PathMark`, filled. **Measures:** the drawn
-  edge against the 2.6 to 2.8 parts in ten thousand of the true radius the control distance leaves,
-  which is what the suite already holds `circle` to; the refusal the engine gives where a winding
-  number is needed, quoted rather than worked around. **Read on 2026-09-09.** `circle(vec2(0, 0), 1)`
-  flattened at a tolerance of 1e-8 gives one loop of 32,769 points whose radii run from exactly 1 to
-  1.000272530, so the cubic lies outside the true circle and never inside it, and 2.7253 parts in ten
-  thousand is the whole of its error. **The cubic meets the circle at three bearings and not at 45
-  degrees alone**: t of 0, 0.5 and 1 are 0, 45 and 90 degrees and each is exact, and the error peaks
-  at t of 0.21131 and 0.78869, which are 19.4386 and 70.5614 degrees. A window measured at 45 degrees
-  therefore reads zero error and says nothing about the bound.
-  The disc drew as 32,768 fan triangles of 98,304 vertices and 786,432 bytes, at 1 pass and 1 draw,
-  covering 54.554 per cent of a 1.2 window against the 54.542 per cent of π over 5.76. **The drawn
-  edge, in three windows 0.008 units across at 1024 pixels, where one pixel spans 7.8125e-06 r or
-  0.0781 parts in ten thousand:** 1.000000000 at 0 degrees, 1.000000000 at 45 degrees, and
-  1.000273396 at 70.5614 degrees, which is +2.7340 parts in ten thousand. **That is inside the 2.6 to
-  2.8 the suite holds `circle` to**, and it sits 0.0087 parts above the cubic's own 2.7253, which is
-  0.11 of a pixel.
-  **No refusal came where a winding number was needed, because there is nothing to refuse.** A
-  pentagram is the wrong test and reads clean: `windingAt` its middle is 2, and a fan about its centre
-  covers 124,728 pixels of an 800 by 800 window, which is what the nonzero rule wants to the pixel. An
-  annulus separates them. An outer `circle` of radius 1 with an inner one of radius 0.5 wound the
-  other way has `windingAt` 1 in the ring and 0 in the hole, and 65,536 fan triangles over the two
-  loops drew a solid disc: 349,144 pixels against the 261,799 the rule wants, 33.4 per cent too much
-  area, with the middle pixel filled where the winding is 0. `resolve` answered `{ backend: 'webgpu' }`
-  for that frame and the card drew it without a word.
-
-- [x] **3. One stroked path.** The flat demo's axis at width 0.02 with a round cap. **Measures:** the
-  two ends and the cap against the same mark's filled outline from `outlinePath`, which is what the
-  SVG painter writes for a tapered stroke and is the shape a shader would have to want. **Read on
-  2026-09-09.** The demo's own `axes` over its own coords flattens to 27 marks, 13 of them stroked at
-  width 0.02, and `axes/x/line` runs from (-4.600000, -2.135000) to (4.600000, -2.135000), which is
-  9.2 figure units. `outlinePath` of it at width 0.02 with a round cap gives one subpath of one loop
-  of 11 points, reaching x -4.610000 to 4.610000 and y -2.145000 to -2.125000, so the cap stands
-  exactly 0.010000000 past each end and the sides exactly 0.010000000 either side of the line.
-  **The round cap is a four-segment polygon and not a curve.** Its five points sit at bearings 90, 45,
-  0, -45 and -90 from the end, each exactly 0.010000000 away, so the vertices are on the semicircle
-  and the chords between them sag to 0.009238795, which is 7.612e-04 units inside it. That is
-  `outlinePath`'s own `FLATNESS` of 1e-3 spent, and its comment says what 1e-3 buys: a tenth of a
-  pixel at the hundred pixels to the unit the demos draw at.
-  The outline drew as 10 triangles of 240 geometry bytes at 1 pass and 1 draw. **Against the outline,
-  the card is exact where the outline has a vertex and half a pixel out where it has an edge.** The
-  cap's vertices at bearings 0 and 45 read 0.010000000 and 0.010000000 in windows spanning 7.8125e-06
-  units a pixel, off by 0.00 of a pixel. The top side reads y -2.125003906 against -2.125000000, which
-  is half a pixel. Radially across the whole cap, in a window spanning 3.125e-05 units a pixel, the
-  drawn edge tracks the polygon from +0.44 to -0.39 of a pixel at every bearing and never the
-  semicircle, which stands 24.4 pixels outside the polygon at the chord midpoints. **So the shape a
-  shader would have to want is `outlinePath`'s polygon, and the card already draws it.**
-
-- [x] **4. Text, or the gap where text is.** A `TextMark` at a size and a family. **Measures:**
-  whether it can be drawn at all before 2.3.0's outlines for plain text exist, written down as a gap
-  rather than built around. **Read on 2026-09-09, and no card was needed for any of it.** The flat
-  demo holds 178 marks at its last time and 24 of them are text; the solid demo holds 316 and 22. All
-  46 name one family, `system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif`, which is a CSS
-  font stack a host resolves and a card cannot. A `TextMark` carries `text`, `size` in figure units,
-  `family`, `weight`, `align`, `baseline` and a fill, and no outline and no metric, so neither painter
-  turns one into geometry: the SVG painter writes a `<text>` element and the canvas painter calls
-  `fillText`, and both are asking the host to find the font.
-  **An equation is a different case and it is already drawable.** `typesetElement('x^2 + y^2 = r^2')`
-  returns one `mjx-container`, one `svg`, 13 `g` and 8 `path`, every path carrying a `d` and not one
-  `use`, so the outlines are in the answer rather than referred to. Read through this package's own
-  `pathFromData` the eight are 9 subpaths, 333 curves and 1,120 points at a tolerance of 0.5 in
-  MathJax's own thousandths of an em. **So the half of 2.3.0's open dependency that asks whether the
-  typesetter's path serves is answered for an equation and unanswered for a label.**
-  **What an equation needs that the card cannot give is the winding number again.** The one glyph of
-  those eight with two subpaths is the equals sign and both its loops are bars: `windingAt` inside the
-  second reads -1, so it is a second filled piece and not a hole. A letter with a counter is where the
-  rule bites, and `typesetElement('a^2 + b^2 = e^0')` gives 8 outlines of which 4 carry a hole the
-  winding rule decides.
-
-- [x] **5. The flat demo at its still time.** As many of its own marks as the painter draws.
-  **Measures:** how many draw, which refuse, and the reason each refusal gives. **Read on
-  2026-09-09.** **The count in this step said 146 and the tree says 181**, which is what the demo
-  holds at its still time of 7.86: 157 paths and 24 text, over an extent of 10.8 by 6 written into
-  1080 by 600 pixels at the hundred pixels to the unit the sheets use.
-  **117 marks drew and 53 were refused, and 11 more have no area at all.** The 117 are 38 fills and 79
-  strokes, which came to 2,915 triangles of 8,745 vertices and 209,880 geometry bytes, submitted as 1
-  pass and 1 draw. The 11 are `tangent/rise/brace`, which holds no subpath, and the ten
-  `tangent/point/flash/N`, whose runs are of no length at opacity 0, and the SVG painter draws nothing
-  for them either, so they are not a gap.
-  **The 53 refusals, by reason.** 24 are text marks, which carry a family and no outline. 23 carry a
-  clip, which the frame description cannot express. 5 are fills that leave a hole the nonzero winding
-  rule decides. 1 is a fill carrying a gradient, against one flat tint a vertex.
-  **What drew is the demo and what is missing is the refusals.** The grid, both axes with their arrow
-  tips, the vector field, the area under the curve, the curve, the tangent, the point and the typeset
-  equation are all in the picture. No tick label and no title is, and the lens panel is an opaque
-  black rectangle whose contents were the clipped marks.
-  **65 marks sit below full opacity and every one drew opaque.** Asking for a blend is refused by name:
-  a `targets` entry carrying `src-alpha` over `one-minus-src-alpha` gives `the pass on pipeline 0
-  writes 1 colours and attaches none`, twice, because `targets` is where a blend lives and naming it
-  makes the pass attach its own textures rather than the frame's.
-  **The painter also had to read a colour, and a mark's colour is not a number.** All 43 colours that
-  reached a shader are of the form `var(--name, #rrggbb)`, so the painter took the hex out of the
-  fallback. A custom property with no fallback would have to be resolved against the document.
-
-- [x] **6. The findings, batched.** **Measures:** one entry per gap in this file with the reading that
-  found it, and one batch to the engine's roadmap, each argued on that package's own merits rather
-  than on a consumer needing it, which is the only argument that repository takes. **Landed on
-  2026-09-09.** Eight gaps are written above, each under the step that found it and each carrying its
-  reading. The batch went to the engine's roadmap as one commit, in the section that file had already
-  set aside for it, and it is four findings rather than eight. **Three of the eight are not that
-  package's**: a plain text mark's missing outline is 2.3.0 here, a mark's colour being a CSS string
-  is 2.0.0 here, and the counted stencil is its item 2 already. **One more is documented behaviour
-  there rather than a defect**, so it is recorded under the batch instead of in it, which is what
-  stops the next session filing it again. **The four that stand there are three inconsistencies
-  between what that package says and what it does, and one door export that changes a caller's
-  document permanently**, and none of them is argued on a consumer needing anything.
-
-#### Done-criteria, verified on 2026-09-09
-
-- **`package.json` and `package-lock.json` are untouched, and no `@altpsyche/engine` import exists in
-  this tree.** `git status --short` named only `docs/ROADMAP.md` at every one of the six commits, and
-  a grep for that name over every `.ts` and `.json` in this tree outside `node_modules` finds it in
-  this file alone.
-- **The scratch tree lives outside this repository and nothing in `git status` mentions it.** It sits
-  in this session's own scratchpad and reaches both packages by an esbuild alias to each door, so the
-  page imports each by the name a consumer would.
-- **Every gap is written where it would be fixed, which is the engine's roadmap, and counted here with
-  the reading that found it.** Eight are counted here. Four went there. The other four are named above
-  with the reason each belongs to this package or is already filed there.
-- **The three gates read exactly what they read before, since nothing that ships was touched.** 785
-  tests over 47 files, `tsc --noEmit` clean, `tsc -p tsconfig.build.json` clean, before the first
-  commit and after the last. `npm run demos` reproduces the eight committed sheets byte for byte.
-- **The known stencil gap is re-measured rather than listed as a discovery.** `StencilMode` is
-  `'mark' | 'inside'`, neither counts, and the annulus that proves it drew 349,144 pixels against the
-  261,799 the nonzero rule wants. The batch names it as that package's item 2 and files nothing new.
 
 ## The version ladder
 
@@ -475,8 +332,8 @@ Now section and `git log` are what keep it.
 **The reading behind each of the four is below and in `git log`**, so none of them is rediscovered
 from nothing when it returns.
 
-**What queues work is the table above, the spike in front of it, the found list below, and whatever
-the consumer asks for.**
+**What queues work is the table above, the spike's eight gaps in front of it, the found list below,
+and whatever the consumer asks for.**
 
 ## The two demos, which are what a version is cut against
 
@@ -556,49 +413,37 @@ README that plays a video on load is a README nobody can read.
 
 ## Now
 
-**1.6.0 is published and the GPU spike is running.** Siva's call of 2026-09-09. The spike's own
-scheduling argument is that its window is the slack of 1.x and 2.0.0, and 1.x is spent, so what is
-left is 2.0.0's twenty-nine commits. Its steps are the section in front of the ladder.
+**1.6.0 is published, the GPU spike is done, and 2.0.0 is what runs next.** Siva's call of 2026-09-09
+put the spike in front of the format work, on the argument that a gap found in the engine costs an
+item, a commit and a release there before a painter here can use it, and that the slack for that lead
+time was 2.0.0's twenty-nine commits. The spike spent one session and found eight gaps, so the
+argument held.
 
-**The spike's first five steps are read, and the flat demo draws.** One
-triangle drew through the one door on a `blackwell` adapter, at 1 pass and 1 draw, with 34,634 of an
-expected 34,656 pixels filled. Then a disc of radius 1 from this package's own `circle`, flattened
-and fan-triangulated, drew with its edge at +2.7340 parts in ten thousand of the true radius at the
-bearing where the cubic's error peaks, **inside the 2.6 to 2.8 the suite already holds `circle` to**,
-read in a window where one pixel spans 0.0781 parts. Then the demo's own x axis at width 0.02 with a
-round cap, whose drawn edge tracks the polygon `outlinePath` writes within half a pixel everywhere and
-lands exactly on its vertices.
+**What the spike proved.** A figure's marks draw on a card through the engine's one door. 117 of the
+flat demo's 181 marks at its still time drew as 2,915 triangles in one pass and one draw, and the
+picture is recognisably the demo. A filled disc's edge reads +2.7340 parts in ten thousand of the true
+radius at the bearing where the cubic's error peaks, inside the 2.6 to 2.8 the suite already holds
+`circle` to. A stroke's drawn edge tracks the polygon `outlinePath` writes within half a pixel and
+lands exactly on its vertices. **So the geometry this package computes is what a card draws**, which
+is the question the spike existed to settle.
 
-**Eight gaps have come out of it**, each written under the step that found it with its reading. Nothing
-at the door joins a selection to a renderer. A canvas the engine drew cannot be read. Every `probe()`
-leaves two canvases pinned over the top-left corner of the page. A draw naming a vertex count binds no
-geometry while `resolve` and `cost` both pass the description. A pass drawing the frame the reader sees
-keeps one sample of each pixel and can name no blend. A plain `TextMark` cannot be drawn at all, and an
-equation only with a stencil. The frame description names no scissor and no viewport, so a rectangle
-clip cannot be asked for. And a mark's colour is a CSS colour string rather than four numbers, which is
-this package's gap rather than the engine's. **The known stencil gap is re-measured**: `StencilMode` is
-`'mark' | 'inside'` and neither counts, so an annulus drew as a solid disc, 33.4 per cent too much
-area, and nothing refused it because nothing could be asked for.
+**What the spike found.** Eight gaps, in the section in front of the ladder with the reading that
+found each. Four went to the engine's roadmap as one batch. One is documented behaviour there. **Two
+are this package's own and are on the ladder already**: a plain `TextMark` cannot be drawn at all,
+which is 2.3.0, and a mark's colour is a CSS colour string rather than four numbers, which is 2.0.0.
+**And one gap decides how much of 2.6.0 can be built at all**, which is the counted winding number: an
+annulus, a letter with a counter and every glyph of an equation all want it, and it is the engine's
+item 2.
 
-**Two of the eight are one gap wearing two hats, and it is the winding number.** An annulus, a letter
-with a counter and every glyph of an equation all want the same counted stencil, which is the engine's
-item 2. That is the reading that decides how much of 2.6.0 can be built before that item lands.
+**Two numbers this file carried are corrected by the spike.** The flat demo holds 181 marks at its
+still time and not 146, and the still time is 7.86.
 
-**What the whole flat demo says.** 117 of its 181 marks at its still time drew, as 2,915 triangles in
-one pass and one draw, and the picture is recognisably the demo: the grid, both axes with their arrow
-tips, the vector field, the area, the curve, the tangent, the point and the typeset equation. 53 were
-refused and 11 more have no area at all. **So the painter's shape is settled and what is left is the
-seven gaps in front of it**, five of them the engine's, one the format's, and one already filed there
-as its item 2.
-
-**The second gap is what the remaining steps work around.** Every pixel reading above came from a
-screenshot of the canvas, because the engine's own `readPixels` is a backend method and the backends
-are not exported. **2.0.0 is
-ready to start behind it**: the six questions are answered, the inventory is counted, and step 1 is
+**2.0.0 is ready to start**: the six questions are answered, the inventory is counted, and step 1 is
 self-contained. **Two things fall due before the format freezes and both are Siva's**, which are
 whether a `Mark` may be a raster image, due by step 3 where the node vocabulary lands, and the
 consumer's move from 0.6.0, which is now unblocked and is the only thing that would draw the 1.x band
-in a shipping page.
+in a shipping page. **A third is new from the spike and is also the format's**: a colour's written
+form, since a figure read by a renderer in another language cannot carry a CSS custom property.
 
 **The 1.x band is closed and 1.6.0 is published.** An audit on 2026-09-08 read the
 whole band against the tree and found nine things, and seven commits closed them. Nothing since
