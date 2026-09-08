@@ -251,18 +251,22 @@ demo both carry the taper of 1.3.0, the gradient of 1.4.0 and a view entry of 1.
 the rotate demo carry none of the three, which is the exception those two were given rather than a
 gap: each exists for an operation that has no picture in a graph or on a surface.
 
-- [ ] **1. What a mark may ask for, said once and correctly.** `DESIGN.md` says a clip path is
+- [x] **1. What a mark may ask for, said once and correctly.** `DESIGN.md` says a clip path is
   something a canvas "either lacks or supports partially" and that the mark vocabulary refuses it,
   which 1.6.0 made false, and it names neither the clip nor the inset. **Measures:** every refusal in
   `DESIGN.md`, the README and the guide naming the same set, which is filters and blend modes; the
-  clip and the inset each described where the design describes the seam.
+  clip and the inset each described where the design describes the seam. **Measured:** three
+  documents named three sets and none named the tree's, since the README still excluded gradients as
+  well; all four now say no filters and no blend modes, with the clip and the fill each given the
+  reason its own exclusion turns on; the README's suite count from 701 tests to 782.
 
-- [ ] **2. A target with no `append` cannot silently lose a mark.** `PaintNode.append` is optional and
+- [x] **2. A target with no `append` cannot silently lose a mark.** `PaintNode.append` is optional and
   its reason is the gradient: a target without it draws every mark and no gradient. A `<clipPath>`
   holding no `<rect>` clips away everything that references it, so the same target loses every
   clipped mark instead. `CanvasLike.clip` was made required for this reason and the SVG side was not.
-  **Measures:** the interface with `append` required; a clipped mark painted into a stand-in
-  document, its `<clipPath>` holding its `<rect>`.
+  **Measured:** `append` required; a clipped mark painted into a stand-in document makes `defs`,
+  `clipPath`, `rect`, `path` in that order with the rectangle inside the clip path and
+  `clip-path="url(#clip-100-30-40-40)"` on the mark; 782 tests over 47 files to 783.
 
 - [ ] **3. The guide teaches the view forms, the clip and the inset.** It mentions `taper` five times
   and `gradient` three and names `moveView`, `followView`, `frameView`, the clip and the inset zero
