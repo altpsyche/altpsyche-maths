@@ -384,9 +384,13 @@ closures without redesigning every builder.
 and it answered the questions above. "A function" turned out to be three problems wearing one word,
 and only the smallest needs the format to grow anything: geometry-making functions do not survive
 serialisation and do not need to, geometry-reading functions should take geometry instead, and what
-is left is a handful of operations over a track value. The three hard problems, the counted scope of
-twenty-two node builders and twelve animation kinds, and a six-step list with its done-criteria are
-all in [`FIGURE-FORMAT.md`](FIGURE-FORMAT.md).
+is left is a handful of operations over a track value. The three hard problems, the inventory, and a
+six-step list with its done-criteria are all in [`FIGURE-FORMAT.md`](FIGURE-FORMAT.md).
+
+**The vocabulary is nineteen node kinds, five path producers and fifteen animation kinds**, counted
+from the door, and **nine of those thirty-nine carry a function**. Only three shapes of function
+exist among them: a curve of one number, a field or a surface of a place, and how `countTo` writes
+its number. Everything else is already a record of values wearing a function call's clothing.
 
 **The measurement runs through every step and it is what makes this checkable: a figure as data draws
 mark for mark what the TypeScript figure draws, compared by tolerance.** The demos are already the

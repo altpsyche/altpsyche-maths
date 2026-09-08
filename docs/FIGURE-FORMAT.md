@@ -164,11 +164,86 @@ paths, so an equation bakes and no renderer needs MathJax to draw one. A plain t
 carries a string and a size, and where its glyphs land is the renderer's. The format should let a
 text mark carry resolved outlines as well, so a figure that must look identical everywhere can say so.
 
-## The scope, counted
+## The inventory
 
-**Twenty-two node builders** on the door and **twelve animation kinds**. Each becomes a named thing
-with parameters. That count is the size of the vocabulary and it is the first honest number this plan
-has had.
+**Counted from the door on 2026-09-08.** The earlier reading of twenty-two builders and twelve
+animations was wrong in both directions, and it was wrong because it counted one list where there are
+three. What a figure is made of falls into node kinds, path producers and animation kinds, and the
+three need different treatment.
+
+### Node kinds, nineteen of them
+
+A node kind is a named record with parameters. None of these carries a function today except the two
+marked, so most are a rename of arguments into fields.
+
+| kind | parameters beyond a name | carries a function |
+| --- | --- | --- |
+| `group` | children, transform, style | no |
+| `shape` | path, style | no |
+| `text` | at, content, size, options | no |
+| `dot` | at, radius, fill | no |
+| `arrow` | from, to, options | no |
+| `brace` | from, to, content, options | no |
+| `callout` | at, to, content, options | no |
+| `numberLine` | scale, options | no |
+| `axes` | coords, options | no |
+| `numberPlane` | coords, options | no |
+| `equationNode` | equation, options | no, the equation is geometry |
+| `vectorField` | coords, the field, options | **yes**, the field and two options |
+| `polyline3` | points, camera, options | no |
+| `dot3` | at, radius, fill, camera | no |
+| `text3` | at, content, size, camera | no |
+| `arrow3` | from, to, camera, options | no |
+| `axes3` | camera, options | no |
+| `scene3` | items, camera | no |
+| `surface3` | the surface, camera, options | **yes**, the surface |
+
+### Path producers, five of them
+
+These return a `Path` rather than a node, so a figure uses one inside `shape`. In the format a path is
+either written out as cubics or named as one of these with its parameters, and which of the two is a
+choice per figure rather than a rule.
+
+| producer | parameters | carries a function |
+| --- | --- | --- |
+| `plot` | coords, the curve, options | **yes**, the curve |
+| `areaUnder` | coords, the curve, over, options | **yes**, the curve |
+| `tangentAt` | coords, the curve, x, options | **yes**, the curve |
+| `riemannBars` | coords, the curve, options | **yes**, the curve |
+| `bracePath` | from, to, options | no |
+
+### Animation kinds, fifteen of them
+
+| kind | parameters beyond a target | carries a function |
+| --- | --- | --- |
+| `fadeIn` | none | no |
+| `fadeOut` | none | no |
+| `fadeTo` | opacity | no |
+| `draw` | none | no |
+| `growFrom` | from | no |
+| `moveBy` | offset | no |
+| `moveAlong` | path | no |
+| `morph` | into, a path | no |
+| `morphEquation` | from and to, two targets | no |
+| `rotate` | angle, about | no |
+| `scale` | to, about | no |
+| `indicate` | factor, colour | no |
+| `flash` | stroke, rays | no |
+| `circumscribe` | stroke, padding | no |
+| `countTo` | from, to, **and how to write the number** | **yes**, the writer |
+
+### What the inventory changes about the plan
+
+**Nine of thirty-nine carry a function, and only three shapes of function exist among them.** A curve
+of one number, a field or surface of a place, and `countTo`'s writer. Every other builder and every
+other animation is already a record of values wearing a function call's clothing.
+
+`countTo` is the smallest and it is worth naming because it is not a curve at all. Its writer is
+`(value) => labelFor(value, 0.01)` in every use, so the parameter becomes how a number is written:
+a precision, and later a choice of forms if a figure ever needs one.
+
+**So the vocabulary is nineteen node kinds, five path producers and fifteen animation kinds**, and the
+work is concentrated in nine of them.
 
 ## The steps
 
@@ -186,13 +261,16 @@ figure draws, compared by tolerance.** The demos are already the conformance sui
   against the TypeScript it replaces at ten inputs; a form naming an unknown function refused with a
   sentence that names it.
 
-- [ ] **3. The node vocabulary.** All twenty-two builders described as records with parameters, and a
-  resolver from a record to the nodes that exist now. The authoring calls keep their names and their
-  arguments and return records. **Measures:** every demo built through records drawing the same marks
-  as it draws today, within tolerance, at its named times.
+- [ ] **3. The node vocabulary.** Nineteen node kinds and five path producers as records with
+  parameters, and a resolver from a record to the nodes that exist now. The authoring calls keep
+  their names and their arguments and return records. **Measures:** every demo built through records
+  drawing the same marks as it draws today, within tolerance, at its named times; the count of kinds
+  at the door against the count in the reference.
 
-- [ ] **4. The animation vocabulary.** All twelve kinds as records with parameters, and a resolver
-  each. **Measures:** every demo's timeline through records drawing the same marks at the same times.
+- [ ] **4. The animation vocabulary.** Fifteen kinds as records with parameters, and a resolver each.
+  `countTo`'s writer becomes a precision rather than a function, which is the last function in an
+  animation. **Measures:** every demo's timeline through records drawing the same marks at the same
+  times; the counting number in the flat demo reading the same string at each of its named times.
 
 - [ ] **5. The file: a serialiser, a reader, a validator and a version.** **Measures:** each demo
   written out, read back, and drawing marks identical within tolerance; a figure of a later version
@@ -206,7 +284,9 @@ figure draws, compared by tolerance.** The demos are already the conformance sui
 
 - Every demo is a file, and reading it draws marks identical within tolerance to the module it
   replaced, at every named time.
-- No builder takes a function, and no figure holds a closure.
+- None of the nine builders that take a function takes one, and no figure holds a closure.
+- The vocabulary is nineteen node kinds, five path producers and fifteen animation kinds, and the
+  reference names each with its parameters.
 - The expression vocabulary is closed, published, and refuses a name it does not know.
 - The format carries a version, an old figure keeps rendering, and a validator names the field that
   is wrong.
