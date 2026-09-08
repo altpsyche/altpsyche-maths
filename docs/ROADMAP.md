@@ -1100,6 +1100,22 @@ format a recorder reads a file, which is also what lets one run without a page a
 
 ## Found while working, not yet queued
 
+- **A tapered stroke's outline is unstable in the last bits of its centreline, and the drawn width is
+  what pays.** `outlinePath` splits a run until the width along it is straight enough, halving the
+  chord and testing the width a third and two thirds of the way along. Where the split lands decides
+  how much of a swelling taper is drawn: the flat demo's tangent carries
+  `{ from: 0, to: 0.035, curve: 'thereAndBack' }`, whose width peaks in the middle, and the outline's
+  points land on eighths of the centreline in the good case. Over 201 tangents to the demo's parabola
+  with x from 0.7 to 0.9, five of them draw more than one per cent away from the true integral of the
+  width over the length and the worst is 5.371e-2. Step 1 of the format moved the frame-1 tangent by
+  1.35e-11 and that was enough to move it from a good split to a bad one: 0.07616098 of area, which is
+  the true value, down to 0.07145405, a mean width of 0.017500 down to 0.016419, or 0.108 of a pixel
+  at the hundred pixels to the unit the sheets draw at. **Adding the midpoint to the test changes
+  nothing**, measured: the same five of 201 and the same worst. So the cause is where the extra points
+  land rather than which places the test reads, and the fix is unknown. **What would settle it** is a
+  gate holding a tapered outline's area to the integral of its own width, which is a claim no test
+  makes today.
+
 - **All four of the things that look worse than 3Blue1Brown are queued now**, which is Siva's call of
   2026-09-08 and the reason the ladder above is no longer empty. Motion and pacing was 1.2.0 and is
   cut, typography and labels was 1.1.0 and is cut, composition and camera is done-criteria on the format's
