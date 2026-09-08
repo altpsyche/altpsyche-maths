@@ -165,7 +165,6 @@ three more are written past those because a session should not rediscover them.
 
 | version | what lands | what it changes | steps | cut against | depends on | plan |
 | --- | --- | --- | --- | --- | --- | --- |
-| 1.5.0 | the view as a timeline entry, so a camera move is sequenced with the action | the shape of `Figure` | 4 | both demos' views, moved against their own entrances | nothing outside this package | written |
 | 1.6.0 | a rectangular clip, and the inset it makes possible | what a `Mark` may ask for | 4 | the flat demo's inset on its tangent point | nothing outside this package | written |
 | 2.0.0 | the figure format | every builder's shape, and the door | 28 | all four demos read from files, and the nine sheets | MathJax, which is already a dependency | written, in [`FIGURE-FORMAT.md`](FIGURE-FORMAT.md) |
 | 2.1.0 | the curves and surfaces a figure can name: parametric, polar, implicit, and the solids | adds kinds | to plan | a phase portrait, which the flat demo's field cannot express | nothing outside this package | to plan |
@@ -289,12 +288,12 @@ it, and out the far side. That walk is what makes the demo a gate rather than an
 takes the operation through no crossing, one crossing, two crossings and containment, which are the
 four cases this kind of code gets silently wrong.
 
-**Which demo each of the look versions is cut against.** 1.5.0 is both demos' views, moved against
-their own entrances, and 1.6.0 is the flat demo's inset on its tangent point, which holds to Siva's
-rule that a feature reaches a flat picture and a solid one. 1.4.0 held to it with the flat demo's
-shaded region and the solid demo's plane, and 1.3.0 with the flat demo's tangent and the solid demo's
-three runs of descent. 1.1.0 held to it too and reached all four, since every one of them writes text
-and none of them named a font.
+**Which demo each of the look versions is cut against.** 1.6.0 is the flat demo's inset on its
+tangent point, which holds to Siva's rule that a feature reaches a flat picture and a solid one.
+1.5.0 held to it with the flat demo's follow and the solid demo's push in on its crossing, 1.4.0 with
+the flat demo's shaded region and the solid demo's plane, and 1.3.0 with the flat demo's tangent and
+the solid demo's three runs of descent. 1.1.0 held to it too and reached all four, since every one of
+them writes text and none of them named a font.
 
 **A version is not cut until its demos draw.** The measurement is the demo's own marks: a count at
 named times, compared by tolerance, which is the gate DESIGN.md describes and which needs no browser.
@@ -308,6 +307,88 @@ the motion in a still. 2.5.0 is the version that ends that, and the strips stay 
 README that plays a video on load is a README nobody can read.
 
 ## Now
+
+**1.5.0 is cut, and the view is a timeline entry.** Three steps and a plan correction closed it. A
+view that moved was a function of the clock written on the figure, so it sat outside the order
+everything else is written in and could not be told to start after an entrance or to overlap one. A
+`ViewAnimation` is the extent the entries before it left and how far along, to the extent at that
+point, and a `ViewChange` is one as a timeline entry.
+
+**One span list carries both kinds, which is the whole of the item.** `after` and `stagger` read that
+list, so a second timeline for the view could not sequence a camera move against an entrance at all.
+An animation is a function and a view change is an object holding one, which is what tells two
+functions of two arguments apart. `Span.animation` is `Span.entry`, `at` skips the view entries and
+`extentAt` folds only those. A move overlapping the entrance by half its own length gives the spans
+(0, 2) and (1, 3): over eleven times the fade reads against its own span and the move against its
+own, so one entry's overlap shifts neither clock, to 1e-10.
+
+**The declared extent is the base of that fold at every time rather than the answer.** A figure with
+no view entry keeps it throughout, and a finished view entry stays applied in full, which is the rule
+every mark animation already follows. Returning to the declared extent after the last entry was the
+other reading available and would make a camera move snap back. Resolving the declared extent first
+is also what keeps a shape-dependent extent choosing: with a view entry in the timeline, `byAspect`
+still picks 20 by 10 at a surface of 400 by 200 and 10 by 10 at 200 by 200.
+
+**Three forms are named and they are the format's own list**, which is a fixed extent, an aspect
+choice, a follow with a margin and a framing of named marks. The first two are what a figure already
+declares. `moveView` walks each field of the extent it was handed to the one it names and leaves the
+fields it does not, so a pan writes a centre alone. `followView` holds a mark within a margin of the
+middle and pushes no further, stopping where its room runs out. `frameView` grows the frame to cover
+the marks rather than fitting it to them, so the shape it was handed is the shape it keeps and the
+picture does not stretch as the marks move: two discs reaching 5 across and 2 up inside a frame of
+two to one come out 5 by 2.5, and padded by one they come out 8 by 4 because the height then sets the
+width. Each agrees with its closed form at eleven times.
+
+**A follow and a framing read the marks, and they arrive as a getter.** Every painter asks for the
+marks and the matrix both, so building them inside the call that answers for the matrix would build
+the solid demo's 245 marks and its depth sort twice a frame. A figure whose view is a `moveView`
+builds its scene no times and one whose view is a `followView` and a `frameView` together builds it
+once.
+
+**The door gained `extentAt(figure, seconds, aspect)`, which the work needed rather than chose.** Four
+gates read the frame off `figure.extent` to place a mark against it, and a declared extent stopped
+being the whole view the moment a view entry existed: the flat demo's reading came out at -5.804
+against a frame the gate believed ran to -5.4. `viewAt` is that call plus `viewMatrix`, so the two
+cannot disagree. A scene placing a mark against the frame cannot read it from there, since a view
+that follows something reads the marks and the scene would be asking for what is being built.
+
+**The flat demo's view is one `followView` entry and its picture is byte-identical.** `tangent.extent`
+was `(_aspect, seconds) => frameAt(pointAt(seconds))` and is now the plain extent `size`. The entry's
+span is nothing wide, so it is applied in full from the first frame: the duration is 10.25 seconds as
+it was and the matrices read 602 across at the entrance and the beat and 478 at the walk and the end.
+
+**The solid demo's camera pushes in on the crossing to 6.8 across, a magnification of 1.21, and comes
+back.** The crossing reaches 3.1105 across and 1.4744 up from the middle at its widest over the
+orbit, so 6.8 holds both branches with 0.2896 to spare at every place in the turn. Its matrix reads
+93.75 at the entrance, the still, a quarter turn and the end and 113.051471 at the half turn, and the
+figure ends where it began to 1e-12.
+
+**The equation and the title had to go, because that demo had no room.** Everything it draws fits
+inside 7.872 by 6.155 against a declared 8.2 by 6.4, four per cent of margin, so any push worth
+seeing crops something, and those two are placed at fractions of the declared extent. They are walked
+to nothing over 0.4 seconds before the camera moves and back after it has returned. Fading them while
+it moved left a label at half its opacity outside the frame, which reads as one that slid off rather
+than one that went, and the gate holding every text mark inside the frame caught it. `fadeTo` rather
+than `fadeOut` and `fadeIn`, since those two multiply the opacity they are handed and a mark faded
+out never returns.
+
+**The push starts after the still and after the last frame the strip shows**, so a reader shown one
+frame gets the whole saddle with its equation, and the strip stays four frames of one composition.
+**The eight sheets are byte-identical, so what holds both moves is the suite rather than a sheet**,
+which is what 1.2.0 did with the pacing for the same reason.
+
+**Three errors in the plan were found and corrected before they were built.** Step 2 said four forms
+including a hold, and step 7 of the format, which it defers to, names no hold: `wait` already inserts
+dead time and a finished view entry stays applied in full, so a view holding while a brace arrives is
+the absence of an entry. Step 3 said the solid demo's orbit gains a held beat, and that orbit is a
+`Camera3` driven by a track inside the scene rather than the figure's view, so pacing it belongs to
+step 3.8 of the format. And both this file and the format claimed the flat demo holds its dot within
+1.2 figure units of the middle: the reach is 1.2 but `ROOM` is 0.62 and binds at both ends of the
+walk, so the real bound is 2.14. The suite already held 2.14 and said why, so the gate was right and
+both plans were wrong.
+
+**The door went from 252 names to 261 and the suite from 722 tests to 747 over 45 files.** Every
+done-criterion was verified line by line in the commit that cut it.
 
 **1.4.0 is cut, and a fill may be a run of colours along an axis.** Five steps closed it. A
 `Gradient` is two points and a list of `Stop`s, each a colour and an offset from nothing at the start
@@ -568,194 +649,9 @@ no box test in front of it and the quadratic over piece pairs is not worth remov
 
 ## The items
 
-Each is a version above. What follows is what each one covers. The three of the 1.x band carry a step
+Each is a version above. What follows is what each one covers. The one of the 1.x band carries a step
 list and the eight of the 2.x band do not, because writing one is a session of its own and the band
 is behind 2.0.0.
-
-### 1.5.0 The view as a timeline entry
-
-**A camera move cannot be sequenced with anything.** `viewAt` reads `figure.extent` straight off the
-figure and the timeline never touches the view, so a view that moves is a function of the clock
-sitting outside the order everything else is written in. The flat demo's view follows its dot and
-holds it within 1.2 figure units of the middle, and there is no way to say that the move starts after
-the entrance finishes, overlaps it by half a second, or holds while a brace arrives. Manim animates
-`camera.frame` as an object among the others, which is why every chapter it draws can move the camera
-against the action.
-
-**What this changes is the shape of `Figure`**, which is why it goes in front of the format rather
-than after it.
-
-- [x] **1. A view animation, and the timeline carrying it.** An entry that changes the extent over
-  its span, played and staggered like any other. The extent a figure declares stays what the view is
-  before the first entry and after the last. **Measures:** `viewAt` answering the same matrix at
-  every named time as it does today for a figure with no view entry; a view entry with a negative
-  `after` overlapping the entrance and the matrix at eleven times through the overlap.
-
-  **Landed.** A `ViewAnimation` is the extent the entries before it left and how far along, to the
-  extent at that point, and a `ViewChange` is one as a timeline entry, holding it under `view`. The
-  wrapper is what lets one span list carry both kinds: an animation and a view animation are both
-  functions of two arguments and nothing at runtime tells them apart, so the object is the whole of
-  the test. **One list is the point of the item**, since `after` and `stagger` read that list and a
-  second timeline for the view could not sequence a camera move against an entrance at all.
-
-  `Span.animation` is `Span.entry`, and `play`, `together` and `stagger` take an `Entry`. `at` skips
-  the view entries and a new `extentAt` folds only those, over the extent it is given. `viewAt`
-  resolves the declared extent and hands it to `extentAt`, so a declared extent chosen from the shape
-  of the surface still chooses under a view that moves: `byAspect` picks 20 by 10 at a surface of 400
-  by 200 and 10 by 10 at 200 by 200 with a view entry in the timeline.
-
-  **Which reading of "and after the last" this took.** The declared extent is the base of the fold at
-  every time rather than the answer, so a figure with no view entry keeps it throughout and a
-  finished view entry stays applied in full. The other reading, that the view returns to the declared
-  extent once the last entry ends, would make a camera move snap back and would be the one rule a
-  span follows that no mark animation follows. A move to 4 over the span 1 to 3 reads the origin at
-  100 pixels at 0 and at 1, and at 20 at 3 and at 30.
-
-  **A move overlapping the entrance by half its own length**, which is what no view outside the
-  timeline could express, gives the spans (0, 2) and (1, 3) and a duration of 3. Over eleven times
-  through the overlap the fade reads against its own span and the move against its own, so one
-  entry's overlap shifts neither clock: the opacity is `seconds / 2` and the origin is
-  100 − 80·(seconds − 1)/2, both to 1e-10. Played `together` instead, both spans are (0, 2) and at
-  one second the opacity is 0.5 and the origin is 60.
-
-  **Every demo's view is unchanged, which is the other half of the measure.** None of the four holds
-  a view entry, so each is the matrix its own extent gives: the flat demo at (100, 0, 0, 0, -100, 0,
-  602, 300, 1) at the entrance and the beat and 478 across at the walk and the end, the solid demo at
-  93.75 with 540 across at all four of its named times, the boolean demo at 100 with 540, and the
-  rotation demo at 103.448276 with 485.172414 and 291.724138. The eight sheets are byte-identical.
-
-  The door went from 252 names to 255 and the suite from 722 tests to 732 over 45 files.
-
-- [x] **2. The named view moves, and the marks a follow reads.** A move to a fixed extent, a follow
-  with a margin, and a framing of named marks. **Measures:** each form's matrix at eleven times
-  against its closed form; the flat demo's dot held within its reach of 1.2 figure units of the
-  middle wherever its room allows; `marksAt` called once rather than twice for a figure whose view
-  reads no mark.
-
-  **Two corrections to this step, found by reading step 7 of the format before working it.** This
-  step defers to that list and the list is not the one written here first.
-
-  **There are three forms rather than four, and a hold is not one of them.** Step 7 names "a fixed
-  extent, an aspect choice, a follow with a margin, and a framing of named marks", of which the first
-  two are what a figure declares today: a plain `Extent` and `byAspect`. So what this step adds is a
-  move to a fixed extent, a follow and a framing. A hold was this file's own invention. `wait` already
-  inserts dead time, and a finished view entry stays applied in full, so the view holding while a
-  brace arrives is the absence of a view entry over that span rather than an entry of its own.
-
-  **A follow and a framing both read the marks, which `ViewAnimation` cannot see.** Step 1 landed it
-  as the extent and how far along, because nothing then needed more. A follow of a named mark needs
-  that mark's place and a framing of named marks needs their bounds, so this step widens it. **The
-  marks arrive as a getter rather than as a list**, since every painter calls `marksAt` and `viewAt`
-  both and computing the marks inside `viewAt` would build the solid demo's 245 marks and its depth
-  sort a second time at every frame. A figure whose view reads no mark then pays nothing.
-
-  **Landed.** `moveView`, `followView` and `frameView`, in `figure/view.ts`, and `ViewAnimation`
-  gained the getter. `viewAt` builds the marks at most once per call and only if an entry asks: a
-  figure whose view is a `moveView` builds its scene no times, and one whose view is a `followView`
-  and a `frameView` together builds it once.
-
-  **A move walks each field of the extent it was handed to the one it names, and leaves the fields it
-  does not name.** From 10 by 10 to 20 by 5 centred at (3, -1) over eleven times, each matrix agrees
-  with `viewMatrix` on the lerped extent to 1e-10. A pan writes a centre alone, so the pixels per
-  unit read 20 at both ends of it while the origin walks from 100 to 20.
-
-  **A follow holds the mark within its margin of the middle and no closer.** With a margin of 1.2 and
-  a dot walking across at one unit a second, the view stands still while the dot is inside the margin
-  and the middle then reads 100 − (seconds − 1.2)·20 pixels, so the dot never leaves 1.2 figure units
-  of the middle. That is the number the flat demo's own view quotes. Given a room of 2 the middle
-  stops at 40 pixels off and holds there at 6 seconds and at 60. A name matching nothing leaves the
-  view where it was, which is the rule every animation follows.
-
-  **A framing grows the frame to cover the marks rather than fitting it to them**, so the shape it
-  was handed is the shape it keeps and the picture does not stretch as the marks move. Two discs
-  reaching 5 across and 2 up inside a frame of two to one come out 5 by 2.5 centred at (0, 0.5),
-  agreeing with the closed form at eleven times. Padded by one they reach 7 across and 4 up, and 4 up
-  at two to one wants 8 across, so the height sets the width and the framing is 8 by 4. A disc at 20
-  across that the framing does not name is left out, which the 40 pixels per unit says.
-
-  **`touches` is exported from `figure/animation.ts` rather than written twice**, since a follow and
-  a framing name marks by the same rule an animation does: a name is a mark's id or the front of one.
-
-  The door went from 255 names to 260 and the suite from 732 tests to 744. The eight sheets are
-  byte-identical.
-
-- [x] **3. Both demos move their view against the action.** **Measures:** the demo's marks and view
-  matrices at its named times; the flat demo's duration unchanged within a tenth of a second.
-
-  **Landed, and the picture is byte-identical.** `tangent.extent` was
-  `(_aspect, seconds) => frameAt(pointAt(seconds))` and is now the plain extent `size`, with
-  `followView('tangent/point', { within: REACH, room: ROOM, axis: 'x' })` as the one view entry. Its
-  span is nothing wide, so it is applied in full from the first frame. The duration is 10.25 seconds
-  as it was and the matrices read 602 across at the entrance and the beat and 478 at the walk and the
-  end, which are the numbers step 1 recorded. The eight sheets are byte-identical.
-
-  **The 1.2 this step and step 2 both quoted is not what the picture holds, and the same wrong number
-  is in step 7 of the format.** The reach of 1.2 is the margin the view pushes to close, but `ROOM`
-  is 0.62 and it binds at both ends of the walk, so the dot sits 2.14 figure units from the middle at
-  the worst rather than 1.2. `tests/demos.test.ts` already held 2.14 and said why, so the number was
-  right in the gate and wrong in the plan. The reach does bite mid-walk, where the dot crosses the
-  middle and the offset is nothing.
-
-  **The door gained `extentAt(figure, seconds, aspect)`, which the step needed rather than chose.**
-  Four gates read the frame off `figure.extent` to place a mark against it, and a declared extent
-  stopped being the whole view the moment a view entry existed. `viewAt` is now that call plus
-  `viewMatrix`, so the two cannot disagree. `demos/render.ts` reads it too, so a still's pixel size
-  would follow a view that zoomed.
-
-  **A scene placing a mark against the frame cannot read the frame from `extentAt`**, since a view
-  that follows something reads the marks and the scene would be asking for what is being built. The
-  flat demo's reading and its rule are placed by `frameAt` for that reason, which is the same
-  arithmetic the view entry does.
-
-  The door went from 260 names to 261 and the suite from 744 tests to 745.
-
-
-  **The solid demo's own half was reshaped and Siva chose it.** This step said the orbit gains a held
-  beat at the face of the saddle. That orbit is a `Camera3` inside the scene driven by a track rather
-  than the figure's view, so pacing it is a track change and belongs to step 3.8 of the format. What
-  landed instead is a push in on the crossing, since Siva's rule is that a feature reaches a flat
-  picture and a solid one.
-
-  **The camera pushes to 6.8 across, a magnification of 1.21, and comes back.** The crossing reaches
-  3.1105 across and 1.4744 up from the middle at its widest over the orbit, so 6.8 across holds both
-  branches of it with 0.2896 to spare at every place in the turn. The two view spans are 6.40 to 7.40
-  seconds and 10.20 to 11.40, the matrix reads 93.75 at the entrance, the still, a quarter turn and
-  the end and 113.051471 at the half turn, and the figure ends where it began to 1e-12.
-
-  **The equation and the title had to go, because the demo had no room.** Everything drawn fits inside
-  7.872 by 6.155 against a declared 8.2 by 6.4, which is four per cent of margin, so a push worth
-  seeing crops something. Those two are placed at fractions of the declared extent and are what reach
-  nearest its edge. They are walked to nothing over 0.4 seconds **before** the camera moves and back
-  after it has returned, since fading them while it moved left a label at half its opacity outside the
-  frame, which reads as one that slid off rather than one that went. That is what the frame gate
-  caught.
-
-  **`fadeTo` rather than `fadeOut` and `fadeIn`**, since those two multiply the opacity they are
-  handed: a mark faded out sits at nothing, and a fade in over it walks nothing towards nothing and
-  the mark never returns.
-
-  **The push starts after the still and after the last frame the strip shows**, so a reader shown one
-  frame gets the whole saddle with its equation rather than a crop of the middle, and the strip stays
-  four frames of one composition. The eight sheets are byte-identical and the duration is 11.8 seconds
-  as it was. **What holds the push is the suite rather than a sheet**, which is what 1.2.0 did with
-  the pacing for the same reason.
-
-  **One gate was narrowed.** The gate holding every text mark inside the frame now skips a mark at
-  nothing, since a mark that is not drawn has not been cropped.
-
-  The suite went from 745 tests to 747.
-
-- [ ] **4. Cut 1.5.0.** **Measures:** the three gates; the eight sheets identical after
-  `npm run demos`; the door and the suite from wherever 1.4.0 left them.
-
-#### Done-criteria
-
-- A view move is an entry in the timeline, sequenced with `after` and `stagger` like any animation.
-- A figure with no view entry gets the same matrix at every time it gets today.
-- The three view forms are named, and each one's matrix agrees with its closed form at eleven times.
-- The flat demo moves its view as a timeline entry, and its dot stays within 1.2 figure units of the
-  middle.
-- The three gates pass and the lock file agrees with the manifest.
 
 ### 1.6.0 The rectangular clip
 
