@@ -87,6 +87,43 @@ painter be worth building.
 **Nothing in the ladder below 1.3.0 waits on this.** Quadratics, dashes and the painter itself all
 draw the marks that exist today.
 
+**A fifth set of decisions is answered, all Siva's, taken on 2026-09-08 after a review of the whole
+architecture. They reorder everything below.**
+
+**The figure format is the product, and this package is its reference implementation.** A figure
+becomes a serialisable description rather than TypeScript closures. Today `scene` may be a function
+and every animation is one, so a figure can only be authored by a programmer writing TypeScript and
+can never leave this language. As data it reaches an editor, a page's content, a generator, a worker,
+and a renderer written in something else.
+
+**The format is closed.** An author uses the animations and the scene shapes the format names, with
+parameters, and never an arbitrary function. That is what makes a figure portable, checkable and
+generatable, and the cost is that a new kind of animation is a change to the format rather than a
+function somebody writes.
+
+**Every scene shape becomes a named builder.** `plot`, `axes`, `tangentAt`, `areaUnder` and the rest
+are nodes of the format with parameters, and a track value binds to a parameter. **This is the
+largest single piece of the whole plan**, because a scene builder today computes geometry: the flat
+demo walks a path by its own length and recovers the graph x from where it lands, which is the design
+this file already defends. Nothing arbitrary survives that.
+
+**The format is versioned and stable, the way the door is.** An old figure keeps rendering and a
+breaking change is a major, since anything else makes a second renderer impossible to write against.
+
+**Truly native rendering happens through the format and not through this package.** A renderer in
+another language reads a serialised figure and draws it, importing no TypeScript. That is what makes
+"native, no browser" reachable at all: `@altpsyche/engine` targets browser WebGPU and WebGL 2, and
+its headless path is Playwright driving Chromium with a window needed for a real card, so it cannot
+go there and does not have to.
+
+**The GPU painter stays in this package** and video out stays here too, behind a dynamic import. One
+install still gives a working figure, a working painter and a file at the end.
+
+**Lottie is the precedent** and it is worth reading before the format is designed. Vector animation
+as JSON with independent renderers on several platforms, and its known trouble is the one this format
+will meet: renderers drifting apart on the semantics the format left loose, text metrics worst of
+all.
+
 ## The version ladder
 
 **Every item gets its own minor version, then 1.0.0 is the polish.** Siva's plan, and the release
@@ -94,12 +131,18 @@ convention this repository already follows makes each one a minor bump. A versio
 demos draw, not when its code compiles. A version that is cut leaves this table and its item goes
 with it, because `git log` is what keeps a closed plan.
 
+**The ladder is frozen and holds nothing.** Siva's call. Four renderer versions were on it, and every
+one would have been written against an API the format is going to reshape. They come back once the
+format exists, in whatever shape it leaves them.
+
 | version | what lands |
 | --- | --- |
-| 1.1.0 | Quadratics and dashes, which is what a shader needs from a path |
-| 1.2.0 | The GPU painter: the fill, the stroke, and the engine behind a dynamic import, waiting on that package's item 2 |
-| 1.3.0 | A figure in space keeps its depth, and the painter writes a depth buffer, if the fourth decision allows it |
-| 1.4.0 | Text on a GPU, and a recorder that hands back a file |
+| — | nothing is queued until the format is designed and read |
+
+**What was on it, kept here so it is not rediscovered:** quadratics and dashes, the GPU painter, a
+figure in space keeping its depth, and text on a GPU with a recorder. The reading behind each is
+below and in `git log`, and the engine's stencil gap is filed in that repository as its item 2
+whatever happens here.
 
 **Every version below 1.0.0 is cut and its item is deleted.** What queues work now is the table
 above, the found list below, and whatever the consumer asks for.
@@ -294,227 +337,60 @@ no box test in front of it and the quadratic over piece pairs is not worth remov
 
 Each is a version above. What follows is what each one covers.
 
-### Quadratics and dashes, 1.1.0
+### The figure format, and it is planned before anything is worked
 
-A tessellation is a shape rewritten as the pieces a renderer draws: a curve as a run of straight
-segments, a stroke as a fillable outline, and a fill as triangles. Every part of it is numbers in and
-numbers out, so it is held by the suite the way the boolean operations are and needs no browser.
+**This is the next session and it is a planning session.** No code is touched in it. What it produces
+is the format written down, the questions below answered, and a step list Siva reads before anything
+lands.
 
-**What it is and what it is not.** This version is the part of a GPU painter that is pure geometry
-and needs no device: a cubic rewritten as the quadratics a shader can test exactly, and a dash
-resolved into the runs that are drawn. The painter itself is 1.2.0. Splitting them this way is not a
-boundary between packages any more, since the decision above brings the painter here too. It is a
-boundary between what `npm test` holds and what a card holds, and landing the tested half first means
-the painter is written against calls that already have their numbers.
+A figure format is a description of a picture over time that a program reads rather than runs. It
+carries nodes, tracks and animations, each a named thing with parameters, and no function anywhere.
+Two things follow: a figure can be written by something other than a person typing TypeScript, and a
+figure can be drawn by something other than this package.
 
-**What it is worth on its own merits.** `strokeOutline` turns a stroke into a path, so the boolean
-operations reach strokes, which they cannot today. `quadratics` is what a hit test against a curve
-needs and what `length.ts` already samples for by hand. Neither waits on a device.
+**Why it comes before the renderer.** Four renderer versions were queued and every one would have
+been written against an API the format reshapes. The format is also the only part that cannot be
+retrofitted: an authoring API can be added over a format, and a format cannot be extracted from
+closures without redesigning every builder.
 
-**What argues against it.** The demos draw 144, 12 and 244 marks, and SVG draws those instantly and
-sharper than triangles would. Nothing is waiting to draw this, which is the test this file orders its
-items by, so **whether 1.1.0 is worked at all is Siva's call rather than a session's.**
+#### What the planning session has to answer
 
-**The depth buffer is not reached through this seam, and drawing the graph is what showed it.** A
-mark is flat. `PathMark` holds a `Path` of `Vec2` and carries no z, and `scene3` sorts its items by
-the mean depth of their own points and then hands back a flat group, so the depth it measured is
-gone before a painter sees anything. A GPU painter fed `Mark[]` therefore gets geometry already
-ordered by the painter's algorithm and has nothing to write into a depth buffer. **The argument that
-a depth buffer removes the cyclic-overlap case is true and this seam does not deliver it.**
+- **The scene shapes, named and parameterised.** Every builder this package publishes becomes a node
+  of the format or is refused a place in it. The count is the size of the work and nobody has counted
+  it yet. `plot`, `axes`, `tangentAt`, `areaUnder`, `brace`, `vectorField`, `surface3` and the rest.
+- **How a track value binds to a parameter.** The flat demo drives a fraction of a curve's length and
+  recovers the graph x from the point it lands on. That is computation, and the format admits none,
+  so either a node takes a length fraction directly or the demo is expressed differently. **This one
+  case decides whether the format is workable**, so it is answered first and on paper.
+- **Where text's geometry is settled.** A label's place depends on font metrics, which differ between
+  platforms, so two renderers disagree unless the format pins metrics or a figure carries text
+  already resolved. This is the failure Lottie never fully closed.
+- **What conformance means and what checks it.** Two renderers agree if they draw the same marks at
+  the same times, compared by tolerance, which is a gate this repository already runs. That oracle
+  covers a flat figure and covers nothing a depth buffer does, so the second half needs an answer of
+  its own.
+- **What the version promise covers.** Which parts are frozen, what a renderer may leave unimplemented
+  and how it says so, and what a major would be for.
+- **Whether the authoring API changes at all.** The builders that exist can stay as the way a figure
+  is written, producing the format rather than closures, in which case a consumer sees little change.
+  That is the goal and it needs checking rather than assuming.
 
-What the door does carry is `camera3.project`, which returns a `Projected` with a depth, and
-`SpaceItem`, which is a piece's world points beside the flat node built from them. So depth per piece
-is reachable today and depth per vertex is not. **Closing that is a separate item and it is Siva's
-call**, since the three answers are a mark carrying an optional z, a second call handing back space
-geometry unflattened, or the GPU painter projecting `SpaceItem` points itself. The first widens a
-door frozen at 1.0.0 and breaks the rule in `figure/mark.ts` that a mark asks only for what an SVG
-element and a 2D canvas can both do.
+#### The cheapest thing that answers most of it
 
-**1.1.0 as written is still worth its own steps**, because flattening, dashes, stroke outlines and
-triangulation are what a GPU painter needs for a flat figure whatever the answer to depth is, and
-`strokeOutline` earns its place with no painter at all.
-
-#### The graph, with this item in it
-
-Nothing new crosses a boundary. This package still imports no renderer, and the site still holds both.
-
-```mermaid
-graph TD
-  subgraph site["altpsyche.dev &nbsp;&nbsp; the website"]
-    direction TB
-    W1["figures: the registry and the components"]
-    W2["shader surface and controls"]
-    W3["recording: frames to a VideoEncoder"]
-    W4["the GPU painter, and the glyph atlas under it"]
-  end
-
-  subgraph engine["@altpsyche/engine &nbsp;&nbsp; the renderer"]
-    direction TB
-    E1["gpu, graph, scene, host"]
-  end
-
-  subgraph maths["@altpsyche/maths &nbsp;&nbsp; one door"]
-    direction TB
-    M1["values: vectors, matrices, curves, easing"]
-    M2["timing: keys, tracks, sampling"]
-    M3["figure: marks, groups, timeline, animations"]
-    M4["tessellation: flatten, dashed, strokeOutline, triangulate"]
-    M5["painters: SVG, and a 2D canvas"]
-  end
-
-  W1 --> maths
-  W2 --> maths
-  W3 --> maths
-  W4 --> maths
-  W2 --> engine
-  W3 --> engine
-  W4 --> engine
-  maths -. "never" .-> engine
-
-  linkStyle 7 stroke-dasharray:4,stroke:#b00
-```
-
-**How a figure reaches a card, with nothing about a device crossing into this package.** Each arrow
-carries plain values, and the last one is the only one that touches a driver.
-
-```mermaid
-graph LR
-  F["a figure"] -->|"marksAt(t)"| K["Mark[]"]
-  K -->|"quadratics(path, tolerance)"| Q["quadratic control points"]
-  K -->|"dashed(path, dash)"| Q
-  K -->|"a text mark"| G["the glyph atlas, in the site"]
-  Q -->|"packed into a storage buffer"| P["the GPU painter, in the site"]
-  G --> P
-  P -->|"a FrameGraph"| R["@altpsyche/engine"]
-  R -->|"two triangles per curve, from the vertex index"| V["the vertex stage"]
-  V -->|"discard where v is under u squared"| D["the device"]
-```
-
-**No triangle crosses the boundary, and reading Manim is what showed that.** A vertex stage there
-generates six vertices per curve from the vertex index alone and reads the three control points out
-of a buffer, so the only thing a processor has to send is the control points. What this package
-contributes to a GPU painter is therefore smaller than the first plan assumed: a cubic rewritten as
-quadratics, and a dash resolved into runs. The triangles, the winding count and the anti-aliasing are
-all the shader's.
-
-**What answers the question of how this package reaches a renderer: it does not, and it does not need
-to.** Control points are numbers. The site imports both packages and joins them, and the arrow drawn
-in red above stays undrawn. That is the arrangement `DESIGN.md` already fixed, and nothing found this
-session moves it.
-
-**The thing that costs quality is not the split.** It is `figure/space.ts` projecting a point and
-keeping only where it landed. Manim sends `vec3f` control points to its vertex stage and projects
-there, which is what makes a depth buffer work; this package projects on the processor and hands a
-painter two-dimensional marks. Sending `vec3` control points across this boundary needs no renderer
-import either, since a coordinate is a number the same as any other. **So the depth question and the
-dependency question are separate, and answering the first does not touch the second.**
-
-**Its steps are written below, and no code was touched in the session that wrote them.**
-
-**The step list below was rewritten after reading how Manim does this**, which is recorded under the
-entry as what the techniques are named. The first list flattened every cubic on the processor and ear
-clipped the fill into triangles. Both are the wrong technique and the reading says why.
-
-- [ ] **1. A cubic as quadratics.** `quadratics(path, tolerance)` rewrites each cubic as a run of
-  quadratic Bézier pieces within a tolerance. A quadratic is what a fragment shader can test exactly:
-  the canonical control points (0,0), (0.5,0) and (1,1) put the curve on `v = u²`, so a pixel is
-  outside when `v < u²` and one comparison decides it. A cubic has no such test, which is why Manim
-  converts and why this is the first step rather than an optimisation. **Measures:** the greatest
-  distance from the quadratic run to the true cubic at tolerances of 1e-2, 1e-3 and 1e-4; the piece
-  count at each; and a quarter arc converted and read back inside the 2.6 to 2.8 parts in ten
-  thousand the control distance already leaves.
-
-- [ ] **2. A fill as two triangles for each curve.** `fillTriangles(path)` returns, per quadratic, the
-  fan triangle reaching back to its subpath's first point and the triangle on the curve's own three
-  control points, with the `uv` coordinates that put the curve on `v = u²`. Nothing here decides what
-  is inside: the winding number is counted per pixel from which way each triangle faces, which is a
-  stencil pass the site owns. **This replaces the ear clipping the first list planned**, which
-  triangulates a flattened outline and therefore fixes the resolution at authoring time and costs
-  more the more complex the shape. Two triangles per curve is the whole cost whatever the shape.
-  **Measures:** the triangle count against twice the curve count exactly; the covered area against
-  `area(path)`, which is closed form by Green's theorem; and a ring under both fill rules coming out
-  right from the facing alone.
-
-- [ ] **3. A dashed path as the runs that are drawn.** `dashed(path, dash, offset)` returns the drawn
-  runs as subpaths of their own, reading `length.ts` for where a length falls inside a piece. Both
-  painters resolve a dash themselves and a shader has nothing that will. **Measures:** the summed
-  length of the returned subpaths against the drawn share the dash array asks for, on a straight line
-  and on a circle; and a dash longer than the path returning the whole path once.
-
-- [ ] **4. A stroke as a path that can be filled.** `strokeOutline(path, stroke)` returns the region a
-  stroke covers, with miter, round and bevel joins and butt, round and square caps, and a miter limit
-  past which a miter becomes a bevel. **This is no longer what a GPU painter uses.** Manim expands a
-  stroke into a strip of quads inside the shader, breaking each curve into segments per frame so the
-  count follows the view, and a stroke expanded on the processor cannot do that. The step stays
-  because it is what lets the boolean operations reach strokes, which is its own reason.
-  **Measures:** the outline's `area` against width times length exactly for a straight segment; the
-  same for a closed square; the miter limit taking effect at the angle it names; and a round join's
-  edge inside the same 2.6 to 2.8 parts in ten thousand as every other arc here.
-
-- [ ] **5. The demo the layer is cut against.** A sheet whose whole purpose is the tessellation, which
-  is the exception `demos/boolean.ts` and `demos/rotate.ts` already set. One shape is drawn three
-  times side by side: as its cubics, as the quadratic run step 1 returns, and as the two-triangle
-  cover step 2 returns, with the piece and triangle counts written under each. A tolerance walks from
-  coarse to fine across the clip, so the counts move and the quadratics tighten onto the curve.
-  **Measures:** the sheet's marks at four named times; its bare fraction under the four fifths every
-  sheet is held to; its smallest glyph above the fourteen pixel floor; and the counts written on it
-  asserted against what the calls return.
-
-- [ ] **6. Cut 1.1.0.** The version bumped in this commit, `npm install --package-lock-only` in the
-  same one, the reference given an entry per new name, the guide given a section, and the
-  done-criteria verified line by line. **Measures:** the three gates; all nine sheets identical after
-  `npm run demos`; the door and the suite from 230 names and 637 tests.
-
-#### Done-criteria
-
-- A cubic rewritten as quadratics at a named tolerance stays within that tolerance of the true cubic,
-  and the suite says so at three tolerances.
-- A fill returns exactly two triangles per quadratic, and the area they cover is `area(path)` to a
-  named tolerance under both fill rules.
-- A dash array resolves to subpaths whose summed length is the drawn share, on a straight path and on
-  a curved one.
-- A stroke outline's area is the closed form for a straight segment and for a closed square, and the
-  three joins and three caps each have a test.
-- The demo draws, its marks are asserted at four named times, and the counts written on it are the
-  counts the calls return.
-- Nothing in this item imports a browser API, and the whole of it is held by `npm test` alone.
-- The reference has one entry per name at the door and the gate holds them equal.
-- `npm test`, `npm run type-check` and `npm run build` pass, and the lock file agrees with the manifest.
-
-#### How Manim does this, read from its own source on 2026-09-08
-
-**Quadratics, never cubics.** `manimlib/mobject/types/vectorized_mobject.py` stores anchors at
-`points[0::2]` and handles at `points[1::2]`, and `add_cubic_bezier_curve_to` converts through
-`get_quadratic_approximation_of_cubic`. The reason is the fragment test above.
-
-**A fill is two triangles per curve and a stencil buffer.** `manimlib/shaders/fill.wgsl` says it: "Each
-bezier of a path contributes two triangles: one reaching back to the mobject's base point, which
-together with those of the other beziers covers the interior of the path, and one hugging the curve
-itself, whose fragments falling outside it are cut away." And on what decides the interior: "Nothing
-here decides what is inside the path. The winding number around each pixel does, counted in the
-stencil buffer from which way each of these triangles happens to face once projected." The fragment
-stage is one line, `if (in.fill_all == 0.0 && in.uv_coords.y < in.uv_coords.x * in.uv_coords.x) {
-discard; }`. The technique is Loop and Blinn's, from "Resolution Independent Curve Rendering using
-Programmable Graphics Hardware".
-
-**A stroke is a quad strip built in the shader.** `manimlib/shaders/stroke.wgsl` draws "a strip of
-quads following each bezier, with a fan of triangles rounding off the joint at each end", breaking
-each curve into segments with a `POLYLINE_FACTOR` of 100 and a `MAX_STEPS` of 32. The count follows
-the view because it is computed per frame.
-
-**A point stays in space until the vertex stage.** Both shaders read `vec3f` control points and call
-`project_point(point)` in the vertex stage. Manim never flattens to two dimensions before the
-renderer, which is exactly what `figure/space.ts` does here, and it is why a depth buffer is within
-Manim's reach and outside this seam's. Depth testing is per object and off by default:
-`apply_depth_test` turns it on.
-
-**Manim's shaders are WGSL.** The `manimlib/shaders` directory is `fill.wgsl`, `stroke.wgsl`,
-`surface.wgsl` and the rest, so the move Siva proposed is the move that project already made.
-
-**The site's half of this is queued in that repository**, as the GPU figure painter, and it names this
-item as what it waits on.
+**Express `demos/tangent.ts` as data, on paper, before designing anything.** It is the figure with the
+computed scene, the track that drives arc length, the typeset rule that walks into another, the brace
+and the counting number. A format that carries that one figure carries most of them, and a format that
+cannot is answered in an afternoon rather than in a version.
 
 ## Found while working, not yet queued
+
+- **Three of the four things that look worse than 3Blue1Brown need no architecture.** Siva named all
+  four: motion and pacing, line quality and colour, typography and labels, and composition and
+  camera. Only line quality is partly a renderer. Easing, staggered entrances, held beats, a size
+  hierarchy and a moving camera are builder and demo work over the SVG painter that already draws.
+  **Siva asked for these in parallel and then chose to freeze everything behind the format**, so they
+  are recorded here rather than queued, and they are the first thing to pick up if the format
+  planning stalls.
 
 - **The ladder freezes an API before anything validates it.** 1.1.0's demo draws quadratics as SVG,
   which checks the arithmetic and not whether the output is the shape a shader wants, and the painter
