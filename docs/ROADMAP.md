@@ -1048,6 +1048,12 @@ timeline entry as carrying an `after` offset and a stagger's `gap`, which are ar
 span's `from` when the call is made. Step 6 writes the spans, since that is what `marksAt` reads and
 it leaves no compiler for a second renderer to get wrong, and it says what that costs.
 
+**A drawn string had no written form, and one demo draws one.** The expression vocabulary names a
+literal, a track reference, a bound variable, arithmetic, a comparison with a choice, a member and a
+call, and no join of text. The flat demo's reading is a fixed word beside a formatted number, so a
+text record carries a template with numbered holes and one expression per hole, which leaves
+substitution in a renderer rather than a string algebra.
+
 **Nothing is signed off.** Siva reads the plan before a line is written.
 
 ### The 2.x band, which is what Manim has and this does not

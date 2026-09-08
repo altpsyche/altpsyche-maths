@@ -179,6 +179,13 @@ choice, a member of a value, or a call to one of the pure functions this package
 of callable functions is named and versioned the way the node set is, so every renderer implements a
 fixed vocabulary rather than an interpreter for an open language.
 
+**A drawn string is a template with holes rather than an expression that joins text.** The flat demo's
+reading is `` `slope ${labelFor(slopeOf(curve, x), 0.01)}` ``, so its content is a fixed word beside a
+formatted number. `labelFor` is a published function the vocabulary already calls, and joining its
+answer to the word is the one string operation a demo asks for. A text node carrying `slope {0}` and
+one expression per hole answers it, which keeps the expression form over numbers and points and gives
+a renderer substitution rather than a string algebra to implement.
+
 ### What each of the three hard problems turned out to be
 
 **A function as a parameter is answered and it does not reach the format.** The first two tiers
@@ -518,9 +525,14 @@ release away and has a document of its own.
   - [ ] **3.1 The node record and the resolver, with the three kinds of the tree.** A record is a
     kind, a name and its parameters, and a group's children are records. `shape`, `text` and `group`
     are the three, and `resolveNode` walks a record into the `Node` that `flatten` already takes.
+    **A text record's content is a template with numbered holes and one expression per hole**, since
+    the flat demo's reading is a word beside a formatted number and nothing in the expression form
+    joins text.
     **Measures:** the rotation demo, whose scene is a fixed tree of those three kinds and no
     expression at all, mark for mark at each of the four times its strip draws, which is eight marks
-    each time; the suite from 785. **It is the rotation demo rather than the boolean one**, because the
+    each time; the flat demo's reading, which is `slope 0.00` at three of its named times, `slope
+    1.16` at the fourth and `slope 6.00` at the last three, from a template and one call to
+    `labelFor`; the suite from 785. **It is the rotation demo rather than the boolean one**, because the
     boolean demo's scene is a boolean operation over a track value and step 3.3 is what carries that.
 
   - [ ] **3.2 A path as data.** `arc`, `circle`, `line`, `polygon`, `polyline`, `rect` and `straight`
