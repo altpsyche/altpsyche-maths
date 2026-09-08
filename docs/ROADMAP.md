@@ -465,6 +465,16 @@ and a size that says which text matters.
   the growth per sheet quoted; every family named resolvable with no network, which a test asserts by
   reading the stack rather than by rendering it.
 
+  **Landed.** `demos/typeface.ts` holds the stack and the weight, and each demo hands them to its root
+  group, so a text mark anywhere under it is written with the same face whether the demo built it or a
+  builder did. The stack is `system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif` at weight
+  400. Every text mark in the four demos names both, from none of them before. Each mark costs 67 bytes
+  more, 54 for the longer family and 19 for a weight that was never written, and the eight sheets grew
+  by 201, 804, 268, 1072, 737, 2948, 804 and 3216 bytes over 3, 12, 4, 16, 11, 44, 12 and 48 text
+  marks. A gate reads the stack rather than rendering it: the last family is one of the six generic
+  names, every other is a bare or quoted family name, and no sheet carries `@font-face`, `@import`,
+  `url(` or a link element. The suite went from 644 tests to 646.
+
 - [ ] **3. Text over more than one line.** A `TextNode` is one string at one anchor and there is no
   newline, no leading and no wrapping anywhere in `figure/node.ts` or either painter, so a title over
   two lines is placed by hand or not at all. A text node takes its lines and the leading between

@@ -43,6 +43,7 @@ import {
   type Vec2,
 } from '../index.js';
 import { DEEP, EMBER, INK, PEACH } from './palette.js';
+import { TYPE } from './typeface.js';
 
 const ink = { colour: INK };
 const edge = { colour: DEEP, width: 0.04 };
@@ -124,10 +125,11 @@ function panel(name: string, pivot: Vec2, swing: number, label: string): Node {
   ]);
 }
 
-export const scene: Node = group('turns', [
-  panel('own', OWN, 0, 'about its centre'),
-  panel('given', GIVEN, SWING, 'about a given point'),
-]);
+export const scene: Node = group(
+  'turns',
+  [panel('own', OWN, 0, 'about its centre'), panel('given', GIVEN, SWING, 'about a given point')],
+  { style: TYPE }
+);
 
 /** How long the whole circle takes. */
 export const TURN = 6;

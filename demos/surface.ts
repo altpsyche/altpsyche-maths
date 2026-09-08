@@ -57,6 +57,7 @@ import {
   type Vec2,
 } from '../index.js';
 import { DEEP, EMBER, FROST, INK, MOSS, SKY, shadeOf } from './palette.js';
+import { TYPE } from './typeface.js';
 
 const ink = { colour: INK };
 const pen = { colour: INK, width: 0.014 };
@@ -202,7 +203,9 @@ const written = await equationFromTex('z = \\frac{x^2 - y^2}{2}');
 
 export function sceneAt(along: number): Node {
   const camera = eyeAt(along);
-  return group('solid', [
+  return group(
+    'solid',
+    [
     scene3(
       'body',
       [
@@ -255,7 +258,9 @@ export function sceneAt(along: number): Node {
       height: 0.7,
       fill: ink,
     }),
-  ]);
+    ],
+    { style: TYPE }
+  );
 }
 
 /** How long one orbit takes. */

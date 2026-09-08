@@ -38,6 +38,7 @@ import {
   stillMarkup,
 } from '../demos/render.js';
 import { ADVANCE, CAP, bareShare } from '../demos/cover.js';
+import { FAMILY, WEIGHT } from '../demos/typeface.js';
 import {
   FRAMES as SOLID_FRAMES,
   HEIGHT,
@@ -156,6 +157,35 @@ describe('the committed pictures', () => {
     // The README opens on the still that clears both readings by the most, so the
     // one it opens on draws the largest smallest glyph as well as the least bare frame.
     expect(Math.max(...stills)).toBe(stills[0]);
+  });
+
+  it('write every piece of text in the one face the demos name', () => {
+    for (const figure of [tangent, booleans, turns, solid]) {
+      const end = durationOf(figure);
+      for (let step = 0; step <= 8; step += 1) {
+        for (const mark of marksAt(figure, (step / 8) * end)) {
+          if (mark.kind !== 'text') continue;
+          expect(mark.family, mark.id).toBe(FAMILY);
+          expect(mark.weight, mark.id).toBe(WEIGHT);
+        }
+      }
+    }
+  });
+
+  it('name a face the reader already has, since a sheet in an image loads nothing', () => {
+    // A generic name is what the browser answers with when none of the families
+    // is installed, so the stack ending in one is what makes it resolve offline.
+    const generic = ['serif', 'sans-serif', 'monospace', 'cursive', 'fantasy', 'system-ui'];
+    const named = FAMILY.split(',').map((entry) => entry.trim());
+    expect(generic).toContain(named[named.length - 1]);
+    for (const entry of named) expect(entry).toMatch(/^(?:[A-Za-z][A-Za-z0-9-]*|'[A-Za-z][A-Za-z0-9 -]*')$/);
+    for (const sheet of sheets) {
+      const markup = sheet.markup();
+      expect(markup).not.toContain('@font-face');
+      expect(markup).not.toContain('@import');
+      expect(markup).not.toContain('url(');
+      expect(markup).not.toContain('<link');
+    }
   });
 
   it('give each figure room for the sizes its own scale asks for', () => {

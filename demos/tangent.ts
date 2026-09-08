@@ -75,6 +75,7 @@ import {
   type Track,
 } from '../index.js';
 import { AMBER, DEEP, EMBER, HAZE, INK, MIST, PEACH, STEEL } from './palette.js';
+import { TYPE } from './typeface.js';
 
 const ink = { colour: INK };
 const pen = { colour: INK, width: 0.02 };
@@ -233,7 +234,9 @@ export function sceneAt(along: number): Node {
   const point = pointAlong(walkPath, along) ?? START;
   const frame = frameAt(point);
   const x = toGraph(coords.x, point.x);
-  return group('tangent', [
+  return group(
+    'tangent',
+    [
     numberPlane('grid', coords, { stroke: faint, minors: 4, minorOpacity: 0.45 }),
     axes('axes', coords, { stroke: pen, fill: ink, size: TEXT.tick, tip: TIP }),
     shape('area', areaUnder(coords, curve, interval(0, x)), { fill: wash }),
@@ -258,7 +261,9 @@ export function sceneAt(along: number): Node {
       fill: ink,
       size: TEXT.tick,
     }),
-  ]);
+    ],
+    { style: TYPE }
+  );
 }
 
 /** The picture arriving, one part at a time. */

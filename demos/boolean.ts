@@ -41,6 +41,7 @@ import {
   moveBy,
 } from '../index.js';
 import { DEEP, INK, PEACH, SLATE } from './palette.js';
+import { TYPE } from './typeface.js';
 
 const ink = { colour: INK };
 const still = { colour: SLATE, width: 0.018 };
@@ -110,7 +111,8 @@ export function sceneAt(apart: number): Node {
         group('discs', [shape('first', first, { stroke: still }), shape('second', second, { stroke: walker })]),
         text('label', vec2(middle, LABEL_Y), panel.name, TEXT.label, { fill: ink, align: 'middle' }),
       ]);
-    })
+    }),
+    { style: TYPE }
   );
 }
 
