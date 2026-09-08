@@ -232,6 +232,31 @@ choice per figure rather than a rule.
 | `circumscribe` | stroke, padding | no |
 | `countTo` | from, to, **and how to write the number** | **yes**, the writer |
 
+### The timeline, which is a structure rather than a kind
+
+A timeline is a sequence of entries built by `play`, `together`, `stagger` and `wait`. Each entry
+carries its animations, its duration, an `after` offset that may be negative so two runs overlap, and
+for a stagger a `gap`. The flat demo's entrance is eleven such entries and five of them carry a
+negative offset.
+
+**This was missing from the first inventory entirely.** It is not a node and not an animation, and it
+has to serialise before any figure does.
+
+### The extent, which is the tenth function
+
+`ExtentChoice` is `Extent | ((aspect: number, seconds: number) => Extent)`. The flat demo's is a
+function: the view follows the dot across, holding it within 1.2 figure units of the middle.
+
+**This was missed when the flat demo was written out as data**, which is worth recording as a warning
+about the exercise rather than only as an omission. Reading a figure and believing it has been
+understood is not the same as writing every one of its parameters down.
+
+### The value types, nine of them
+
+A parameter is often not a number. `Coords`, `Scale`, `Interval`, `Extent`, `Camera3`, `Mat3`,
+`Style` with its `Stroke` and `Fill`, `Equation`, and a `Track`. Each needs a written form, and each
+is small, and there are nine of them.
+
 ### What the inventory changes about the plan
 
 **Nine of thirty-nine carry a function, and only three shapes of function exist among them.** A curve
@@ -242,14 +267,50 @@ other animation is already a record of values wearing a function call's clothing
 `(value) => labelFor(value, 0.01)` in every use, so the parameter becomes how a number is written:
 a precision, and later a choice of forms if a figure ever needs one.
 
-**So the vocabulary is nineteen node kinds, five path producers and fifteen animation kinds**, and the
-work is concentrated in nine of them.
+**So the vocabulary is nineteen node kinds, five path producers, fifteen animation kinds, one timeline
+structure and nine value types**, which is fifty things rather than thirty-nine, and **ten of them
+carry a function** once the extent is counted.
+
+## The scope, told without flattering it
+
+An earlier version of this document said thirty of thirty-nine are "a rename of arguments into
+fields". That is true of the shape and false about the work, and it is worth correcting rather than
+leaving.
+
+**A rename is not free thirty times over.** Each kind needs a record type, a resolver, a test that
+the record draws what the call drew, a reference entry, and a parameter name chosen to agree with the
+other forty-nine. The last of those is a design running through all of them rather than a decision
+taken once.
+
+**Two of the six steps are not commit-sized and this file's own rule says they must be.** Step 3
+covers nineteen node kinds and five path producers in one bullet. Step 4 covers fifteen animations.
+Each of those is a version's worth, not a commit's, and they are written out properly before any of
+this is worked.
+
+**Four surfaces have to be rewritten and none was counted.** The four demos are 1,610 lines and every
+one becomes a file. The guide is 544 lines and teaches the API that is changing. The reference is 805
+lines and names every parameter that is being renamed. The website's figures move from modules to
+files, which its own document describes and does not scope.
+
+**This is almost certainly 2.0.0 rather than a minor.** `plot` returns a `Path` today and would
+return a record. A consumer calling it breaks. The door was frozen at 1.0.0 five commits ago and a
+frozen door is what a major exists for, so either the old calls keep working beside the new ones,
+which means two APIs and two things to test, or the version goes to two. **That is Siva's call and
+this plan assumed a minor without asking.**
+
+**Realistic shape: twelve to sixteen commits over the vocabulary, plus the four surfaces, plus the
+site.** Against evenings and weekends that is months rather than weeks. The plan is still worth doing
+and the reasons in this document are unchanged. What was wrong was the size written next to them.
 
 ## The steps
 
 Each is commit-sized and names what its commit will measure. **The measurement is the same throughout
 and it is the reason this plan is checkable: a figure as data draws mark for mark what the TypeScript
 figure draws, compared by tolerance.** The demos are already the conformance suite.
+
+**Steps 3 and 4 are each larger than a commit and are written out before they are worked**, which is
+the rule this repository holds every item to. What is below is the shape of the work rather than its
+final list, and the count is twelve to sixteen commits once those two are split.
 
 - [ ] **1. The readers take geometry rather than functions.** `slopeOf`, `areaUnder` and `tangentAt`
   work from a plotted path's own cubics. **Measures:** every demo's marks unchanged within tolerance
@@ -276,7 +337,22 @@ figure draws, compared by tolerance.** The demos are already the conformance sui
   written out, read back, and drawing marks identical within tolerance; a figure of a later version
   refused; a malformed figure refused with the field named; the bytes of each demo as data.
 
-- [ ] **6. The demos are the conformance suite.** The gate reads each figure from its file rather
+- [ ] **6. The timeline as data.** The sequence of entries, each with its animations, its duration,
+  its `after` offset and a stagger's `gap`. **Measures:** the flat demo's eleven entrances, five of
+  which carry a negative offset, producing the same marks at the same times.
+
+- [ ] **7. The extent as data.** A view that follows something becomes a named form with parameters
+  rather than a function of the clock. **Measures:** the flat demo's dot held within 1.2 figure units
+  of the middle of the frame, which is the number that view already quotes.
+
+- [ ] **8. The four demos rewritten as files**, 1,610 lines of module becoming descriptions.
+  **Measures:** all nine sheets byte for byte as committed after `npm run demos`.
+
+- [ ] **9. The guide and the reference rewritten.** 544 and 805 lines describing an API that changed.
+  **Measures:** the guide's code blocks compiling in order; the reference's entries against the door
+  with the gate holding them equal.
+
+- [ ] **10. The demos are the conformance suite.** The gate reads each figure from its file rather
   than from its module. **Measures:** the whole suite green with every demo loaded as data; the byte
   gate on all nine sheets unchanged.
 

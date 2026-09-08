@@ -396,6 +396,13 @@ its number. Everything else is already a record of values wearing a function cal
 mark for mark what the TypeScript figure draws, compared by tolerance.** The demos are already the
 conformance suite.
 
+**The size was written down honestly on a second pass**, after Siva said the document was underselling
+it. Fifty things rather than thirty-nine once the timeline structure and the nine value types are
+counted, ten function carriers rather than nine once the extent is, two of the six steps larger than
+a commit and needing to be split, four prose and demo surfaces to rewrite that were never counted,
+and twelve to sixteen commits rather than six. **It is almost certainly 2.0.0 rather than a minor,
+since `plot` returns a `Path` today and would return a record**, and that is Siva's call.
+
 **Nothing is signed off.** Siva reads the plan before a line is written.
 
 ## Found while working, not yet queued
