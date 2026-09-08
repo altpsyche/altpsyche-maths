@@ -114,18 +114,20 @@ const gaps = (points: readonly { x: number; y: number }[]) =>
   points.slice(1).map((point, at) => Math.hypot(point.x - points[at].x, point.y - points[at].y));
 
 describe("every demo's view", () => {
-  // None of the four holds a view entry, so each one's matrix is the extent it
-  // declares and nothing else. These are the numbers the timeline gaining a view
-  // entry had to leave alone.
+  // The boolean and rotation demos hold no view entry, so each is the matrix its
+  // own extent gives. The flat demo follows its dot and the solid demo pushes in
+  // on its crossing, both from entries in their own timelines.
   const wanted: readonly [string, Figure, readonly number[], readonly number[]][] = [
     ['tangent', tangent, [TIMES.entrance, TIMES.beat], [100, 0, 0, 0, -100, 0, 602, 300, 1]],
     ['tangent', tangent, [TIMES.walkTo, durationOf(tangent)], [100, 0, 0, 0, -100, 0, 478, 300, 1]],
     [
       'solid',
       solid,
-      [SOLID_TIMES.entrance, SOLID_TIMES.quarter, SOLID_TIMES.half, SOLID_TIMES.round],
+      [SOLID_TIMES.entrance, solid.still, SOLID_TIMES.quarter, SOLID_TIMES.round],
       [93.75, 0, 0, 0, -93.75, 0, 540, 300, 1],
     ],
+    // Pushed in to 6.8 by 5.3073, which is 8.2 over 6.8 more of the picture.
+    ['solid', solid, [SOLID_TIMES.half], [113.051471, 0, 0, 0, -113.051471, 0, 540, 300, 1]],
     ['booleans', booleans, [booleans.still, durationOf(booleans)], [100, 0, 0, 0, -100, 0, 540, 300, 1]],
     [
       'turns',
@@ -135,13 +137,40 @@ describe("every demo's view", () => {
     ],
   ];
 
-  it('is the matrix its own extent gives, at every named time', () => {
+  it('is the matrix its own extent and its own view entries give, at every named time', () => {
     for (const [name, figure, times, matrix] of wanted) {
       for (const seconds of times) {
         const read = Array.from(viewAt(figure, seconds, 1080, 600));
         read.forEach((value, at) => expect(value, `${name} at ${seconds}`).toBeCloseTo(matrix[at], 6));
       }
     }
+  });
+
+  it('leaves the solid demo where it began, since the push comes back', () => {
+    const start = Array.from(viewAt(solid, SOLID_TIMES.entrance, 1080, 600));
+    const end = Array.from(viewAt(solid, durationOf(solid), 1080, 600));
+    end.forEach((value, at) => expect(value).toBeCloseTo(start[at], 12));
+  });
+
+  it('crops nothing a reader can see when the solid demo pushes in', () => {
+    // The push holds the crossing with a margin at every place in the orbit, and
+    // the two labels it does crop are at nothing by the time the camera moves.
+    let margin = Number.POSITIVE_INFINITY;
+    for (let step = 0; step <= 120; step += 1) {
+      const seconds = SOLID_TIMES.entrance + 3.6 + (2.8 * step) / 120;
+      const extent = extentAt(solid, seconds, 1.8);
+      const cut = boundsOfMarks(marksAt(solid, seconds).filter((mark) => mark.id.startsWith('solid/cut/')))!;
+      margin = Math.min(
+        margin,
+        extent.width / 2 - Math.max(Math.abs(cut.x.from), Math.abs(cut.x.to)),
+        extent.height / 2 - Math.max(Math.abs(cut.y.from), Math.abs(cut.y.to))
+      );
+      for (const id of ['solid/rule', 'solid/title']) {
+        const labels = marksAt(solid, seconds).filter((mark) => mark.id.startsWith(id));
+        expect(labels.every((mark) => (mark.opacity ?? 1) === 0), id).toBe(true);
+      }
+    }
+    expect(margin).toBeCloseTo(0.2896, 4);
   });
 });
 
@@ -246,6 +275,9 @@ describe('the committed pictures', () => {
         const centre = extent.centre ?? vec2(0, 0);
         for (const mark of marksAt(figure, seconds)) {
           if (mark.kind !== 'text') continue;
+          // A mark at nothing is not drawn, so a view that pushes past a label
+          // has cropped nothing a reader could see.
+          if ((mark.opacity ?? 1) === 0) continue;
           const width = ADVANCE * mark.size * mark.text.length;
           const left = mark.align === 'middle' ? mark.at.x - width / 2 : mark.align === 'end' ? mark.at.x - width : mark.at.x;
           expect(left, mark.id).toBeGreaterThanOrEqual(centre.x - extent.width / 2);

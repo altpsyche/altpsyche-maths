@@ -31,6 +31,8 @@ import {
   equationFromTex,
   equationNode,
   fadeIn,
+  fadeTo,
+  moveView,
   fieldArrows3,
   fractionOf,
   group,
@@ -337,7 +339,55 @@ export const orbit: Track = [
   { time: ORBIT_FROM + ORBIT, value: 1 },
 ];
 
-const line = entrance.wait(ORBIT);
+/**
+ * How far in the camera pushes on the crossing, in figure units across.
+ *
+ * The crossing reaches 3.1105 across and 1.4744 up from the middle at its widest
+ * over the orbit, so 6.8 across holds both branches of it with 0.2895 to spare at
+ * every place in the turn. The declared extent is 8.2, which makes this a
+ * magnification of 1.21.
+ */
+const PUSH = 6.8;
+
+/** The extent the push reaches, its shape the declared one's so the saddle fills
+ * the frame the way it did. */
+const pushed: Extent = { width: PUSH, height: (PUSH * extent.height) / extent.width };
+
+/**
+ * When the push starts, how long each half of it takes, and how long the two
+ * labels take to go, in seconds.
+ *
+ * It starts after the still and after the last frame the strip shows, so a reader
+ * shown one frame gets the whole saddle with its equation rather than a crop of
+ * the middle of it, and the strip is four frames of one composition.
+ */
+const PUSH_FROM = 2.2;
+const PUSH_IN = 1;
+const PULL_OUT = 1.2;
+const LABELS = 0.4;
+
+/**
+ * The picture arrives, the eye goes round once, and the camera pushes in on the
+ * crossing while it does.
+ *
+ * The equation and the title are placed at fractions of the declared extent and
+ * are what reach nearest its edge, so the push crops them: everything drawn fits
+ * inside 7.872 by 6.155 against a declared 8.2 by 6.4, and any push worth seeing
+ * is further in than that. They go before the camera moves and return after it
+ * has come back, rather than fading while it moves, since a label at half its
+ * opacity outside the frame reads as one that slid off the edge.
+ *
+ * `fadeTo` rather than `fadeOut` and `fadeIn`, since those two multiply the
+ * opacity they are handed: a mark faded out is at nothing, and a fade in over it
+ * walks nothing towards nothing and the mark never returns.
+ */
+const line = entrance
+  .wait(PUSH_FROM)
+  .together([fadeTo('solid/rule', 0), fadeTo('solid/title', 0)], LABELS)
+  .play(moveView(pushed), PUSH_IN)
+  .wait(ORBIT - PUSH_FROM - 2 * LABELS - PUSH_IN - PULL_OUT)
+  .play(moveView({ width: extent.width, height: extent.height }), PULL_OUT)
+  .together([fadeTo('solid/rule', 1), fadeTo('solid/title', 1)], LABELS);
 
 export const solid: Figure = {
   extent,

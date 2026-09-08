@@ -679,7 +679,7 @@ than after it.
   The door went from 255 names to 260 and the suite from 732 tests to 744. The eight sheets are
   byte-identical.
 
-- [x] **3. The flat demo's view becomes a timeline entry.** **Measures:** the demo's marks and view
+- [x] **3. Both demos move their view against the action.** **Measures:** the demo's marks and view
   matrices at its named times; the flat demo's duration unchanged within a tenth of a second.
 
   **Landed, and the picture is byte-identical.** `tangent.extent` was
@@ -709,18 +709,41 @@ than after it.
 
   The door went from 260 names to 261 and the suite from 744 tests to 745.
 
-  **What a demo moving its view against the action would be is Siva's, and no picture is waiting.**
-  The flat demo's view moves only while the dot walks, and after the walk it holds while the brace
-  arrives because the dot has stopped rather than because anything said so. Nothing in either demo
-  reads better for a sequenced camera move today.
 
-  **What the solid demo gains is Siva's and no picture is waiting.** This step said the orbit gains a
-  held beat at the face of the saddle. That orbit is a `Camera3` inside the scene driven by a track
-  rather than the figure's view, so pacing it is a track change and belongs to step 3.8 of the
-  format, where the camera becomes parameters. The solid demo's own view is a fixed 8.2 by 6.4 extent
-  and has never moved. **A framing of the cut is what would exercise a form in a solid picture**,
-  since Siva's rule is that a feature reaches a flat picture and a solid one, and the crossing curve
-  is what that demo is about.
+  **The solid demo's own half was reshaped and Siva chose it.** This step said the orbit gains a held
+  beat at the face of the saddle. That orbit is a `Camera3` inside the scene driven by a track rather
+  than the figure's view, so pacing it is a track change and belongs to step 3.8 of the format. What
+  landed instead is a push in on the crossing, since Siva's rule is that a feature reaches a flat
+  picture and a solid one.
+
+  **The camera pushes to 6.8 across, a magnification of 1.21, and comes back.** The crossing reaches
+  3.1105 across and 1.4744 up from the middle at its widest over the orbit, so 6.8 across holds both
+  branches of it with 0.2896 to spare at every place in the turn. The two view spans are 6.40 to 7.40
+  seconds and 10.20 to 11.40, the matrix reads 93.75 at the entrance, the still, a quarter turn and
+  the end and 113.051471 at the half turn, and the figure ends where it began to 1e-12.
+
+  **The equation and the title had to go, because the demo had no room.** Everything drawn fits inside
+  7.872 by 6.155 against a declared 8.2 by 6.4, which is four per cent of margin, so a push worth
+  seeing crops something. Those two are placed at fractions of the declared extent and are what reach
+  nearest its edge. They are walked to nothing over 0.4 seconds **before** the camera moves and back
+  after it has returned, since fading them while it moved left a label at half its opacity outside the
+  frame, which reads as one that slid off rather than one that went. That is what the frame gate
+  caught.
+
+  **`fadeTo` rather than `fadeOut` and `fadeIn`**, since those two multiply the opacity they are
+  handed: a mark faded out sits at nothing, and a fade in over it walks nothing towards nothing and
+  the mark never returns.
+
+  **The push starts after the still and after the last frame the strip shows**, so a reader shown one
+  frame gets the whole saddle with its equation rather than a crop of the middle, and the strip stays
+  four frames of one composition. The eight sheets are byte-identical and the duration is 11.8 seconds
+  as it was. **What holds the push is the suite rather than a sheet**, which is what 1.2.0 did with
+  the pacing for the same reason.
+
+  **One gate was narrowed.** The gate holding every text mark inside the frame now skips a mark at
+  nothing, since a mark that is not drawn has not been cropped.
+
+  The suite went from 745 tests to 747.
 
 - [ ] **4. Cut 1.5.0.** **Measures:** the three gates; the eight sheets identical after
   `npm run demos`; the door and the suite from wherever 1.4.0 left them.
