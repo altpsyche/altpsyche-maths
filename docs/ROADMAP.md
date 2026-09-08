@@ -165,7 +165,7 @@ three more are written past those because a session should not rediscover them.
 
 | version | what lands | what it changes | steps | cut against | depends on | plan |
 | --- | --- | --- | --- | --- | --- | --- |
-| 1.1.0 | the typography: a size scale by role, a named family and a weight, text over more than one line, and a label that keeps clear | the sizes and the font a `Style` carries, and the parameters of the text kind | 5 | all four demos, and the rotation strip's eight frames | nothing outside this package | written |
+| 1.1.0 | the typography: a size scale by role, a named family and a weight, text over more than one line, and a label that keeps clear | adds a named size scale as a value type, and the lines and leading a text kind carries | 5 | all four demos, and the rotation strip's eight frames | nothing outside this package | written |
 | 1.2.0 | the pacing: the easing set widened and named, a key naming its own curve, and the demos pacing themselves | the set of names a `Curve` can be | 4 | all four demos, and their twenty-six timeline entries | nothing outside this package | written |
 | 1.3.0 | the variable-width stroke, as the filled outline of a path | what a `Stroke`'s width may be | 5 | the flat demo's tangent and the solid demo's three runs of descent | nothing outside this package | written |
 | 1.4.0 | gradients, as stops along an axis in the mark's own units | what a `Fill` may be | 5 | the flat demo's shaded region and the solid demo's plane | nothing outside this package | written |
@@ -334,9 +334,10 @@ could not see. A ground is written as a `background` declaration on `:root` in e
 element rather than as a mark, so the bare-fraction readings of 0.13.0 are untouched. All eight
 sheets grew by 38 bytes. The door went from 229 names to 230 and the suite from 631 tests to 637.
 
-**0.14.0 is held back rather than published, which is Siva's call.** It ships inside the 1.0.0
-release instead, so npm carries the unreadable sheets until then. What would change the answer is
-1.0.0 slipping far enough that a reader lands on those sheets for weeks rather than days.
+**0.14.0 shipped inside the 1.0.0 release, which went to npm.** It was held back rather than
+published on its own, which was Siva's call, and the condition that would have changed the answer
+never arrived: 1.0.0 did not slip. So the ground fix is in a reader's hands and the sheets npm
+carries are the readable ones.
 
 **0.13.0 is cut, and the eight sheets read on a dark page and are worth looking at.** Every colour is
 painted as `var(--name, light)` and `svgMarkup` writes the theme as a `<style>` element, so a sheet
@@ -425,15 +426,27 @@ demos the sizes are 0.22, 0.26, 0.30, 0.32 and 0.34, a span of 1.55:1.
 and a size that says which text matters.
 
 - [ ] **1. A size scale, named by role.** A figure names a title, a label, a tick or a note rather
-  than a number, and the scale is one ratio applied throughout. **Measures:** the flat demo's largest
-  text against its smallest, from 1.06:1 to at least 2:1; the smallest glyph on each of the eight
-  sheets at or above what 0.13.0 measured, and `tangent.svg` still leading at 21.33 pixels, which is
-  the gate that already asserts the lead.
+  than a number, and the scale is one ratio applied throughout. **The scale is a name at the door and
+  not a set of constants in the demos**, since a consumer drawing their own figure needs the same
+  hierarchy the demos get or the package has taught nothing, and that makes it a value type the
+  format later freezes a written form for, which is why this version sits in front of 2.0.0. **The
+  ratio is the commit's own call** and the measurement below is what constrains it. **Measures:** the
+  flat demo's largest text against its smallest, from 1.06:1 to at least 2:1; the smallest glyph on
+  each of the eight sheets at or above what 0.13.0 measured, and `tangent.svg` still leading at 21.33
+  pixels, which is the gate that already asserts the lead; the door from 230 names.
 
-- [ ] **2. A family and a weight the demos name.** A fallback stack rather than one family, since a
-  sheet is read wherever an `<img>` is opened. **Measures:** every text mark in the four demos naming
-  a family and a weight, from none of them today; the eight sheets' bytes re-committed with the
-  growth per sheet quoted.
+- [ ] **2. A family and a weight the demos name.** Neither painter needs a change: `paint/svg.ts`
+  already writes `font-family` and `font-weight` and `paint/canvas.ts` already builds its `font`
+  string from the weight, the size and the family. So this is a demo commit and one choice.
+
+  **The choice is a system stack and not a webfont**, because a sheet is read inside an `<img>` and
+  an `<img>` loads no external resource: no stylesheet, no script and no font file. A `@font-face`
+  pointing anywhere would silently fall back, and a font embedded as data would put its bytes in
+  every one of the eight sheets. This is the same trap 0.13.0 found when the colour scheme query
+  answered for the browser rather than for the page. **Measures:** every text mark in the four demos
+  naming a family and a weight, from none of them today; the eight sheets' bytes re-committed with
+  the growth per sheet quoted; every family named resolvable with no network, which a test asserts by
+  reading the stack rather than by rendering it.
 
 - [ ] **3. Text over more than one line.** A `TextNode` is one string at one anchor and there is no
   newline, no leading and no wrapping anywhere in `figure/node.ts` or either painter, so a title over
@@ -454,6 +467,8 @@ and a size that says which text matters.
 #### Done-criteria
 
 - Every text mark in the four demos names a family and a weight.
+- The size scale is a name at the door with a role per name, and the demos take their sizes from it
+  rather than from constants of their own.
 - A text node carries more than one line, and a one-line text draws exactly the mark it draws today.
 - The flat demo's largest text is at least twice the size of its smallest, and the solid demo's is
   too.
