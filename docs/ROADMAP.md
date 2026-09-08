@@ -438,8 +438,15 @@ item 2.
 **Two numbers this file carried are corrected by the spike.** The flat demo holds 181 marks at its
 still time and not 146, and the still time is 7.86.
 
-**2.0.0 is ready to start**: the six questions are answered, the inventory is counted, and step 1 is
-self-contained. **Two things fall due before the format freezes and both are Siva's**, which are
+**2.0.0 is under way and its first two steps are landed.** Step 1 gave the three graph readers the
+plotted path instead of the function behind it, so a parabola's slope reads exactly where a central
+difference carried 1.06e-11, and step 2 published the expression form: `Expression`, `evaluate` and
+the thirty-four names of `EXPRESSION_FUNCTIONS`, holding a complex square, a complex exponential and
+a Möbius map. The door is 274 names and the suite is 808 tests over 48 files. **Step 3.1 is what runs
+next**, which is the node record and the resolver with the three kinds of the tree, and it is the
+spine the other ten commits of step 3 hang off.
+
+**Two things fall due before the format freezes and both are Siva's**, which are
 whether a `Mark` may be a raster image, due by step 3 where the node vocabulary lands, and the
 consumer's move from 0.6.0, which is now unblocked and is the only thing that would draw the 1.x band
 in a shipping page. **A third is new from the spike and is also the format's**: a colour's written
