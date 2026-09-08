@@ -309,11 +309,21 @@ name to the door, and 0.13.0 lands before the surface is frozen at 1.0.0 for tha
   wash takes no reading off it, so what it needs is separation from both grounds rather than 4.5:1
   against either, and a ramp inside the middle of the range clears that.
 
-- [ ] **2. A text size that holds against the frame.** A strip's text is the figure's own size, so a
-  strip fitted to a wide extent shrinks every glyph in it. A figure gains a text size it can hold at
-  a floor on the page rather than in figure units alone. **Measures:** the smallest labelled glyph
-  from 7.6px on `surface-strip` and 7.9, 9.4 and 10.8px on the other three strips, to a floor no
-  sheet falls under, with the four stills held at 14.7px or better.
+- [x] **2. A text size that holds against the frame.** The floor belongs to the write rather than to
+  the mark, since `tangent` is written as a still and as a strip frame and one figure cannot carry two
+  floors. `svgMarkup` and `paintSvg` take a `minTextSize` in the units they paint into, and every text
+  size is multiplied by the one factor that brings the smallest of them to it. **Raising each size on
+  its own to the floor was wrong and was measured wrong**: it took `tangent-strip`'s 12.188 and 15.938
+  written units to 18.251 alike, flattening two sizes into one. The lift keeps them at 18.251 and
+  23.873. The four strips went from 9.4px, 10.8px, 7.6px and 7.9px on the page to 14.0px each, and the
+  four stills are untouched at 17.3px, 20.0px, 17.3px and 14.7px, since a floor of 14 sits under the
+  14.7 the tightest still already drew. The door went from 229 names to 229, the option being a field
+  on a type already there, and the suite from 620 tests to 622.
+
+  **The lift makes two captions collide, which is why step 3 follows it.** `rotate-strip` draws
+  "about its own middle" and "about a point it is given" in one frame and they now run together, and
+  `surface-strip`'s tick numbers crowd their own axis. Text is never measured here, so nothing can
+  know a caption's width, and the fix is a shorter caption rather than a smaller glyph.
 
 - [ ] **3. The rotation's placeholder word, and every caption.** `demos/rotate.ts` draws the literal
   string `label` as the word riding the shape, twice in `rotate.svg` and eight times in

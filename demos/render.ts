@@ -22,13 +22,43 @@ import { FRAMES as SOLID_FRAMES, solid, stripMarks as solidStripMarks } from './
 export const WIDTH = 1080;
 export const HEIGHT = 600;
 
+/** The smallest a glyph is drawn on the page, in the pixels a reader sees rather
+ * than in the units the sheet is written in. Fourteen is under the 14.7 the
+ * tightest still already draws, so the floor lifts the strips and leaves every
+ * still where it was. */
+export const PAGE_FLOOR = 14;
+
+/** The width each sheet is shown at, the stills in the README and the strips in
+ * the guide. A sheet scales from its view box, so this is the only thing that
+ * turns a written size into a size on the page. */
+export const SHOWN_AT = 720;
+export const SHOWN_AT_STRIP = 820;
+
+/** The floor in written units, from the floor on the page and how far the sheet
+ * is scaled to reach the width it is shown at. */
+function writtenFloor(width: number, shownAt: number): number {
+  return (PAGE_FLOOR * width) / shownAt;
+}
+
 /** One list of marks written out over a surface shaped like the extent it covers. */
-export function markupOf(marks: readonly Mark[], extent: Extent, width: number, height: number): string {
-  return svgMarkup(marks, viewMatrix(extent, 'contain', width, height), width, height, { theme: THEME });
+export function markupOf(
+  marks: readonly Mark[],
+  extent: Extent,
+  width: number,
+  height: number,
+  shownAt = SHOWN_AT
+): string {
+  return svgMarkup(marks, viewMatrix(extent, 'contain', width, height), width, height, {
+    theme: THEME,
+    minTextSize: writtenFloor(width, shownAt),
+  });
 }
 
 export function stillMarkup(figure: Figure, seconds: number, width = WIDTH, height = HEIGHT): string {
-  return svgMarkup(marksAt(figure, seconds), viewAt(figure, seconds, width, height), width, height, { theme: THEME });
+  return svgMarkup(marksAt(figure, seconds), viewAt(figure, seconds, width, height), width, height, {
+    theme: THEME,
+    minTextSize: writtenFloor(width, SHOWN_AT),
+  });
 }
 
 export interface Sheet {
@@ -41,7 +71,7 @@ export interface Sheet {
  * extent, so contain leaves no margin above or below the frames. */
 function stripMarkup(strip: { marks: readonly Mark[]; extent: Extent }): string {
   const across = Math.round((strip.extent.width / strip.extent.height) * HEIGHT);
-  return markupOf(strip.marks, strip.extent, across, HEIGHT);
+  return markupOf(strip.marks, strip.extent, across, HEIGHT, SHOWN_AT_STRIP);
 }
 
 export const sheets: readonly Sheet[] = [

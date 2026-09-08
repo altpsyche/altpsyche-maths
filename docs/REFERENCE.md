@@ -710,14 +710,16 @@ picture in a recording are the same picture.
 - `svgMarkup(marks, view, width, height, options?)` — a whole `<svg>` as text, for a page that has
   not run any script yet. It carries no width or height of its own and only a view box, so the
   element around it decides how big it is.
-- `SvgMarkupOptions` — what else `svgMarkup` takes: a `theme`.
+- `SvgMarkupOptions` — what else `svgMarkup` and `paintSvg` take: a `theme`, and a `minTextSize`.
+  Every text size is multiplied by the one factor that brings the smallest of them to that size, so
+  the sizes stay in the ratios the figure gave them.
 - `SvgTheme` — a `light` and a `dark` colour for each CSS custom property, written into the markup as
   a `<style>` element. A mark painted `var(--ink, #1b1b1b)` takes the value of the ground it is read
   on, and falls back to the colour inside the `var()` where the element is absent.
 - `svgElements(marks, view)` — every mark described as an element, in the order they are drawn.
 - `SvgElement` — one of those: its `tag`, `path` or `text`, its `attributes`, and the `text` a text
   element carries.
-- `paintSvg(into, marks, view, maker)` — the marks put into an element that is already on the page.
+- `paintSvg(into, marks, view, maker, options?)` — the marks put into an element that is already on the page.
   Every child is replaced rather than matched up and patched, since a figure rebuilds its geometry
   every frame and almost every attribute would be rewritten anyway.
 - `PaintTarget` — what `paintSvg` draws into: anything with `replaceChildren`.

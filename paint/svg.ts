@@ -26,6 +26,30 @@ export interface SvgElement {
   text?: string;
 }
 
+/** A colour per ground for one CSS custom property. A mark painted with
+ * `var(--name, colour)` takes the value of the ground it is read on, and the
+ * colour written inside the `var()` is what it falls back to. */
+export interface SvgTheme {
+  [property: string]: { light: string; dark: string };
+}
+
+export interface SvgMarkupOptions {
+  /** Written into the markup as a `<style>` element, so one file is read on a
+   * light page and a dark one with no script and no page CSS. */
+  theme?: SvgTheme;
+  /**
+   * The smallest font size written, in the units painted into rather than in
+   * figure units. A view that fits a wide extent scales every figure unit down,
+   * so a glyph readable in one frame is not readable in a row of them.
+   *
+   * Every text size is multiplied by the one factor that brings the smallest of
+   * them to this, which holds the sizes in the ratios the figure gave them.
+   * Raising each size on its own to the floor would flatten two sizes that both
+   * fall under it into one.
+   */
+  minTextSize?: number;
+}
+
 /** The `d` attribute: a move to the start, a cubic per segment, and a close
  * where the subpath joins back. */
 export function pathToData(path: Path, view: Mat3): string {
@@ -63,14 +87,14 @@ function pathElement(mark: PathMark, view: Mat3, scale: number): SvgElement {
   return { tag: 'path', attributes };
 }
 
-function textElement(mark: TextMark, view: Mat3, scale: number): SvgElement {
+function textElement(mark: TextMark, view: Mat3, scale: number, lift: number): SvgElement {
   const at = mat3.transformPoint(view, mark.at);
   const attributes: Record<string, string> = {
     'data-mark': mark.id,
     x: short(at.x),
     y: short(at.y),
     'font-family': mark.family,
-    'font-size': short(mark.size * scale),
+    'font-size': short(mark.size * scale * lift),
     fill: mark.fill.colour,
   };
   if (mark.weight !== undefined) attributes['font-weight'] = String(mark.weight);
@@ -80,28 +104,30 @@ function textElement(mark: TextMark, view: Mat3, scale: number): SvgElement {
   return { tag: 'text', attributes, text: mark.text };
 }
 
+/**
+ * What every text size is multiplied by so the smallest of them reaches the
+ * floor, or one where they already do and where no text is drawn at all.
+ */
+function textLift(marks: readonly Mark[], scale: number, floor: number): number {
+  if (floor <= 0) return 1;
+  const written = marks.filter((mark) => mark.kind === 'text').map((mark) => mark.size * scale);
+  const smallest = Math.min(...written.filter((size) => size > 0));
+  if (!Number.isFinite(smallest)) return 1;
+  return Math.max(1, floor / smallest);
+}
+
 /** Every mark described as an element, in the order they are drawn. */
-export function svgElements(marks: readonly Mark[], view: Mat3): SvgElement[] {
+export function svgElements(marks: readonly Mark[], view: Mat3, options: SvgMarkupOptions = {}): SvgElement[] {
   const scale = mat3.scaleFactor(view);
-  return marks.map((mark) => (mark.kind === 'path' ? pathElement(mark, view, scale) : textElement(mark, view, scale)));
+  const lift = textLift(marks, scale, options.minTextSize ?? 0);
+  return marks.map((mark) =>
+    mark.kind === 'path' ? pathElement(mark, view, scale) : textElement(mark, view, scale, lift)
+  );
 }
 
 /** The five characters that would otherwise close a tag or open an entity. */
 function escaped(value: string): string {
   return value.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
-}
-
-/** A colour per ground for one CSS custom property. A mark painted with
- * `var(--name, colour)` takes the value of the ground it is read on, and the
- * colour written inside the `var()` is what it falls back to. */
-export interface SvgTheme {
-  [property: string]: { light: string; dark: string };
-}
-
-export interface SvgMarkupOptions {
-  /** Written into the markup as a `<style>` element, so one file is read on a
-   * light page and a dark one with no script and no page CSS. */
-  theme?: SvgTheme;
 }
 
 const PROPERTY = /^[A-Za-z0-9_-]+$/;
@@ -143,7 +169,7 @@ export function svgMarkup(
   options: SvgMarkupOptions = {}
 ): string {
   const style = options.theme ? themeStyle(options.theme) : '';
-  const body = svgElements(marks, view)
+  const body = svgElements(marks, view, options)
     .map((element) => {
       const attributes = Object.entries(element.attributes)
         .map(([name, value]) => `${name}="${escaped(value)}"`)
@@ -197,9 +223,10 @@ export function paintSvg<Made extends PaintNode>(
   into: PaintTarget<NoInfer<Made>>,
   marks: readonly Mark[],
   view: Mat3,
-  maker: ElementMaker<Made>
+  maker: ElementMaker<Made>,
+  options: SvgMarkupOptions = {}
 ): void {
-  const elements = svgElements(marks, view);
+  const elements = svgElements(marks, view, options);
   into.replaceChildren(
     ...elements.map((element) => {
       const node = maker.createElementNS(SVG_NAMESPACE, element.tag);

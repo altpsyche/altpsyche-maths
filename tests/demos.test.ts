@@ -25,7 +25,7 @@ import {
   vec2,
   type Mark,
 } from '../index.js';
-import { sheets, stillMarkup } from '../demos/render.js';
+import { PAGE_FLOOR, SHOWN_AT, SHOWN_AT_STRIP, sheets, stillMarkup } from '../demos/render.js';
 import {
   FRAMES as SOLID_FRAMES,
   HEIGHT,
@@ -44,12 +44,12 @@ import {
   DEEP,
   EMBER,
   FROST,
+  GROUND,
   HAZE,
   INK,
   MIST,
   MOSS,
   PEACH,
-  GROUND,
   SKY,
   SLATE,
   STEEL,
@@ -95,6 +95,35 @@ describe('the committed pictures', () => {
       const committed = readFileSync(path.join(root, sheet.file), 'utf8');
       expect(committed).toBe(`${sheet.markup()}\n`);
     }
+  });
+
+  it('draw no glyph under the floor on the page, and leave every still where it was', () => {
+    // A sheet scales from its view box, so the width the page shows it at is what
+    // turns a written size into a size a reader sees.
+    for (const sheet of sheets) {
+      const markup = sheet.markup();
+      const written = [...markup.matchAll(/font-size="([0-9.]+)"/g)].map((found) => Number(found[1]));
+      const box = Number(/viewBox="0 0 ([0-9.]+)/.exec(markup)![1]);
+      const shownAt = sheet.file.includes('-strip') ? SHOWN_AT_STRIP : SHOWN_AT;
+      expect(Math.min(...written) * (shownAt / box)).toBeGreaterThanOrEqual(PAGE_FLOOR - 0.05);
+    }
+  });
+
+  it('holds the four strips at the floor and the four stills above it untouched', () => {
+    const onPage = (file: string) => {
+      const markup = sheets.find((sheet) => sheet.file === file)!.markup();
+      const written = [...markup.matchAll(/font-size="([0-9.]+)"/g)].map((found) => Number(found[1]));
+      const box = Number(/viewBox="0 0 ([0-9.]+)/.exec(markup)![1]);
+      const shownAt = file.includes('-strip') ? SHOWN_AT_STRIP : SHOWN_AT;
+      return Math.min(...written) * (shownAt / box);
+    };
+    for (const strip of ['tangent-strip', 'boolean-strip', 'rotate-strip', 'surface-strip']) {
+      expect(onPage(`docs/${strip}.svg`)).toBeCloseTo(14.0, 1);
+    }
+    expect(onPage('docs/tangent.svg')).toBeCloseTo(17.33, 2);
+    expect(onPage('docs/boolean.svg')).toBeCloseTo(20.0, 2);
+    expect(onPage('docs/rotate.svg')).toBeCloseTo(17.33, 2);
+    expect(onPage('docs/surface.svg')).toBeCloseTo(14.67, 2);
   });
 
   it('each fill half their frame or better at the time their still is taken', () => {
