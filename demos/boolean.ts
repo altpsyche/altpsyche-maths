@@ -38,11 +38,12 @@ import {
   marksAt,
   moveBy,
 } from '../index.js';
+import { DEEP, INK, PEACH, SLATE } from './palette.js';
 
-const ink = { colour: '#1b1b1b' };
-const still = { colour: '#6b7280', width: 0.018 };
-const walker = { colour: '#0369a1', width: 0.018 };
-const wash = { colour: '#fdba74' };
+const ink = { colour: INK };
+const still = { colour: SLATE, width: 0.018 };
+const walker = { colour: DEEP, width: 0.018 };
+const wash = { colour: PEACH };
 
 /** Three panels across, and only as tall as they need to be. A frame twice the
  * height of its own picture is a picture floating in white. */

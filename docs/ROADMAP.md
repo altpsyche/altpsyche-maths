@@ -374,11 +374,16 @@ demo is recompiled by steps 6 and 7 against the renamed door.
   shape of each written out; the suite holds at 608 tests; every demo compiles and all eight sheets
   identical.
 
-- [ ] **8. One palette the demos share.** Thirteen colours are written as hex across four demo files
-  with no shared source, and `#1b1b1b` appears six times. The palette is the demos' own and not the
-  package's, because DESIGN.md keeps colour the author's. **Measures:** thirteen ad hoc colours to a
-  named list, each with its contrast ratio against the ground; distinct fill and stroke values per
-  sheet from 11 on `tangent.svg`, 25 on `surface.svg`, 5 on `boolean.svg` and 4 on `rotate.svg`.
+- [x] **8. One palette the demos share.** `demos/palette.ts` holds twelve named colours and the
+  shade ramp a surface cell is drawn with, and no hex is written anywhere else in the demos. It sits
+  with the demos rather than behind the door, because a mark takes a colour as text and the choosing
+  is the author's, which is the rule DESIGN.md keeps. Every colour a reader reads a value or a label
+  off stands above 4.5 against the white the sheets are drawn on, which is what the guidelines ask
+  of text, and the ones below it are washes and field arrows carrying no reading of their own.
+  **Measured:** thirteen hex values written 23 times across four files to twelve names written once,
+  `#1b1b1b` from six places to one; contrast against white recorded for each, from 17.22 to one for
+  the ink down to 1.15 for the face of a pane of glass; the suite holds at 608 tests; all eight
+  sheets identical, since the step moves where a colour is written and not what it is.
 
 - [ ] **9. The strips take one shape.** `tangent-strip.svg` is 7.60 to 1 in a single row, so at the
   960 pixels the README shows it a frame is 240 by 126. The other three are two rows between 1.78 and

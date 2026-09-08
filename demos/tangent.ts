@@ -73,19 +73,20 @@ import {
   type Vec2,
   type Track,
 } from '../index.js';
+import { AMBER, DEEP, EMBER, HAZE, INK, MIST, PEACH, STEEL } from './palette.js';
 
-const ink = { colour: '#1b1b1b' };
-const pen = { colour: '#1b1b1b', width: 0.02 };
-const faint = { colour: '#b4b9c0', width: 0.012 };
-const drawn = { colour: '#c2410c', width: 0.05 };
-const accent = { colour: '#0369a1', width: 0.035 };
-const wash = { colour: '#fdba74' };
-const lit = '#b45309';
+const ink = { colour: INK };
+const pen = { colour: INK, width: 0.02 };
+const faint = { colour: MIST, width: 0.012 };
+const drawn = { colour: EMBER, width: 0.05 };
+const accent = { colour: DEEP, width: 0.035 };
+const wash = { colour: PEACH };
+const lit = AMBER;
 
 /** The two colours a field arrow takes, the second where the curve has begun to
  * climb, so the field darkens across the picture the way the curve steepens. */
-const gentle = '#bfd7e6';
-const steep = '#7fb2cc';
+const gentle = HAZE;
+const steep = STEEL;
 
 const size = { width: 10.8, height: 6 };
 

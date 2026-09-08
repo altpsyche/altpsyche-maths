@@ -40,11 +40,12 @@ import {
   type Path,
   type Vec2,
 } from '../index.js';
+import { DEEP, EMBER, INK, PEACH } from './palette.js';
 
-const ink = { colour: '#1b1b1b' };
-const edge = { colour: '#0369a1', width: 0.04 };
-const wash = { colour: '#fdba74' };
-const marker = { colour: '#c2410c' };
+const ink = { colour: INK };
+const edge = { colour: DEEP, width: 0.04 };
+const wash = { colour: PEACH };
+const marker = { colour: EMBER };
 
 /** Two panels across, and tall enough for the swing of the right one with the
  * word that rides round outside it. Same frame as the flat demo, so the two

@@ -54,13 +54,14 @@ import {
   type Track,
   type Vec2,
 } from '../index.js';
+import { DEEP, EMBER, FROST, INK, MOSS, SKY, shadeOf } from './palette.js';
 
-const ink = { colour: '#1b1b1b' };
-const pen = { colour: '#1b1b1b', width: 0.014 };
-const cut = { colour: '#c2410c', width: 0.05 };
-const glass = { colour: '#38bdf8', width: 0.008 };
-const flow = { colour: '#0369a1', width: 0.01 };
-const fall = { colour: '#15803d', width: 0.035 };
+const ink = { colour: INK };
+const pen = { colour: INK, width: 0.014 };
+const cut = { colour: EMBER, width: 0.05 };
+const glass = { colour: SKY, width: 0.008 };
+const flow = { colour: DEEP, width: 0.01 };
+const fall = { colour: MOSS, width: 0.035 };
 
 /** Same frame as the other two demos, so the pictures in the README are one
  * size. */
@@ -127,13 +128,6 @@ export const descents = SEEDS.map((seed) =>
 const FLOW = { x: 6, y: 6, z: 1 };
 const arrowLength = (magnitude: number) => (0.34 * magnitude) / (0.9 + magnitude);
 
-/** How dark a cell of the saddle is drawn, from how squarely it faces the light.
- * Two greys mixed by hand, since a colour here is text and nothing reads one. */
-function shade(amount: number): { colour: string } {
-  const level = Math.round(150 + 90 * amount);
-  return { colour: `rgb(${level}, ${level - 14}, ${level - 34})` };
-}
-
 /** How many cells each grid is cut into. Enough that the saddle reads as a
  * curved sheet and few enough that the committed pictures stay small: every cell
  * is a path in the file, and the strip holds four frames of them. */
@@ -171,11 +165,11 @@ export function sceneAt(along: number): Node {
     scene3(
       'body',
       [
-        ...surfaceCells('hill', surfaceAt, camera, { over: { u: OVER, v: OVER }, resolution: CELLS, shade }),
+        ...surfaceCells('hill', surfaceAt, camera, { over: { u: OVER, v: OVER }, resolution: CELLS, shade: shadeOf }),
         ...surfaceCells('pane', planeAt, camera, {
           over: { u: OVER, v: OVER },
           resolution: PANES,
-          shade: () => ({ colour: '#e0f2fe' }),
+          shade: () => ({ colour: FROST }),
           stroke: glass,
         }),
         ...fieldArrows3('flow', (at) => vec3(-at.x, at.y, 0), camera, {
