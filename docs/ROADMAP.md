@@ -334,18 +334,34 @@ carries plain values, and the last one is the only one that touches a driver.
 ```mermaid
 graph LR
   F["a figure"] -->|"marksAt(t)"| K["Mark[]"]
-  K -->|"flatten, dashed, strokeOutline"| O["outlines as paths"]
-  O -->|"triangulate"| T["triangles, as numbers"]
+  K -->|"quadratics(path, tolerance)"| Q["quadratic control points"]
+  K -->|"dashed(path, dash)"| Q
   K -->|"a text mark"| G["the glyph atlas, in the site"]
-  T --> P["the GPU painter, in the site"]
+  Q -->|"packed into a storage buffer"| P["the GPU painter, in the site"]
   G --> P
   P -->|"a FrameGraph"| R["@altpsyche/engine"]
-  R --> D["the device"]
+  R -->|"two triangles per curve, from the vertex index"| V["the vertex stage"]
+  V -->|"discard where v is under u squared"| D["the device"]
 ```
 
-**What answers the question of how this package reaches a renderer: it does not.** Marks and triangles
-are values, the site imports both packages and joins them, and the arrow drawn in red above stays
-undrawn. That is the arrangement `DESIGN.md` already fixed, and this item does not move it.
+**No triangle crosses the boundary, and reading Manim is what showed that.** A vertex stage there
+generates six vertices per curve from the vertex index alone and reads the three control points out
+of a buffer, so the only thing a processor has to send is the control points. What this package
+contributes to a GPU painter is therefore smaller than the first plan assumed: a cubic rewritten as
+quadratics, and a dash resolved into runs. The triangles, the winding count and the anti-aliasing are
+all the shader's.
+
+**What answers the question of how this package reaches a renderer: it does not, and it does not need
+to.** Control points are numbers. The site imports both packages and joins them, and the arrow drawn
+in red above stays undrawn. That is the arrangement `DESIGN.md` already fixed, and nothing found this
+session moves it.
+
+**The thing that costs quality is not the split.** It is `figure/space.ts` projecting a point and
+keeping only where it landed. Manim sends `vec3f` control points to its vertex stage and projects
+there, which is what makes a depth buffer work; this package projects on the processor and hands a
+painter two-dimensional marks. Sending `vec3` control points across this boundary needs no renderer
+import either, since a coordinate is a number the same as any other. **So the depth question and the
+dependency question are separate, and answering the first does not touch the second.**
 
 **Its steps are written below, and no code was touched in the session that wrote them.**
 
