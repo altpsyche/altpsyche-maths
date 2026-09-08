@@ -31,8 +31,10 @@ argument [DESIGN.md](../DESIGN.md) makes about timing moving in here before a si
 an item earns its place by a picture something is waiting to draw, and the two demos below are what
 is waiting until the website has a chapter that is.
 
-**The website waits.** Its own roadmap has one open item and nothing there needs anything from this
-page, so this package is worked to 1.0.0 first and the site is picked up after.
+**The website waits, and it has waited longer than this file meant it to.** The plan was that this
+package is worked to 1.0.0 first and the site is picked up after. 1.0.0 published and the site was
+not picked up, so it reads `^0.6.0` against a published 1.6.0 and no feature of the 1.x band has been
+drawn in a shipping page. Its move is unblocked and is under Now.
 
 ## The two decisions are answered
 
@@ -148,6 +150,64 @@ as JSON with independent renderers on several platforms, and its known trouble i
 will meet: renderers drifting apart on the semantics the format left loose, text metrics worst of
 all.
 
+## The GPU spike, which is due now and is not a version
+
+**A throwaway painter over `@altpsyche/engine`, drawing a figure's marks as they stand.** It ships
+nothing, it adds nothing to the manifest, and what it produces is a list of gaps. Both repositories
+already agree on it: this file scheduled it after 1.6.0 and before the format work, and the engine's
+own roadmap says items may arrive from it in one batch, each still argued on that package's own
+merits or thrown out.
+
+**Why it is early rather than at 2.6.0 where the painter is.** A gap found in the engine costs an
+item, a commit and a release there before a painter here can use it, and the roughly fifty-five
+commits of 1.x and 2.0.0 are the only slack that lead time has. 1.x is spent, so the slack left is
+2.0.0's twenty-nine commits. A gap found after 2.5.0 is found with none. Earlier than 1.6.0 was no
+better, since 1.3.0, 1.4.0 and 1.6.0 each changed what a `Mark` is and a spike paints marks.
+
+**One gap is already known and is not what the spike is for.** The engine cannot count a winding
+number, which is filed there as its item 2. The spike re-measures it rather than re-finding it, and
+what it is for is everything else.
+
+**It needs a browser, and this repository has no browser gate.** WebGPU is a page's API, so the spike
+is a scratch page run by hand and its readings are quoted by hand into the entries below. That is the
+one thing about it that cannot be held by `npm test`, and it is why the spike is a session rather
+than a commit.
+
+- [ ] **1. The seam, before any mark.** A scratch tree outside this repository that links
+  `@altpsyche/engine` and draws one triangle. **Measures:** what `selectBackend` offers and what
+  `readingOf` reads on this machine, both quoted; one frame submitted with the `FrameCost` the engine
+  costs it at.
+
+- [ ] **2. One filled path.** A disc of radius 1 as a `PathMark`, filled. **Measures:** the drawn
+  edge against the 2.6 to 2.8 parts in ten thousand of the true radius the control distance leaves,
+  which is what the suite already holds `circle` to; the refusal the engine gives where a winding
+  number is needed, quoted rather than worked around.
+
+- [ ] **3. One stroked path.** The flat demo's axis at width 0.02 with a round cap. **Measures:** the
+  two ends and the cap against the same mark's filled outline from `outlinePath`, which is what the
+  SVG painter writes for a tapered stroke and is the shape a shader would have to want.
+
+- [ ] **4. Text, or the gap where text is.** A `TextMark` at a size and a family. **Measures:**
+  whether it can be drawn at all before 2.3.0's outlines for plain text exist, written down as a gap
+  rather than built around.
+
+- [ ] **5. The flat demo at its still time.** As many of its 146 own marks as the painter draws.
+  **Measures:** how many draw, which refuse, and the reason each refusal gives.
+
+- [ ] **6. The findings, batched.** **Measures:** one entry per gap in this file with the reading that
+  found it, and one batch to the engine's roadmap, each argued on that package's own merits rather
+  than on a consumer needing it, which is the only argument that repository takes.
+
+#### Done-criteria
+
+- `package.json` and `package-lock.json` are untouched, and no `@altpsyche/engine` import exists in
+  this tree.
+- The scratch tree lives outside this repository and nothing in `git status` mentions it.
+- Every gap is written where it would be fixed, which is the engine's roadmap, and counted here with
+  the reading that found it.
+- The three gates read exactly what they read before, since nothing that ships was touched.
+- The known stencil gap is re-measured rather than listed as a discovery.
+
 ## The version ladder
 
 **Every item gets its own minor version.** Siva's plan, and the release convention this repository
@@ -230,7 +290,8 @@ Now section and `git log` are what keep it.
 **The reading behind each of the four is below and in `git log`**, so none of them is rediscovered
 from nothing when it returns.
 
-**What queues work is the table above, the found list below, and whatever the consumer asks for.**
+**What queues work is the table above, the spike in front of it, the found list below, and whatever
+the consumer asks for.**
 
 ## The two demos, which are what a version is cut against
 
@@ -310,7 +371,16 @@ README that plays a video on load is a README nobody can read.
 
 ## Now
 
-**The 1.x band is closed and 1.6.0 is one command from publishing.** An audit on 2026-09-08 read the
+**1.6.0 is published and the GPU spike is what runs next.** Siva's call of 2026-09-09. The spike's own
+scheduling argument is that its window is the slack of 1.x and 2.0.0, and 1.x is spent, so what is
+left is 2.0.0's twenty-nine commits. Its steps are the section in front of the ladder. **2.0.0 is
+ready to start behind it**: the six questions are answered, the inventory is counted, and step 1 is
+self-contained. **Two things fall due before the format freezes and both are Siva's**, which are
+whether a `Mark` may be a raster image, due by step 3 where the node vocabulary lands, and the
+consumer's move from 0.6.0, which is now unblocked and is the only thing that would draw the 1.x band
+in a shipping page.
+
+**The 1.x band is closed and 1.6.0 is published.** An audit on 2026-09-08 read the
 whole band against the tree and found nine things, and seven commits closed them. Nothing since
 1.0.0 is published: `npm view @altpsyche/maths version` answers 1.0.0 while this tree reads 1.6.0,
 with thirty-seven commits unpushed and no tags, and the consumer holds 0.6.0. **Siva publishes**, and
@@ -949,28 +1019,6 @@ format a recorder reads a file, which is also what lets one run without a page a
   steps 3.8 and 7, and line quality is 1.3.0 and 1.4.0 between them. **The reading that put them there is that
   three of the four are builder and demo work over the SVG painter that already draws**, and only the
   sharpness of a line is the renderer's.
-
-- **A renderer step would freeze an API before anything validated it**, which is part of why the
-  ladder was frozen. A demo drawing quadratics as SVG checks the arithmetic and not whether the output
-  is the shape a shader wants, and only the painter says. The engine's stencil gap below was found by
-  reading its source rather than by building anything, and a throwaway spike of the painter would
-  have found it in an hour.
-
-  **The spike is a session of its own and it goes after 1.6.0, which is cut, so it is due now.** That
-  is a scheduling answer rather than a preference. An engine gap costs a release in that repository before this one can use it, and
-  the fifty-five commits of 1.x and 2.0.0 are the only slack that lead time has: a gap found after
-  2.5.0 is found with none. Earlier than 1.6.0 is no better, since 1.3.0, 1.4.0 and 1.6.0 each change
-  what a `Mark` is and a spike paints marks, so a spike in front of them measures something that will
-  not exist. **What it touches is nothing that ships**, and it does not add the engine to this
-  manifest: it links that package in a scratch tree or as a development dependency that leaves with
-  the spike.
-
-  **The dependency is added in one commit and it is the first `await import('@altpsyche/engine')` in
-  the GPU painter, at 2.6.0.** A manifest entry nothing loads is what the rule at the top of
-  `CLAUDE.md` exists to prevent. What the dynamic import defers is the load and not the download, so
-  from 2.6.0 a consumer who never draws on a GPU still fetches that package's bytes and never parses
-  them, which is the trade one install is worth and is why the engine having no runtime dependencies
-  of its own matters.
 
 - **The engine cannot count a winding number, and a GPU fill needs one.** `StencilMode` there is a
   boolean mask: `mark` replaces every bit where it draws, `inside` keeps what compares equal, and
