@@ -59,21 +59,33 @@ allowed. What is not allowed is a sentence a reader has to decode, or a term use
 given its plain meaning. **Every technical word gets its everyday explanation the first time it
 appears**, and a forward reference is a defect.
 
-**Talk to the reader.** Every page here is written to one person: the reader is **you**, and the
-sentences say what you do and what you get. There is no **I** and no **we**, so the package is
-"the package" or "@altpsyche/maths" and never a voice of its own.
+**The register is a graphics-mathematics reference.** Siva named the model: Eric Lengyel, in
+_Foundations of Game Engine Development_. Define the object, state its properties, give each number
+with the expression it comes from, then name the function that does the work.
 
-**Put the subject first and give it a real verb.** "You get back a flat list of things to draw",
-never "Back comes a flat list". An inversion makes the reader hold the sentence open until its
-subject arrives, and it is the thing that made these pages sound written rather than said.
+**Definition first.** A section opens by saying what the thing is, in one declarative sentence,
+before it says anything the thing does. "A figure is a description of a picture over time."
 
-**No riddles.** "It arrives rather than appearing" tells the reader nothing until they have decoded
-it, and a sentence built on a contrast with a thing that did not happen is a sentence about nothing.
-Say what happens: "the grid fades in, the axes draw themselves, then the curve draws".
+**Third person, present tense.** "`marksAt` is a pure function of t", never "you get back a list of
+things to draw". There is no **I**, no **we** and no **you** on these pages.
 
-**A heading is addressed to the reader too.** "What you can draw" rather than "What it draws". The
-reader is deciding whether this does what they need, and a heading about "it" makes them work that
-out for themselves.
+**The standard name for anything that has one.** Cubic Bézier, affine transform, column-major, de
+Casteljau's construction, the painter's algorithm, fourth-order Runge-Kutta, the nonzero winding
+rule. The name is the part a reader can look up, and a paraphrase costs them that.
+
+**A number arrives with what produces it.** Not "close enough to a circle" but the control distance
+(4/3)·tan(θ/4), the bound of 2.7 × 10⁻⁴ r it gives, and the interval the suite holds the drawn edge
+inside.
+
+**No process narration.** "Watch it from the start: the grid fades in, the axes draw themselves" is
+a tour. State what the figure is at the time named, and what the code does.
+
+**A heading names its subject.** The model, Geometry, Graphs, Space, Painters, Restrictions. Not
+"What you can draw", not "In full".
+
+**Where this meets the simplicity brief above:** plain words for ordinary things, the exact term for
+a technical one, and every technical term defined where it first appears. Lengyel defines his terms
+before he uses them, which is the same rule the brief already states.
 
 ## Style: caveman ultra
 
