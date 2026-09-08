@@ -328,9 +328,9 @@ called formats and both have implementers on several platforms. The specificatio
 own, so a figure declares which version of the format it is written in and a renderer declares which
 it reads, and neither number is this package's.
 
-**This is the next session and it is a planning session.** No code is touched in it. What it produces
-is the format written down, the questions below answered, and a step list Siva reads before anything
-lands.
+**Two planning sessions ran and neither touched code.** What they produced is the format written
+down, the six questions below answered, and a step list of twenty-eight commits Siva reads before
+anything lands.
 
 A figure format is a description of a picture over time that a program reads rather than runs. It
 carries nodes, tracks and animations, each a named thing with parameters, and no function anywhere.
@@ -371,23 +371,23 @@ and it answered the questions above. "A function" turned out to be three problem
 and only the smallest needs the format to grow anything: geometry-making functions do not survive
 serialisation and do not need to, geometry-reading functions should take geometry instead, and what
 is left is a handful of operations over a track value. The three hard problems, the inventory, and a
-six-step list with its done-criteria are all in [`FIGURE-FORMAT.md`](FIGURE-FORMAT.md).
+step list with its done-criteria are all in [`FIGURE-FORMAT.md`](FIGURE-FORMAT.md).
 
-**The vocabulary is nineteen node kinds, five path producers and fifteen animation kinds**, counted
-from the door, and **nine of those thirty-nine carry a function**. Only three shapes of function
-exist among them: a curve of one number, a field or a surface of a place, and how `countTo` writes
-its number. Everything else is already a record of values wearing a function call's clothing.
+**The vocabulary is twenty-one node kinds, two item producers, eleven path producers, two point
+producers and fifteen animation kinds**, read from the door by return type, and **sixteen names at
+the door carry a function** in eleven shapes. Everything else is already a record of values wearing a
+function call's clothing.
 
 **The measurement runs through every step and it is what makes this checkable: a figure as data draws
 mark for mark what the TypeScript figure draws, compared by tolerance.** The demos are already the
 conformance suite.
 
 **The size was written down honestly on a second pass**, after Siva said the document was underselling
-it. Fifty things rather than thirty-nine once the timeline structure and the nine value types are
-counted, ten function carriers rather than nine once the extent is, two of the six steps larger than
-a commit and needing to be split, four prose and demo surfaces to rewrite that were never counted,
-and twelve to sixteen commits rather than six. **It is almost certainly 2.0.0 rather than a minor,
-since `plot` returns a `Path` today and would return a record**, and that is Siva's call.
+it. Sixty-one things rather than thirty-nine once the timeline structure and the nine value types are
+counted, two of the steps larger than a commit and needing to be split, four prose and demo surfaces
+to rewrite that were never counted, and at least twenty-eight commits rather than six. **It is almost
+certainly 2.0.0 rather than a minor, since `plot` returns a `Path` today and would return a record**,
+and that is Siva's call.
 
 **Three more decisions, Siva's, on 2026-09-08.**
 
@@ -406,9 +406,24 @@ specification changes before the code does.** It moves out when a second impleme
 when a tool wants the types and a validator without the whole library, which is also when
 `@altpsyche/figure-format` becomes a package. Nothing needs that today.
 
-**The next session splits steps 3 and 4 and writes no code.** Twenty-four node kinds and path
-producers in one bullet and fifteen animations in another are not commit-sized, which this file's own
-rule forbids. When they are written out the plan is complete.
+**Steps 3 and 4 are split and the plan is complete.** Step 3 is ten commits and step 4 is five, each
+naming the demo whose marks measure it, and the plan is twenty-eight commits rather than the twelve to
+sixteen it claimed.
+
+**Splitting them corrected the inventory in four places**, because the tables had been read from the
+names at the door rather than from each builder's return type. `riemannBars` returns a node and was
+counted as a path producer. `vectorField3` is a node kind that was missed, and `surfaceCells` and
+`fieldArrows3` return `SpaceItem[]`, which is a third thing a figure is made of. Six path producers
+in `figure/path.ts` and the two point producers were never counted. And sixteen names at the door
+carry a function in eleven shapes rather than nine in three: a `Camera3` carries `project`, a
+`Projection` carries `place`, and `lengthOf`, `colourFor` and `shade` are function-valued options.
+
+**Two of those findings shrink the work and one grows it.** The five option functions the two demos
+pass are four named forms between them, a constant, a threshold, a saturating length and a ramp
+through a band, so they need no expression at all. Eleven names at the door are drawn by no demo, so
+each gets a test against its own call rather than a picture. What grows is the camera: the solid
+demo's eye sits at `4.6·cos(2πt)`, `4.6·sin(2πt)`, `2.6`, which is the second place a demo asks the
+expression form for arithmetic, so the camera has a step of its own.
 
 **Nothing is signed off.** Siva reads the plan before a line is written.
 
