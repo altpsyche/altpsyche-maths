@@ -79,6 +79,18 @@ describe('the committed pictures', () => {
     }
   });
 
+  it('each fill half their frame or better at the time their still is taken', () => {
+    // A picture cut to prove a feature draws can sit in a corner of its frame.
+    // The frame is sized for the widest moment of the motion, so which moment a
+    // still is taken at is what decides how full it looks.
+    for (const figure of [tangent, booleans, turns, solid]) {
+      const box = boundsOfMarks(marksAt(figure, figure.still))!;
+      const frame = resolveExtent(figure.extent, 16 / 9, figure.still);
+      const cover = ((box.x.to - box.x.from) * (box.y.to - box.y.from)) / (frame.width * frame.height);
+      expect(cover).toBeGreaterThan(0.5);
+    }
+  });
+
   it('are all eight there', () => {
     expect(sheets.map((sheet) => sheet.file)).toEqual([
       'docs/tangent.svg',

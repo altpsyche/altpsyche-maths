@@ -134,7 +134,7 @@ export const turns: Figure = {
   scene,
   timeline: line,
   duration: line.duration,
-  still: TURN * 0.375,
+  still: TURN * 0.125,
   loop: true,
 };
 

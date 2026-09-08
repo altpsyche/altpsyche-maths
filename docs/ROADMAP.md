@@ -400,14 +400,31 @@ demo is recompiled by steps 6 and 7 against the renamed door.
   410 by 230, 410 by 158, 410 by 193 and 410 by 230; the tangent strip from 7.60 to one down to 1.78;
   `tangent-strip.svg` from 282,370 bytes to 277,409; the suite from 608 tests to 609.
 
-- [ ] **10. The stills chosen to be looked at, and the picture the README opens on.** `boolean.svg` is
-  12 marks and `rotate.svg` is 8, so both read as diagrams beside `tangent.svg` at 202 and
-  `surface.svg` at 265. Two numbers decide a still: the fraction of the view box the drawn bounds
-  cover, read with `boundsOfMarks` against the extent, and the height in pixels of the smallest
-  labelled text at the width the README shows it. The opening picture is whichever of the eight clears
-  both by the most, and a ninth sheet is cut only if none of them clears both. **Measures:** both
-  numbers for all eight sheets before and after, the time each still is taken at, and which sheet
-  opens the page.
+- [x] **10. The stills chosen to be looked at, and the picture the README opens on.** The eight
+  sheets were read on how much of the frame the drawn bounds cover and how tall the smallest labelled
+  text stands at the width the README shows it. Coverage: `tangent-strip` 93.4%, `tangent` 80.0%,
+  `surface-strip` 79.3%, `boolean-strip` 75.9%, `surface` 71.0%, `rotate-strip` 65.5%, `boolean`
+  59.9%, `rotate` 49.0%. On-page text: `boolean` 20.0px, `tangent` and `rotate` 17.3px, `surface`
+  14.7px, then the four strips at 10.8, 9.4, 7.9 and 7.6px.
+
+  **What a frame's emptiness turns on is the time the still is taken at, not the frame.** Every
+  frame here is sized for the widest moment of its own motion: the rotation reaches 4.940 of its 5.4
+  half-width and 2.750 of its 3 half-height somewhere in the turn, so narrowing the frame would clip
+  the swing. The rotation's still moved from three eighths of a turn to one eighth, which is 65.0%
+  covered rather than 49.0% and is still a clean fraction a reader can name. The other three were
+  read the same way and left: the flat demo's best-covering moment is 97.6% at 4.27 seconds and
+  shows neither the brace nor the finished reading, so 80.0% at the end of the walk is the better
+  picture and coverage is not the only number.
+
+  **The README opens on `tangent.svg`, which is what it already opened on, and no ninth sheet is
+  cut.** It is the sheet that clears both numbers by the most: 80.0% covered with 17.3px text, where
+  the only sheet covering more has text at 9.4px.
+
+  **The strips' labels are too small to read on the page**, 7.6 to 10.8 pixels, and that is not
+  fixable inside this step: a strip's text size is the figure's own, so growing it grows the stills
+  too. Written down under "Found while working". **Measured:** the rotation still from 49.0% to
+  65.0% and `rotate.svg` from 1,870 bytes to 1,876; the suite from 609 tests to 610, the new one
+  holding every still above half its frame.
 
 - [ ] **11. The four surfaces divided, and who each is for.** No code. Two readers land here, the
   person deciding whether to install this and the person looking up what `sectionOf` does, and a page
@@ -475,6 +492,12 @@ demo is recompiled by steps 6 and 7 against the renamed door.
 - Siva has read the README, the guide and the pictures once, and said so.
 
 ## Found while working, not yet queued
+
+- **A strip's labels are too small to read at the width the README shows it.** The four strips draw
+  their smallest labelled text at 7.6 to 10.8 pixels on the page, where the four stills draw theirs
+  at 14.7 to 20.0. A strip's text size is the figure's own, so growing it grows the stills too, and
+  what it wants is a text size a figure can scale with the frame it is drawn into. Found while
+  measuring the eight sheets for 1.0.0.
 
 - **The picture gate is engine-dependent at a rounding boundary.** A coordinate is written to three
   decimal places, so the sine and cosine differences between engines are invisible in the bytes,
