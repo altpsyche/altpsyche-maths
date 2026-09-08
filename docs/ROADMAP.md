@@ -231,6 +231,16 @@ above is hard. The axis measures it: 0.02 figure units in a window 5.6 units acr
 draw into a multisampled texture of its own and name it in `present`, which is two resources and a
 copy rather than one pass. The SVG painter has the browser's own antialiasing and pays nothing for it.
 
+**Gap 6: a plain `TextMark` cannot be drawn on a card at all, and an equation can only be drawn with
+a stencil.** The engine has textures and samplers, so a glyph atlas is expressible, and it has no text
+vocabulary of its own, so a painter would build that atlas by rasterising with a 2D canvas and
+sampling it. That is the shape this step refuses to build. What the reading says instead is where the
+line falls today: 46 text marks across the two demos name a CSS font stack and carry no outline, and
+an equation arrives from `typesetElement` as 8 filled paths that read as 333 curves. **So the GPU
+painter's text is two problems and not one.** A label waits on 2.3.0's outlines for plain text, and an
+equation waits on the same counted winding an annulus waits on, since 4 of the 8 glyphs of
+`a^2 + b^2 = e^0` carry a hole.
+
 **The known stencil gap, re-measured rather than re-found.** `StencilMode` is `'mark' | 'inside'` and
 its own comment says what each is: `mark` leaves the reference behind everywhere it draws, and
 `inside` draws only where the reference is already there. Neither counts, and no increment or
@@ -287,9 +297,26 @@ it.
   semicircle, which stands 24.4 pixels outside the polygon at the chord midpoints. **So the shape a
   shader would have to want is `outlinePath`'s polygon, and the card already draws it.**
 
-- [ ] **4. Text, or the gap where text is.** A `TextMark` at a size and a family. **Measures:**
+- [x] **4. Text, or the gap where text is.** A `TextMark` at a size and a family. **Measures:**
   whether it can be drawn at all before 2.3.0's outlines for plain text exist, written down as a gap
-  rather than built around.
+  rather than built around. **Read on 2026-09-09, and no card was needed for any of it.** The flat
+  demo holds 178 marks at its last time and 24 of them are text; the solid demo holds 316 and 22. All
+  46 name one family, `system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif`, which is a CSS
+  font stack a host resolves and a card cannot. A `TextMark` carries `text`, `size` in figure units,
+  `family`, `weight`, `align`, `baseline` and a fill, and no outline and no metric, so neither painter
+  turns one into geometry: the SVG painter writes a `<text>` element and the canvas painter calls
+  `fillText`, and both are asking the host to find the font.
+  **An equation is a different case and it is already drawable.** `typesetElement('x^2 + y^2 = r^2')`
+  returns one `mjx-container`, one `svg`, 13 `g` and 8 `path`, every path carrying a `d` and not one
+  `use`, so the outlines are in the answer rather than referred to. Read through this package's own
+  `pathFromData` the eight are 9 subpaths, 333 curves and 1,120 points at a tolerance of 0.5 in
+  MathJax's own thousandths of an em. **So the half of 2.3.0's open dependency that asks whether the
+  typesetter's path serves is answered for an equation and unanswered for a label.**
+  **What an equation needs that the card cannot give is the winding number again.** The one glyph of
+  those eight with two subpaths is the equals sign and both its loops are bars: `windingAt` inside the
+  second reads -1, so it is a second filled piece and not a hole. A letter with a counter is where the
+  rule bites, and `typesetElement('a^2 + b^2 = e^0')` gives 8 outlines of which 4 carry a hole the
+  winding rule decides.
 
 - [ ] **5. The flat demo at its still time.** As many of its 146 own marks as the painter draws.
   **Measures:** how many draw, which refuse, and the reason each refusal gives.
@@ -475,8 +502,8 @@ README that plays a video on load is a README nobody can read.
 scheduling argument is that its window is the slack of 1.x and 2.0.0, and 1.x is spent, so what is
 left is 2.0.0's twenty-nine commits. Its steps are the section in front of the ladder.
 
-**The spike's first three steps are read, the seam holds and both a filled path and a stroke are
-right to the pixel.** One
+**The spike's first four steps are read, the seam holds, and a filled path and a stroke are right to
+the pixel while text is not drawable at all.** One
 triangle drew through the one door on a `blackwell` adapter, at 1 pass and 1 draw, with 34,634 of an
 expected 34,656 pixels filled. Then a disc of radius 1 from this package's own `circle`, flattened
 and fan-triangulated, drew with its edge at +2.7340 parts in ten thousand of the true radius at the
@@ -485,14 +512,19 @@ read in a window where one pixel spans 0.0781 parts. Then the demo's own x axis 
 round cap, whose drawn edge tracks the polygon `outlinePath` writes within half a pixel everywhere and
 lands exactly on its vertices.
 
-**Five gaps have come out of it so far**, each written under the step that found it with its reading.
+**Six gaps have come out of it so far**, each written under the step that found it with its reading.
 Nothing at the door joins a selection to a renderer. A canvas the engine drew cannot be read. Every
 `probe()` leaves two canvases pinned over the top-left corner of the page. A draw naming a vertex
-count binds no geometry while `resolve` and `cost` both pass the description. And a pass drawing the
-frame the reader sees keeps one sample of each pixel, so a 2.857-pixel stroke drew as 2. **The known
+count binds no geometry while `resolve` and `cost` both pass the description. A pass drawing the frame
+the reader sees keeps one sample of each pixel, so a 2.857-pixel stroke drew as 2. And a plain
+`TextMark` cannot be drawn at all, while an equation can be drawn only with a stencil. **The known
 stencil gap is re-measured**: `StencilMode` is `'mark' | 'inside'` and neither counts, so an annulus
 drew as a solid disc, 33.4 per cent too much area, and nothing refused it because nothing could be
 asked for.
+
+**Two of the six are one gap wearing two hats, and it is the winding number.** An annulus, a letter
+with a counter and every glyph of an equation all want the same counted stencil, which is the engine's
+item 2. That is the reading that decides how much of 2.6.0 can be built before that item lands.
 
 **The second gap is what the remaining steps work around.** Every pixel reading above came from a
 screenshot of the canvas, because the engine's own `readPixels` is a backend method and the backends
