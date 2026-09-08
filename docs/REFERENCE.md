@@ -1,39 +1,39 @@
 # Reference
 
-One entry for every name `index.ts` exports. Each says what the name is and what it takes. A test in
-the suite reads the door and this page. It fails when either holds a name the other does not, so a
-name added or renamed without an entry stops the build.
+This page carries one entry for every name `index.ts` exports, stating what the name is and what
+it takes. A test in the suite reads the door and this page and holds the two equal, so a name added
+or renamed without an entry fails the build.
 
-[docs/GUIDE.md](GUIDE.md) teaches the package in the order a reader needs it. This page is for
-looking one name up. [DESIGN.md](../DESIGN.md) says why the design is what it is.
+[docs/GUIDE.md](GUIDE.md) teaches the package in order. [DESIGN.md](../DESIGN.md) states why the
+design is what it is.
 
-## The words used on this page
+## Terms
 
-**Figure units** are the units a picture is measured in. A figure says how many wide and tall it is,
-and nothing in it is measured in pixels.
+**Figure units** are the units a picture is measured in. A figure declares its extent in them, and
+no quantity in a figure is expressed in pixels.
 
-**Graph units** are the numbers along an axis. A graph counting minus two to two across is in graph
-units, and a scale maps those numbers onto figure units.
+**Graph units** are the numbers an axis counts through. A scale maps an interval of graph units onto
+an interval of figure units.
 
-A **mark** is one thing to draw: an outline, filled or stroked, or a piece of text. A **node** is a
-part of the tree a figure is written as, and flattening the tree gives the marks.
+A **mark** is one drawn item: an outline with a fill, a stroke, or both, or a piece of text. A
+**node** is one element of the tree a figure is written as, and flattening the tree yields the
+marks.
 
-A **path** is a list of subpaths, and a subpath is a start point and a run of **cubics**. A cubic is
-a curve given by two control points and an end point, which is the one curve both SVG and canvas
-draw.
+A **path** is a sequence of subpaths. A subpath is a start point followed by **cubic Bézier
+segments**, closed or open. A segment carries two control points and an endpoint, and not its start.
 
 **Below the line** are values and timing, which change almost never. **Above the line** are figures
 and painters. Nothing below the line imports anything above it.
 
 ## Numbers
 
-Plain arithmetic, taking and returning numbers, so a vector, a colour channel and a uniform are all
-walked by the same lines.
+These take and return plain numbers, so a vector, a colour channel and a uniform are interpolated
+by the same four functions.
 
 - `clamp(value, low, high)` — the value held inside the two bounds, whichever way round they are
   given.
 - `lerp(from, to, along)` — the number `along` of the way from one to the other. An `along` outside
-  nothing to one reaches past that end rather than stopping there.
+  0 to 1 reaches past that end rather than stopping there.
 - `inverseLerp(from, to, value)` — how far along the span the value sits, which is `lerp` read
   backwards. A span of no width reports its start rather than dividing by zero.
 - `remap(value, fromLow, fromHigh, toLow, toHigh)` — the same position in a second span as it held
@@ -41,8 +41,8 @@ walked by the same lines.
 
 ## Colours
 
-A colour in a figure is a string, which is what both painters take. These three read one back so two
-can be walked between.
+A colour in a figure is a string, which is what both painters accept. These three parse one back so
+that two can be interpolated.
 
 - `colourOf(colour)` — a colour read out of its text as `Rgba`, or nothing where the form is one
   this does not read. Hex takes three, four, six or eight digits. `rgb()` and `rgba()` take channels
@@ -54,12 +54,12 @@ can be walked between.
   which is what CSS mixes in when nothing names a space.
 - `Rgba` — a colour read out of its text.
   - `r`, `g`, `b` — each channel, nothing to 255.
-  - `a` — the alpha, nothing to one.
+  - `a` — the alpha, 0 to 1.
 
 ## Easing curves
 
-Four curves, each taking and returning nothing to one, so the caller decides the values at both ends
-and the curve decides only the pace between them.
+Each curve maps the interval 0 to 1 onto itself, so the caller fixes the values at both ends and
+the curve fixes only the pace between them.
 
 - `Curve` — a function from how far through a span the clock is to how far through the change the
   value is.
@@ -101,7 +101,7 @@ and the curve decides only the pace between them.
 
 ## Intervals
 
-An interval is a run of numbers from one bound to another, and either bound may be the larger.
+An interval is the numbers from one bound to another. Either bound may be the larger.
 
 - `Interval` — `from` and `to`, both readable and neither writable.
 - `interval(from, to)` — an interval, with its family on the same name. The width is not called
@@ -112,7 +112,7 @@ An interval is a run of numbers from one bound to another, and either bound may 
   - `interval.ordered(interval)` — the same two bounds with the lower first, for anything that walks
     from one end to the other.
   - `interval.at(interval, along)` — a fraction of the way along, reaching past either bound when
-    the fraction is outside nothing to one.
+    the fraction is outside 0 to 1.
   - `interval.clampTo(interval, value)` — the value held inside the two bounds.
   - `interval.remap(value, source, target)` — the place a value holds in one interval, read at the
     same place in another. A source of no width hands back the target's first bound.
@@ -149,8 +149,7 @@ An interval is a run of numbers from one bound to another, and either bound may 
 
 ## Tracks
 
-A track is one value's keys over time. This is the half of the package a control panel writes into
-and a figure reads out of.
+A track is one value's keys over time. A control panel writes tracks and a figure reads them.
 
 - `TrackValue` — what a key can hold: a number, a list of numbers, or a boolean. A boolean because a
   control can be a switch, and a list because a control can be a vector or a colour.
@@ -204,7 +203,7 @@ and a figure reads out of.
   distance in figure units. Every call that takes a tolerance defaults to this one, so a crossing, a
   cut, a flattening and a stitch agree about what counts as one place.
 
-## Combining shapes
+## Boolean operations
 
 - `areaOf(path)` — how much a path encloses, positive where it is wound anticlockwise. An open
   subpath is closed by the straight run back to its start. Every subpath is added, so a ring written
@@ -216,7 +215,7 @@ and a figure reads out of.
   - `tolerance` — how close two things come before they count as the same place, in figure units. It
     decides where two paths are read as crossing and which ends are read as meeting.
 
-## Insides and crossings
+## Containment and intersection
 
 - `flattenPath(path, options)` — every subpath as a run of points, each loop closed.
 - `FlattenOptions` — what a flattening takes.
@@ -246,12 +245,12 @@ and a figure reads out of.
     same place, in figure units. It is read against each piece's own length, so a cut is made only
     where the piece it would leave behind is long enough to see.
 
-## Length, trimming and morphing
+## Arc length, trimming and interpolation
 
 - `lengthOf(path)` — how long a path is, in figure units, across every subpath. It reads a little
   short of the truth, by the chord error of its sampling.
 - `pointAlong(path, fraction)` — the point a fraction of the way along a path, measured by length
-  rather than by piece. A fraction outside nothing to one is held at the nearer end, and a path with
+  rather than by piece. A fraction outside 0 to 1 is held at the nearer end, and a path with
   no points hands back nothing.
 - `trimPath(path, fraction)` — the path up to a fraction of its total length. A fraction at or past
   one is the path itself, untouched.
@@ -262,7 +261,7 @@ and a figure reads out of.
 
 ## Marks
 
-What a painter draws. A mark asks only for what both painters can do.
+A mark is what a painter draws. It may request only what both painters implement.
 
 - `Colour` — a colour as text, which is any colour a CSS author can write.
 - `Fill` — how an inside is painted.
@@ -527,7 +526,7 @@ animations reach a picture in space and a picture on a graph.
 - `fieldArrows3(name, of, camera, options)` — the same arrows as pieces waiting to be sorted, for a
   figure that mixes them with pieces of its own. A sample whose vector is nothing draws no arrow.
 - `VectorField3Options` — the arrow options, plus:
-  - `over` — the box the samples are taken in, nothing to one each way unless named.
+  - `over` — the box the samples are taken in, 0 to 1 each way unless named.
   - `resolution` — how many samples each way. One number is all three.
   - `lengthOf` — how long an arrow is, in the world's own units rather than the figure's. A far
     arrow drawing shorter than a near one of the same magnitude is what says which is far. Its head
@@ -539,7 +538,7 @@ animations reach a picture in space and a picture on a graph.
   cell carries the name it was given ahead of its own place in the grid. An animation can then name
   a whole surface once its cells are mixed with another's.
 - `Surface3Options` — what a surface takes.
-  - `over` — the runs of the two parameters, nothing to one each unless named.
+  - `over` — the runs of the two parameters, 0 to 1 each unless named.
   - `resolution` — how many cells each way.
   - `shade` — the fill a cell takes, given how squarely it faces the light. That amount is one
     facing the light head on, a half edge on, and nothing facing away. The author supplies this
@@ -566,7 +565,7 @@ animations reach a picture in space and a picture on a graph.
 - `Plane` — `point`, somewhere the plane passes through, and `normal`, which way it faces. The
   normal's length does not matter.
 - `SectionOptions` — what a section takes.
-  - `over` — the runs of the two parameters, nothing to one each unless named.
+  - `over` — the runs of the two parameters, 0 to 1 each unless named.
   - `resolution` — how many samples each way.
   - `tolerance` — how close two ends come before they are read as the same place.
 
@@ -574,7 +573,7 @@ animations reach a picture in space and a picture on a graph.
 
 An animation takes the marks and a fraction of its span and hands back the marks as they stand at
 that fraction. Every one of them is nothing at the beginning of its span. Every mark it adds is in
-the list at every fraction, at nothing where it is not yet showing. A mark that arrived part way
+the list at every fraction, at zero opacity where it is not yet visible. A mark arriving part way
 through would turn up in a comparison between two frames as something that changed.
 
 The first argument of each is the name of what it changes, which reaches a mark and every mark under
@@ -646,7 +645,7 @@ a group of that name.
     before and each running the same length.
   - `wait(seconds)` — a gap before the next entry.
   - `at(marks, seconds)` — the marks as every span leaves them at a time. A span that has not
-    started is applied at nothing and one already finished is applied in full. That is what makes
+    started is applied at 0 and one already finished is applied in full. That is what makes
     this a function of time rather than a record of what has been played.
   - `spans` — the spans it holds. `duration` — how long the whole thing runs.
 - `Span` — one entry: its `animation`, the seconds it runs `from` and `to`, and the `curve` pacing
@@ -687,7 +686,7 @@ a group of that name.
 - `sameMarks(one, two, tolerance)` — two lists holding the same marks in the same order, to a
   tolerance.
 
-## Frames out
+## Frames
 
 - `FrameStep` — how far apart the frames are: `fps`, a rate, or `frames`, a count spread over the
   whole figure. A recorder knows the rate it plays at; a strip knows how many pictures fit across a
@@ -788,6 +787,6 @@ that code. It runs at build time, and what a reader downloads is the outlines it
 - `matchGlyphs(from, to)` — two typeset expressions paired glyph by glyph, with what neither answers
   kept apart. Marks that are not paths are left out, since a glyph is an outline.
 - `GlyphMatch` — what that pairing found.
-  - `pairs` — each glyph of the expression being left, beside the one it becomes.
-  - `leaving` — glyphs of the expression being left that nothing in the other answers.
-  - `arriving` — glyphs of the expression being arrived at that nothing in the first answers.
+  - `pairs` — each glyph of the first expression beside the glyph of the second it becomes.
+  - `leaving` — glyphs of the first expression that no glyph of the second matches.
+  - `arriving` — glyphs of the second expression that no glyph of the first matches.
