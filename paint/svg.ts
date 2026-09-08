@@ -15,6 +15,7 @@
  */
 import { mat3, type Mat3 } from '../values/mat3.js';
 import { vec2 } from '../values/vec2.js';
+import type { Bounds } from '../figure/bounds.js';
 import type { Fill, Mark, PathMark, TextMark } from '../figure/mark.js';
 import type { Path } from '../figure/path.js';
 import { outlinedMarks } from '../figure/outline.js';
@@ -100,18 +101,14 @@ export function pathToData(path: Path, view: Mat3): string {
 }
 
 /**
- * The id of the element naming one thing about one mark.
+ * The id of the element naming one mark's gradient.
  *
  * Every character an id may not carry is written as its own code point between
  * dashes, a literal dash included. Nothing is dropped and nothing is folded
  * together, so two mark ids that differ cannot arrive at one id here.
- *
- * The suffix is what tells a mark's gradient from its clip, and it cannot be
- * reached by escaping any mark id: escaping writes a dash only around a code
- * point, so no mark id becomes text ending in a word after a bare dash.
  */
-function elementId(prefix: string, mark: string, suffix = ''): string {
-  return prefix + mark.replace(/[^A-Za-z0-9_]/g, (letter) => `-${letter.codePointAt(0)!.toString(16)}-`) + suffix;
+function elementId(prefix: string, mark: string): string {
+  return prefix + mark.replace(/[^A-Za-z0-9_]/g, (letter) => `-${letter.codePointAt(0)!.toString(16)}-`);
 }
 
 /** What a fill is painted with: the element naming its stops where it has them,
@@ -120,40 +117,41 @@ function fillPaint(fill: Fill, mark: string, prefix: string): string {
   return fill.gradient ? `url(#${elementId(prefix, mark)})` : fill.colour;
 }
 
-/** What every clip element's id ends with, so one mark's clip and its gradient
- * are two ids rather than one. */
-const CLIP = '-clip';
-
 /**
- * One mark's clip as a `<clipPath>` holding a `<rect>`, written in the units
- * painted into.
+ * One mark's clip as the rectangle it is written out as, in the units painted
+ * into.
  *
  * The rectangle is put through the same view the geometry is, and the corners
  * are taken lowest first afterwards: the view turns the y axis over, so the top
  * of the box in figure units is the smaller number on the surface and a width
  * worked out before the flip would come out negative.
  */
-function clipElement(mark: Mark, view: Mat3, prefix: string): SvgElement | null {
-  if (!mark.clip) return null;
-  const one = mat3.transformPoint(view, vec2(mark.clip.x.from, mark.clip.y.from));
-  const other = mat3.transformPoint(view, vec2(mark.clip.x.to, mark.clip.y.to));
-  const x = Math.min(one.x, other.x);
-  const y = Math.min(one.y, other.y);
+function clipRect(clip: Bounds, view: Mat3): Record<string, string> {
+  const one = mat3.transformPoint(view, vec2(clip.x.from, clip.y.from));
+  const other = mat3.transformPoint(view, vec2(clip.x.to, clip.y.to));
   return {
-    tag: 'clipPath',
-    attributes: { id: elementId(prefix, mark.id, CLIP), clipPathUnits: 'userSpaceOnUse' },
-    children: [
-      {
-        tag: 'rect',
-        attributes: {
-          x: short(x),
-          y: short(y),
-          width: short(Math.abs(other.x - one.x)),
-          height: short(Math.abs(other.y - one.y)),
-        },
-      },
-    ],
+    x: short(Math.min(one.x, other.x)),
+    y: short(Math.min(one.y, other.y)),
+    width: short(Math.abs(other.x - one.x)),
+    height: short(Math.abs(other.y - one.y)),
   };
+}
+
+/**
+ * The id of the element naming one clip, which is the rectangle's own four
+ * numbers rather than the id of a mark that carries it.
+ *
+ * A gradient is named per mark because two marks rarely share an axis. A clip is
+ * shared: every mark of an inset is cut to the one rectangle, so naming it per
+ * mark writes that rectangle once for each of them. The numbers are what make
+ * two marks with the same rectangle arrive at one id, and they are stable frame
+ * to frame in the way a counter over the marks would not be.
+ *
+ * The dots and minus signs a number carries are both allowed inside an id, and
+ * the prefix is what keeps it from starting with a digit.
+ */
+function clipId(prefix: string, rect: Record<string, string>): string {
+  return `${prefix}clip-${rect.x}-${rect.y}-${rect.width}-${rect.height}`;
 }
 
 /**
@@ -166,9 +164,20 @@ function clipElement(mark: Mark, view: Mat3, prefix: string): SvgElement | null 
  */
 function defsElement(marks: readonly Mark[], view: Mat3, prefix: string): SvgElement | null {
   const named: SvgElement[] = [];
+  const clips = new Set<string>();
   for (const mark of marks) {
-    const clip = clipElement(mark, view, prefix);
-    if (clip) named.push(clip);
+    if (mark.clip) {
+      const rect = clipRect(mark.clip, view);
+      const id = clipId(prefix, rect);
+      if (!clips.has(id)) {
+        clips.add(id);
+        named.push({
+          tag: 'clipPath',
+          attributes: { id, clipPathUnits: 'userSpaceOnUse' },
+          children: [{ tag: 'rect', attributes: rect }],
+        });
+      }
+    }
     const gradient = mark.kind === 'path' || mark.kind === 'text' ? mark.fill?.gradient : undefined;
     if (!gradient) continue;
     const from = mat3.transformPoint(view, gradient.from);
@@ -208,7 +217,7 @@ function pathElement(mark: PathMark, view: Mat3, scale: number, prefix: string):
     if (mark.stroke.dashOffset !== undefined) attributes['stroke-dashoffset'] = short(mark.stroke.dashOffset * scale);
   }
   if (mark.opacity !== undefined && mark.opacity !== 1) attributes.opacity = short(mark.opacity);
-  if (mark.clip) attributes['clip-path'] = `url(#${elementId(prefix, mark.id, CLIP)})`;
+  if (mark.clip) attributes['clip-path'] = `url(#${clipId(prefix, clipRect(mark.clip, view))})`;
   return { tag: 'path', attributes };
 }
 
@@ -226,7 +235,7 @@ function textElement(mark: TextMark, view: Mat3, scale: number, lift: number, pr
   if (mark.align) attributes['text-anchor'] = mark.align;
   if (mark.baseline) attributes['dominant-baseline'] = mark.baseline;
   if (mark.opacity !== undefined && mark.opacity !== 1) attributes.opacity = short(mark.opacity);
-  if (mark.clip) attributes['clip-path'] = `url(#${elementId(prefix, mark.id, CLIP)})`;
+  if (mark.clip) attributes['clip-path'] = `url(#${clipId(prefix, clipRect(mark.clip, view))})`;
   return { tag: 'text', attributes, text: mark.text };
 }
 

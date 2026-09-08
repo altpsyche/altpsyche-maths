@@ -875,9 +875,11 @@ picture in a recording are the same picture.
   `minTextSize`, and a `prefix`. Every text size is multiplied by the one factor that brings the
   smallest of them to that size, so the sizes stay in the ratios the figure gave them. The `ground` is
   painted behind the marks as the `background` of the sheet, so the colours land on the ground they
-  were measured against wherever the sheet is shown. The `prefix` begins every gradient id written,
-  since an id is unique across a document rather than inside one figure, and two figures in one
-  document want different prefixes.
+  were measured against wherever the sheet is shown. The `prefix` begins every id written, since an
+  id is unique across a document rather than inside one figure, and two figures in one document want
+  different prefixes. A gradient is named by the mark that carries it and a clip by its own four
+  numbers, since every mark of an inset is cut to the one rectangle and naming that per mark would
+  write it once for each of them.
 - `SvgTheme` — a `light` and a `dark` colour for each CSS custom property, written into the markup as
   a `<style>` element. A mark painted `var(--ink, #1b1b1b)` takes the value of the ground it is read
   on, and falls back to the colour inside the `var()` where the element is absent.

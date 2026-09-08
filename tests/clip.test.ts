@@ -126,7 +126,7 @@ describe('a clip on a mark', () => {
     expect(defs?.children).toHaveLength(1);
     const [clip] = defs!.children!;
     expect(clip.tag).toBe('clipPath');
-    expect(clip.attributes).toEqual({ id: 'disc-clip', clipPathUnits: 'userSpaceOnUse' });
+    expect(clip.attributes).toEqual({ id: 'clip-100-30-40-40', clipPathUnits: 'userSpaceOnUse' });
     expect(clip.children).toHaveLength(1);
     expect(clip.children![0]).toEqual({
       tag: 'rect',
@@ -154,7 +154,7 @@ describe('a clip on a mark', () => {
   it('is written on a text mark the same way', () => {
     const marks = flatten(text('label', vec2(1, 0), 'here', 1, { fill: ink, clip: box }));
     const [element] = svgElements(marks, view).filter((mark) => mark.tag === 'text');
-    expect(element.attributes['clip-path']).toBe('url(#label-clip)');
+    expect(element.attributes['clip-path']).toBe('url(#clip-100-30-40-40)');
     expect(painted(marks).calls.find((call) => call.name === 'rect')!.args).toEqual([100, 30, 40, 40]);
   });
 });
@@ -187,7 +187,7 @@ describe('a mark against its clip', () => {
     const [mark] = flatten(tapered);
     expect(mark.clip).toEqual(box);
     const [element] = svgElements([mark], view).filter((one) => one.tag === 'path');
-    expect(element.attributes['clip-path']).toBe('url(#rule-clip)');
+    expect(element.attributes['clip-path']).toBe('url(#clip-100-30-40-40)');
   });
 });
 
@@ -237,10 +237,44 @@ describe('a clip a group hands down', () => {
 });
 
 describe('the id of a clip', () => {
-  it('is the mark id escaped, so two mark ids cannot arrive at one', () => {
+  it('is the rectangle it names rather than the mark that carries it', () => {
     const marks = flatten(group('fig', [shape('a/b', circle(vec2(1, 0), 1), { fill: ink, clip: box })]));
     const defs = defsOf(svgElements(marks, view));
-    expect(defs!.children![0].attributes.id).toBe('fig-2f-a-2f-b-clip');
+    expect(defs!.children![0].attributes.id).toBe('clip-100-30-40-40');
+  });
+
+  it('is one element for every mark holding that rectangle, which is what an inset gives them', () => {
+    const marks = flatten(
+      group('fig', [
+        shape('one', circle(vec2(1, 0), 1), { fill: ink }),
+        shape('two', circle(vec2(2, 0), 1), { fill: ink }),
+        shape('three', circle(vec2(3, 0), 1), { fill: ink }),
+      ]),
+      undefined,
+      { clip: box }
+    );
+    const defs = defsOf(svgElements(marks, view));
+    expect(defs!.children).toHaveLength(1);
+    const elements = svgElements(marks, view).filter((element) => element.tag === 'path');
+    expect(elements.map((element) => element.attributes['clip-path'])).toEqual([
+      'url(#clip-100-30-40-40)',
+      'url(#clip-100-30-40-40)',
+      'url(#clip-100-30-40-40)',
+    ]);
+  });
+
+  it('is a second element where a second rectangle is asked for', () => {
+    const marks = flatten(
+      group('fig', [
+        shape('one', circle(vec2(1, 0), 1), { fill: ink, clip: box }),
+        shape('two', circle(vec2(2, 0), 1), { fill: ink, clip: { x: interval(0, 3), y: interval(-2, 2) } }),
+      ])
+    );
+    const defs = defsOf(svgElements(marks, view));
+    expect(defs!.children!.map((child) => child.attributes.id)).toEqual([
+      'clip-100-30-40-40',
+      'clip-100-30-30-40',
+    ]);
   });
 
   it('differs from the id of the same mark gradient', () => {
@@ -251,7 +285,7 @@ describe('the id of a clip', () => {
     const marks = flatten(shape('disc', circle(vec2(1, 0), 1), { fill: washed, clip: box }));
     const defs = defsOf(svgElements(marks, view));
     expect(defs!.children!.map((child) => `${child.tag} ${child.attributes.id}`)).toEqual([
-      'clipPath disc-clip',
+      'clipPath clip-100-30-40-40',
       'linearGradient disc',
     ]);
   });
@@ -259,6 +293,6 @@ describe('the id of a clip', () => {
   it('takes the document prefix the gradients take', () => {
     const marks = flatten(shape('disc', circle(vec2(1, 0), 1), { fill: ink, clip: box }));
     const defs = defsOf(svgElements(marks, view, { prefix: 'one-' }));
-    expect(defs!.children![0].attributes.id).toBe('one-disc-clip');
+    expect(defs!.children![0].attributes.id).toBe('one-clip-100-30-40-40');
   });
 });
