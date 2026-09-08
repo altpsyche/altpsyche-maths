@@ -290,15 +290,27 @@ gap: each exists for an operation that has no picture in a graph or on a surface
   four places; the value types from ten to eleven, since `Inset` is one and the clip is a `Bounds`
   inside `Style`.
 
-- [ ] **6. The solid demo carries an inset.** Everything it draws fits inside 7.872 by 6.155 against
+- [x] **6. The solid demo carries an inset.** Everything it draws fits inside 7.872 by 6.155 against
   a declared 8.2 by 6.4, four per cent of margin, so a panel crops something and what moves out of
-  the way is what 1.5.0 already walks away for the camera push. **Measures:** the sheet's bytes and
-  mark count re-committed; every text mark and every panel inside the frame at each named time; the
-  crossing curve visible inside the panel at the half turn.
+  the way is what 1.5.0 already walks away for the camera push. **Measured:** the panel is 2.6 by 1.95 at (-3.3, -2.55) showing 1.3 by
+  0.975 of the middle, so it magnifies by exactly 2, and it sits inside the 6.8 by 5.307 the camera
+  pushes to rather than inside the declared 8.2 by 6.4, since an inset's marks carry no opacity of
+  their own and cannot be walked away the way the rule and the title are; docs/surface.svg from 97200
+  bytes and 245 marks to 126906 and 247 with an inset of 67 to 77, and docs/surface-strip.svg from
+  391635 to 522338; 783 tests over 47 files to 785.
 
-- [ ] **7. Verify and hand the release over.** **Measures:** the three gates; the eight sheets
-  identical after `npm run demos`; every claim in `DESIGN.md`, the README, the guide and the
-  reference read against the tree; the door and the suite quoted for Siva to publish against.
+  **What the panel shows is the middle rather than the crossing, which the step assumed.** The
+  crossing is a hyperbola, so its two branches pass outside a window on the middle at some bearings,
+  and holding both would need 6.3 of the 8.2 units the figure declares, which is a reduction rather
+  than a magnification. The panel carries the saddle's cells, all three runs of descent and the six
+  axis marks through the middle at every named time, and the crossing at three of the four.
+
+- [x] **7. Verify and hand the release over.** **Measured:** 785 tests over 47 files, `tsc --noEmit`
+  and the build clean, the eight sheets identical after `npm run demos`, the lock file agreeing with
+  a manifest reading 1.6.0, and the door at 266 names. Two more stale numbers were found in the
+  sweep: the README said 247 names at the door, and `DESIGN.md` said the flat demo is 202 marks and
+  the solid one 265 at 2.5 and 2.7 milliseconds a frame, where they are 181 and 321 at their still
+  times and cost 3.9 and 4.2 milliseconds at the median of sixty runs, writing SVG at 1280 by 720.
 
 #### Done-criteria
 

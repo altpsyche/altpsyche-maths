@@ -234,10 +234,10 @@ at four seconds is the picture at four seconds however many times it is requeste
 identifiers it would walk the figure instead, which is two traversals of one structure.
 
 **Marks are for explanation and not for data.** A figure of a few hundred marks redrawn sixty times
-a second is comfortable. The flat demo is 202 marks and the solid one 265. Reading a frame and
-writing its SVG at 1280 by 720 costs 2.5 and 2.7 milliseconds each, against the 16.7 a sixtieth of a
-second allows. Ten thousand marks is not comfortable, and a figure wanting ten thousand wants a
-shader.
+a second is comfortable. At their still times the flat demo is 181 marks and the solid one 321, each
+counting the inset it draws. Reading a frame and writing its SVG at 1280 by 720 costs 3.9 and 4.2
+milliseconds at the median of sixty runs, against the 16.7 a sixtieth of a second allows. Ten
+thousand marks is not comfortable, and a figure wanting ten thousand wants a shader.
 
 ## Units and the frame
 

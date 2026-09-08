@@ -170,7 +170,7 @@ tests runs in Node without a browser. Comparisons are by tolerance rather than b
 ## Further reading
 
 [docs/GUIDE.md](docs/GUIDE.md) teaches the package in order. [docs/REFERENCE.md](docs/REFERENCE.md)
-carries one entry for each of the 247 names at the door. [DESIGN.md](DESIGN.md) states why the
+carries one entry for each of the 266 names at the door. [DESIGN.md](DESIGN.md) states why the
 design is what it is and what it will not become.
 
 `index.ts` is the entire public surface, and nothing outside the package reaches a file inside it by
