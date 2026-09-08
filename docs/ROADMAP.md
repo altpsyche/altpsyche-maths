@@ -550,10 +550,27 @@ and should fade toward its far edge, which is what makes a pane read as glass.
   Neither painter draws a gradient yet, which is steps 2 and 3, so every sheet is byte-identical. The
   door went from 247 names to 251 and the suite from 701 tests to 709 over 44 files.
 
-- [ ] **2. The SVG painter's `<defs>`, and an id nothing collides with.** A gradient's id is built
+- [x] **2. The SVG painter's `<defs>`, and an id nothing collides with.** A gradient's id is built
   from the mark's own id, which is already stable frame to frame and unique inside a figure, and the
   document's own prefix makes it unique across a page. **Measures:** two figures in one document each
   with a gradient, drawn with no repeated id; the bytes a sheet grows by.
+
+  **Landed.** A sheet that names a gradient carries one `<defs>` in front of its marks, holding a
+  `<linearGradient>` of `<stop>`s for each, and the mark's `fill` is `url(#id)`. The axis is written
+  in the units painted into, which is what `userSpaceOnUse` means, so the same view that moved the
+  geometry moves the axis. The same disc drawn twice with the prefixes `one-` and `two-` gives the
+  ids `one-disc` and `two-disc`, and the two together hold no repeated id.
+
+  **The id is the mark's own id with every character an id may not carry written as its own code
+  point between dashes, a dash included.** Nothing is dropped and nothing is folded together, so two
+  mark ids that differ cannot arrive at one id: `fig/a/b` and `fig/a-b` become `fig-2f-a-2f-b` and
+  `fig-2f-a-2d-b`. A three-stop gradient costs a sheet 249 bytes, 206 to 455 on a disc drawn alone.
+
+  `SvgElement` gained `children`, so both writers put the stops inside the element naming them, and
+  `PaintNode` gained an optional `append` for the same reason. It is optional because a stand-in
+  written before gradients existed is still one, and a target without it draws every mark and no
+  gradient. The suite went from 709 tests to 716, the door is unchanged at 251 since an option is
+  not a name, and the eight sheets are byte-identical.
 
 - [ ] **3. The canvas painter's gradient.** `createLinearGradient` with the same stops in the same
   order, held by the recorded calls on a `CanvasLike` rather than by a pixel, since a claim about

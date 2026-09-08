@@ -795,25 +795,30 @@ picture in a recording are the same picture.
 - `svgMarkup(marks, view, width, height, options?)` — a whole `<svg>` as text, for a page that has
   not run any script yet. It carries no width or height of its own and only a view box, so the
   element around it decides how big it is.
-- `SvgMarkupOptions` — what else `svgMarkup` and `paintSvg` take: a `theme`, a `ground`, and a
-  `minTextSize`. Every text size is multiplied by the one factor that brings the smallest of them to
-  that size, so the sizes stay in the ratios the figure gave them. The `ground` is painted behind the
-  marks as the `background` of the sheet, so the colours land on the ground they were measured
-  against wherever the sheet is shown.
+- `SvgMarkupOptions` — what else `svgMarkup` and `paintSvg` take: a `theme`, a `ground`, a
+  `minTextSize`, and a `prefix`. Every text size is multiplied by the one factor that brings the
+  smallest of them to that size, so the sizes stay in the ratios the figure gave them. The `ground` is
+  painted behind the marks as the `background` of the sheet, so the colours land on the ground they
+  were measured against wherever the sheet is shown. The `prefix` begins every gradient id written,
+  since an id is unique across a document rather than inside one figure, and two figures in one
+  document want different prefixes.
 - `SvgTheme` — a `light` and a `dark` colour for each CSS custom property, written into the markup as
   a `<style>` element. A mark painted `var(--ink, #1b1b1b)` takes the value of the ground it is read
   on, and falls back to the colour inside the `var()` where the element is absent.
 - `SvgColour` — one colour for each of the two grounds a sheet is read on: a `light` and a `dark`.
   Every entry of an `SvgTheme` is one, and so is the `ground` of `SvgMarkupOptions`.
 - `svgElements(marks, view)` — every mark described as an element, in the order they are drawn.
-- `SvgElement` — one of those: its `tag`, `path` or `text`, its `attributes`, and the `text` a text
-  element carries.
+- `SvgElement` — one of those: its `tag`, its `attributes`, the `text` a text element carries, and the
+  `children` inside it. A mark is a `path` or a `text`, and the gradients a sheet names are a `defs`
+  in front of them holding a `linearGradient` of `stop`s each.
 - `paintSvg(into, marks, view, maker, options?)` — the marks put into an element that is already on the page.
   Every child is replaced rather than matched up and patched, since a figure rebuilds its geometry
   every frame and almost every attribute would be rewritten anyway.
 - `PaintTarget` — what `paintSvg` draws into: anything with `replaceChildren`.
 - `ElementMaker` — what it builds elements with: anything with `createElementNS`.
-- `PaintNode` — what those two hand back and take: anything with `setAttribute` and `textContent`.
+- `PaintNode` — what those two hand back and take: anything with `setAttribute` and `textContent`, and
+  an `append` where it has one. A gradient's stops go inside the element naming them, so a stand-in
+  without `append` draws every mark and no gradient.
 - `pathToData(path, view)` — the `d` attribute for a path: a move to the start, a cubic per segment,
   and a close where the subpath joins back.
 - `paintCanvas(context, marks, view)` — every mark painted onto a canvas context, in order. Each is

@@ -158,6 +158,37 @@ describe('svg', () => {
     expect(made[0].attributes['data-mark']).toBe('fig/axis');
   });
 
+  it('puts a gradient’s stops inside the element naming them', () => {
+    const made: Array<{ tag: string; inside: string[] }> = [];
+    const maker = {
+      createElementNS: (_namespace: string, tag: string): PaintNode => {
+        const record = { tag, inside: [] as string[] };
+        made.push(record);
+        return {
+          setAttribute: () => {},
+          textContent: null,
+          append: (...nodes: unknown[]) => {
+            for (const node of nodes) record.inside.push((node as { tag: string }).tag);
+          },
+          tag,
+        } as PaintNode & { tag: string };
+      },
+    };
+    const washed: Mark = {
+      kind: 'path',
+      id: 'fig/disc',
+      path: circle(vec2(0, 0), 1),
+      fill: {
+        colour: '#345',
+        gradient: { from: vec2(0, 0), to: vec2(2, 0), stops: [{ offset: 0, colour: '#012' }, { offset: 1, colour: '#678' }] },
+      },
+    };
+    paintSvg({ replaceChildren: () => {} }, [washed], view, maker);
+    expect(made.map((node) => node.tag)).toEqual(['defs', 'linearGradient', 'stop', 'stop', 'path']);
+    expect(made[0].inside).toEqual(['linearGradient']);
+    expect(made[1].inside).toEqual(['stop', 'stop']);
+  });
+
   it('takes an element from a document, whose own call accepts more than a painter can make', () => {
     // Neither signature is assignable to the other, since a document's element holds
     // text an attribute cannot be set on, so this compiling is the whole test.

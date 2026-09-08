@@ -14,7 +14,7 @@
  * y axis over, and a mirrored transform mirrors the letters with it.
  */
 import { mat3, type Mat3 } from '../values/mat3.js';
-import type { Mark, PathMark, TextMark } from '../figure/mark.js';
+import type { Fill, Mark, PathMark, TextMark } from '../figure/mark.js';
 import type { Path } from '../figure/path.js';
 import { outlinedMarks } from '../figure/outline.js';
 import { widestWidth } from '../figure/width.js';
@@ -23,9 +23,11 @@ import { short } from './number.js';
 /** One element, described rather than built, so the same description can be
  * written as text or made in a document and the two cannot drift. */
 export interface SvgElement {
-  tag: 'path' | 'text';
+  tag: 'path' | 'text' | 'defs' | 'linearGradient' | 'stop';
   attributes: Record<string, string>;
   text?: string;
+  /** The elements inside this one, which is how a gradient carries its stops. */
+  children?: readonly SvgElement[];
 }
 
 /** One colour for each of the two grounds a sheet is read on. */
@@ -65,6 +67,16 @@ export interface SvgMarkupOptions {
    * fall under it into one.
    */
   minTextSize?: number;
+  /**
+   * What every gradient id written here begins with.
+   *
+   * A gradient is named by an element carrying an id, and an id is unique across
+   * a whole document rather than inside one figure. A mark's own id is already
+   * unique inside its figure and stable frame to frame, so what is left is
+   * telling two figures on one page apart, which is this. Two figures in one
+   * document want different prefixes.
+   */
+  prefix?: string;
 }
 
 /** The `d` attribute: a move to the start, a cubic per segment, and a close
@@ -85,11 +97,61 @@ export function pathToData(path: Path, view: Mat3): string {
   return parts.join('');
 }
 
-function pathElement(mark: PathMark, view: Mat3, scale: number): SvgElement {
+/**
+ * The id of the element naming one mark's gradient.
+ *
+ * Every character an id may not carry is written as its own code point between
+ * dashes, a literal dash included. Nothing is dropped and nothing is folded
+ * together, so two mark ids that differ cannot arrive at one id here.
+ */
+function gradientId(prefix: string, mark: string): string {
+  return prefix + mark.replace(/[^A-Za-z0-9_]/g, (letter) => `-${letter.codePointAt(0)!.toString(16)}-`);
+}
+
+/** What a fill is painted with: the element naming its stops where it has them,
+ * and its one colour otherwise. */
+function fillPaint(fill: Fill, mark: string, prefix: string): string {
+  return fill.gradient ? `url(#${gradientId(prefix, mark)})` : fill.colour;
+}
+
+/**
+ * Every gradient named once, inside the one `<defs>` the sheet carries.
+ *
+ * The axis is written in the units painted into rather than the figure's own,
+ * which is what `userSpaceOnUse` means, so the same view that moved the geometry
+ * moves the axis with it.
+ */
+function defsElement(marks: readonly Mark[], view: Mat3, prefix: string): SvgElement | null {
+  const gradients: SvgElement[] = [];
+  for (const mark of marks) {
+    const gradient = mark.kind === 'path' || mark.kind === 'text' ? mark.fill?.gradient : undefined;
+    if (!gradient) continue;
+    const from = mat3.transformPoint(view, gradient.from);
+    const to = mat3.transformPoint(view, gradient.to);
+    gradients.push({
+      tag: 'linearGradient',
+      attributes: {
+        id: gradientId(prefix, mark.id),
+        gradientUnits: 'userSpaceOnUse',
+        x1: short(from.x),
+        y1: short(from.y),
+        x2: short(to.x),
+        y2: short(to.y),
+      },
+      children: gradient.stops.map((stop) => ({
+        tag: 'stop' as const,
+        attributes: { offset: short(stop.offset), 'stop-color': stop.colour },
+      })),
+    });
+  }
+  return gradients.length > 0 ? { tag: 'defs', attributes: {}, children: gradients } : null;
+}
+
+function pathElement(mark: PathMark, view: Mat3, scale: number, prefix: string): SvgElement {
   const attributes: Record<string, string> = {
     'data-mark': mark.id,
     d: pathToData(mark.path, view),
-    fill: mark.fill ? mark.fill.colour : 'none',
+    fill: mark.fill ? fillPaint(mark.fill, mark.id, prefix) : 'none',
   };
   if (mark.fill?.rule === 'evenodd') attributes['fill-rule'] = 'evenodd';
   if (mark.stroke) {
@@ -104,7 +166,7 @@ function pathElement(mark: PathMark, view: Mat3, scale: number): SvgElement {
   return { tag: 'path', attributes };
 }
 
-function textElement(mark: TextMark, view: Mat3, scale: number, lift: number): SvgElement {
+function textElement(mark: TextMark, view: Mat3, scale: number, lift: number, prefix: string): SvgElement {
   const at = mat3.transformPoint(view, mark.at);
   const attributes: Record<string, string> = {
     'data-mark': mark.id,
@@ -112,7 +174,7 @@ function textElement(mark: TextMark, view: Mat3, scale: number, lift: number): S
     y: short(at.y),
     'font-family': mark.family,
     'font-size': short(mark.size * scale * lift),
-    fill: mark.fill.colour,
+    fill: fillPaint(mark.fill, mark.id, prefix),
   };
   if (mark.weight !== undefined) attributes['font-weight'] = String(mark.weight);
   if (mark.align) attributes['text-anchor'] = mark.align;
@@ -133,16 +195,20 @@ function textLift(marks: readonly Mark[], scale: number, floor: number): number 
   return Math.max(1, floor / smallest);
 }
 
-/** Every mark described as an element, in the order they are drawn. */
+/** Every mark described as an element, in the order they are drawn, behind the
+ * one `<defs>` holding whatever gradients they name. */
 export function svgElements(marks: readonly Mark[], view: Mat3, options: SvgMarkupOptions = {}): SvgElement[] {
   const scale = mat3.scaleFactor(view);
   // A stroke of two widths is no attribute an element carries, so it arrives here
   // as the filled outline it is drawn as before any of it is written out.
   const drawn = outlinedMarks(marks);
   const lift = textLift(drawn, scale, options.minTextSize ?? 0);
-  return drawn.map((mark) =>
-    mark.kind === 'path' ? pathElement(mark, view, scale) : textElement(mark, view, scale, lift)
+  const prefix = options.prefix ?? '';
+  const defs = defsElement(drawn, view, prefix);
+  const elements = drawn.map((mark) =>
+    mark.kind === 'path' ? pathElement(mark, view, scale, prefix) : textElement(mark, view, scale, lift, prefix)
   );
+  return defs ? [defs, ...elements] : elements;
 }
 
 /** The five characters that would otherwise close a tag or open an entity. */
@@ -197,15 +263,16 @@ export function svgMarkup(
   options: SvgMarkupOptions = {}
 ): string {
   const style = themeStyle(options.theme, options.ground);
-  const body = svgElements(marks, view, options)
-    .map((element) => {
-      const attributes = Object.entries(element.attributes)
-        .map(([name, value]) => `${name}="${escaped(value)}"`)
-        .join(' ');
-      if (element.text === undefined) return `<${element.tag} ${attributes}/>`;
-      return `<${element.tag} ${attributes}>${escaped(element.text)}</${element.tag}>`;
-    })
-    .join('');
+  const written = (element: SvgElement): string => {
+    const attributes = Object.entries(element.attributes)
+      .map(([name, value]) => `${name}="${escaped(value)}"`)
+      .join(' ');
+    const open = attributes === '' ? element.tag : `${element.tag} ${attributes}`;
+    if (element.children) return `<${open}>${element.children.map(written).join('')}</${element.tag}>`;
+    if (element.text === undefined) return `<${open}/>`;
+    return `<${open}>${escaped(element.text)}</${element.tag}>`;
+  };
+  const body = svgElements(marks, view, options).map(written).join('');
   return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${short(width)} ${short(height)}">${style}${body}</svg>`;
 }
 
@@ -227,6 +294,10 @@ const SVG_NAMESPACE = 'http://www.w3.org/2000/svg';
 export interface PaintNode {
   setAttribute(name: string, value: string): void;
   textContent: string | null;
+  /** What a gradient's stops are put inside. It is optional because a stand-in
+   * written before gradients existed is still a stand-in, and a target without
+   * it draws every mark and no gradient. */
+  append?(...nodes: unknown[]): void;
 }
 
 export interface PaintTarget<Made extends PaintNode = PaintNode> {
@@ -254,13 +325,12 @@ export function paintSvg<Made extends PaintNode>(
   maker: ElementMaker<Made>,
   options: SvgMarkupOptions = {}
 ): void {
-  const elements = svgElements(marks, view, options);
-  into.replaceChildren(
-    ...elements.map((element) => {
-      const node = maker.createElementNS(SVG_NAMESPACE, element.tag);
-      for (const [name, value] of Object.entries(element.attributes)) node.setAttribute(name, value);
-      if (element.text !== undefined) node.textContent = element.text;
-      return node;
-    })
-  );
+  const made = (element: SvgElement): Made => {
+    const node = maker.createElementNS(SVG_NAMESPACE, element.tag);
+    for (const [name, value] of Object.entries(element.attributes)) node.setAttribute(name, value);
+    if (element.children) for (const child of element.children) node.append?.(made(child));
+    else if (element.text !== undefined) node.textContent = element.text;
+    return node;
+  };
+  into.replaceChildren(...svgElements(marks, view, options).map(made));
 }

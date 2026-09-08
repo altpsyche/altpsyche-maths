@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { flatten, group, mat3, rotate, scale, shape, text, transformFill, vec2, circle, marksAt, Timeline, linear } from '@altpsyche/maths';
+import { flatten, group, mat3, rotate, scale, shape, svgMarkup, text, transformFill, vec2, circle, marksAt, Timeline, linear } from '@altpsyche/maths';
 import type { Figure, Fill, Gradient, Mark } from '@altpsyche/maths';
 
 /**
@@ -45,6 +45,53 @@ describe('a fill that is a gradient', () => {
   it('hands back a fill of one colour untouched', () => {
     const flat: Fill = { colour: '#111' };
     expect(transformFill(flat, mat3.scaling(vec2(3, 3)))).toBe(flat);
+  });
+});
+
+describe('a gradient written as SVG', () => {
+  const disc = (name: string) => shape(name, circle(vec2(0, 0), 1), { fill: washed });
+  const drawn = (name: string, prefix?: string) =>
+    svgMarkup(flatten(disc(name)), mat3.IDENTITY, 10, 10, prefix === undefined ? {} : { prefix });
+
+  it('names the stops in one element inside a defs, in the order they were given', () => {
+    const markup = drawn('disc');
+    expect(markup).toContain('<defs>');
+    expect(markup).toContain('<linearGradient id="disc" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="2" y2="0">');
+    const stops = [...markup.matchAll(/<stop offset="([^"]*)" stop-color="([^"]*)"\/>/g)];
+    expect(stops.map((stop) => stop[1])).toEqual(['0', '0.5', '1']);
+    expect(stops.map((stop) => stop[2])).toEqual(['#012', '#345', '#678']);
+  });
+
+  it('points the mark at that element rather than at a colour', () => {
+    expect(drawn('disc')).toContain('fill="url(#disc)"');
+  });
+
+  it('writes the defs in front of the marks that name it', () => {
+    const markup = drawn('disc');
+    expect(markup.indexOf('<defs>')).toBeLessThan(markup.indexOf('<path'));
+  });
+
+  it('writes no defs at all for a sheet with no gradient in it', () => {
+    const flat = svgMarkup(flatten(shape('disc', circle(vec2(0, 0), 1), { fill: { colour: '#111' } })), mat3.IDENTITY, 10, 10);
+    expect(flat).not.toContain('<defs>');
+    expect(flat).toContain('fill="#111"');
+  });
+
+  it('gives two figures in one document no repeated id, once each names its own prefix', () => {
+    const page = drawn('disc', 'one-') + drawn('disc', 'two-');
+    const ids = [...page.matchAll(/ id="([^"]*)"/g)].map((match) => match[1]);
+    expect(ids).toEqual(['one-disc', 'two-disc']);
+    expect(new Set(ids).size).toBe(ids.length);
+  });
+
+  it('writes every character an id may not carry as its own code point', () => {
+    // A mark id is names joined with a slash, and a repeated name gains a hash,
+    // neither of which an id may hold. Nothing is dropped and nothing is folded
+    // together, so two ids that differ cannot arrive at one.
+    const marks = flatten(group('fig', [disc('a/b'), disc('a-b')]));
+    const ids = [...svgMarkup(marks, mat3.IDENTITY, 10, 10).matchAll(/ id="([^"]*)"/g)].map((match) => match[1]);
+    expect(ids).toEqual(['fig-2f-a-2f-b', 'fig-2f-a-2d-b']);
+    expect(new Set(ids).size).toBe(2);
   });
 });
 
