@@ -100,7 +100,7 @@ gives a figure, a painter and a file at the end.
 
 ## What this repository refactors
 
-The package is 8,316 lines of source across `values`, `timing`, `figure`, `paint` and the door, 165
+The package is 8,316 lines of source across `values`, `timing`, `figure`, `paint` and the door, 166
 exported values counted as a top-level `export const`, `function` or `class` in those directories, and
 785 tests over 47 files. Twenty-one builders return a node. This is a rewrite of
 the middle of the package.
@@ -331,7 +331,8 @@ written form for a style is what gains a field.
 
 ### What the inventory changes about the plan
 
-**Seventeen names at the door carry a function and twelve shapes of function exist among them.** A
+**Nineteen names at the door take a function or a value carrying one, three more carry one in a field
+of a type rather than a parameter, and twelve shapes of function exist among them.** A
 curve of one number, a flat field of a place, a space field of a place, a surface of two numbers, a
 magnitude to a length, a magnitude to a colour, an amount to a fill, a number to a string, an aspect
 with a clock to an extent, a point to a projected point, a fraction to a fraction, and a clock with
@@ -340,12 +341,14 @@ Every other builder and every other animation is already a record of values wear
 clothing.
 
 `countTo` is the smallest and it is worth naming because it is not a curve at all. Its writer is
-`(value) => labelFor(value, 0.01)` in every use, so the parameter becomes how a number is written:
-a precision, and later a choice of forms if a figure ever needs one.
+`(value) => labelFor(value, 0.01)` in its one use in a demo, so the parameter becomes how a number is
+written: a precision, and later a choice of forms if a figure ever needs one. The suite passes it
+three precisions, 1, 0.01 and 0.001, which is what says a precision is the parameter rather than the
+one figure that draws it.
 
 **So the vocabulary is twenty-one node kinds, two item producers, eleven path producers, two point
-producers, fifteen animation kinds, one timeline structure and ten value types**, which is sixty-two
-things.
+producers, fifteen animation kinds, one timeline structure and eleven value types**, which is
+sixty-three things.
 
 ### What splitting steps 3 and 4 corrected in the inventory
 
@@ -369,8 +372,14 @@ them returning one `Cubic`. `pathFromData` reads a path out of SVG path data, wh
 the format can carry as it stands. `streamlineOf` and `sectionOf` produce points rather than paths,
 `Vec2[]` and `Vec3[][]`, and were uncounted too.
 
-**Sixteen names at the door take a function, and eleven shapes of function exist among them rather
-than three.** The tables marked the parameters that are a curve or a surface and missed the rest.
+**Nineteen names at the door take a function or a value carrying one, and twelve shapes of function
+exist among them rather than three.** The tables above mark eighteen of the nineteen and `slopeOf` is
+the one they miss, because it returns a number rather than a node, a path, an item, a point or an
+animation, so none of the five tables has a row for it. **Three more carry a function in a field of a
+type rather than in a parameter:** `PlayOptions.curve` is a `Curve`, `Figure.scene` may be a function
+of the clock and its sampled values, and `ExtentChoice` is an `Extent` or a function of the aspect and
+the clock. The earlier readings of sixteen and seventeen were both undercounts.
+The tables marked the parameters that are a curve or a surface and missed the rest.
 `Camera3` carries `project` and a `Projection` carries `place`, so a camera is a resolved value
 holding two closures and what a figure stores is a `Camera3Choice`. `VectorFieldOptions` and
 `VectorField3Options` each carry `lengthOf` and `colourFor`. `Surface3Options` carries `shade`. And
@@ -399,7 +408,8 @@ a timeline entry's.
 
 **Eleven names at the door are drawn by no demo**, so a version cut against demos leaves them
 unchecked. They are `numberLine`, `callout`, `riemannBars`, `dot3`, `text3`, `arrow3`, `surface3` and
-`vectorField3`, and the animations `fadeTo`, `moveAlong` and `scale`. Each gets a test comparing the
+`vectorField3`, and the animations `morph`, `moveAlong` and `scale`. `fadeTo` is not among them: the
+solid demo plays two of them to walk its rule and its title away and back. Each gets a test comparing the
 record's marks against the call's at one time, which is the same oracle a demo gives over a smaller
 picture.
 
@@ -419,8 +429,8 @@ covered the node kinds and the path producers in one bullet and step 4 covered f
 Both are written out as fifteen commits between them, and writing them out is what corrected the
 counts above.
 
-**Four surfaces have to be rewritten and none was counted.** The four demos are 1,610 lines and every
-one becomes a file. The guide is 544 lines and teaches the API that is changing. The reference is 805
+**Four surfaces have to be rewritten and none was counted.** The four demos are 1,484 lines and every
+one becomes a file. The guide is 709 lines and teaches the API that is changing. The reference is 976
 lines and names every parameter that is being renamed. The website's figures move from modules to
 files, which its own document describes and does not scope.
 
@@ -543,8 +553,9 @@ release away and has a document of its own.
 
   - [ ] **4.1 The animation record and the four kinds that change opacity.** A record is a kind, a
     target and its parameters, and a target stays an id or the front of one. `fadeIn`, `fadeOut`,
-    `fadeTo` and `draw`. **Measures:** the boolean demo's fades and the cover sheet's draw at their
-    named times; `fadeTo` against its call, since no demo plays one.
+    `fadeTo` and `draw`. **Measures:** the boolean demo's fades, the solid demo's two `fadeTo` walking
+    its rule and its title away, and the flat demo's `draw` over its axes, its curve and its brace, at
+    their named times.
 
   - [ ] **4.2 The kinds that move marks.** `moveBy`, `moveAlong`, `rotate`, `scale` and `growFrom`.
     `about` is a point or the centre of the marks' own bounds, read at play time rather than stored,
@@ -555,7 +566,7 @@ release away and has a document of its own.
   - [ ] **4.3 The kinds that put one shape in place of another.** `morph`, which carries a path, and
     `morphEquation`, which names two targets and leaves glyph matching where it is. **Measures:** the
     flat demo's rule walking from `\frac{dy}{dx} = 0` into `\frac{dy}{dx} = 2x`, glyph for glyph at
-    its named times.
+    its named times; `morph` against its own call, since no demo plays one.
 
   - [ ] **4.4 The kinds that make marks rather than change them.** `indicate`, `flash` and
     `circumscribe`. Each adds marks, so a record says how the marks it adds are named, which is the
@@ -563,8 +574,8 @@ release away and has a document of its own.
     within tolerance at the times each of the three plays.
 
   - [ ] **4.5 `countTo`, whose writer becomes a precision.** The writer is
-    `(value) => labelFor(value, 0.01)` in both of its uses, so the parameter is a precision and the
-    last function in an animation is gone. **Measures:** the flat demo's counting number reading the
+    `(value) => labelFor(value, 0.01)` in the one demo that plays it and one of three precisions in
+    the suite, so the parameter is a precision and the last function in an animation is gone. **Measures:** the flat demo's counting number reading the
     same string at each of its named times.
 
 - [ ] **5. The file: a serialiser, a reader, a validator and a version.** **Measures:** each demo
@@ -572,8 +583,9 @@ release away and has a document of its own.
   refused; a malformed figure refused with the field named; the bytes of each demo as data.
 
 - [ ] **6. The timeline as data.** The sequence of entries, each with its animations, its duration,
-  its `after` offset and a stagger's `gap`. **Measures:** the flat demo's eleven entrances, five of
-  which carry a negative offset, producing the same marks at the same times.
+  its `after` offset and a stagger's `gap`. **Measures:** the flat demo's entrance, which is eight
+  builder calls over twenty-three spans of its thirty, six of the eight carrying a negative offset,
+  producing the same marks at the same times.
 
 - [ ] **7. The extent as data.** A view that follows something becomes a named form with parameters
   rather than a function of the clock, and the forms are the ones a figure needs rather than one per
@@ -591,12 +603,13 @@ release away and has a document of its own.
   and the resolver and adds no vocabulary. **It exists because 1.6.0 landed after this plan was
   written**, and without it step 8 could not write the flat demo out as a file with the panel that
   demo draws. **Measures:** the flat demo's inset built from a record giving the same marks at its own
-  named times, which is 32 to 40 marks against its 146; the panel inside the frame at each of them.
+  named times, which is 32 to 40 marks against the 178 to 186 the whole figure draws at those times;
+  the panel inside the frame at each of them.
 
-- [ ] **8. The four demos rewritten as files**, 1,610 lines of module becoming descriptions.
+- [ ] **8. The four demos rewritten as files**, 1,484 lines of module becoming descriptions.
   **Measures:** all eight sheets byte for byte as committed after `npm run demos`.
 
-- [ ] **9. The guide and the reference rewritten.** 544 and 805 lines describing an API that changed.
+- [ ] **9. The guide and the reference rewritten.** 709 and 976 lines describing an API that changed.
   **Measures:** the guide's code blocks compiling in order; the reference's entries against the door
   with the gate holding them equal.
 
@@ -615,8 +628,9 @@ release away and has a document of its own.
 
 - Every demo is a file, and reading it draws marks identical within tolerance to the module it
   replaced, at every named time, the flat demo's inset included.
-- None of the sixteen names at the door that take a function takes one, no figure holds a closure,
-  and a figure stores a `Camera3Choice` rather than a built `Camera3`.
+- None of the nineteen names at the door that take a function takes one, the three fields of a type
+  that carry one carry a named form instead, no figure holds a closure, and a figure stores a
+  `Camera3Choice` rather than a built `Camera3`.
 - The vocabulary is twenty-one node kinds, two item producers, eleven path producers, two point
   producers and fifteen animation kinds, and the reference names each with its parameters.
 - Every one of the eleven names no demo draws has a test comparing its record's marks against its

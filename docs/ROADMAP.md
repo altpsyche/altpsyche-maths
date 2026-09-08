@@ -981,8 +981,8 @@ is left is a handful of operations over a track value. The three hard problems, 
 step list with its done-criteria are all in [`FIGURE-FORMAT.md`](FIGURE-FORMAT.md).
 
 **The vocabulary is twenty-one node kinds, two item producers, eleven path producers, two point
-producers and fifteen animation kinds**, read from the door by return type, and **sixteen names at
-the door carry a function** in eleven shapes. Everything else is already a record of values wearing a
+producers and fifteen animation kinds**, read from the door by return type, and **nineteen names at
+the door carry a function** in twelve shapes, with three more carrying one in a field of a type. Everything else is already a record of values wearing a
 function call's clothing.
 
 **The measurement runs through every step and it is what makes this checkable: a figure as data draws
@@ -1021,8 +1021,8 @@ to sixteen it claimed. The audit of the 1.x band added a step for the insets and
 names at the door rather than from each builder's return type. `riemannBars` returns a node and was
 counted as a path producer. `vectorField3` is a node kind that was missed, and `surfaceCells` and
 `fieldArrows3` return `SpaceItem[]`, which is a third thing a figure is made of. Six path producers
-in `figure/path.ts` and the two point producers were never counted. And sixteen names at the door
-carry a function in eleven shapes rather than nine in three: a `Camera3` carries `project`, a
+in `figure/path.ts` and the two point producers were never counted. And nineteen names at the door
+carry a function in twelve shapes rather than nine in three: a `Camera3` carries `project`, a
 `Projection` carries `place`, and `lengthOf`, `colourFor` and `shade` are function-valued options.
 
 **Two of those findings shrink the work and one grows it.** The five option functions the two demos
