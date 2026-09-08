@@ -171,7 +171,7 @@ reaching it. The six colours a reader takes a value off went from 1.10:1 through
 luminance a colour needs to clear 4.5:1 on white is 0.183333 or less and on `#0d1117` is 0.199675 or
 more. The suite went from 618 tests to 620 and the door from 227 names to 229.
 
-**The next session starts at step 9.** Siva made the one call this version had, the dark ramp's hue,
+**The next session starts at step 9**, which steps 9 and 11 have been rewritten into one piece of work about the frame a still is written into. Siva made the one call this version had, the dark ramp's hue,
 and answered it with slate. He also put three defects of the solid sheet into this version rather
 than after it, which are steps 7, 8 and 9, so the plan is eleven steps rather than eight.
 
@@ -426,21 +426,34 @@ name to the door, and 0.13.0 lands before the surface is frozen at 1.0.0 for tha
   0.600. The runs are shorter for it, 35, 35 and 28 points where they were 47, 47 and 36. The suite
   went from 628 tests to 630.
 
-- [ ] **9. The typeset rule placed against its picture.** All four tangent and surface sheets put the
-  equation in the top-left corner with a column of white between it and the graph it describes.
-  **Measures:** the share of the frame between the rule and the drawn bounds, from its value on the
-  four sheets.
+- [ ] **9. The frame each still is written into.** **The premise was wrong for three sheets of the
+  four and the measurement said so.** On `tangent.svg` the rule stands at x 25 to 134 inside a
+  picture that spans 0 to 956, so it sits in the band above the graph that the demo leaves for it
+  rather than in a column of its own. Both strips read the same way, since each holds four frames.
+  Only `surface.svg` has the column: its rule spans x 23 to 178 and its picture 272 to 882, so 8.7%
+  of the frame stands between them and the whole of the left margin below the rule is empty.
+
+  **The cause is the frame rather than the placement, and it is step 11's own subject.** A
+  perspective projection of a saddle comes out roughly square, so a picture 610 wide sits in a frame
+  1080 wide and the rule in the left margin is what fills the rest. The sheet reads 71.0% covered
+  only because the rule stretches the bounds to x 23: the bounds are 860 wide where the picture is
+  610. That is the same flaw step 11 is there to fix, so the two are one piece of work and the frame
+  is what it changes. **Measures:** the share of the frame no mark covers, on all four stills; the
+  width of the surface sheet from 1080 against a picture 610 wide.
 
 - [ ] **10. A field drawn as a field.** The flat sheet samples 50 arrows and the solid one 36, and at
   the width the README shows them neither draws a head. **Measures:** the arrow count from 50 and 36;
   the drawn head from none to its size on the page; the two field colours from HAZE 1.49:1 and STEEL
   2.30:1 against white.
 
-- [ ] **11. The stills re-timed, and every sheet measured again.** Coverage replaced by a number an
-  empty frame fails, since `rotate.svg` passes 65.0% while drawing inside the upper third of its
-  frame. All eight read again on that number and on on-page text, and the picture the README opens on
-  decided on the readings rather than kept. **Measures:** the replacement number for all eight
-  against the eight coverage figures above; the sheet the README opens on.
+- [ ] **11. The stills re-timed, and every sheet measured again.** Coverage on bounds is a number an
+  empty frame passes, and two sheets now show how: `rotate.svg` reads 65.0% while drawing inside the
+  upper third of its frame, and `surface.svg` reads 71.0% with bounds 860 wide round a picture 610
+  wide, because a label in a corner stretches the bounds past the picture. What replaces it is the
+  share of the frame no mark covers. All eight are read again on that and on on-page text, and the
+  picture the README opens on is decided on the readings rather than kept. **Measures:** the
+  replacement number for all eight against the eight coverage figures above; the sheet the README
+  opens on.
 
 #### Done-criteria
 
@@ -456,7 +469,8 @@ name to the door, and 0.13.0 lands before the surface is frozen at 1.0.0 for tha
   wash on both grounds, and the saddle reaches every step.
 - The three axes of the solid sheets carry names.
 - No run of steepest descent turns back on itself.
-- No sheet leaves a column of the frame empty between the typeset rule and the picture it describes.
+- No still leaves more of its frame uncovered than the number step 11 sets, measured on what marks
+  cover rather than on the box round them.
 - Every field arrow draws a head at the width the README shows it.
 - Every sheet is measured on the number step 8 sets, and the README opens on the sheet that reads
   best on it.
