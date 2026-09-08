@@ -29,6 +29,7 @@ import { PAGE_FLOOR, SHOWN_AT, SHOWN_AT_STRIP, sheets, stillMarkup } from '../de
 import {
   FRAMES as SOLID_FRAMES,
   HEIGHT,
+  STRIP_ALONG,
   TIMES as SOLID_TIMES,
   alongAt,
   descents,
@@ -135,6 +136,40 @@ describe('the committed pictures', () => {
       const cover = ((box.x.to - box.x.from) * (box.y.to - box.y.from)) / (frame.width * frame.height);
       expect(cover).toBeGreaterThan(0.5);
     }
+  });
+
+  it('give each strip four frames no two of which are one frame twice', () => {
+    // The share of a frame's marks that stand where the other frame's stood. Two
+    // frames of one strip that agree on every mark are one picture drawn twice.
+    const settled = (mark: Mark) =>
+      mark.kind === 'text'
+        ? `${mark.at.x},${mark.at.y},${mark.text},${mark.size}`
+        : `${JSON.stringify(mark.path)},${mark.opacity ?? 1},${mark.fill?.colour ?? ''}`;
+    const apart = (first: readonly Mark[], second: readonly Mark[]) => {
+      const standing = new Map(first.map((mark) => [mark.id, settled(mark)]));
+      return second.filter((mark) => standing.get(mark.id) !== settled(mark)).length / second.length;
+    };
+    for (const [figure, frames] of [
+      [tangent, FRAMES],
+      [booleans, BOOLEAN_FRAMES],
+      [turns, TURN_FRAMES],
+      [solid, SOLID_FRAMES],
+    ] as const) {
+      const lists = frames.map((seconds) => marksAt(figure, seconds));
+      for (let first = 0; first < lists.length; first += 1)
+        for (let second = first + 1; second < lists.length; second += 1)
+          expect(apart(lists[first], lists[second])).toBeGreaterThan(0.1);
+    }
+  });
+
+  it('keeps the solid strip inside a half turn, since a half turn draws the same saddle', () => {
+    // The saddle is unchanged by a half turn about the z axis, so an eye at a
+    // bearing and an eye a half turn from it draw the same shape.
+    expect(saddle(0.7, 0.3)).toBeCloseTo(saddle(-0.7, -0.3), 12);
+    const bearings = STRIP_ALONG.map((along) => along % 1);
+    for (const first of bearings)
+      for (const second of bearings)
+        if (first !== second) expect(Math.abs(Math.abs(first - second) - 0.5)).toBeGreaterThan(0.05);
   });
 
   it('carry no placeholder word', () => {
@@ -270,7 +305,7 @@ describe('the flat demo', () => {
   it('reads a slope that changes as the dot walks', () => {
     expect(reading(marksAt(tangent, 0))).toBe('slope 0.00');
     expect(reading(marksAt(tangent, TIMES.beat))).toBe('slope 0.00');
-    expect(reading(marksAt(tangent, FRAMES[2]))).toBe('slope 3.44');
+    expect(reading(marksAt(tangent, FRAMES[2]))).toBe('slope 4.98');
     expect(reading(marksAt(tangent, TIMES.walkTo))).toBe('slope 6.00');
   });
 
@@ -430,8 +465,8 @@ describe('the strip of frames', () => {
     const readings = marks.filter((mark) => mark.id.endsWith('/tangent/reading'));
     expect(readings.map((mark) => (mark.kind === 'text' ? mark.text : ''))).toEqual([
       'slope 0.00',
-      'slope 0.00',
-      'slope 3.44',
+      'slope 1.59',
+      'slope 4.98',
       'slope 6.00',
     ]);
   });

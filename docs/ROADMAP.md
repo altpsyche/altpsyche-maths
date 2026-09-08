@@ -160,7 +160,7 @@ eight.
 **The lock file agrees with the manifest again**, and holding it there is one
 `npm install --package-lock-only` in whichever commit bumps a version.
 
-**0.13.0 is being worked and three of its eight steps are ticked.** Siva read the eight sheets and
+**0.13.0 is being worked and four of its eight steps are ticked.** Siva read the eight sheets and
 rejected them, so 1.0.0 waits behind it: the cut's last criterion is Siva reading the README, the
 guide and the pictures, and the pictures are being redrawn.
 
@@ -171,8 +171,8 @@ reaching it. The six colours a reader takes a value off went from 1.10:1 through
 luminance a colour needs to clear 4.5:1 on white is 0.183333 or less and on `#0d1117` is 0.199675 or
 more. The suite went from 618 tests to 620 and the door from 227 names to 229.
 
-**The next session starts at step 4**, which is the frames a strip shows, and step 6 carries the one
-call that is Siva's.
+**The next session starts at step 5**, which is the clipping, and step 6 carries the one call that is
+Siva's.
 
 **1.0.0 is being worked and sixteen of its seventeen steps are ticked.** The library is 6,794 lines,
 the door is 227 names, the suite is 618 tests over 40 files, and the four prose surfaces are a 175
@@ -337,11 +337,25 @@ name to the door, and 0.13.0 lands before the surface is frozen at 1.0.0 for tha
   suite reads. A gate holds no sheet carrying the placeholder, and the suite went from 622 tests to
   623.
 
-- [ ] **4. The frames a strip shows.** `tangent-strip.svg` draws its first two frames at slope 0.00
-  and they look alike, and `surface-strip.svg` draws four frames that are two near-identical pairs. A
-  strip's times are chosen for difference rather than for even spacing. **Measures:** the share of
-  marks that move between the closest two frames of each strip, from its value today to a floor every
-  strip clears.
+- [x] **4. The frames a strip shows.** **The flat strip drew one frame twice.** Its first two times
+  were the start and the end of the beat, and nothing moves during the beat, so the two rasterised to
+  a root-mean-square difference of 0 and the suite's own expectation held "slope 0.00" twice. The
+  four times are the arrived picture and two moments of the walk and the braced reading now, which
+  read 0.00, 1.59, 4.98 and 6.00, and the closest pair rose from 0 to 6,308.74 and from 0.5% of marks
+  moved to 14.9%.
+
+  **The solid strip repeated itself for a reason the plan's measurement could not see.** Every pair
+  of its frames differed in 94.7% of marks, yet frames 0 and 2 rasterised 2,501.39 apart and frames 1
+  and 3 3,355.49 apart where every other pair sat near 8,000. The cause is a symmetry: the saddle is
+  unchanged by a half turn about the z axis, since `(x, y)` and `(-x, -y)` give the same height, so
+  the four quarters of an orbit are two pairs of the same shape. The four eyes sit at 0.03, 0.11,
+  0.19 and 0.27 of the orbit now, inside a quarter turn, and the closest pair went from 2,501.39 to
+  6,631.70.
+
+  **The share of marks that moved is not the measurement for a camera and the gate says so.** Two
+  gates landed instead: no two frames of any strip agree on more than nine tenths of their marks,
+  which is what caught the flat strip, and no two eyes of the solid strip are a half turn apart, with
+  the saddle's own invariance asserted beside it. The suite went from 623 tests to 625.
 
 - [ ] **5. The curve clipped to its frame.** The parabola runs out of the top of all four
   `tangent-strip` frames and off the left edge of `tangent.svg`. **Measures:** the share of drawn

@@ -358,7 +358,14 @@ export function stripMarks(
  * at: the picture arrived, the beat, half way up, and the end with the rise
  * braced. The last is the end rather than the top of the curve, because a strip
  * that stops at the top shows none of what the last beat adds. */
-export const FRAMES = [entrance.duration, beat.duration, WALK_FROM + WALK * 0.5, line.duration];
+/**
+ * The four times the strip shows: the picture arrived and at rest, two moments
+ * of the walk, and the finished reading under its brace.
+ *
+ * Nothing moves during the beat, so the beat's start and its end drew the same
+ * image and two of the four frames were one frame twice.
+ */
+export const FRAMES = [entrance.duration, WALK_FROM + WALK * 0.3, WALK_FROM + WALK * 0.7, line.duration];
 
 /** What the timeline is made of, for a gate that would otherwise have to guess
  * where one part of the story ends and the next begins. */

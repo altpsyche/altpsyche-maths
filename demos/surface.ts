@@ -281,6 +281,14 @@ export const TIMES = {
   round: ORBIT_FROM + ORBIT,
 };
 
-/** The quarters of the orbit, which is what the strip shows and what the gate
- * reads. */
-export const FRAMES = [TIMES.entrance, TIMES.quarter, TIMES.half, ORBIT_FROM + ORBIT * 0.75];
+/**
+ * The four times the strip shows, inside the first quarter of the orbit rather
+ * than at its quarters.
+ *
+ * The saddle is unchanged by a half turn about the z axis, since `(x, y)` and
+ * `(-x, -y)` give the same height, so an eye at a bearing and an eye a half turn
+ * from it draw the same shape. Four frames at the quarters of the orbit are two
+ * such pairs, and the two of them read as one picture drawn twice.
+ */
+export const STRIP_ALONG = [0.03, 0.11, 0.19, 0.27];
+export const FRAMES = STRIP_ALONG.map((along) => ORBIT_FROM + ORBIT * along);
