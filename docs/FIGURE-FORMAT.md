@@ -384,10 +384,11 @@ demo's arc-length walk where a demo asks the expression form for arithmetic, and
 camera gets a step to itself.
 
 **A seventeenth name carries a function and it is the pacing.** `PlayOptions.curve` is a `Curve`,
-which is `(along: number) => number`, and `Timeline.play` defaults it to `curveFor(true, true)`. A
-`Key` carries a flat flag that `curveFor` reads. So a timeline as data names a curve rather than
-carrying one, and the set of names has to be closed before step 6 writes a timeline out. Four exist
-today and 1.2.0 widens the set, which is why that version sits in front of this one.
+which is `(along: number) => number`, and `Timeline.play` defaults it to `curveFor(true, true)`. So a
+timeline as data names a curve rather than carrying one, and the name it carries is the `CurveName`
+1.2.0 closed the set of: six curves, with `curveNamed` reading a name and `nameOfCurve` writing one
+back. A `Key` already names one, so step 6 has a written form for a track's pacing and needs one for
+a timeline entry's.
 
 **Eleven names at the door are drawn by no demo**, so a version cut against demos leaves them
 unchecked. They are `numberLine`, `callout`, `riemannBars`, `dot3`, `text3`, `arrow3`, `surface3` and

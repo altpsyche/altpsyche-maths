@@ -165,7 +165,6 @@ three more are written past those because a session should not rediscover them.
 
 | version | what lands | what it changes | steps | cut against | depends on | plan |
 | --- | --- | --- | --- | --- | --- | --- |
-| 1.2.0 | the pacing: the easing set widened and named, a key naming its own curve, and the demos pacing themselves | the set of names a `Curve` can be | 4 | all four demos, and their twenty-six timeline entries | nothing outside this package | written |
 | 1.3.0 | the variable-width stroke, as the filled outline of a path | what a `Stroke`'s width may be | 5 | the flat demo's tangent and the solid demo's three runs of descent | nothing outside this package | written |
 | 1.4.0 | gradients, as stops along an axis in the mark's own units | what a `Fill` may be | 5 | the flat demo's shaded region and the solid demo's plane | nothing outside this package | written |
 | 1.5.0 | the view as a timeline entry, so a camera move is sequenced with the action | the shape of `Figure` | 4 | both demos' views, moved against their own entrances | nothing outside this package | written |
@@ -292,8 +291,7 @@ it, and out the far side. That walk is what makes the demo a gate rather than an
 takes the operation through no crossing, one crossing, two crossings and containment, which are the
 four cases this kind of code gets silently wrong.
 
-**Which demo each of the look versions is cut against.** 1.2.0 reaches all four, since twenty-five
-of their twenty-six timeline entries take the same curve. 1.3.0 is the flat demo's tangent and the
+**Which demo each of the look versions is cut against.** 1.3.0 is the flat demo's tangent and the
 solid demo's three runs of descent. 1.4.0 is the flat demo's shaded region and the solid demo's
 plane. So each of them holds to Siva's rule that a feature reaches a flat picture and a solid one.
 1.1.0 held to it too and reached all four, since every one of them writes text and none of them
@@ -311,6 +309,36 @@ the motion in a still. 2.5.0 is the version that ends that, and the strips stay 
 README that plays a video on load is a README nobody can read.
 
 ## Now
+
+**1.2.0 is cut, and a figure names how a change is paced.** Four steps closed it. The easing set is
+six curves from four: `overshoot` is Robert Penner's back ease out, whose constant 1.70158 puts its
+peak at 1 + 4c³/(27(c+1)²), which is 1.100004 of the change, 0.580103 of the way through; and
+`thereAndBack` is a smoothstep over each half, which reaches one at the midpoint and is zero at one.
+Neither can be deduced from a pair of flat flags, which is why the set is named as well as widened:
+`CurveName` is the closed set, `curveNamed` reads a name and `nameOfCurve` writes one back, so the
+format can carry a name where it cannot carry a closure. `Key.curve` is a `CurveName` and never a
+`Curve`, since a key is already data a file can hold. The name on the earlier key of a pair wins,
+because a curve says how a value leaves a key rather than how it arrives.
+
+**The demos name a curve at seven of their twenty-three entries, from one.** Three reasons cover the
+six that gained one. A row a `stagger` built is paced by its gap, so each fade is `easeOut` and the
+flat demo's first x label reads 0.441 a tenth of a second in where a smoothstep reads 0.156. A thing
+arriving at its own size passes it and settles back, so the flat demo's dot reaches 0.176001 units
+across against the 0.16 it settles at. A gesture carrying its own out-and-back gets a clock that does
+not ease, so the swell at the beat is at 1.500000 of the settled width a quarter of the way through
+where an eased clock would read 1.2325, and each of the flash's ten rays reads 0.5 opacity there.
+
+**No span moved, so the four durations are 10.25, 7.74, 11.8 and 6 seconds as they were and the eight
+sheets are byte-identical.** No still and no strip frame falls inside a paced entry, so five gates
+read the pacing at times inside those entries instead, which is what makes the change checked rather
+than merely written.
+
+**One finding landed on the way through, in its own commit.** `figure/animation.ts` held a private
+out-and-back of its own, which `indicate`, `flash` and `circumscribe` each read, and it was the same
+cubic pair the set had just gained as a name.
+
+**The door went from 235 names to 240 and the suite from 652 tests to 668 over 41 files.** Every
+done-criterion was verified line by line in the commit that cut it.
 
 **1.1.0 is cut, and a figure's text says which of it matters.** Five steps closed it. `textScale`,
 `TextScale`, `TextRole` and `TEXT_RATIO` name four sizes by role, largest first: a title says what
@@ -446,87 +474,9 @@ no box test in front of it and the quadratic over piece pairs is not worth remov
 
 ## The items
 
-Each is a version above. What follows is what each one covers. The five of the 1.x band carry a step
-list and the five of the 2.x band do not, because writing one is a session of its own and the band is
-behind 2.0.0.
-
-### 1.2.0 The pacing
-
-**Twenty-six timeline entries across the four demos and one of them names a curve.** The other
-twenty-five take the default, which `Timeline.play` reads as `curveFor(true, true)`, so a change that
-should snap and a change that should settle are both smoothstep. Sixteen entries carry a negative
-`after` so runs overlap, and one demo staggers.
-
-**Four curves exist and all four are monotone.** `linear`, `easeIn`, `easeOut` and `smoothstep`, and
-`curveFor(fromFlat, toFlat)` is the only place they are chosen between. A `Key` says whether it is
-flat and nothing more, so a track cannot name its own curve and no figure can overshoot or come back.
-
-- [x] **1. The easing vocabulary widened and named.** The four that exist, plus an overshoot and a
-  there-and-back, each a pure function of zero to one and each named so the format can carry a name
-  rather than a closure. **Measures:** each curve at eleven inputs against its closed form;
-  `curveFor`'s four answers unchanged; the door from 235 names, which is what it held rather than the
-  230 written here before 1.1.0 landed.
-
-  **Landed.** Six curves from four. `overshoot` is Robert Penner's back ease out with his constant
-  1.70158, which peaks at 1.100004 of the change 0.580103 of the way through, both from the closed
-  forms 1 + 4c³/(27(c+1)²) and 1 - 2c/(3(c+1)). `thereAndBack` is a smoothstep over each half, so it
-  reaches 1 at the midpoint and is 0 at 1, and it is the only member whose value at one end is not
-  one. Neither can come from a flat flag, which is why the set is named: `CurveName` is the closed
-  set, `curveNamed` reads it and `nameOfCurve` writes it back, so a timeline written to a file names
-  its pacing instead of holding a closure. `curveFor` is untouched and answers its four pairings with
-  `linear`, `easeIn`, `easeOut` and `smoothstep` as it did. Each of the six agrees with a closed form
-  restated in the test at eleven inputs to ten decimal places. The door went from 235 names to 240
-  and the suite from 652 tests to 658. The eight sheets are byte-identical, since no demo names a
-  curve yet and step 3 is where they do.
-
-- [x] **2. A key names its own curve.** A `Key` carries a curve rather than only a flat flag, and
-  `curveFor` stays the answer for a key that does not. **Measures:** a track keyed with each curve
-  sampled at eleven times against the curve's own values; every existing track's samples unchanged
-  within tolerance.
-
-  **Landed.** `Key.curve` is a `CurveName` and never a `Curve`, since a key is already data a file
-  can hold and a closure on it would take that away. The name on the earlier key of a pair wins,
-  because a curve says how the value leaves a key rather than how it arrives, so a key can be left
-  along one shape and arrived at along another. `curveOf` is the one place the choice is made and it
-  falls through to `curveFor` for a key naming nothing. Each of the six curves keyed on a segment
-  reads its own value at eleven times to ten decimal places, and the eleventh is the later key's own
-  time, where the track holds that key's value and reads no curve. A track keyed `overshoot` from 0
-  to 10 reads 11.00004 at 0.580103 of its span and 10 at its end, and one keyed `thereAndBack` from
-  3 to 7 reads 7 at its midpoint and 3 again at its end. The suite went from 658 tests to 663, the
-  door is unchanged at 240 since a field is not a name, and the eight sheets are byte-identical.
-
-- [x] **3. The demos pace themselves.** Every entry that should not settle names its curve, and the
-  flat demo's eleven-entry entrance staggers where it now overlaps by hand. **Measures:** entries
-  naming a curve from 1 of 26; the flat demo's duration unchanged within a tenth of a second; each
-  sheet's marks at its named times re-committed with the count quoted.
-
-  **Landed.** Entries naming a curve went from 1 of 23 to 7 of 23. The 26 counted the three `wait`
-  calls, which carry no animation and so can name nothing. Three reasons cover the six that gained a
-  name. A row a `stagger` built is paced by its gap, and 0.08 of a second is shorter than the rest a
-  smoothstep spends leaving zero, so each fade of the flat demo's label row and the boolean demo's
-  outlines is `easeOut`: the first label reads 0.441 a tenth of a second in where a smoothstep reads
-  0.156. A thing arriving at its own size is `overshoot`, so the flat demo's dot reaches 0.176001
-  units across against the 0.16 it settles at, a ratio of 1.100004 at 3.032 seconds, which is
-  0.580103 of its 0.4 span. And a gesture carrying its own out-and-back is `linear`, since easing the
-  clock as well eases it twice: the swell at the beat is halfway to its peak a quarter of the way
-  through at 1.500000 of the settled width where an eased clock would read 1.2325, and each of the
-  flash's ten rays reads 0.5 opacity a quarter through. No span moved, so the four durations are
-  10.25, 7.74, 11.8 and 6 seconds as they were, and the eight sheets are byte-identical: no still and
-  no strip frame falls inside a paced entry, which is why five new gates read the pacing at times
-  inside those entries instead. The suite went from 663 tests to 668.
-
-- [ ] **4. Cut 1.2.0.** **Measures:** the three gates; the eight sheets identical after
-  `npm run demos`; the door and the suite from 235 names and 652 tests.
-
-#### Done-criteria
-
-- The easing set is closed, named, and every member is a pure function of zero to one.
-- `curveFor` answers exactly as it does today for its four inputs.
-- A key names its own curve, and a key that does not is paced as it is today.
-- Every timeline entry in the four demos either names a curve or is one the default suits, and the
-  count of each is written in the commit body.
-- The eight sheets are re-committed and the byte gate is green.
-- The three gates pass and the lock file agrees with the manifest.
+Each is a version above. What follows is what each one covers. The four of the 1.x band carry a step
+list and the eight of the 2.x band do not, because writing one is a session of its own and the band
+is behind 2.0.0.
 
 ### 1.3.0 The variable-width stroke
 
@@ -562,7 +512,7 @@ than trim the outline and open it.
   quoted; the marks at the named times.
 
 - [ ] **5. Cut 1.3.0.** **Measures:** the three gates; the eight sheets identical after
-  `npm run demos`; the door and the suite from wherever 1.2.0 left them.
+  `npm run demos`; the door and the suite from 240 names and 668 tests.
 
 #### Done-criteria
 
@@ -855,8 +805,8 @@ format a recorder reads a file, which is also what lets one run without a page a
 ## Found while working, not yet queued
 
 - **All four of the things that look worse than 3Blue1Brown are queued now**, which is Siva's call of
-  2026-09-08 and the reason the ladder above is no longer empty. Motion and pacing is 1.2.0,
-  typography and labels was 1.1.0 and is cut, composition and camera is done-criteria on the format's
+  2026-09-08 and the reason the ladder above is no longer empty. Motion and pacing was 1.2.0 and is
+  cut, typography and labels was 1.1.0 and is cut, composition and camera is done-criteria on the format's
   steps 3.8 and 7, and line quality is 1.3.0 and 1.4.0 between them. **The reading that put them there is that
   three of the four are builder and demo work over the SVG painter that already draws**, and only the
   sharpness of a line is the renderer's.
