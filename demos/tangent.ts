@@ -151,9 +151,23 @@ export const curve = (x: number) => x * x;
  */
 export const slopeField = (at: Vec2) => vec2(1, slopeOf(curve, at.x));
 
-/** How many arrows across and up, chosen so a cell comes out nearly square in
- * figure units rather than tall and thin. */
-export const FIELD = { x: 10, y: 5 };
+/**
+ * How many arrows across and up, chosen so a cell comes out nearly square in
+ * figure units rather than tall and thin.
+ *
+ * Fifty read as scratches rather than as a field over a graph that already
+ * carries a grid, a curve, a shaded region, a tangent and a dot. Twenty-one of
+ * them, each drawn at a width and a head a reader can see, say the same thing
+ * about the same curve. Seven across and three up keeps the cells at 1.053 of
+ * square, where seven across and four up comes to 1.267.
+ */
+export const FIELD = { x: 7, y: 3 };
+
+/** How wide a field arrow's shaft is and how long its head is, in figure units.
+ * A head four times the shaft, which is what an arrow takes when nothing says,
+ * came to 4.4 pixels at the width the README shows the sheet. */
+const FIELD_WIDTH = 0.03;
+const FIELD_HEAD = 0.16;
 
 /** How long an arrow is, in figure units, against the magnitude of the vector
  * there. It settles towards a third of a figure unit as the curve steepens
@@ -222,7 +236,8 @@ export function sceneAt(along: number): Node {
       resolution: FIELD,
       lengthOf: arrowLength,
       colourFor: (magnitude) => (magnitude > 3 ? steep : gentle),
-      width: 0.018,
+      width: FIELD_WIDTH,
+      head: FIELD_HEAD,
     }),
     shape('curve', plot(coords, curve), { stroke: drawn }),
     shape('tangent', tangentAt(coords, curve, x, { reach: 1.2 }), { stroke: accent }),

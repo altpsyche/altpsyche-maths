@@ -198,10 +198,10 @@ describe('the committed pictures', () => {
 });
 
 describe('the flat demo', () => {
-  it('draws the same 202 marks at every time', () => {
-    // A hundred of the 202 are the field's fifty arrows and fifteen the two rules,
-    // and nothing arrives or leaves part way through, so every time reads alike.
-    for (const seconds of [0, ...FRAMES, durationOf(tangent)]) expect(marksAt(tangent, seconds)).toHaveLength(202);
+  it('draws the same 144 marks at every time', () => {
+    // Forty-two of the 144 are the field's twenty-one arrows and fifteen the two
+    // rules, and nothing arrives or leaves part way through, so every time alike.
+    for (const seconds of [0, ...FRAMES, durationOf(tangent)]) expect(marksAt(tangent, seconds)).toHaveLength(144);
   });
 
   it('braces the rise at the end and counts up to it', () => {
@@ -350,7 +350,7 @@ describe('the flat demo', () => {
   it('draws one arrow of its field along the tangent the dot carries', () => {
     const marks = marksAt(tangent, TIMES.walkTo);
     const shafts = marks.filter((mark) => mark.id.startsWith('tangent/field/') && mark.id.endsWith('/shaft'));
-    expect(shafts).toHaveLength(50);
+    expect(shafts).toHaveLength(21);
     for (const mark of shafts) {
       if (mark.kind !== 'path') throw new Error('a shaft is a path');
       const start = mark.path[0].start;
@@ -445,7 +445,7 @@ describe('the flat demo', () => {
 describe('the strip of frames', () => {
   it('carries every frame with no two marks sharing an id', () => {
     const { marks } = stripMarks(FRAMES);
-    expect(marks).toHaveLength(202 * FRAMES.length);
+    expect(marks).toHaveLength(144 * FRAMES.length);
     expect(new Set(marks.map((mark) => mark.id)).size).toBe(marks.length);
   });
 
@@ -780,10 +780,10 @@ describe('the solid demo', () => {
     expect(named3).toEqual(['x', 'y', 'z']);
   });
 
-  it('draws the same 268 marks at every time', () => {
+  it('draws the same 244 marks at every time', () => {
     // A hundred and forty-four cells of saddle, sixteen panes of glass and the
     // field's thirty-six arrows at two marks each, with the rest the axes and rule.
-    for (const seconds of [0, ...SOLID_FRAMES, SOLID_TIMES.round]) expect(solidAt(seconds)).toHaveLength(268);
+    for (const seconds of [0, ...SOLID_FRAMES, SOLID_TIMES.round]) expect(solidAt(seconds)).toHaveLength(244);
   });
 
   it('runs its three descents down the saddle and never off it', () => {
@@ -800,7 +800,7 @@ describe('the solid demo', () => {
     const ids = solidAt(SOLID_TIMES.quarter).map((mark) => mark.id);
     expect(ids.filter((id) => id.startsWith('solid/body/hill/')).length).toBe(144);
     expect(ids.filter((id) => id.startsWith('solid/body/pane/')).length).toBe(16);
-    expect(ids.filter((id) => id.startsWith('solid/body/flow/')).length).toBe(72);
+    expect(ids.filter((id) => id.startsWith('solid/body/flow/')).length).toBe(48);
     expect(ids.filter((id) => id.startsWith('solid/descent/run')).length).toBe(3);
     expect(ids.filter((id) => id.startsWith('solid/cut/run')).length).toBe(2);
     for (const axis of ['x', 'y', 'z']) {
@@ -873,18 +873,20 @@ describe('the solid demo', () => {
 describe('the solid strip', () => {
   it('carries every frame with no two marks sharing an id', () => {
     const { marks } = solidStripMarks(SOLID_FRAMES, 2);
-    expect(marks).toHaveLength(268 * SOLID_FRAMES.length);
+    expect(marks).toHaveLength(244 * SOLID_FRAMES.length);
     expect(new Set(marks.map((mark) => mark.id)).size).toBe(marks.length);
   });
 });
 
 describe("the flat demo's field", () => {
   it('samples on cells that come out nearly square', () => {
-    // Arrows on tall thin cells read as a comb rather than as a field.
+    // Arrows on tall thin cells read as a comb rather than as a field, and so do
+    // arrows on wide flat ones, so the reading is how far from square it is
+    // either way round.
     const across = interval.span(coords.x.units) / FIELD.x;
     const up = interval.span(coords.y.units) / FIELD.y;
-    expect(across / up).toBeGreaterThan(1);
-    expect(across / up).toBeLessThan(1.11);
+    const shape = Math.max(across / up, up / across);
+    expect(shape).toBeLessThan(1.11);
   });
 });
 

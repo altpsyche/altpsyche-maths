@@ -60,7 +60,7 @@ const ink = { colour: INK };
 const pen = { colour: INK, width: 0.014 };
 const cut = { colour: EMBER, width: 0.05 };
 const glass = { colour: SKY, width: 0.008 };
-const flow = { colour: DEEP, width: 0.01 };
+const flow = { colour: DEEP, width: 0.022 };
 const fall = { colour: MOSS, width: 0.035 };
 
 /** Same frame as the other two demos, so the pictures in the README are one
@@ -132,7 +132,7 @@ export const descents = SEEDS.map((seed) =>
  * in the units the surface is drawn in. An arrow settles towards a third of a
  * unit rather than growing with the gradient, since the gradient at the corner
  * of the saddle is thirty times the gradient near the middle. */
-const FLOW = { x: 6, y: 6, z: 1 };
+const FLOW = { x: 5, y: 5, z: 1 };
 const arrowLength = (magnitude: number) => (0.34 * magnitude) / (0.9 + magnitude);
 
 /** How many cells each grid is cut into. Enough that the saddle reads as a
@@ -216,6 +216,7 @@ export function sceneAt(along: number): Node {
           lengthOf: arrowLength,
           colourFor: () => flow.colour,
           stroke: flow,
+          head: 0.13,
         }),
       ],
       camera

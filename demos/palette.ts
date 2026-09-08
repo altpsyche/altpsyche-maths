@@ -29,8 +29,8 @@ export const THEME = {
   peach: { light: '#fdba74', dark: '#7a4a1c' },
   deep: { light: '#0369a1', dark: '#4cb8ea' },
   sky: { light: '#38bdf8', dark: '#1f6f96' },
-  haze: { light: '#bfd7e6', dark: '#33505f' },
-  steel: { light: '#7fb2cc', dark: '#41708a' },
+  haze: { light: '#7ea8c4', dark: '#3d5f76' },
+  steel: { light: '#5a8fb3', dark: '#4a6f88' },
   frost: { light: '#e0f2fe', dark: '#17293b' },
   moss: { light: '#15803d', dark: '#3ec46d' },
 } as const;

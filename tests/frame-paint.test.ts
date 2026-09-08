@@ -71,8 +71,8 @@ describe('a walk of the flat demo', () => {
     expect(frames).toHaveLength(308);
     for (const frame of frames) {
       const counted = drawn(frame);
-      expect(counted.fills).toBe(71);
-      expect(counted.strokes).toBe(119);
+      expect(counted.fills).toBe(42);
+      expect(counted.strokes).toBe(90);
       expect(counted.texts).toBe(12);
       // Every mark is one element and one drawing call, so the two painters
       // agree about what the frame holds.
@@ -98,8 +98,8 @@ describe('a walk of the solid demo', () => {
     expect(frames).toHaveLength(354);
     for (const frame of frames) {
       const counted = drawn(frame);
-      expect(counted.fills).toBe(205);
-      expect(counted.strokes).toBe(69);
+      expect(counted.fills).toBe(193);
+      expect(counted.strokes).toBe(57);
       expect(counted.texts).toBe(10);
       // Sixteen more calls than marks, which are the panes of glass: a mark
       // carrying both a fill and a stroke is painted twice and written once.

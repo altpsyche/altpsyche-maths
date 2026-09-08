@@ -160,7 +160,7 @@ eight.
 **The lock file agrees with the manifest again**, and holding it there is one
 `npm install --package-lock-only` in whichever commit bumps a version.
 
-**0.13.0 is being worked and eight of its eleven steps are ticked.** Siva read the eight sheets and
+**0.13.0 is being worked and nine of its eleven steps are ticked.** Siva read the eight sheets and
 rejected them, so 1.0.0 waits behind it: the cut's last criterion is Siva reading the README, the
 guide and the pictures, and the pictures are being redrawn.
 
@@ -171,7 +171,7 @@ reaching it. The six colours a reader takes a value off went from 1.10:1 through
 luminance a colour needs to clear 4.5:1 on white is 0.183333 or less and on `#0d1117` is 0.199675 or
 more. The suite went from 618 tests to 620 and the door from 227 names to 229.
 
-**The next session starts at step 9**, which steps 9 and 11 have been rewritten into one piece of work about the frame a still is written into. Siva made the one call this version had, the dark ramp's hue,
+**The next session starts at step 9**, which steps 9 and 11 were rewritten into: one piece of work about the frame a still is written into, and the last of this version. Siva made the one call this version had, the dark ramp's hue,
 and answered it with slate. He also put three defects of the solid sheet into this version rather
 than after it, which are steps 7, 8 and 9, so the plan is eleven steps rather than eight.
 
@@ -441,10 +441,24 @@ name to the door, and 0.13.0 lands before the surface is frozen at 1.0.0 for tha
   is what it changes. **Measures:** the share of the frame no mark covers, on all four stills; the
   width of the surface sheet from 1080 against a picture 610 wide.
 
-- [ ] **10. A field drawn as a field.** The flat sheet samples 50 arrows and the solid one 36, and at
-  the width the README shows them neither draws a head. **Measures:** the arrow count from 50 and 36;
-  the drawn head from none to its size on the page; the two field colours from HAZE 1.49:1 and STEEL
-  2.30:1 against white.
+- [x] **10. A field drawn as a field.** **Both fields drew heads all along and the plan was wrong to
+  say otherwise.** What they drew was heads nobody could see: four times the shaft's width, which is
+  what an arrow takes when nothing says, came to 4.43 to 5.01 pixels on the flat sheet and 2.48 to
+  2.78 on the solid one at the width the README shows them. A head of 0.16 figure units on the flat
+  sheet and 0.13 on the solid one draws 9.81 to 11.14 and 6.12 to 9.05 pixels.
+
+  **Fifty arrows over a graph that already carries a grid, a curve, a shaded region, a tangent and a
+  dot is the noise rather than the field.** The flat sheet samples 21 now and the solid one 25, of
+  which 24 draw: the sample at the middle of a five by five grid sits on the origin, where this
+  field is nothing and an arrow of no length is no mark. **Seven across by four up was tried first
+  and was wrong**, since it puts the cells at 1.267 of square where the rule is 1.11, and that rule
+  was itself only half written: it read the cells as wider than tall and passed nothing taller than
+  wide. Seven by three holds 1.053.
+
+  The two field colours went from HAZE 1.49:1 and STEEL 2.30:1 against white to 2.53:1 and 3.49:1,
+  and on the dark ground from 2.21:1 and 3.52:1 to 2.79:1 and 3.53:1, all four still washes. The
+  shafts went from 0.018 and 0.01 figure units to 0.03 and 0.022. The flat figure went from 202 marks
+  to 144 and the solid from 268 to 244. The suite is 630 tests before and after.
 
 - [ ] **11. The stills re-timed, and every sheet measured again.** Coverage on bounds is a number an
   empty frame passes, and two sheets now show how: `rotate.svg` reads 65.0% while drawing inside the
@@ -864,6 +878,10 @@ demo is recompiled by steps 6 and 7 against the renamed door.
   so this waits on that version being cut.
 
 ## Found while working, not yet queued
+
+- **A run of descent shows a short hook where it meets the region's edge.** The run seeded at
+  `(-1.3, 0.3)` draws a bracket a few points long at its start on both solid sheets, which reads as a
+  kink rather than as the run leaving the region. Found while cutting 0.13.0's step 10.
 
 - **The word riding the shape crosses it in two of the eight rotation frames.** `upright` sits at a
   fixed offset from the shape's centre and the shape turns under it, so at two of the eight times in
