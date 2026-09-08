@@ -50,8 +50,12 @@ convention this repository already follows makes each one a minor bump. A versio
 demos draw, not when its code compiles. A version that is cut leaves this table and its item goes
 with it, because `git log` is what keeps a closed plan.
 
-**The ladder is empty.** Every version on it is cut, 1.0.0 last, so what queues work now is the found
-list below and whatever the consumer asks for.
+| version | what lands |
+| --- | --- |
+| 1.1.0 | The tessellation layer: a path as polylines, as a stroke outline, and as triangles |
+
+**Every version below 1.0.0 is cut and its item is deleted.** What queues work now is the table
+above, the found list below, and whatever the consumer asks for.
 
 ## The two demos, which are what a version is cut against
 
@@ -238,6 +242,96 @@ and `difference = A less the overlap` to 1.776e-15. Two circles crossed at every
 1e4 answer 4.11e-4 of the closed form, the same share at every one, so nothing there turns on the
 tolerance being an absolute distance. Two 400-piece paths unite in 48ms, so the crossing search needs
 no box test in front of it and the quadratic over piece pairs is not worth removing.
+
+## The items
+
+Each is a version above. What follows is what each one covers.
+
+### The tessellation layer, 1.1.0
+
+A tessellation is a shape rewritten as the pieces a renderer draws: a curve as a run of straight
+segments, a stroke as a fillable outline, and a fill as triangles. Every part of it is numbers in and
+numbers out, so it is held by the suite the way the boolean operations are and needs no browser.
+
+**Why it is here and not in the site.** A GPU painter for figures is the site's, which
+[DESIGN.md](../DESIGN.md) settled: maths must never import the engine, and the painter that hands
+marks to the engine lives in the website, which knows both packages. What that painter needs from a
+mark is triangles, and turning a cubic into triangles is geometry rather than device work. The line
+this item draws is the same one the package already draws everywhere else. Numbers stay here, and
+buffers, pipelines and glyph atlases stay in the site.
+
+**What it is worth on its own merits, with no painter waiting.** `strokeOutline` turns a stroke into a
+path, so the boolean operations reach strokes, which they cannot today. `flatten` is what a hit test
+against a curve needs and what `length.ts` already samples for by hand. Neither depends on anything
+drawing on a GPU.
+
+**What argues against it.** The demos draw 144, 12 and 244 marks, and SVG draws those instantly and
+sharper than triangles would. Nothing is waiting to draw this, which is the test this file orders its
+items by, so **whether 1.1.0 is worked at all is Siva's call rather than a session's.**
+
+**Its steps are written below, and no code was touched in the session that wrote them.**
+
+- [ ] **1. A cubic as a run of straight segments.** `flatten(path, tolerance)` returns each subpath as
+  a polyline, by recursive de Casteljau subdivision stopping when a piece's control points sit within
+  the tolerance of the chord. The tolerance is in figure units, so a caller scales it by the view the
+  way a stroke width is scaled. **Measures:** the greatest distance from the returned polyline to the
+  true curve at tolerances of 1e-2, 1e-3 and 1e-4, each under the tolerance asked for; the point count
+  at each; and a quarter arc's flattened edge inside the 2.6 to 2.8 parts in ten thousand the control
+  distance already leaves.
+
+- [ ] **2. A dashed path as the runs that are drawn.** `dashed(path, dash, offset)` returns the drawn
+  runs as subpaths of their own, reading `length.ts` for where a length falls inside a piece. Both
+  painters resolve a dash themselves and a GPU painter has nothing that will, so this is the one part
+  of a stroke's style that has no answer today. **Measures:** the summed length of the returned
+  subpaths against the drawn share the dash array asks for, on a straight line and on a circle; and a
+  dash longer than the path returning the whole path once.
+
+- [ ] **3. A stroke as a path that can be filled.** `strokeOutline(path, stroke)` returns the region a
+  stroke covers, with miter, round and bevel joins and butt, round and square caps, and a miter limit
+  past which a miter becomes a bevel. **Measures:** the outline's `area` against width times length
+  exactly for a straight segment, since `area` is closed form by Green's theorem; the same for a
+  closed square; the miter limit taking effect at the angle it names; and a round join's edge inside
+  the same 2.6 to 2.8 parts in ten thousand as every other arc here.
+
+- [ ] **4. A fill as triangles.** `triangulate(path, rule)` returns triangles covering what the fill
+  rule says is inside, over a path flattened by step 1. Ear clipping over the flattened outline is the
+  named technique, with holes joined to their outer loop by a bridge, which is what handles a ring
+  under the nonzero rule. **Measures:** the summed triangle area against `area(path)`, which is exact,
+  to a named tolerance; no two triangles overlapping; and the sixty random pairs of shapes the boolean
+  suite already builds, each triangulated and summed against its own area.
+
+- [ ] **5. The demo the layer is cut against.** A sheet whose whole purpose is the tessellation, which
+  is the exception `demos/boolean.ts` and `demos/rotate.ts` already set: an operation with no picture
+  in a graph or a surface is given a picture of its own. One shape is drawn three times side by side,
+  as its outline, as the polyline step 1 returns, and as the triangles step 4 returns, with the point
+  and triangle counts written under each. A tolerance walks from coarse to fine across the clip, so
+  the counts move and the polyline tightens onto the curve. **Measures:** the sheet's marks at four
+  named times; its bare fraction under the four fifths every sheet is held to; its smallest glyph
+  above the fourteen pixel floor; and the counts written on it asserted against what the calls return.
+
+- [ ] **6. Cut 1.1.0.** The version bumped in this commit, `npm install --package-lock-only` in the
+  same one, the reference given an entry per new name, the guide given a section, and the
+  done-criteria verified line by line. **Measures:** the three gates; all nine sheets identical after
+  `npm run demos`; the door and the suite from 230 names and 637 tests.
+
+#### Done-criteria
+
+- A cubic flattened at a named tolerance stays within that tolerance of the true curve, and the suite
+  says so at three tolerances.
+- A dash array resolves to subpaths whose summed length is the drawn share, on a straight path and on
+  a curved one.
+- A stroke outline's area is the closed form for a straight segment and for a closed square, and the
+  three joins and three caps each have a test.
+- Triangles cover a fill to within a named tolerance of `area`, no two overlapping, over the sixty
+  random pairs the boolean suite already builds.
+- The demo draws, its marks are asserted at four named times, and the counts written on it are the
+  counts the calls return.
+- Nothing in this item imports a browser API, and the whole of it is held by `npm test` alone.
+- The reference has one entry per name at the door and the gate holds them equal.
+- `npm test`, `npm run type-check` and `npm run build` pass, and the lock file agrees with the manifest.
+
+**The site's half of this is queued in that repository**, as the GPU figure painter, and it names this
+item as what it waits on.
 
 ## Found while working, not yet queued
 
