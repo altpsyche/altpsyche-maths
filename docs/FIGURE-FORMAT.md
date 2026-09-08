@@ -34,10 +34,13 @@ queued work is built to. It moves to the specification's own repository once tha
 2026-09-08. The name was carrying work a rule should do, so the four refusals above are in the
 specification's first section and the name stays modest.
 
-**The specification lives in its own repository.** Apart from every implementation, the way a language
-standard does, carrying the specification, the conformance suite and its own version.
-`@altpsyche/maths` becomes the reference implementation of it rather than the place it is defined. The
-repository is made and it is `altpsyche-figure-format`, with no remote until publishing is asked for.
+**The specification lives here, in the package that implements it, and that is deliberate rather than
+permanent.** A fourth repository was made and then folded back on the same day: glTF and Lottie split
+their specifications because several implementers with different owners read them, and there is one
+implementation and one author here. [`SPECIFICATION.md`](SPECIFICATION.md) is that document, and the
+discipline the split would have bought is a rule instead: **it changes before the code does.** It
+moves out when a second implementation exists, or when a tool wants the types and a validator without
+the whole library, which is also when `@altpsyche/figure-format` becomes a package.
 
 **The specification carries its own version.** A figure declares which version of the language it is
 written in and a renderer declares which versions it reads. That number and the package's are

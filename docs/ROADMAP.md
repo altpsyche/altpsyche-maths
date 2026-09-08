@@ -422,10 +422,14 @@ five commits ago. Old calls stop working rather than standing beside new ones, s
 resolvers, two sets of tests and a reference twice the size, carried until a major removes them
 anyway. 1.0.0 has one consumer and it is this tree's own author.
 
-**The specification's repository is made and it is `altpsyche-figure-format`**, holding the
-specification and eventually the conformance suite and no implementation. It has no remote:
-publishing it is asked for rather than assumed. **The specification leads and this package follows**,
-because implementation-first would make that document a description of whatever got built.
+**The specification lives here, as [`SPECIFICATION.md`](SPECIFICATION.md).** A fourth repository was
+made and folded back on the same day. glTF and Lottie split their specifications because several
+implementers with different owners read them, and there is one implementation and one author here, so
+a fourth repository would have been a fourth roadmap and a fourth set of gates against a document
+sitting nearly empty for months. **The discipline the split would have bought is a rule instead: the
+specification changes before the code does.** It moves out when a second implementation exists, or
+when a tool wants the types and a validator without the whole library, which is also when
+`@altpsyche/figure-format` becomes a package. Nothing needs that today.
 
 **The next session splits steps 3 and 4 and writes no code.** Twenty-four node kinds and path
 producers in one bullet and fifteen animations in another are not commit-sized, which this file's own
