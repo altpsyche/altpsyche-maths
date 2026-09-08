@@ -10,6 +10,7 @@ import { mat3, type Mat3 } from '../values/mat3.js';
 import { transformPath } from './path.js';
 import type { Path } from './path.js';
 import { vec2, type Vec2 } from '../values/vec2.js';
+import { scaledWidth } from './width.js';
 import type { Fill, Mark, Stroke } from './mark.js';
 
 /** What a group hands down and a child may override. */
@@ -132,7 +133,7 @@ function walk(node: Node, prefix: string, transform: Mat3, style: Style, into: M
       id,
       path: transformPath(node.path, transform),
       fill: settled.fill,
-      stroke: settled.stroke ? { ...settled.stroke, width: settled.stroke.width * scale } : undefined,
+      stroke: settled.stroke ? { ...settled.stroke, width: scaledWidth(settled.stroke.width, scale) } : undefined,
       opacity,
     });
     return;

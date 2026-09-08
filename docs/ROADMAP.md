@@ -514,9 +514,39 @@ than trim the outline and open it.
   pixels to the unit the demos draw at. The door went from 240 names to 242 and the suite from 668
   tests to 682 over 42 files. Nothing in the demos changed and the eight sheets are byte-identical.
 
-- [ ] **2. A width that varies along the length.** The width is a number or a named taper with
+- [x] **2. A width that varies along the length.** The width is a number or a named taper with
   parameters. **Measures:** a taper from w to nothing over a straight segment giving a triangle's
   area to 1e-12; the width read at eleven places along the flat demo's tangent.
+
+  **Landed.** A `Taper` is two widths and the name of the curve the width leaves the first along,
+  which is the shape a key already has and so a shape a file can carry. `Stroke.width` is a `Width`,
+  which is one number or a taper. A taper from 0.4 to nothing over a straight segment of length 2 is
+  the triangle exactly: three corners at (0, 0.2), (2, 0) and (0, −0.2), and an area of 0.4 against
+  the 0.4 of Lw/2, to 1e-12. The flat demo's tangent at x of 1.5 is 5.072714 long, and tapered from
+  0.035 to nothing it reads 0.999994049 of the half width the taper asks for at all eleven places
+  along it: the edge slants by 0.0175 over 5.072714, whose cosine is 0.99999405, and a perpendicular
+  from the centreline is the half width less that. A stroke that swells reads 0.2 at the middle of
+  its length against the 0.2 half width it asks for.
+
+  **One defect found on the way, and it is why the width is read at a third and two thirds.** The
+  flattening answers for the geometry alone, so a straight run is two points however the width moves
+  along it, and a swell had nothing to swell at: `thereAndBack` from nothing to 0.4 drew as two
+  points. Splitting a run while the width halfway along differs from the width its ends average to
+  fixed it only for a taper that is not symmetric, since a curve that rises and falls by the same
+  amount has its midpoint on the chord: the swell then drew as a four-point diamond, whose area of
+  0.4 is the right answer for the wrong shape. The test is now at a third and two thirds, which is
+  where the geometry's own flatness test reads a cubic's controls, and the swell draws as 48 points
+  with an area of 0.4000000000000001 against the 0.4 of its length times its mean width.
+
+  **A width has three readings and each site says which it needs.** The width at a place builds the
+  outline, the widest is what a part measured against the line reads, and a scaled width is what a
+  group's transform leaves. Eight sites did arithmetic on a width and each took one of the three: a
+  tick length and an arrow head take the widest, a group's scale and a minor grid line take the
+  scaled width. Both painters run every mark through `outlinedMarks` before drawing, since neither a
+  `stroke-width` attribute nor a context's `lineWidth` holds two widths.
+
+  The door went from 242 names to 247 and the suite from 682 tests to 697 over 43 files. Nothing in
+  the demos tapers yet, so the eight sheets are byte-identical.
 
 - [ ] **3. `draw` over an outlined stroke.** The centreline is trimmed and re-outlined, so a tapered
   line draws on from one end. **Measures:** the outlined mark at eleven fractions of `draw` against

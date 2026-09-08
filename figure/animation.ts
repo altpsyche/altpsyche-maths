@@ -20,6 +20,7 @@ import { trimPath } from './trim.js';
 import { lerpPath } from './morph.js';
 import { matchGlyphs } from './equation-match.js';
 import { pointAlong } from './length.js';
+import { scaledWidth } from './width.js';
 import { boundsOfMarks, centreOf } from './bounds.js';
 import { interval } from '../values/interval.js';
 import type { Colour, Mark, Stroke } from './mark.js';
@@ -162,7 +163,7 @@ function carried(mark: Mark, through: Mat3): Mark {
   return {
     ...mark,
     path: transformPath(mark.path, through),
-    stroke: mark.stroke ? { ...mark.stroke, width: mark.stroke.width * scale } : undefined,
+    stroke: mark.stroke ? { ...mark.stroke, width: scaledWidth(mark.stroke.width, scale) } : undefined,
   };
 }
 

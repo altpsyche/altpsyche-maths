@@ -15,6 +15,7 @@ import { group, type GroupNode, type Node } from './node.js';
 import { ticksOn } from './ticks.js';
 import { polyline3, text3 } from './space.js';
 import type { Camera3 } from './camera.js';
+import { widestWidth } from './width.js';
 import type { Fill, Stroke } from './mark.js';
 
 export interface Axes3Options {
@@ -65,7 +66,7 @@ function oneAxis(which: 'x' | 'y' | 'z', bounds: Interval, camera: Camera3, opti
   const along = ALONG[which];
   const across = ACROSS[which];
   const size = options.size ?? 0;
-  const tickLength = options.tickLength ?? options.stroke.width * 8;
+  const tickLength = options.tickLength ?? widestWidth(options.stroke.width) * 8;
   const gap = options.gap ?? size * 0.35;
   const { from: low, to: high } = interval.ordered(bounds);
   const at = (value: number) => vec3.scale(along, value);

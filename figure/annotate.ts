@@ -11,6 +11,7 @@
 import { vec2, type Vec2 } from '../values/vec2.js';
 import { circle, line, polygon, straight, type Cubic, type Path } from './path.js';
 import { group, shape, text, type GroupNode, type Style, type TextOptions } from './node.js';
+import { widestWidth } from './width.js';
 import type { Fill, Stroke } from './mark.js';
 
 export interface ArrowOptions {
@@ -37,7 +38,7 @@ export interface ArrowOptions {
  * base behind the tail, which draws the shaft pointing back the way it came.
  */
 export function arrow(name: string, from: Vec2, to: Vec2, options: ArrowOptions): GroupNode {
-  const head = Math.min(options.head ?? options.stroke.width * 4, vec2.distance(from, to));
+  const head = Math.min(options.head ?? widestWidth(options.stroke.width) * 4, vec2.distance(from, to));
   const spread = options.spread ?? 0.6;
   const along = vec2.normalize(vec2.sub(to, from));
   const base = vec2.sub(to, vec2.scale(along, head));
@@ -178,7 +179,7 @@ export interface CalloutOptions {
  * reader was told to look at.
  */
 export function callout(name: string, at: Vec2, to: Vec2, content: string, options: CalloutOptions): GroupNode {
-  const marker = options.marker ?? options.stroke.width * 2;
+  const marker = options.marker ?? widestWidth(options.stroke.width) * 2;
   const style: Style = { fill: options.fill, family: options.family, weight: options.weight };
   const parts = [
     shape('leader', line(at, to), { stroke: options.stroke }),

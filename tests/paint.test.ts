@@ -218,6 +218,19 @@ describe('the style a sheet carries', () => {
 });
 
 describe('canvas', () => {
+  it('fills a tapered stroke rather than stroking it, since a context holds one width', () => {
+    const recorder = new Recorder();
+    const tapered: Mark = {
+      kind: 'path',
+      id: 'fig/line',
+      path: line(vec2(0, 0), vec2(2, 0)),
+      stroke: { colour: '#e00', width: { from: 0.4, to: 0 } },
+    };
+    paintCanvas(recorder, [tapered], mat3.IDENTITY);
+    expect(recorder.calls.some((call) => call.name === 'stroke')).toBe(false);
+    expect(recorder.calls.find((call) => call.name === 'fill')?.args[1]).toBe('#e00');
+  });
+
   it('wraps every mark so a dash or an opacity cannot leak into the next one', () => {
     const recorder = new Recorder();
     paintCanvas(recorder, marks, view);

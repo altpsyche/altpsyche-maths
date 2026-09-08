@@ -16,6 +16,8 @@
 import { mat3, type Mat3 } from '../values/mat3.js';
 import type { Mark, PathMark, TextMark } from '../figure/mark.js';
 import type { Path } from '../figure/path.js';
+import { outlinedMarks } from '../figure/outline.js';
+import { widestWidth } from '../figure/width.js';
 import { short } from './number.js';
 
 /** One element, described rather than built, so the same description can be
@@ -92,7 +94,7 @@ function pathElement(mark: PathMark, view: Mat3, scale: number): SvgElement {
   if (mark.fill?.rule === 'evenodd') attributes['fill-rule'] = 'evenodd';
   if (mark.stroke) {
     attributes.stroke = mark.stroke.colour;
-    attributes['stroke-width'] = short(mark.stroke.width * scale);
+    attributes['stroke-width'] = short(widestWidth(mark.stroke.width) * scale);
     if (mark.stroke.cap) attributes['stroke-linecap'] = mark.stroke.cap;
     if (mark.stroke.join) attributes['stroke-linejoin'] = mark.stroke.join;
     if (mark.stroke.dash) attributes['stroke-dasharray'] = mark.stroke.dash.map((run) => short(run * scale)).join(' ');
@@ -134,8 +136,11 @@ function textLift(marks: readonly Mark[], scale: number, floor: number): number 
 /** Every mark described as an element, in the order they are drawn. */
 export function svgElements(marks: readonly Mark[], view: Mat3, options: SvgMarkupOptions = {}): SvgElement[] {
   const scale = mat3.scaleFactor(view);
-  const lift = textLift(marks, scale, options.minTextSize ?? 0);
-  return marks.map((mark) =>
+  // A stroke of two widths is no attribute an element carries, so it arrives here
+  // as the filled outline it is drawn as before any of it is written out.
+  const drawn = outlinedMarks(marks);
+  const lift = textLift(drawn, scale, options.minTextSize ?? 0);
+  return drawn.map((mark) =>
     mark.kind === 'path' ? pathElement(mark, view, scale) : textElement(mark, view, scale, lift)
   );
 }

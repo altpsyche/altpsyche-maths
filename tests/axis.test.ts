@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { axes, coordsOf, flatten, interval, numberLine, numberPlane, scaleOf, type Mark } from '../index.js';
+import { axes, coordsOf, flatten, interval, numberLine, numberPlane, scaleOf, widestWidth, type Mark } from '../index.js';
 
 const pen = { colour: '#222', width: 0.02 };
 const ink = { colour: '#222' };
@@ -17,7 +17,7 @@ describe('a grid', () => {
     const major = marks.find((mark) => mark.id.startsWith('grid/majors'));
     const minor = marks.find((mark) => mark.id.startsWith('grid/minors'));
     if (major?.kind !== 'path' || minor?.kind !== 'path') throw new Error('a grid line is a path');
-    expect(minor.stroke!.width).toBeLessThan(major.stroke!.width);
+    expect(widestWidth(minor.stroke!.width)).toBeLessThan(widestWidth(major.stroke!.width));
     expect(minor.opacity).toBeLessThan(major.opacity ?? 1);
   });
 });

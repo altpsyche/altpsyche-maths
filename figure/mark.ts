@@ -14,6 +14,7 @@
  * an object built from the context, and a colour here is text that both take as
  * it stands.
  */
+import type { CurveName } from '../values/ease.js';
 import type { Vec2 } from '../values/vec2.js';
 import type { Path } from './path.js';
 
@@ -21,11 +22,35 @@ import type { Path } from './path.js';
  * figure is handed these in a palette rather than reading them from a page. */
 export type Colour = string;
 
+/**
+ * A width that changes along the length of a stroke.
+ *
+ * The width leaves the first number for the second along the named curve, read
+ * at the fraction of the whole path's length rather than of the piece it falls
+ * in, which is the measure a path is trimmed by as well. A curve is named
+ * rather than passed, because a figure written as a file carries a name and
+ * cannot carry a function.
+ */
+export interface Taper {
+  /** The width where the path starts, in figure units. */
+  from: number;
+  /** The width where the path ends. */
+  to: number;
+  /** The curve the width leaves the first number along. Left out, it is
+   * `linear`. */
+  curve?: CurveName;
+}
+
+/** What a stroke's width may be: one number the whole way, or a taper. A
+ * tapered stroke is drawn as the filled outline of its own path, since neither
+ * painter strokes at two widths. */
+export type Width = number | Taper;
+
 export interface Stroke {
   colour: Colour;
   /** In figure units, scaled with everything else, so a line reads the same
    * weight at every size the figure is drawn at. */
-  width: number;
+  width: Width;
   cap?: 'butt' | 'round' | 'square';
   join?: 'miter' | 'round' | 'bevel';
   /** Lengths of the drawn and undrawn runs, in figure units. */

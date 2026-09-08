@@ -15,9 +15,11 @@
  * here are its defaults: a butt cap, a miter join, and a limit of four.
  */
 import { vec2, type Vec2 } from '../values/vec2.js';
+import { lerp } from '../values/scalar.js';
 import { polygon, type Path } from './path.js';
 import { flattenRuns } from './inside.js';
-import type { Stroke } from './mark.js';
+import { widthAt } from './width.js';
+import type { Mark, Stroke, Width } from './mark.js';
 
 export interface OutlineOptions {
   /** What the two ends of an open stroke are finished with. */
@@ -48,6 +50,12 @@ const MITER_LIMIT = 4;
 /** How close two points come before the walk reads them as one, below which a
  * run between them has no direction to offset along. */
 const SAME_PLACE = 1e-12;
+
+/** One subpath flattened, with every repeated point already dropped. */
+interface Run {
+  readonly points: readonly Vec2[];
+  readonly closed: boolean;
+}
 
 interface Settings {
   readonly cap: NonNullable<Stroke['cap']>;
@@ -162,22 +170,29 @@ function reachAt(points: readonly Vec2[], at: number): number {
   return Math.min(back, on);
 }
 
-/** One side of the stroke, offset to the left of the walk by half the width. */
-function offsetSide(points: readonly Vec2[], loop: boolean, half: number, settings: Settings): Vec2[] {
+/**
+ * One side of the stroke, offset to the left of the walk by half the width.
+ *
+ * The half width is read per point, so a taper offsets each point by its own
+ * amount. The corner where two runs meet is offset by the width at that corner,
+ * which both runs share.
+ */
+function offsetSide(points: readonly Vec2[], halves: readonly number[], loop: boolean, settings: Settings): Vec2[] {
   const headings = headingsOf(points, loop);
   const side: Vec2[] = [];
-  if (!loop) side.push(vec2.add(points[0], vec2.scale(vec2.perpendicular(headings[0]), half)));
+  if (!loop) side.push(vec2.add(points[0], vec2.scale(vec2.perpendicular(headings[0]), halves[0])));
 
   const first = loop ? 0 : 1;
   const last = loop ? points.length - 1 : points.length - 2;
   for (let at = first; at <= last; at++) {
     const incoming = headings[(at - 1 + headings.length) % headings.length];
-    cornerInto(side, points[at], incoming, headings[at], reachAt(points, at), half, settings);
+    cornerInto(side, points[at], incoming, headings[at], reachAt(points, at), halves[at], settings);
   }
 
   if (!loop) {
+    const last = points.length - 1;
     const heading = headings[headings.length - 1];
-    side.push(vec2.add(points[points.length - 1], vec2.scale(vec2.perpendicular(heading), half)));
+    side.push(vec2.add(points[last], vec2.scale(vec2.perpendicular(heading), halves[last])));
   }
   return side;
 }
@@ -213,6 +228,136 @@ function capAlone(at: Vec2, half: number, settings: Settings): Vec2[] | null {
   return null;
 }
 
+/** Whether a width is worth an outline at all, which a stroke of nothing at
+ * both ends is not. */
+function anyWidth(width: Width): boolean {
+  return typeof width === 'number' ? width > 0 : width.from > 0 || width.to > 0;
+}
+
+/** How many times one run may be halved for the sake of the width along it,
+ * which a tolerance of nothing would otherwise leave unbounded. */
+const WIDTH_DEPTH = 12;
+
+/** One run with the width it carries at each of its points. */
+interface Walked {
+  readonly points: readonly Vec2[];
+  readonly halves: readonly number[];
+  readonly closed: boolean;
+}
+
+/** Half the width a fraction of the way along, never below nothing: a taper
+ * along a curve that passes its destination and comes back has a stretch below
+ * zero, and a stroke offset the wrong way is a bow tie rather than a thin
+ * line. */
+function halfAt(width: Width, along: number): number {
+  return Math.max(0, widthAt(width, along)) / 2;
+}
+
+/**
+ * One run of the walk split until the width along it is straight enough, with
+ * every point placed on the run itself.
+ *
+ * The flattening answers for the geometry alone, so a straight piece is two
+ * points however the width moves along it and a taper that swells in the middle
+ * would have nothing to swell at. The extra points are on the run, which adds
+ * no distance to the walk and no corner to the outline.
+ *
+ * The width is read at a third and two thirds rather than halfway, because a
+ * curve that rises and falls by the same amount has its midpoint on the chord
+ * and a test taken there calls it straight.
+ */
+function splitForWidth(
+  from: Vec2,
+  fromAlong: number,
+  to: Vec2,
+  toAlong: number,
+  width: Width,
+  tolerance: number,
+  depth: number,
+  into: Vec2[],
+  halves: number[]
+): void {
+  const middle = (fromAlong + toAlong) / 2;
+  const near = halfAt(width, fromAlong);
+  const far = halfAt(width, toAlong);
+  const offChord = (share: number) =>
+    Math.abs(halfAt(width, lerp(fromAlong, toAlong, share)) - lerp(near, far, share));
+  if (depth >= WIDTH_DEPTH || Math.max(offChord(1 / 3), offChord(2 / 3)) <= tolerance) {
+    into.push(to);
+    halves.push(far);
+    return;
+  }
+  const half = vec2.lerp(from, to, 0.5);
+  splitForWidth(from, fromAlong, half, middle, width, tolerance, depth + 1, into, halves);
+  splitForWidth(half, middle, to, toAlong, width, tolerance, depth + 1, into, halves);
+}
+
+/**
+ * Every run with the half width at every point, taken over the whole path's
+ * length rather than each subpath's own, which is the measure a path is trimmed
+ * by as well.
+ */
+function walkedRuns(runs: readonly Run[], width: Width, tolerance: number): Walked[] {
+  const measured = runs.map((run) => {
+    const along: number[] = [0];
+    for (let at = 1; at < run.points.length; at++) {
+      along.push(along[at - 1] + vec2.distance(run.points[at - 1], run.points[at]));
+    }
+    const closing = run.closed ? vec2.distance(run.points[run.points.length - 1], run.points[0]) : 0;
+    return { along, total: along[along.length - 1] + closing };
+  });
+  const total = measured.reduce((sum, run) => sum + run.total, 0);
+
+  let before = 0;
+  return runs.map((run, at) => {
+    const { along } = measured[at];
+    const start = before;
+    before += measured[at].total;
+    const fractionOf = (walked: number) => (total > 0 ? (start + walked) / total : 0);
+
+    if (typeof width === 'number') {
+      return { points: run.points, halves: run.points.map(() => halfAt(width, 0)), closed: run.closed };
+    }
+
+    const points: Vec2[] = [run.points[0]];
+    const halves: number[] = [halfAt(width, fractionOf(0))];
+    for (let piece = 1; piece < run.points.length; piece++) {
+      splitForWidth(
+        run.points[piece - 1],
+        fractionOf(along[piece - 1]),
+        run.points[piece],
+        fractionOf(along[piece]),
+        width,
+        tolerance,
+        0,
+        points,
+        halves
+      );
+    }
+    // The run back to the start of a loop carries width like any other, and its
+    // far end is the point the loop already begins at.
+    if (run.closed && run.points.length > 2) {
+      const last = run.points.length - 1;
+      const ending: Vec2[] = [];
+      const endingHalves: number[] = [];
+      splitForWidth(
+        run.points[last],
+        fractionOf(along[last]),
+        run.points[0],
+        fractionOf(measured[at].total),
+        width,
+        tolerance,
+        0,
+        ending,
+        endingHalves
+      );
+      points.push(...ending.slice(0, -1));
+      halves.push(...endingHalves.slice(0, -1));
+    }
+    return { points, halves, closed: run.closed };
+  });
+}
+
 /**
  * A path stroked at a width, as the filled outline of that stroke.
  *
@@ -223,9 +368,8 @@ function capAlone(at: Vec2, half: number, settings: Settings): Vec2[] | null {
  *
  * A width of nothing or less has no outline and gives an empty path.
  */
-export function outlinePath(path: Path, width: number, options: OutlineOptions = {}): Path {
-  const half = width / 2;
-  if (!(half > 0)) return [];
+export function outlinePath(path: Path, width: Width, options: OutlineOptions = {}): Path {
+  if (!anyWidth(width)) return [];
   const settings: Settings = {
     cap: options.cap ?? 'butt',
     join: options.join ?? 'miter',
@@ -233,34 +377,70 @@ export function outlinePath(path: Path, width: number, options: OutlineOptions =
     tolerance: options.tolerance ?? FLATNESS,
   };
 
+  const runs: Run[] = flattenRuns(path, { tolerance: settings.tolerance }).map((run) => ({
+    points: withoutRepeats(run.points, run.closed),
+    closed: run.closed,
+  }));
+
   const loops: Vec2[][] = [];
-  for (const run of flattenRuns(path, { tolerance: settings.tolerance })) {
-    const points = withoutRepeats(run.points, run.closed);
+  walkedRuns(runs, width, settings.tolerance).forEach((run) => {
+    const { points, halves: half } = run;
     if (points.length < 2) {
-      const alone = capAlone(points[0], half, settings);
+      const alone = half[0] > 0 ? capAlone(points[0], half[0], settings) : null;
       if (alone) loops.push(alone);
-      continue;
+      return;
     }
 
     // A loop of two points has doubled back on itself and has ends, so it is
     // walked as an open stroke and gets the caps that go with them.
-    const loop = run.closed && points.length > 2;
-    if (loop) {
-      loops.push(offsetSide(points, true, half, settings));
-      loops.push(offsetSide([...points].reverse(), true, half, settings));
-      continue;
+    if (run.closed && points.length > 2) {
+      loops.push(offsetSide(points, half, true, settings));
+      loops.push(offsetSide([...points].reverse(), [...half].reverse(), true, settings));
+      return;
     }
 
-    const back = [...points].reverse();
-    const ending = vec2.normalize(vec2.sub(points[points.length - 1], points[points.length - 2]));
+    const last = points.length - 1;
+    const ending = vec2.normalize(vec2.sub(points[last], points[last - 1]));
     const starting = vec2.normalize(vec2.sub(points[0], points[1]));
     loops.push([
-      ...offsetSide(points, false, half, settings),
-      ...capPoints(points[points.length - 1], ending, half, settings),
-      ...offsetSide(back, false, half, settings),
-      ...capPoints(points[0], starting, half, settings),
+      ...offsetSide(points, half, false, settings),
+      ...capPoints(points[last], ending, half[last], settings),
+      ...offsetSide([...points].reverse(), [...half].reverse(), false, settings),
+      ...capPoints(points[0], starting, half[0], settings),
     ]);
-  }
+  });
 
   return loops.flatMap((loop) => polygon(withoutRepeats(loop, true)));
+}
+
+/**
+ * The marks a painter draws, with every tapered stroke turned into the filled
+ * outline it is drawn as.
+ *
+ * A mark whose stroke is one width the whole way is handed back as it stands,
+ * so a list with no taper in it comes out of this unchanged and running it
+ * twice changes nothing the first pass left.
+ *
+ * A shape carrying a fill as well leaves two marks, the fill under its own id
+ * and the outline under that id with the stroke's name on the end, because one
+ * mark holds one fill and the outline needs its own.
+ */
+export function outlinedMarks(marks: readonly Mark[]): readonly Mark[] {
+  const drawn: Mark[] = [];
+  for (const mark of marks) {
+    const stroke = mark.kind === 'path' ? mark.stroke : undefined;
+    if (mark.kind !== 'path' || !stroke || typeof stroke.width === 'number') {
+      drawn.push(mark);
+      continue;
+    }
+    if (mark.fill) drawn.push({ ...mark, stroke: undefined });
+    drawn.push({
+      kind: 'path',
+      id: mark.fill ? `${mark.id}/stroke` : mark.id,
+      path: outlinePath(mark.path, stroke.width, { cap: stroke.cap, join: stroke.join }),
+      fill: { colour: stroke.colour },
+      opacity: mark.opacity,
+    });
+  }
+  return drawn;
 }

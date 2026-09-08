@@ -13,6 +13,8 @@
 import { mat3, type Mat3 } from '../values/mat3.js';
 import type { Mark, PathMark, TextMark } from '../figure/mark.js';
 import type { Path } from '../figure/path.js';
+import { outlinedMarks } from '../figure/outline.js';
+import { widestWidth } from '../figure/width.js';
 
 /**
  * Only what a painter uses from a canvas context, named here rather than taken
@@ -72,7 +74,7 @@ function paintPath(context: CanvasLike, mark: PathMark, view: Mat3, scale: numbe
   }
   if (mark.stroke) {
     context.strokeStyle = mark.stroke.colour;
-    context.lineWidth = mark.stroke.width * scale;
+    context.lineWidth = widestWidth(mark.stroke.width) * scale;
     context.lineCap = mark.stroke.cap ?? 'butt';
     context.lineJoin = mark.stroke.join ?? 'miter';
     // Set every time rather than only when a mark asks for it, because a context
@@ -102,7 +104,9 @@ function paintText(context: CanvasLike, mark: TextMark, view: Mat3, scale: numbe
  */
 export function paintCanvas(context: CanvasLike, marks: readonly Mark[], view: Mat3): void {
   const scale = mat3.scaleFactor(view);
-  for (const mark of marks) {
+  // A stroke of two widths is no setting a context holds, so it arrives here as
+  // the filled outline it is drawn as before any of it is traced.
+  for (const mark of outlinedMarks(marks)) {
     context.save();
     context.globalAlpha = mark.opacity ?? 1;
     if (mark.kind === 'path') paintPath(context, mark, view, scale);

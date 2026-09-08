@@ -279,6 +279,15 @@ A track is one value's keys over time. A control panel writes tracks and a figur
   cap at the start. A closed subpath becomes two loops wound against each other, which the nonzero
   rule reads as a ring. A width of nothing or less has no outline. The loop is built on a flattening,
   since the offset of a cubic is not a cubic.
+- `widthAt(width, along)` — the width a stroke has a fraction of the way along its length, which for
+  one number is that number wherever it is read.
+- `widestWidth(width)` — the widest a stroke gets, which is the number a caller that has to pick one
+  reads. A tick standing on an axis is measured against the line it stands on.
+- `outlinedMarks(marks)` — the marks a painter draws, with every tapered stroke turned into the
+  filled outline it is drawn as. A mark whose stroke is one width is handed back as it stands, so a
+  list with no taper comes out unchanged and running it twice changes nothing. A shape carrying a
+  fill as well leaves two marks, the fill under its own id and the outline under that id with
+  `/stroke` on the end. Both painters run this over the marks they are given.
 - `OutlineOptions` — what outlining takes. The caps, the joins and the miter limit are the SVG
   specification's, and so are the defaults.
   - `cap` — what the two ends of an open stroke are finished with: `butt`, `round` or `square`.
@@ -300,11 +309,18 @@ A mark is what a painter draws. It may request only what both painters implement
   - `rule` — `nonzero` or `evenodd`, how a shape that crosses itself decides what is inside.
 - `Stroke` — how a line is painted.
   - `colour` — the colour.
-  - `width` — in figure units, so a line reads the same weight at every size the figure is drawn at.
+  - `width` — one number in figure units, so a line reads the same weight at every size the figure is
+    drawn at, or a `Taper`.
   - `cap` — `butt`, `round` or `square`, the shape of each end.
   - `join` — `miter`, `round` or `bevel`, the shape of each corner.
   - `dash` — lengths of the drawn and undrawn runs, in figure units.
   - `dashOffset` — how far into that pattern the line starts.
+- `Taper` — a width that changes along the length of a stroke. The width leaves `from` for `to` along
+  the named curve, read at the fraction of the whole path's length. A tapered stroke is drawn as the
+  filled outline of its own path, since neither painter strokes at two widths.
+  - `from`, `to` — the width where the path starts and where it ends, in figure units.
+  - `curve` — the `CurveName` the width leaves `from` along. Default `linear`.
+- `Width` — what a stroke's width may be: one number the whole way, or a `Taper`.
 - `PathMark` — an outline to draw: its `path`, and a `fill`, a `stroke`, or both.
 - `TextMark` — a piece of text to draw.
   - `at` — where its anchor sits.

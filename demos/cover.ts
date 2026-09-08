@@ -18,6 +18,7 @@ import {
   mat3,
   transformPath,
   vec2,
+  widestWidth,
   windingAt,
   type Mark,
   type Mat3,
@@ -146,7 +147,7 @@ function stampFill(grid: Grid, mark: Mark & { kind: 'path' }, matrix: Mat3): voi
 }
 
 function stampStroke(grid: Grid, mark: Mark & { kind: 'path' }, matrix: Mat3): void {
-  const half = (mark.stroke!.width * mat3.scaleFactor(matrix)) / 2;
+  const half = (widestWidth(mark.stroke!.width) * mat3.scaleFactor(matrix)) / 2;
   for (const loop of loopsOf(mark, matrix, false)) {
     for (let at = 1; at < loop.length; at++) along(grid, loop[at - 1], loop[at], half);
   }

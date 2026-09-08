@@ -13,6 +13,7 @@ import { line, polygon } from './path.js';
 import { group, shape, text, type GroupNode, type Node } from './node.js';
 import { multiplesOn, tickStep, ticksOn } from './ticks.js';
 import { toUnits, type Coords, type Scale } from './scale.js';
+import { scaledWidth, widestWidth } from './width.js';
 import type { Fill, Stroke } from './mark.js';
 
 export interface NumberLineOptions {
@@ -68,7 +69,7 @@ export function numberLine(name: string, scale: Scale, options: NumberLineOption
   const across = (options.direction ?? 'across') === 'across';
   const seat = options.at ?? 0;
   const tip = options.tip ?? 0;
-  const tickLength = options.tickLength ?? options.stroke.width * 8;
+  const tickLength = options.tickLength ?? widestWidth(options.stroke.width) * 8;
   const size = options.size ?? 0;
   const gap = options.gap ?? size * 0.35;
   const { from: low, to: high } = interval.ordered(scale.units);
@@ -220,7 +221,7 @@ export function numberPlane(name: string, coords: Coords, options: NumberPlaneOp
         ],
         {
           style: {
-            stroke: { ...options.stroke, width: options.stroke.width * (options.minorWidth ?? 0.6) },
+            stroke: { ...options.stroke, width: scaledWidth(options.stroke.width, options.minorWidth ?? 0.6) },
             opacity: options.minorOpacity ?? 0.4,
           },
         }
