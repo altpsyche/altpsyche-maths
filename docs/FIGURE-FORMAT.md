@@ -494,10 +494,13 @@ twelve steps are one commit each, which is the seven this plan was written with 
 rewrites the guide and the reference and is two. The site is not counted here at all, since it is a
 release away and has a document of its own.
 
-- [ ] **1. The readers take geometry rather than functions.** `slopeOf`, `areaUnder` and `tangentAt`
-  work from a plotted path's own cubics. **Measures:** every demo's marks unchanged within tolerance
-  at its named times; the slope read off a path against the closed-form derivative of `x²` at five
-  places; the suite from 785.
+- [x] **1. The readers take geometry rather than functions.** `slopeOf(coords, curve, x)`,
+  `areaUnder(coords, curve, options)` and `tangentAt(coords, curve, x, options)` all take the plotted
+  path. **Measured:** the slope read off a path is the closed-form derivative of `x²` to twelve places
+  at five x, and a sine to 1.57e-3, which is a tenth of the sample step squared; seven of the eight
+  sheets are byte for byte as committed and the flat demo's strip moves one piece boundary of its
+  frame-1 tangent, thinning that tapered stroke by a tenth of a pixel on the mean, which is the
+  outliner's own instability and is filed; the suite from 785 to 787.
 
 - [ ] **2. The expression form, and the evaluator for it.** The closed vocabulary above, as a type
   and a function that evaluates one against a set of track values. **It is an expression over a point

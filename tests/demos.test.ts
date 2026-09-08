@@ -21,6 +21,7 @@ import {
   overlapOf,
   isLoop,
   plot,
+  slopeOf,
   pointAlong,
   pointOf,
   sameMarks,
@@ -668,13 +669,18 @@ describe('the flat demo', () => {
     const marks = marksAt(tangent, TIMES.walkTo);
     const shafts = marks.filter((mark) => mark.id.startsWith('tangent/field/') && mark.id.endsWith('/shaft'));
     expect(shafts).toHaveLength(21);
+
     for (const mark of shafts) {
       if (mark.kind !== 'path') throw new Error('a shaft is a path');
       const start = mark.path[0].start;
       const end = mark.path[0].curves[mark.path[0].curves.length - 1].to;
       const x = toGraph(coords.x, start.x);
-      const wanted = tangentAt(coords, curve, x, { reach: 1.2 })[0];
-      const along = vec2.sub(wanted.curves[0].to, wanted.start);
+      // The field reaches x either side of the walk, where the closed-form
+      // derivative is the only slope there is.
+      const read = slopeOf(coords, walkPath, x);
+      const slope = Number.isNaN(read) ? 2 * x : read;
+      const wanted = [pointOf(coords, x, curve(x)), pointOf(coords, x + 1, curve(x) + slope)];
+      const along = vec2.sub(wanted[1], wanted[0]);
       const shaft = vec2.sub(end, start);
       expect(Math.abs(vec2.cross(vec2.normalize(along), vec2.normalize(shaft)))).toBeLessThan(1e-9);
     }
@@ -687,7 +693,7 @@ describe('the flat demo', () => {
     for (let step = 0; step <= 40; step++) {
       const point = pointAlong(walkPath, step / 40)!;
       const x = toGraph(coords.x, point.x);
-      const path = tangentAt(coords, curve, x, { reach: 1.2 });
+      const path = tangentAt(coords, walkPath, x, { reach: 1.2 });
       if (path.length === 0) continue;
       const from = path[0].start;
       const to = path[0].curves[0].to;

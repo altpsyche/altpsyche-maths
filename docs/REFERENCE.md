@@ -490,9 +490,10 @@ never drawn works.
   - `resolution` — how many pieces the curve is cut into.
   - `over` — the run of x the curve is drawn over, the whole width of the graph where it is left
     out.
-- `areaUnder(coords, of, over, options)` — the region between a curve and a level line, closed. The
-  top of the region is the same geometry `plot` draws over the same run.
-- `AreaOptions` — `PlotOptions`, plus:
+- `areaUnder(coords, curve, options)` — the region between a plotted curve and a level line, closed,
+  one subpath per subpath of the curve. The top is the path the caller drew rather than a second plot
+  of the function behind it.
+- `AreaOptions` — what a region takes.
   - `baseline` — the height the region is measured down to, the axis itself where it is left out. A
     height off the graph sits at the near edge instead.
 - `riemannBars(name, coords, of, options)` — the bars under a curve, each named by its place in the
@@ -505,15 +506,13 @@ never drawn works.
   - `over` — the run of x they cover, the whole width of the graph where it is left out.
   - `height` — `left`, `right` or `middle`, where in each bar its height is read.
   - `baseline` — the level the bars stand on.
-- `slopeOf(of, x, step)` — the slope of a function at a point, from the central difference either
-  side of it. Either side rather than one side makes the error fall as the step squared and costs
-  the same two calls.
-- `tangentAt(coords, of, x, options)` — the tangent to a curve at a point, as a straight line cut
-  where it leaves the graph.
+- `slopeOf(coords, curve, x)` — the slope a plotted curve has at a graph x, read off the cubic that
+  covers that x, and `NaN` where the curve does not reach it. A cubic written through samples of a
+  quadratic carries that quadratic with nothing left over, so a parabola reads exactly.
+- `tangentAt(coords, curve, x, options)` — the tangent to a plotted curve at a graph x, as a straight
+  line cut where it leaves the graph. Nothing where the curve does not reach that x.
 - `TangentOptions` — what a tangent takes.
   - `reach` — how far the line reaches either side of the point, in graph units.
-  - `step` — the step the slope is read over, for a function whose own scale asks for a different
-    one.
 
 ## Axes and grids
 

@@ -260,11 +260,12 @@ of the way along in x and carry the sample's own slope, so the curve passes thro
 both slopes. `plot` cuts the curve where it leaves the graph, so a pole breaks into two subpaths
 rather than drawing a line across the picture.
 
-`areaUnder` closes the region between a curve and a level line, over the same sampling `plot` uses,
-so the region's top and the curve are one geometry. `riemannBars` draws the bars whose limit that
-region is. `tangentAt` clips the tangent line to the graph analytically, since a straight line
-crosses each edge once. `slopeOf` evaluates the slope by the central difference, whose error is
-O(h²) for the same two evaluations a one-sided difference costs.
+`areaUnder` closes the region between a plotted curve and a level line, taking the path the caller
+drew, so the region's top and the curve are one geometry. `riemannBars` draws the bars whose limit
+that region is. `tangentAt` clips the tangent line to the graph analytically, since a straight line
+crosses each edge once. All three readers take the plotted path rather than the function behind it:
+`slopeOf` reads the slope off the cubic covering the x it is asked for, and hands back `NaN` where
+the curve does not reach that x.
 
 ## Timelines and animations
 

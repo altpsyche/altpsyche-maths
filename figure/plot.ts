@@ -17,10 +17,10 @@
  */
 import { interval, type Interval } from '../values/interval.js';
 import { vec2 } from '../values/vec2.js';
-import { pointOf, toUnits, type Coords } from './scale.js';
+import { pointOf, toGraph, toUnits, type Coords, type Scale } from './scale.js';
 import { group, shape, type GroupNode } from './node.js';
 import type { Fill, Stroke } from './mark.js';
-import { line, polygon, straight, type Cubic, type Path, type Subpath } from './path.js';
+import { line, pointOn, polygon, straight, tangentOn, type Cubic, type Path, type Subpath } from './path.js';
 
 export interface PlotOptions {
   /** How many pieces the curve is cut into. */
@@ -173,28 +173,23 @@ export function plot(coords: Coords, of: (x: number) => number, options: PlotOpt
   return path;
 }
 
-export interface AreaOptions extends PlotOptions {
+export interface AreaOptions {
   /** The height the region is measured down to, which is the axis itself where
    * it is left out. A height off the graph sits at the near edge instead. */
   baseline?: number;
 }
 
 /**
- * The region between a curve and a level line, closed, as one subpath per
- * stretch of the curve that is on the graph.
+ * The region between a plotted curve and a level line, closed, as one subpath
+ * per subpath of the curve.
  *
- * The curve is the same one `plot` draws over the same run, so the top of the
- * region and the curve laid over it are the same geometry rather than two
- * samplings that agree to within a sample.
+ * The top is the path a caller already drew rather than a second plot of the
+ * function behind it, so the region and the curve laid over it are one piece of
+ * geometry and cannot come to disagree.
  */
-export function areaUnder(
-  coords: Coords,
-  of: (x: number) => number,
-  over: Interval,
-  options: AreaOptions = {}
-): Path {
+export function areaUnder(coords: Coords, curve: Path, options: AreaOptions = {}): Path {
   const foot = toUnits(coords.y, interval.clampTo(coords.y.graph, options.baseline ?? 0));
-  return plot(coords, of, { ...options, over }).map((top) => {
+  return curve.map((top) => {
     const last = top.curves.length > 0 ? top.curves[top.curves.length - 1].to : top.start;
     const under = vec2(last.x, foot);
     const back = vec2(top.start.x, foot);
@@ -261,46 +256,98 @@ export function riemannBars(
   return group(name, children, { style: { fill: options.fill, stroke: options.stroke } });
 }
 
-/**
- * The step the central difference is taken over, against the size of x.
- *
- * The cube root of the smallest gap between two doubles is the step where the
- * two errors in a central difference are the same size: the formula's own error
- * falls as the step squared and the rounding error rises as one over the step.
- */
-const STEP = Math.cbrt(Number.EPSILON);
+/** How many figure units one graph unit covers on an axis, with its sign, so a
+ * scale given the other way round turns a slope over rather than losing it. */
+function perGraph(scale: Scale): number {
+  return (scale.units.to - scale.units.from) / (scale.graph.to - scale.graph.from);
+}
+
+/** Where a plotted curve stands at one graph x: the height it reaches and the
+ * slope it leaves at, both as numbers on the graph. */
+interface Reading {
+  readonly height: number;
+  readonly slope: number;
+}
 
 /**
- * The slope of a function at a point, from the central difference either side of
- * it.
+ * How many times a reading corrects its first guess at the fraction along a
+ * piece.
  *
- * The difference either side rather than one side is what makes the error fall
- * as the step squared instead of the step, and it costs the same two calls.
+ * A curve `plot` writes carries its controls a third of the way along in x, so x
+ * is a straight line in the fraction and the first guess is already the answer.
+ * The correction is what makes a reading right on a piece written some other way,
+ * and Newton's method doubles the digits it holds each time.
  */
-export function slopeOf(of: (x: number) => number, x: number, step = STEP * Math.max(Math.abs(x), 1)): number {
-  return (of(x + step) - of(x - step)) / (2 * step);
+const CORRECTIONS = 2;
+
+/**
+ * The height and the slope a plotted curve has at a graph x, and nothing where
+ * the curve does not reach that x.
+ *
+ * A place at the join between two pieces is read on the earlier one, and the two
+ * agree because a plotted curve leaves each sample at one slope.
+ */
+function readingAt(coords: Coords, curve: Path, x: number): Reading | null {
+  const across = perGraph(coords.x);
+  const up = perGraph(coords.y);
+  if (!Number.isFinite(across) || !Number.isFinite(up) || across === 0 || up === 0) return null;
+  const place = toUnits(coords.x, x);
+  for (const subpath of curve) {
+    let from = subpath.start;
+    for (const piece of subpath.curves) {
+      const low = Math.min(from.x, piece.to.x);
+      const high = Math.max(from.x, piece.to.x);
+      if (place >= low && place <= high && high > low) {
+        let along = (place - from.x) / (piece.to.x - from.x);
+        for (let correction = 0; correction < CORRECTIONS; correction++) {
+          const rate = tangentOn(from, piece, along).x;
+          if (rate === 0) break;
+          along = Math.min(1, Math.max(0, along - (pointOn(from, piece, along).x - place) / rate));
+        }
+        const heading = tangentOn(from, piece, along);
+        return {
+          height: toGraph(coords.y, pointOn(from, piece, along).y),
+          slope: heading.y / up / (heading.x / across),
+        };
+      }
+      from = piece.to;
+    }
+  }
+  return null;
+}
+
+/**
+ * The slope a plotted curve has at a graph x, read off the cubic covering that
+ * x, and `NaN` where the curve does not reach it.
+ *
+ * The cubics are the curve a figure already drew, so the slope is the drawn
+ * curve's own rather than a second sampling of the function behind it. A cubic
+ * written through samples of a quadratic carries that quadratic with nothing left
+ * over, which is why the reading of a parabola is exact rather than close.
+ */
+export function slopeOf(coords: Coords, curve: Path, x: number): number {
+  return readingAt(coords, curve, x)?.slope ?? Number.NaN;
 }
 
 export interface TangentOptions {
   /** How far the line reaches either side of the point, in graph units. */
   reach?: number;
-  /** The step the slope is read over, for a function whose own scale asks for a
-   * different one. */
-  step?: number;
 }
 
 /**
- * The tangent to a curve at a point, as a straight line held inside the graph.
+ * The tangent to a plotted curve at a graph x, as a straight line held inside
+ * the graph.
  *
  * The line is cut where it leaves the graph rather than sampled and broken like
  * a curve, because a straight line crosses each edge once and the crossing is
  * arithmetic rather than a search. A tangent at a steep place otherwise runs the
  * width of the picture and out of it.
  */
-export function tangentAt(coords: Coords, of: (x: number) => number, x: number, options: TangentOptions = {}): Path {
+export function tangentAt(coords: Coords, curve: Path, x: number, options: TangentOptions = {}): Path {
   const reach = options.reach ?? interval.span(coords.x.graph) / 8;
-  const height = of(x);
-  const slope = slopeOf(of, x, options.step);
+  const reading = readingAt(coords, curve, x);
+  if (!reading) return [];
+  const { height, slope } = reading;
   if (!Number.isFinite(height) || !Number.isFinite(slope)) return [];
 
   const graphX = interval.ordered(coords.x.graph);

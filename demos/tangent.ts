@@ -214,10 +214,11 @@ const wash: Fill = {
  * The direction the curve has at a place, which is one across and the curve's
  * own slope up.
  *
- * The slope is read from the curve rather than written out a second time, so
- * the field and the tangent the dot carries cannot come to disagree.
+ * The slope is the derivative of the same curve in closed form rather than a
+ * reading off the drawn one, because the field covers x that the curve is cut
+ * short of where it leaves the top of the graph.
  */
-export const slopeField = (at: Vec2) => vec2(1, slopeOf(curve, at.x));
+export const slopeField = (at: Vec2) => vec2(1, 2 * at.x);
 
 /**
  * How many arrows across and up, chosen so a cell comes out nearly square in
@@ -305,7 +306,7 @@ export function sceneAt(along: number): Node {
     [
     numberPlane('grid', coords, { stroke: faint, minors: 4, minorOpacity: 0.45 }),
     axes('axes', coords, { stroke: pen, fill: ink, size: TEXT.tick, tip: TIP }),
-    shape('area', areaUnder(coords, curve, interval(0, x)), { fill: wash }),
+    shape('area', areaUnder(coords, plot(coords, curve, { over: interval(0, x) })), { fill: wash }),
     vectorField('field', coords, slopeField, {
       resolution: FIELD,
       lengthOf: arrowLength,
@@ -314,9 +315,9 @@ export function sceneAt(along: number): Node {
       head: FIELD_HEAD,
     }),
     shape('curve', plot(coords, curve), { stroke: drawn }),
-    shape('tangent', tangentAt(coords, curve, x, { reach: 1.2 }), { stroke: slope }),
+    shape('tangent', tangentAt(coords, walkPath, x, { reach: 1.2 }), { stroke: slope }),
     dot('point', point, 0.08, ink),
-    text('reading', fractionOf(frame, 0.02, 0.91), `slope ${labelFor(slopeOf(curve, x), 0.01)}`, TEXT.note, {
+    text('reading', fractionOf(frame, 0.02, 0.91), `slope ${labelFor(slopeOf(coords, walkPath, x), 0.01)}`, TEXT.note, {
       fill: ink,
     }),
     group('equation', [rule('at-rest', atRest, frame), rule('moving', moving, frame)]),

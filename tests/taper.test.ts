@@ -6,6 +6,7 @@ import {
   flatten,
   flattenPath,
   group,
+  interval,
   line,
   linear,
   marksAt,
@@ -13,6 +14,7 @@ import {
   nearestEdge,
   outlinePath,
   outlinedMarks,
+  plot,
   pointAlong,
   shape,
   svgMarkup,
@@ -90,7 +92,7 @@ describe('the outline of a tapered stroke', () => {
 
   it('has the width the taper asks for at eleven places along the flat demo’s tangent', () => {
     const width: Taper = { from: 0.035, to: 0 };
-    const tangent = tangentAt(coords, curve, 1.5, { reach: 1.2 });
+    const tangent = tangentAt(coords, plot(coords, curve, { over: interval(0, 3) }), 1.5, { reach: 1.2 });
     const loops = flattenPath(outlinePath(tangent, width));
     for (let place = 0; place <= 10; place++) {
       // Inside the length rather than at its ends, since the nearest edge to a

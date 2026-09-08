@@ -91,9 +91,10 @@ than state read back out of a drawn group.
 
 `plot` samples a function and emits one Hermite cubic per interval. The control points sit a third
 of the way along in x and carry the sample's own slope, so the curve passes through both samples at
-both slopes. `slopeOf` uses the central difference, whose error is O(h²) for the same two
-evaluations a one-sided difference costs. `tangentAt` clips the tangent line to the graph
-analytically rather than by sampling, since a line crosses each edge once.
+both slopes. `slopeOf` reads the slope off that curve's own cubics, which carry a quadratic with
+nothing left over, so a parabola reads exactly rather than to a difference's O(h²). `tangentAt`
+clips the tangent line to the graph analytically rather than by sampling, since a line crosses each
+edge once.
 
 `streamlineOf` integrates a field by fourth-order Runge-Kutta with a step in arc length rather than
 in time, which keeps the points evenly spaced. Halving the step divides the error along the curve by

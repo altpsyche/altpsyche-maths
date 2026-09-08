@@ -217,13 +217,14 @@ describe('the area under a curve', () => {
     // A cubic holds a parabola with nothing left over, so the region's top is
     // the parabola itself and its area has no sampling error in it.
     for (const samples of [4, 16, 64, 96]) {
-      const area = enclosedArea(areaUnder(tall, (x) => x * x, interval(0, 2), { resolution: samples }));
+      const top = plot(tall, (x: number) => x * x, { resolution: samples, over: interval(0, 2) });
+      const area = enclosedArea(areaUnder(tall, top));
       expect(area / perGraphUnit).toBeCloseTo(8 / 3, 12);
     }
   });
 
   it('closes down to the axis and back', () => {
-    const path = areaUnder(tall, (x) => x * x, interval(0, 2), { resolution: 4 });
+    const path = areaUnder(tall, plot(tall, (x: number) => x * x, { resolution: 4, over: interval(0, 2) }));
     expect(path).toHaveLength(1);
     expect(path[0].closed).toBe(true);
     expect(path[0].curves).toHaveLength(7);
@@ -232,21 +233,23 @@ describe('the area under a curve', () => {
   });
 
   it('shares its top with the curve drawn over it', () => {
-    const region = areaUnder(tall, (x) => x * x, interval(0, 2), { resolution: 8 });
-    const curve = plot(tall, (x) => x * x, { resolution: 8, over: interval(0, 2) });
+    const curve = plot(tall, (x: number) => x * x, { resolution: 8, over: interval(0, 2) });
+    const region = areaUnder(tall, curve);
     expect(region[0].start).toEqual(curve[0].start);
     for (let piece = 0; piece < 8; piece++) expect(region[0].curves[piece]).toEqual(curve[0].curves[piece]);
   });
 
   it('measures down to the level it is given', () => {
-    const area = enclosedArea(areaUnder(tall, (x) => x * x, interval(0, 2), { baseline: -1, resolution: 16 }));
+    const top = plot(tall, (x: number) => x * x, { resolution: 16, over: interval(0, 2) });
+    const area = enclosedArea(areaUnder(tall, top, { baseline: -1 }));
     // The parabola over a floor one below the axis: eight thirds and two more.
     expect(area / perGraphUnit).toBeCloseTo(8 / 3 + 2, 12);
   });
 
   it('holds a level off the graph at the near edge', () => {
-    const low = enclosedArea(areaUnder(tall, (x) => x * x, interval(0, 2), { baseline: -9, resolution: 16 }));
-    const edge = enclosedArea(areaUnder(tall, (x) => x * x, interval(0, 2), { baseline: -1, resolution: 16 }));
+    const top = plot(tall, (x: number) => x * x, { resolution: 16, over: interval(0, 2) });
+    const low = enclosedArea(areaUnder(tall, top, { baseline: -9 }));
+    const edge = enclosedArea(areaUnder(tall, top, { baseline: -1 }));
     expect(low).toBeCloseTo(edge, 12);
   });
 
@@ -255,13 +258,13 @@ describe('the area under a curve', () => {
       scaleOf(interval(-2, 2), interval(-4.6, 4.6)),
       scaleOf(interval(-4, 4), interval(-2.4, 2.4))
     );
-    const path = areaUnder(pole, (x) => 1 / x, interval(-2, 2));
+    const path = areaUnder(pole, plot(pole, (x: number) => 1 / x, { over: interval(-2, 2) }));
     expect(path).toHaveLength(2);
     for (const subpath of path) expect(subpath.closed).toBe(true);
   });
 
   it('is nothing over a run with no width', () => {
-    expect(areaUnder(tall, (x) => x * x, interval(2, 2))).toEqual([]);
+    expect(areaUnder(tall, plot(tall, (x: number) => x * x, { over: interval(2, 2) }))).toEqual([]);
   });
 });
 
@@ -338,38 +341,71 @@ describe('the bars under a curve', () => {
   });
 });
 
-describe('the slope of a function', () => {
-  it('reads the derivative of a parabola at three places', () => {
-    for (const x of [0.5, 1, 3]) expect(slopeOf((t) => t * t, x)).toBeCloseTo(2 * x, 9);
+describe('the slope of a plotted curve', () => {
+  it('reads the closed-form derivative of a parabola at five places', () => {
+    // A cubic written through samples of a quadratic carries that quadratic with
+    // nothing left over, so the reading is the derivative itself rather than an
+    // approximation of it.
+    const path = plot(tall, (x: number) => x * x, { resolution: 16 });
+    for (const x of [-0.5, 0, 0.75, 1.6, 3.25]) expect(slopeOf(tall, path, x)).toBeCloseTo(2 * x, 12);
   });
 
-  it('reads the derivative of a sine at three places', () => {
-    for (const x of [0, 1, Math.PI / 3]) expect(slopeOf(Math.sin, x)).toBeCloseTo(Math.cos(x), 9);
+  it('reads a sine within the error the drawn curve already carries', () => {
+    // The drawn curve leaves each sample at a central difference of its
+    // neighbours, so the reading carries an error of the sample step squared. The
+    // step is 4pi over 96 and its square is 1.71e-2, of which the worst of these
+    // five places keeps a tenth: 1.57e-3.
+    const path = plot(wave, Math.sin, { resolution: 96 });
+    for (const x of [0.5, 1, Math.PI / 3, 3, 6]) {
+      expect(Math.abs(slopeOf(wave, path, x) - Math.cos(x))).toBeLessThan(1.6e-3);
+    }
   });
 
-  it('is closer than a one-sided difference over the same step', () => {
-    const step = 1e-5;
-    const oneSided = (Math.sin(1 + step) - Math.sin(1)) / step;
-    expect(Math.abs(slopeOf(Math.sin, 1, step) - Math.cos(1))).toBeLessThan(
-      Math.abs(oneSided - Math.cos(1)) / 100
+  it('is the slope of the drawn cubic and not of the function behind it', () => {
+    // Four pieces over a sine leave a visible gap between the drawn curve and
+    // the true one, and the reading follows what is drawn.
+    const coarse = plot(wave, Math.sin, { resolution: 4 });
+    const fine = plot(wave, Math.sin, { resolution: 96 });
+    const x = 1;
+    expect(Math.abs(slopeOf(wave, coarse, x) - Math.cos(x))).toBeGreaterThan(
+      Math.abs(slopeOf(wave, fine, x) - Math.cos(x)) * 100
     );
   });
 
-  it('takes its step from the size of x, so a large x is read as well as a small one', () => {
-    expect(slopeOf((t) => t * t, 1e6)).toBeCloseTo(2e6, 3);
+  it('reads the same slope at a join from either piece', () => {
+    const path = plot(tall, (x: number) => x * x, { resolution: 5 });
+    const join = -1 + 5 / 5;
+    expect(slopeOf(tall, path, join)).toBeCloseTo(2 * join, 12);
+  });
+
+  it('is nothing where the curve does not reach', () => {
+    const path = plot(square, (x: number) => x * x);
+    // The parabola is cut where it leaves the top of this graph, which is x of 3.
+    expect(Number.isNaN(slopeOf(square, path, 3.5))).toBe(true);
+    expect(Number.isNaN(slopeOf(square, [], 1))).toBe(true);
+  });
+
+  it('turns a slope over on an axis given the other way round', () => {
+    const flipped = coordsOf(scaleOf(interval(-1, 4), interval(4.6, -4.6)), scaleOf(interval(-1, 17), interval(-2.4, 2.4)));
+    const path = plot(flipped, (x: number) => x * x, { resolution: 16 });
+    expect(slopeOf(flipped, path, 1.5)).toBeCloseTo(3, 12);
   });
 });
 
-describe('the tangent to a curve', () => {
+describe('the tangent to a plotted curve', () => {
+  /** The demo's parabola drawn over the graph it is read on, which is what every
+   * tangent below is taken off. */
+  const parabola = (coords: typeof square) => plot(coords, (x: number) => x * x, { resolution: 96 });
+
   it('is one open straight piece', () => {
-    const path = tangentAt(tall, (x) => x * x, 1, { reach: 0.5 });
+    const path = tangentAt(tall, parabola(tall), 1, { reach: 0.5 });
     expect(path).toHaveLength(1);
     expect(path[0].curves).toHaveLength(1);
     expect(path[0].closed).toBe(false);
   });
 
   it('leaves each end at the slope the curve has there', () => {
-    const path = tangentAt(tall, (x) => x * x, 1, { reach: 0.5 });
+    const path = tangentAt(tall, parabola(tall), 1, { reach: 0.5 });
     const from = path[0].start;
     const to = path[0].curves[0].to;
     const graph = (point: typeof from) => ({
@@ -384,7 +420,7 @@ describe('the tangent to a curve', () => {
   });
 
   it('touches the curve at the point it is taken at', () => {
-    const path = tangentAt(tall, (x) => x * x, 2, { reach: 1 });
+    const path = tangentAt(tall, parabola(tall), 2, { reach: 1 });
     const from = path[0].start;
     const to = path[0].curves[0].to;
     const along = (pointOf(tall, 2, 0).x - from.x) / (to.x - from.x);
@@ -395,7 +431,11 @@ describe('the tangent to a curve', () => {
   it('is cut where it leaves the graph rather than running out of the picture', () => {
     // At x = 3 the demo's parabola has a slope of 6, so a reach of 1.2 either
     // side asks for 7.2 graph units of height on an axis that holds 10.
-    const path = tangentAt(square, (x) => x * x, 3, { reach: 1.2 });
+    // The curve drawn over the whole graph is cut a few billionths short of x of
+    // 3, where it leaves the top, so the tangent there is taken off the run that
+    // ends at 3, which is the demo's own walk.
+    const walk = plot(square, (x: number) => x * x, { over: interval(0, 3) });
+    const path = tangentAt(square, walk, 3, { reach: 1.2 });
     for (const point of [path[0].start, path[0].curves[0].to]) {
       expect(interval.holds(square.y.units, point.y)).toBe(true);
       expect(interval.holds(square.x.units, point.x)).toBe(true);
@@ -403,18 +443,22 @@ describe('the tangent to a curve', () => {
   });
 
   it('reaches the whole way where nothing cuts it', () => {
-    const path = tangentAt(tall, (x) => x * x, 1, { reach: 0.5 });
+    const path = tangentAt(tall, parabola(tall), 1, { reach: 0.5 });
     const width = path[0].curves[0].to.x - path[0].start.x;
     expect(width).toBeCloseTo((interval.span(tall.x.units) / interval.span(tall.x.graph)) * 1, 12);
   });
 
-  it('draws nothing where the point itself is off the graph', () => {
-    expect(tangentAt(square, () => 50, 1, { reach: 1 })).toEqual([]);
-    expect(tangentAt(square, (x) => 1 / x, 0, { reach: 1 })).toEqual([]);
+  it('draws nothing where the curve does not reach the x it is asked for', () => {
+    // A curve wholly off the graph is plotted as nothing, and a pole leaves a gap
+    // in the middle of one that is drawn.
+    expect(tangentAt(square, plot(square, () => 50), 1, { reach: 1 })).toEqual([]);
+    expect(tangentAt(square, parabola(square), 3.5, { reach: 1 })).toEqual([]);
+    const pole = coordsOf(scaleOf(interval(-2, 2), interval(-4.6, 4.6)), scaleOf(interval(-4, 4), interval(-2.4, 2.4)));
+    expect(tangentAt(pole, plot(pole, (x: number) => 1 / x), 0, { reach: 1 })).toEqual([]);
   });
 
   it('draws a level line where the slope is nothing', () => {
-    const path = tangentAt(tall, (x) => x * x, 0, { reach: 1 });
+    const path = tangentAt(tall, parabola(tall), 0, { reach: 1 });
     expect(path[0].start.y).toBeCloseTo(path[0].curves[0].to.y, 12);
   });
 });
