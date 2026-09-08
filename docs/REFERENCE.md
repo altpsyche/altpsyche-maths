@@ -352,12 +352,18 @@ never drawn works.
 - `Style` — what a node paints with: `fill`, `stroke`, `opacity`, `family` and `weight`. A style set
   on a group is handed down to its children.
 - `ShapeNode` — a named path with a style.
-- `TextNode` — named text at a point, with a size, an alignment and a baseline.
+- `TextNode` — named text at a point, with a size, an alignment and a baseline. Its `text` may hold
+  several lines separated by a newline, and `leading` is how far apart their baselines sit, in the
+  same units as the size. A mark never carries a newline: a node of several lines flattens into one
+  text mark per line, named `0`, `1` and so on under the node's own name.
 - `GroupNode` — a named list of children, with an optional `transform` and `style`.
 - `Node` — a `ShapeNode`, a `TextNode` or a `GroupNode`.
-- `TextOptions` — a style, plus the `align` and `baseline` a text node takes.
+- `TextOptions` — a style, plus the `align`, `baseline` and `leading` a text node takes.
 - `shape(name, path, style)` — a shape node.
-- `text(name, at, content, size, options)` — a text node.
+- `text(name, at, content, size, options)` — a text node. A newline in `content` starts another
+  line under the first.
+- `LEADING` — how far apart two baselines sit against the size, when a text node names no leading of
+  its own, which is six fifths.
 - `group(name, children, options)` — a group node, taking a `transform` and a `style`.
 - `flatten(root, transform, style)` — the tree resolved into the list a painter draws. A shape with
   neither a fill nor a stroke is left out rather than emitted invisible. An invisible mark costs a

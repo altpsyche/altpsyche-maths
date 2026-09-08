@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { circle, flatten, group, line, mat3, shape, text, vec2 } from '@altpsyche/maths';
+import { LEADING, circle, flatten, group, line, mat3, shape, text, vec2 } from '@altpsyche/maths';
 import type { Mark, PathMark, TextMark } from '@altpsyche/maths';
 
 /**
@@ -100,5 +100,45 @@ describe('text marks', () => {
   it('takes a family from the group above it', () => {
     const tree = group('g', [text('t', vec2(0, 0), 'x', 1)], { style: { fill: red, family: 'serif' } });
     expect(texts(flatten(tree))[0].family).toBe('serif');
+  });
+
+  it('draws one line as the one mark it has always drawn', () => {
+    const marks = texts(flatten(text('t', vec2(2, 3), 'one', 0.5, { fill: red })));
+    expect(marks).toHaveLength(1);
+    expect(marks[0].id).toBe('t');
+    expect(marks[0].at).toEqual(vec2(2, 3));
+    expect(marks[0].text).toBe('one');
+  });
+
+  it('drops each line under the one above it by the leading it was given', () => {
+    const marks = texts(flatten(text('t', vec2(2, 3), 'first\nsecond\nthird', 0.5, { fill: red, leading: 0.8 })));
+    expect(marks.map((mark) => mark.text)).toEqual(['first', 'second', 'third']);
+    expect(marks.map((mark) => mark.id)).toEqual(['t/0', 't/1', 't/2']);
+    expect(marks[0].at.y - marks[1].at.y).toBeCloseTo(0.8, 12);
+    expect(marks[1].at.y - marks[2].at.y).toBeCloseTo(0.8, 12);
+    for (const mark of marks) expect(mark.at.x).toBeCloseTo(2, 12);
+  });
+
+  it('leads by six fifths of the size when the node names none', () => {
+    const marks = texts(flatten(text('t', vec2(0, 0), 'a\nb', 0.5, { fill: red })));
+    expect(marks[0].at.y - marks[1].at.y).toBeCloseTo(LEADING * 0.5, 12);
+  });
+
+  it('takes the drop through the transform above it, so a scaled group carries its lines', () => {
+    const tree = group('g', [text('t', vec2(0, 0), 'a\nb', 0.5, { fill: red, leading: 1 })], {
+      transform: mat3.scaling(vec2(3, 3)),
+    });
+    const marks = texts(flatten(tree));
+    expect(marks[0].at.y - marks[1].at.y).toBeCloseTo(3, 12);
+    expect(marks[0].size).toBeCloseTo(1.5, 12);
+  });
+
+  it('turns the drop with the group, so a rotated block of lines stays square to itself', () => {
+    const tree = group('g', [text('t', vec2(0, 0), 'a\nb', 0.5, { fill: red, leading: 1 })], {
+      transform: mat3.rotation(Math.PI / 2),
+    });
+    const marks = texts(flatten(tree));
+    expect(marks[1].at.x).toBeCloseTo(1, 12);
+    expect(marks[1].at.y).toBeCloseTo(0, 12);
   });
 });

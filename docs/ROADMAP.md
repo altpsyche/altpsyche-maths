@@ -475,11 +475,21 @@ and a size that says which text matters.
   names, every other is a bare or quoted family name, and no sheet carries `@font-face`, `@import`,
   `url(` or a link element. The suite went from 644 tests to 646.
 
-- [ ] **3. Text over more than one line.** A `TextNode` is one string at one anchor and there is no
+- [x] **3. Text over more than one line.** A `TextNode` is one string at one anchor and there is no
   newline, no leading and no wrapping anywhere in `figure/node.ts` or either painter, so a title over
   two lines is placed by hand or not at all. A text node takes its lines and the leading between
   them. **Measures:** a two-line title's second baseline against its first, at the leading it was
   given, to 1e-12; a one-line text drawing the identical mark it draws today.
+
+  **Landed.** A newline in a text node's own string starts another line, `leading` is how far apart
+  two baselines sit in the same units as the size, and `LEADING` is the six fifths of the size a node
+  naming none falls back to. No mark carries a newline: a node of several lines flattens into one text
+  mark per line, named `0`, `1` and so on under the node's own name, so neither painter changed and
+  neither did the shape of a `TextMark`. The drop is taken in the node's own space and then
+  transformed, so a group scaled by three drops its lines by three times the leading and a group
+  turned a quarter turn drops them sideways, both held to 1e-12. A one-line text keeps its own id and
+  its own anchor, and all eight sheets are byte-identical. The door went from 234 names to 235 and the
+  suite from 646 tests to 651.
 
 - [ ] **4. A label that keeps clear of what it labels.** `upright` sits at a fixed offset from the
   shape's centre in the rotation demo and the shape turns under it, so the word crosses the drawn

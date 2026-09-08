@@ -9,7 +9,7 @@
 import { mat3, type Mat3 } from '../values/mat3.js';
 import { transformPath } from './path.js';
 import type { Path } from './path.js';
-import type { Vec2 } from '../values/vec2.js';
+import { vec2, type Vec2 } from '../values/vec2.js';
 import type { Fill, Mark, Stroke } from './mark.js';
 
 /** What a group hands down and a child may override. */
@@ -35,8 +35,13 @@ export interface ShapeNode extends Named, Style {
 export interface TextNode extends Named, Style {
   kind: 'text';
   at: Vec2;
+  /** One line, or several separated by a newline. A mark never carries a
+   * newline: the tree is flattened into one text mark per line. */
   text: string;
   size: number;
+  /** How far apart two baselines sit, in the same units as the size. Left out,
+   * it is `LEADING` times the size. */
+  leading?: number;
   align?: 'start' | 'middle' | 'end';
   baseline?: 'alphabetic' | 'middle' | 'hanging';
 }
@@ -56,7 +61,7 @@ export function shape(name: string, path: Path, style: Style = {}): ShapeNode {
 
 /** What a text node takes beyond a shared style, which is where it sits against
  * its own anchor point rather than anything a group can hand down. */
-export type TextOptions = Style & Pick<TextNode, 'align' | 'baseline'>;
+export type TextOptions = Style & Pick<TextNode, 'align' | 'baseline' | 'leading'>;
 
 export function text(name: string, at: Vec2, content: string, size: number, options: TextOptions = {}): TextNode {
   return { kind: 'text', name, at, text: content, size, ...options };
@@ -69,6 +74,11 @@ export function group(name: string, children: readonly Node[], options: { transf
 /** The font a text mark falls back to when no group above it named one. Both
  * painters need a family by name, and neither has a sensible default. */
 const DEFAULT_FAMILY = 'sans-serif';
+
+/** How far apart two baselines sit against the size, when a text node names no
+ * leading of its own. Six fifths is the distance a line of type is set at when
+ * nothing asks for more air. */
+export const LEADING = 1.2;
 
 function inherited(parent: Style, own: Style): Style {
   return {
@@ -128,19 +138,26 @@ function walk(node: Node, prefix: string, transform: Mat3, style: Style, into: M
     return;
   }
 
-  if (!settled.fill) return;
-  into.push({
-    kind: 'text',
-    id,
-    at: mat3.transformPoint(transform, node.at),
-    text: node.text,
-    size: node.size * scale,
-    family: settled.family ?? DEFAULT_FAMILY,
-    weight: settled.weight,
-    align: node.align,
-    baseline: node.baseline,
-    fill: settled.fill,
-    opacity,
+  const fill = settled.fill;
+  if (!fill) return;
+  // The drop between baselines is taken in the node's own space and then
+  // transformed, so a rotated or scaled group carries its lines with it.
+  const lines = node.text.split('\n');
+  const leading = node.leading ?? LEADING * node.size;
+  lines.forEach((line, at) => {
+    into.push({
+      kind: 'text',
+      id: lines.length === 1 ? id : `${id}/${at}`,
+      at: mat3.transformPoint(transform, vec2(node.at.x, node.at.y - at * leading)),
+      text: line,
+      size: node.size * scale,
+      family: settled.family ?? DEFAULT_FAMILY,
+      weight: settled.weight,
+      align: node.align,
+      baseline: node.baseline,
+      fill,
+      opacity,
+    });
   });
 }
 
