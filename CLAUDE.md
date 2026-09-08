@@ -1,8 +1,13 @@
 # @altpsyche/maths — house rules
 
-The mathematics AltPsyche's figures are drawn from. TypeScript, ESM, published to npm, and one
-runtime dependency: MathJax, which is loaded by the typesetting call itself so that a consumer who
-never typesets never loads it. Ships from `master`.
+The mathematics AltPsyche's figures are drawn from. TypeScript, ESM, published to npm. Ships from
+`master`.
+
+**One install is the goal, and every runtime dependency is loaded by the call that needs it.**
+MathJax is loaded by the typesetting call, so a consumer who never typesets never loads it.
+`@altpsyche/engine` is loaded by the GPU painter on the same pattern, so a consumer who draws to SVG
+never loads a renderer. **The engine must never import this package**, which is what keeps the two
+from forming a cycle.
 
 **Where things are.** [`DESIGN.md`](DESIGN.md) is the design: what a figure is, the rule every part
 of it follows, the line through the middle of the package, and the seam everything rests on.
@@ -166,10 +171,14 @@ npm run build     tsc -p tsconfig.build.json, which is what prepack runs
 skill wrapping them would be a second place the list is written. `/next` is here because a sequence
 is worth stating once; a gate this short is not.
 
-**Every claim this package makes is testable without a browser**, which is the point of the seam:
-values and timing are pure functions, and a figure at a time is a list of marks. So there is no
-screenshot gate here and there does not need to be. A claim that needs a browser is a claim about the
-consumer rather than about this package, and it belongs in that repository.
+**Every claim about geometry and timing is testable without a browser**, which is the point of the
+seam: values and timing are pure functions, and a figure at a time is a list of marks. `npm test`
+holds all of it and always will.
+
+**A claim about what a device draws needs a device**, and those are the GPU painter's alone. They are
+gated separately, the way `@altpsyche/engine` already gates its own: a browser gate and a gate on a
+real card, neither of them part of `npm test`. **A claim that could have been made about marks is
+made about marks**, so a pixel gate covers what only a pixel can show and nothing else.
 
 **The comparison between two lists of marks is by tolerance and never by hash.** `Math.sin`,
 `Math.cos` and `Math.pow` are not specified to the last bit in JavaScript and differ between engines,

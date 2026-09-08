@@ -43,6 +43,30 @@ reusable in three dimensions and nothing in three dimensions is reusable in two.
 moved down one when the boolean operations took a version of their own, and the reason for its place
 is unchanged. **What would change that** is a chapter needing a surface sooner.
 
+**A third decision is answered, and it is the one that shapes everything left.** Siva's, made on
+2026-09-08.
+
+**This package takes `@altpsyche/engine` as a dependency and grows a GPU painter and a recorder, so
+that one install is the whole of it.** The goal at the top of this file says anyone who installs this
+package should be able to make the animations, and a figures package leaving a consumer to wire up a
+renderer and write shaders does not meet it. `DESIGN.md` said the opposite until now, and the two
+could not both stand.
+
+**What it costs a consumer who never draws on a GPU: nothing.** The painter loads the engine with
+`await import()`, which is how the typesetting call already loads MathJax, and the engine's own
+backends sit behind dynamic imports of their own.
+
+**What it costs this package.** A fix needed from the engine ships there first. And a claim about
+what a device draws needs a device, so the painter carries a browser gate and a card gate that are
+not part of `npm test`. Geometry and timing stay held by `npm test` alone.
+
+**The engine must never import this package**, since one direction is a dependency and both are a
+cycle. The case that looked like it needed the second, a shader declaring a camera, is answered by
+passing the camera as data.
+
+**The website becomes a plain consumer.** It asks for a picture rather than assembling one, and the
+GPU painter and the recording move here from there.
+
 ## The version ladder
 
 **Every item gets its own minor version, then 1.0.0 is the polish.** Siva's plan, and the release
@@ -52,7 +76,10 @@ with it, because `git log` is what keeps a closed plan.
 
 | version | what lands |
 | --- | --- |
-| 1.1.0 | The tessellation layer: a path as polylines, as a stroke outline, and as triangles |
+| 1.1.0 | Quadratics and dashes, which is what a shader needs from a path |
+| 1.2.0 | The GPU painter: the fill, the stroke, and the engine behind a dynamic import |
+| 1.3.0 | A figure in space keeps its depth, and the painter writes a depth buffer |
+| 1.4.0 | Text on a GPU, and a recorder that hands back a file |
 
 **Every version below 1.0.0 is cut and its item is deleted.** What queues work now is the table
 above, the found list below, and whatever the consumer asks for.
@@ -247,23 +274,22 @@ no box test in front of it and the quadratic over piece pairs is not worth remov
 
 Each is a version above. What follows is what each one covers.
 
-### The tessellation layer, 1.1.0
+### Quadratics and dashes, 1.1.0
 
 A tessellation is a shape rewritten as the pieces a renderer draws: a curve as a run of straight
 segments, a stroke as a fillable outline, and a fill as triangles. Every part of it is numbers in and
 numbers out, so it is held by the suite the way the boolean operations are and needs no browser.
 
-**Why it is here and not in the site.** A GPU painter for figures is the site's, which
-[DESIGN.md](../DESIGN.md) settled: maths must never import the engine, and the painter that hands
-marks to the engine lives in the website, which knows both packages. What that painter needs from a
-mark is triangles, and turning a cubic into triangles is geometry rather than device work. The line
-this item draws is the same one the package already draws everywhere else. Numbers stay here, and
-buffers, pipelines and glyph atlases stay in the site.
+**What it is and what it is not.** This version is the part of a GPU painter that is pure geometry
+and needs no device: a cubic rewritten as the quadratics a shader can test exactly, and a dash
+resolved into the runs that are drawn. The painter itself is 1.2.0. Splitting them this way is not a
+boundary between packages any more, since the decision above brings the painter here too. It is a
+boundary between what `npm test` holds and what a card holds, and landing the tested half first means
+the painter is written against calls that already have their numbers.
 
-**What it is worth on its own merits, with no painter waiting.** `strokeOutline` turns a stroke into a
-path, so the boolean operations reach strokes, which they cannot today. `flatten` is what a hit test
-against a curve needs and what `length.ts` already samples for by hand. Neither depends on anything
-drawing on a GPU.
+**What it is worth on its own merits.** `strokeOutline` turns a stroke into a path, so the boolean
+operations reach strokes, which they cannot today. `quadratics` is what a hit test against a curve
+needs and what `length.ts` already samples for by hand. Neither waits on a device.
 
 **What argues against it.** The demos draw 144, 12 and 244 marks, and SVG draws those instantly and
 sharper than triangles would. Nothing is waiting to draw this, which is the test this file orders its

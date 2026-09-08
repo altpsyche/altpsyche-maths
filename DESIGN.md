@@ -62,20 +62,36 @@ returns the flat nodes the rest of the package already draws.
 
 ## Relationship to the engine
 
-An earlier draft had the engine depend on this package, so that one `Vec3` existed across the tree.
-That was wrong, and the reason is worth keeping.
+**This package depends on `@altpsyche/engine`, and the engine never depends on it.** That direction
+is the rule, and a cycle is what the rule prevents.
 
-The engine publishes `mat3`, `mat4`, `vec3`, a `Scene`, a `Transform` and a draw list from its one
-door. A duplicate type costs something only where values cross the boundary, and nothing crosses it.
-A figure drawn over a shader in screen space passes no vector to the engine. The crossing appears
-when a shader declares a camera, which is separate work not yet done.
+**Why the dependency exists.** The goal is that anyone who installs this package can make the
+animations, and a figures package that leaves a consumer to wire up a renderer and write shaders does
+not meet it. Drawing a figure well needs a GPU: curves rendered from their control points stay exact
+at any zoom, a depth buffer settles what a depth sort cannot, and neither is reachable through an SVG
+element.
 
-Moving the engine's mathematics now would buy a fixed release order across two repositories on the
-first step. It would also place the renderer inside the reach of early figure work. Neither is worth
-having.
+**What it costs a consumer who never uses it: nothing.** The GPU painter loads the engine with
+`await import()`, the same way the typesetting call loads MathJax, so a consumer drawing to SVG
+downloads no renderer. The engine's own backends sit behind dynamic imports too, so a browser without
+WebGPU never fetches that backend.
 
-**The engine is therefore untouched.** The duplication is real and it costs nothing while nothing
-crosses.
+**What it costs this package.** A fix needed from the engine ships there first. And the claim that
+everything here is testable without a browser now holds for the geometry and the timing rather than
+for the whole package, since what a device draws needs a device. Those gates are the painter's and
+they are separate from `npm test`.
+
+**Why the engine must never import this package.** Two imports would be a cycle, and the case that
+would have caused one is a shader declaring a camera. That case does not need an import: the camera
+is read from the engine and handed to a figure as data, by whatever holds both.
+
+**The duplicate mathematics stays.** The engine publishes its own `mat3`, `mat4` and `vec3`, and this
+package has its own. A duplicate type costs something only where values cross, and what crosses is
+control points and matrices as numbers.
+
+**None of this is built yet.** The GPU painter is queued in `docs/ROADMAP.md` and this section states
+the arrangement it is being built to, which is a decision of Siva's rather than a description of the
+tree.
 
 One decision carries over from that draft. The engine's `Scene` is entities and a camera for the
 renderer. A figure is a flat picture on a timeline. Two `Scene` types imported from two packages
@@ -102,15 +118,14 @@ A **painter** turns marks into something a reader can see.
 
 ```mermaid
 graph TD
-  subgraph site["altpsyche.dev &nbsp;&nbsp; the website, this repository"]
+  subgraph site["altpsyche.dev &nbsp;&nbsp; the website"]
     direction TB
     W1["content: velite entries, shader sources, figure files"]
     W2["shader surface and controls"]
     W3["figures: the registry and the components"]
-    W4["recording: the source a figure gives the encoder"]
   end
 
-  subgraph engine["@altpsyche/engine &nbsp;&nbsp; the renderer, untouched"]
+  subgraph engine["@altpsyche/engine &nbsp;&nbsp; the renderer"]
     direction TB
     E1["gpu, graph, scene, host"]
   end
@@ -120,37 +135,35 @@ graph TD
     M1["values: vectors, matrices, curves, easing"]
     M2["timing: keys, tracks, sampling"]
     M3["figure: marks, groups, timeline, animations"]
-    M4["painters: SVG, and a 2D canvas"]
+    M4["painters: SVG, a 2D canvas, and a GPU"]
+    M5["recording: a figure as frames, and as a file"]
   end
 
   W2 --> engine
-  W4 --> engine
   W3 --> maths
-  W4 --> maths
-  W2 --> maths
 
-  engine -. "later, when a shader declares a camera" .-> maths
-  maths -. "never" .-> engine
+  maths -. "the GPU painter, behind a dynamic import" .-> engine
+  engine -. "never" .-> maths
   maths -. "never" .-> site
 
-  linkStyle 5 stroke-dasharray:4,stroke:#888
-  linkStyle 6,7 stroke-dasharray:4,stroke:#b00
+  linkStyle 2 stroke-dasharray:4,stroke:#888
+  linkStyle 3,4 stroke-dasharray:4,stroke:#b00
 ```
 
 An arrow means "depends on".
 
-**The website depends on both packages and the two do not know each other.** It reaches the engine
-for every shader it draws. It reaches maths for the figures, and for the track sampling its shader
-controls perform by hand.
+**The website is a consumer of both and joins nothing.** It reaches the engine for every shader it
+draws. It reaches maths for the figures, for the track sampling its shader controls perform by hand,
+and for recording one to a file. A figure drawn on a GPU and a figure recorded are both this
+package's, so the website asks for a picture rather than assembling one.
 
-**Maths depends on no other package here.** No renderer, no framework, no browser API beyond what a
-painter is handed, which is what allows testing without a browser. Its one runtime dependency is
-MathJax, loaded by the typesetting call and reached by nothing else.
+**Maths depends on the engine and on MathJax, and each is loaded by the call that needs it.** No
+framework, and no browser API beyond what a painter is handed. A consumer drawing to SVG downloads
+neither.
 
-**Maths must never import the engine.** A painter handing marks to the engine, so that a figure and
-a shader shared one surface, would appear to belong beside the other painters. It would become a
-cycle on the day the grey arrow above is drawn for real. That painter lives in the website, which
-knows both.
+**The engine must never import maths.** One direction is a dependency and both directions are a
+cycle, and the case that looked like it needed the second, a shader declaring a camera, is answered
+by passing the camera as data instead.
 
 **Neither package may import the website.** The palette, the content and the theme tokens are
 arguments passed in, which is why a palette is handed to a figure rather than read from the page.
