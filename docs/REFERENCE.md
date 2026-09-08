@@ -545,11 +545,21 @@ functions, which is what lets the same tree survive being written to a file and 
   - `data` — `d`, the path data of an SVG `d` attribute.
   - `cubics` — `subpaths`, the path itself, since a subpath is a point, a list of cubics and whether it
     closes and is already data.
+  - `plot` — `coords`, the curve as `of`, an optional `resolution` and an optional `over`. The curve is
+    an expression of the bound variable `x`, which is a rule rather than a field, since a figure naming
+    its own variable would be a renderer looking a name up rather than binding one.
+  - `areaUnder` — `coords`, the `curve` as a record, and an optional `baseline`.
+  - `tangentAt` — `coords`, the `curve` as a record, the `x` it is read at, and an optional `reach`.
+    The curve is the plotted path rather than the function behind it, so the region and the curve laid
+    over it are one piece of geometry and cannot come to disagree.
+  - `bracePath` — `from`, `to`, a `depth` and an optional `curl`.
   - `union`, `intersection` and `difference` — `first` and `second` as records, and a `tolerance`. The
     operation is a form here rather than geometry a figure carries, because the answer's cubics are
     none of the operands' and a disc walking through another changes the answer every frame. The
     tolerance is a plain number, since nothing a figure animates changes how close two things come
     before they count as one place.
+- `IntervalRecord` — a run of numbers whose `from` and `to` may follow a track. A plain `Interval` is
+  one already, since a bare number is a literal.
 - `resolvePath(record, bindings)` — the geometry a path record names, with its parameters read against
   the tracks and variables. A form outside the set is refused with a sentence naming what was asked
   for, since a figure read from a file carries whatever the file says, and so is a place where a number

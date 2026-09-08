@@ -593,11 +593,24 @@ release away and has a document of its own.
     belongs, and a number among a polygon's points; the suite from 830 to 838 and the door unchanged
     at 285, since both names were already published at step 3.2.
 
-  - [ ] **3.4 The graph path producers.** `plot`, `areaUnder` and `tangentAt` as records whose curve
-    is an expression, and `bracePath`. Step 1 has already made the readers take geometry, so the
-    curve is all that is left in these three. `riemannBars` is not here, because it returns a node.
-    **Measures:** the flat demo's parabola, its shaded region and its tangent, mark for mark at its
-    named times.
+  - [x] **3.4 The graph path producers.** `plot`, `areaUnder` and `tangentAt` are forms of
+    `PathRecord` whose curve is an expression, and so is `bracePath`. Step 1 has already made the
+    readers take geometry, so the curve is all that is left in these three. `riemannBars` is not
+    here, because it returns a node. **A plotted curve's variable is `x` by a rule rather than by a
+    field**, which keeps the form closed: a figure naming its own variable would be a renderer looking
+    a name up rather than binding one. **A plot's `over` is an `IntervalRecord`**, since the flat
+    demo's shaded region runs from nothing to the x its dot stands at, and a plain `Interval` is one
+    already because a bare number is a literal.
+    **Measured:** the flat demo's parabola from the expression `x * x`, its shaded region and its
+    tangent, path for path within a tolerance of 1e-6, the region and the tangent at each of its
+    seven named times with the x its dot stands at bound as a variable; a plot at a resolution of 8
+    over -1 to 2 against its own call; a brace against `bracePath` with and without a curl; a region
+    over a track at 1 and at 3 reading as different, which is what says the comparison can fail; two
+    refusals naming what was asked for, a curve that reads as a place and a baseline that reads as
+    one; the suite from 838 to 845 and the door from 285 names to 286.
+    **The reading is taken where the tree is flattened rather than off the figure**, because a figure
+    outlines a tapered stroke after its timeline has run and the tangent it hands back is the polygon
+    round the line. What a path producer answers for is the geometry it makes.
 
   - [ ] **3.5 The annotation nodes.** `dot`, `arrow`, `brace` and `callout`. **Measures:** the flat
     demo's dots, arrows and braces at its named times; `callout` against its call, since no demo

@@ -448,9 +448,11 @@ written form: `PathRecord` is one of six named shapes, the path data of an SVG `
 path written out as cubics, and the rotation demo's two panels are records top to bottom. Step 3.3
 added `union`, `intersection` and `difference` as forms over two path records, and made every path
 parameter an expression, so the boolean demo's twelve marks draw through records at each of its seven
-named times with its walking disc read off a track. The door is 285 names and the suite is 838 tests
-over 51 files. **Step 3.4 is what runs next**, which is `plot`, `areaUnder` and `tangentAt` as
-records whose curve is an expression, and `bracePath`.
+named times with its walking disc read off a track. Step 3.4 added `plot`, `areaUnder`, `tangentAt`
+and `bracePath` as forms, so the flat demo's parabola comes from the expression `x * x` and its
+shaded region runs from nothing to the x its dot stands at. The door is 286 names and the suite is
+845 tests over 52 files. **Step 3.5 is what runs next**, which is `dot`, `arrow`, `brace` and
+`callout` as node records.
 
 **Two things fall due before the format freezes and both are Siva's**, which are
 whether a `Mark` may be a raster image, due by step 3 where the node vocabulary lands, and the
