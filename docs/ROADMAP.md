@@ -491,11 +491,25 @@ and a size that says which text matters.
   its own anchor, and all eight sheets are byte-identical. The door went from 234 names to 235 and the
   suite from 646 tests to 651.
 
-- [ ] **4. A label that keeps clear of what it labels.** `upright` sits at a fixed offset from the
-  shape's centre in the rotation demo and the shape turns under it, so the word crosses the drawn
-  edge in two of the eight frames of `rotate-strip.svg`. A label takes a placement the turn cannot
-  reach. **Measures:** the word's box overlapping the shape's edge in none of the eight frames, from
-  two today.
+- [x] **4. The clearance the riding label already has is held.** **This step was rewritten when it was
+  worked, because the defect it named does not exist.** It said `upright` crosses the drawn edge in two
+  of the eight frames of `rotate-strip.svg`. Measured over the whole turn at 481 times and both panels,
+  the word's box holds no point inside the shape in any of 962 readings and comes no closer to the
+  edge's own line than 0.183 units, which is 0.163 clear of the outer side of a stroke 0.04 wide, or
+  11.6 pixels on the page at the width the README shows a still. What does overlap is the box round the
+  shape, in all eight of the strip's frames and in 522 of the 962 readings, and a box round an L is
+  mostly the empty corner the word rides in. So there is nothing to move.
+
+  What is worth having is the gate, because step 1 already ate part of that clearance when the word
+  went from 0.26 to 0.296, and nothing said so. **Measures:** the smallest gap between the word's box
+  and the drawn edge over the whole turn, from 0.183 units, held by a test that walks the run rather
+  than the eight frames.
+
+  **Landed.** A gate walks the turn at 481 times and reads both panels, sampling a thirteen by five
+  grid over the word's box against the shape it rides. No point of the box is ever inside the shape,
+  and the nearest any of them comes to the edge's own line is 0.183 units. The reading is taken with
+  `flattenPath` and `nearestEdge`, which are already at the door, so the gate adds no name. The suite
+  went from 651 tests to 652 and no sheet changed.
 
 - [ ] **5. Cut 1.1.0.** The version bumped in this commit, `npm install --package-lock-only` in the
   same one, the done-criteria verified line by line. **Measures:** the three gates; the eight sheets
@@ -511,7 +525,8 @@ and a size that says which text matters.
   too.
 - The smallest glyph on every sheet is at or above the pixel size 0.13.0 measured for it, and
   `tangent.svg` still draws the largest smallest glyph of the eight.
-- The word in the rotation strip crosses the shape in none of its eight frames.
+- The word in the rotation demo clears the drawn edge of the shape it rides at every time in the
+  turn, and the gap it clears by is a number a test holds.
 - `npm test`, `npm run type-check` and `npm run build` pass, and the lock file agrees with the
   manifest.
 

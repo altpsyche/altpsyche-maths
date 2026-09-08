@@ -8,7 +8,10 @@ import {
   boundsOfMarks,
   centreOf,
   colourOf,
+  containsPoint,
   durationOf,
+  flattenPath,
+  nearestEdge,
   flatten,
   frameTimesOf,
   interval,
@@ -808,6 +811,38 @@ describe('the rotation demo', () => {
         }
       }
     }
+  });
+
+  it('keeps the word it carries clear of the edge it rides on, at every time in the turn', () => {
+    // The word stays upright while the shape turns under it, so its box is square
+    // to the figure and the edge is not. The box round an L is mostly the empty
+    // corner the word sits in, so the box is no reading and the edge is the one
+    // that says whether the two touch.
+    const end = durationOf(turns);
+    let closest = Infinity;
+    for (let step = 0; step <= 480; step += 1) {
+      const marks = marksAt(turns, (step / 480) * end);
+      for (const panel of ['own', 'given']) {
+        const word = marks.find((mark) => mark.id === `turns/${panel}/rider/word`);
+        const ell = marks.find((mark) => mark.id === `turns/${panel}/rider/ell`);
+        if (word?.kind !== 'text' || ell?.kind !== 'path') continue;
+        const width = ADVANCE * word.size * word.text.length;
+        const loops = flattenPath(ell.path);
+        for (let across = 0; across <= 12; across += 1)
+          for (let down = 0; down <= 4; down += 1) {
+            const corner = vec2(
+              word.at.x - width / 2 + (width * across) / 12,
+              word.at.y - (1 - CAP) * word.size + (word.size * down) / 4
+            );
+            expect(containsPoint(ell.path, corner)).toBe(false);
+            closest = Math.min(closest, nearestEdge(loops, corner)!.gap);
+          }
+      }
+    }
+    // Read to the edge's own line, so half the 0.04 the shape is stroked at comes
+    // off before the gap is a gap a reader sees.
+    expect(closest).toBeGreaterThan(0.02);
+    expect(closest).toBeCloseTo(0.183, 3);
   });
 });
 
