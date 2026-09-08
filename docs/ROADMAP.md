@@ -212,10 +212,49 @@ stand over the top-left corner of the document afterwards. The first triangle dr
 its top-left 200 by 100 covered by the clear colour (0.1, 0.2, 0.3) those canvases hold, read as (25,
 51, 76). A painter that probes a device before drawing a figure leaves that over the figure.
 
-- [ ] **2. One filled path.** A disc of radius 1 as a `PathMark`, filled. **Measures:** the drawn
+**Gap 4: a draw that names a vertex count binds no geometry, and nothing says so.** The two draw
+forms are `{ vertices }` and `{ instances }`, and `issueDraws` reads the first through `drawsCorners`
+and calls `draw` without ever reaching `setVertexBuffer`, whatever the pipeline's `geometry` names. A
+pipeline declaring a vertex layout drawn with `{ vertices: count }` therefore draws nothing, and the
+card is what says so: `Vertex buffer slot 0 required by [RenderPipeline (unlabeled)] was not set`,
+followed by an invalid render bundle and an invalid command buffer every frame. `resolve` answered
+`{ backend: 'webgpu' }` for that same frame, and `cost` costed it at 1 pass and 1 draw, so the two
+pure readings a caller has before submitting both pass a description that cannot draw. The form that
+draws a mark is `{ instances: 1 }`.
+
+**The known stencil gap, re-measured rather than re-found.** `StencilMode` is `'mark' | 'inside'` and
+its own comment says what each is: `mark` leaves the reference behind everywhere it draws, and
+`inside` draws only where the reference is already there. Neither counts, and no increment or
+decrement is in the type, so **a frame asking for a counted winding cannot be written down**. That is
+why no refusal arrived for the annulus above: a refusal names a capability a frame asked for, and this
+frame had no way to ask. The engine files this as its item 2 and this reading changes nothing about
+it.
+
+- [x] **2. One filled path.** A disc of radius 1 as a `PathMark`, filled. **Measures:** the drawn
   edge against the 2.6 to 2.8 parts in ten thousand of the true radius the control distance leaves,
   which is what the suite already holds `circle` to; the refusal the engine gives where a winding
-  number is needed, quoted rather than worked around.
+  number is needed, quoted rather than worked around. **Read on 2026-09-09.** `circle(vec2(0, 0), 1)`
+  flattened at a tolerance of 1e-8 gives one loop of 32,769 points whose radii run from exactly 1 to
+  1.000272530, so the cubic lies outside the true circle and never inside it, and 2.7253 parts in ten
+  thousand is the whole of its error. **The cubic meets the circle at three bearings and not at 45
+  degrees alone**: t of 0, 0.5 and 1 are 0, 45 and 90 degrees and each is exact, and the error peaks
+  at t of 0.21131 and 0.78869, which are 19.4386 and 70.5614 degrees. A window measured at 45 degrees
+  therefore reads zero error and says nothing about the bound.
+  The disc drew as 32,768 fan triangles of 98,304 vertices and 786,432 bytes, at 1 pass and 1 draw,
+  covering 54.554 per cent of a 1.2 window against the 54.542 per cent of π over 5.76. **The drawn
+  edge, in three windows 0.008 units across at 1024 pixels, where one pixel spans 7.8125e-06 r or
+  0.0781 parts in ten thousand:** 1.000000000 at 0 degrees, 1.000000000 at 45 degrees, and
+  1.000273396 at 70.5614 degrees, which is +2.7340 parts in ten thousand. **That is inside the 2.6 to
+  2.8 the suite holds `circle` to**, and it sits 0.0087 parts above the cubic's own 2.7253, which is
+  0.11 of a pixel.
+  **No refusal came where a winding number was needed, because there is nothing to refuse.** A
+  pentagram is the wrong test and reads clean: `windingAt` its middle is 2, and a fan about its centre
+  covers 124,728 pixels of an 800 by 800 window, which is what the nonzero rule wants to the pixel. An
+  annulus separates them. An outer `circle` of radius 1 with an inner one of radius 0.5 wound the
+  other way has `windingAt` 1 in the ring and 0 in the hole, and 65,536 fan triangles over the two
+  loops drew a solid disc: 349,144 pixels against the 261,799 the rule wants, 33.4 per cent too much
+  area, with the middle pixel filled where the winding is 0. `resolve` answered `{ backend: 'webgpu' }`
+  for that frame and the card drew it without a word.
 
 - [ ] **3. One stroked path.** The flat demo's axis at width 0.02 with a round cap. **Measures:** the
   two ends and the cap against the same mark's filled outline from `outlinePath`, which is what the
@@ -409,13 +448,23 @@ README that plays a video on load is a README nobody can read.
 scheduling argument is that its window is the slack of 1.x and 2.0.0, and 1.x is spent, so what is
 left is 2.0.0's twenty-nine commits. Its steps are the section in front of the ladder.
 
-**The spike's first step is read and the seam holds.** One triangle drew through the one door on a
-`blackwell` adapter, at 1 pass and 1 draw, with 34,634 of an expected 34,656 pixels filled. **Three
-gaps came with it**, each written under step 1 with the reading that found it: nothing at the door
-joins a selection to a renderer, a canvas the engine drew cannot be read, and `probe()` leaves two
-canvases pinned over the top-left corner of the page. **The second gap is in front of step 2 rather
-than beside it**, because step 2 measures a drawn edge in pixels and this machine read its own
-triangle through a screenshot. **2.0.0 is
+**The spike's first two steps are read, the seam holds and a filled path is right to the pixel.** One
+triangle drew through the one door on a `blackwell` adapter, at 1 pass and 1 draw, with 34,634 of an
+expected 34,656 pixels filled. Then a disc of radius 1 from this package's own `circle`, flattened
+and fan-triangulated, drew with its edge at +2.7340 parts in ten thousand of the true radius at the
+bearing where the cubic's error peaks, **inside the 2.6 to 2.8 the suite already holds `circle` to**,
+read in a window where one pixel spans 0.0781 parts.
+
+**Four gaps have come out of it so far**, each written under the step that found it with its reading.
+Nothing at the door joins a selection to a renderer. A canvas the engine drew cannot be read. Every
+`probe()` leaves two canvases pinned over the top-left corner of the page. And a draw naming a vertex
+count binds no geometry while `resolve` and `cost` both pass the description. **The known stencil gap
+is re-measured**: `StencilMode` is `'mark' | 'inside'` and neither counts, so an annulus drew as a
+solid disc, 33.4 per cent too much area, and nothing refused it because nothing could be asked for.
+
+**The second gap is what the remaining steps work around.** Every pixel reading above came from a
+screenshot of the canvas, because the engine's own `readPixels` is a backend method and the backends
+are not exported. **2.0.0 is
 ready to start behind it**: the six questions are answered, the inventory is counted, and step 1 is
 self-contained. **Two things fall due before the format freezes and both are Siva's**, which are
 whether a `Mark` may be a raster image, due by step 3 where the node vocabulary lands, and the
