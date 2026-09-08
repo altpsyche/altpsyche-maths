@@ -168,6 +168,10 @@ could not see. A ground is written as a `background` declaration on `:root` in e
 element rather than as a mark, so the bare-fraction readings of 0.13.0 are untouched. All eight
 sheets grew by 38 bytes. The door went from 229 names to 230 and the suite from 631 tests to 637.
 
+**0.14.0 is held back rather than published, which is Siva's call.** It ships inside the 1.0.0
+release instead, so npm carries the unreadable sheets until then. What would change the answer is
+1.0.0 slipping far enough that a reader lands on those sheets for weeks rather than days.
+
 **0.13.0 is cut, and the eight sheets read on a dark page and are worth looking at.** Every colour is
 painted as `var(--name, light)` and `svgMarkup` writes the theme as a `<style>` element, so a sheet
 follows the reader's colour scheme through an `<img>` with no page CSS reaching it. A value per
@@ -183,14 +187,16 @@ it. The eight sheets went from 21.2%, 17.1%, 67.4%, 56.5%, 81.8%, 76.3%, 59.5% a
 21.2%, 17.1%, 60.1%, 56.5%, 71.5%, 72.3%, 46.1% and 43.2%. The suite went from 618 tests to 631 and
 the four stills draw text at 17.33, 20.0, 20.8 and 19.32 pixels on the page.
 
-**Two of 1.0.0's done-criteria need a call before step 17**, both found while cutting 0.13.0 and both
-written into the found list below. The sheet the README opens on no longer clears both readings, and
-the rotation strip draws its frames at two thirds the width the other three do.
+**Both of the criteria that needed a call are answered and Siva made both.** The still the README
+opens on draws the largest smallest glyph now: `tangent.svg` went from 17.33 pixels to 21.33 against
+20.0, 20.8 and 19.32, holding 21.2% bare, so it leads both readings and the gate asserts the lead.
+The strip criterion names the slot rather than the fill, since a frame holding two panels needs a gap
+between frames wider than the gap inside one.
 
 **1.0.0 is being worked and sixteen of its seventeen steps are ticked.** The door is 230 names, the
 suite is 637 tests over 40 files, and the four prose surfaces are a 175 line README, a 544 line
 guide, a 805 line reference and a 387 line DESIGN.md. **The next session starts at step 17**, which
-is one commit once the two open criteria above are answered.
+is one commit once Siva has read the README and the guide.
 
 **Every done-criterion below is verified but one, and that one is Siva's.** The three gates pass, the
 lock file agrees with the manifest, `npm run demos` leaves all eight sheets byte for byte as
@@ -456,6 +462,13 @@ demo is recompiled by steps 6 and 7 against the renamed door.
   410 by 230, 410 by 158, 410 by 193 and 410 by 230; the tangent strip from 7.60 to one down to 1.78;
   `tangent-strip.svg` from 282,370 bytes to 277,409; the suite from 608 tests to 609.
 
+  **How much of its slot a figure fills is the figure's own, which is Siva's call.** A slot is 410
+  pixels in all four strips and the figure inside it is 388, 388, 264 and 382. `demos/rotate.ts` holds
+  `SLOT` at 14 against a figure 9 wide because a frame there holds two panels 4.53 apart, and a gap
+  between frames narrower than that reads as a row of four panels rather than two frames. That caps
+  its figure at 9/14 of its slot. Moving `PANEL` in from 2.6 to 2.0 reaches 70.1% and does not close
+  it, so the criterion names the slot rather than the fill.
+
 - [x] **10. The stills chosen to be looked at, and the picture the README opens on.** The eight
   sheets were read on how much of the frame the drawn bounds cover and how tall the smallest labelled
   text stands at the width the README shows it. Coverage: `tangent-strip` 93.4%, `tangent` 80.0%,
@@ -597,7 +610,9 @@ demo is recompiled by steps 6 and 7 against the renamed door.
   is in this entry.
 - One name means sampling density and one name means a domain, in one shape each.
 - The demos take their colours from one named list, and no hex is written in a demo file.
-- Every strip draws its frames one slot wide, and no strip runs wider than 2.6 to one.
+- Every strip gives each frame one slot and every slot the same width on the page, and no strip runs
+  wider than 2.6 to one. How much of its slot a figure fills is the figure's own, since a strip whose
+  frame holds two panels needs a gap between frames wider than the gap inside one.
 - Every sheet's covered fraction and smallest text height are recorded, and the picture the README
   opens on is the one that clears both by the most.
 - The README's sentence mean is under 18 words and no sentence is over 30, and the guide's too.
@@ -612,24 +627,10 @@ demo is recompiled by steps 6 and 7 against the renamed door.
 - The byte gate's rounding boundary is written down as a known gap.
 - `npm test`, `npm run type-check` and `npm run build` pass, and the lock file agrees with the manifest.
 - Siva has read the README, the guide and the pictures once, and said so. He read the pictures and
-  cut 0.13.0 on them, so what is left of this line is the README and the guide.
+  cut 0.13.0 on them, and the still the README opens on has changed since, so what is left of this
+  line is the README, the guide and that one picture.
 
 ## Found while working, not yet queued
-
-- **The sheet the README opens on no longer clears both readings.** 1.0.0's criterion asks for the
-  picture that clears the covered fraction and the smallest text height by the most, and `tangent.svg`
-  wins the first by 25 points at 21.2% bare while drawing the smallest text of the four stills at
-  17.33 pixels, against 20.0, 20.8 and 19.32. 0.13.0's own criterion asks only for the frame reading,
-  which `tangent.svg` wins, so the two criteria now name different sheets. Found while cutting
-  0.13.0's steps 9 and 11.
-
-- **The rotation strip draws its frames at two thirds the width the other three do.** A slot is 410
-  pixels on the page in all four strips, and the figure inside it is 388, 388, 264 and 382 pixels.
-  `SLOT` is held at 14 in `demos/rotate.ts` by the rule that the gap between two frames must beat the
-  4.53 unit gap between the two panels inside one, so narrowing the extent to 9 took the figure down
-  from 316 pixels. Closing it means moving `PANEL` in from 2.6, which is a layout change rather than
-  a frame one. It bears on 1.0.0's criterion that every strip draws its frames one slot wide. Found
-  while cutting 0.13.0's steps 9 and 11.
 
 - **A run of descent shows a short hook where it meets the region's edge.** The run seeded at
   `(-1.3, 0.3)` draws a bracket a few points long at its start on both solid sheets, which reads as a
