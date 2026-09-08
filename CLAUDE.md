@@ -59,6 +59,22 @@ allowed. What is not allowed is a sentence a reader has to decode, or a term use
 given its plain meaning. **Every technical word gets its everyday explanation the first time it
 appears**, and a forward reference is a defect.
 
+**Talk to the reader.** Every page here is written to one person: the reader is **you**, and the
+sentences say what you do and what you get. There is no **I** and no **we**, so the package is
+"the package" or "@altpsyche/maths" and never a voice of its own.
+
+**Put the subject first and give it a real verb.** "You get back a flat list of things to draw",
+never "Back comes a flat list". An inversion makes the reader hold the sentence open until its
+subject arrives, and it is the thing that made these pages sound written rather than said.
+
+**No riddles.** "It arrives rather than appearing" tells the reader nothing until they have decoded
+it, and a sentence built on a contrast with a thing that did not happen is a sentence about nothing.
+Say what happens: "the grid fades in, the axes draw themselves, then the curve draws".
+
+**A heading is addressed to the reader too.** "What you can draw" rather than "What it draws". The
+reader is deciding whether this does what they need, and a heading about "it" makes them work that
+out for themselves.
+
 ## Style: caveman ultra
 
 Pinned in `.caveman/config.json` (`defaultMode: "ultra"`), which the plugin's resolver reads above
