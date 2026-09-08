@@ -113,6 +113,42 @@ A group may carry a transform and a style. A style set on a group descends to it
 child sets its own. A group that scales multiplies the stroke widths beneath it by the same factor
 it multiplies everything else, since a stroke width is in figure units.
 
+## Text sizes and lines
+
+A **text scale** is four sizes, one per role, each a fixed ratio above the one below it. The roles
+are `title`, `note`, `label` and `tick`, largest first. A title says what the picture is, a note is a
+remark written beside the picture, a label is a tag on a mark, and a tick is a number on an axis.
+
+`textScale` builds the four from the size the ticks take. The ratio is `TEXT_RATIO`, the square root
+of two, so two steps double: a note is twice a tick and a title is twice a label. A figure names a
+role rather than a number, and the hierarchy is then the same wherever it is drawn.
+
+```ts
+import { group, text, textScale, vec2 } from '@altpsyche/maths';
+
+const type = textScale(0.32);
+
+group('graph', [
+  text('reading', vec2(-4, 2.4), 'slope 2.00', type.note, { fill: ink }),
+  text('mark', vec2(1, 0.2), '1', type.tick, { fill: ink }),
+]);
+```
+
+A size is in figure units, so a figure drawn in different units needs a scale of its own rather than
+the same four numbers.
+
+A newline in a text node's own string starts another line under the first. `leading` is how far
+apart two baselines sit, in the same units as the size, and it defaults to `LEADING` times the size,
+which is six fifths. A node of several lines flattens into one text mark per line, named `0`, `1`
+and so on under the node's own name, so a mark never carries a newline.
+
+```ts
+text('title', vec2(-4, 2.6), 'a saddle\ncut by a plane', type.title, { fill: ink, leading: 0.8 });
+```
+
+The two marks above are `title/0` and `title/1`. A one-line text keeps its own name and draws the
+one mark it always drew.
+
 ## Paths
 
 A **path** is a sequence of **subpaths**. A subpath is a start point followed by a sequence of

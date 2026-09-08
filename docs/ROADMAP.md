@@ -165,7 +165,6 @@ three more are written past those because a session should not rediscover them.
 
 | version | what lands | what it changes | steps | cut against | depends on | plan |
 | --- | --- | --- | --- | --- | --- | --- |
-| 1.1.0 | the typography: a size scale by role, a named family and a weight, text over more than one line, and a label that keeps clear | adds a named size scale as a value type, and the lines and leading a text kind carries | 5 | all four demos, and the rotation strip's eight frames | nothing outside this package | written |
 | 1.2.0 | the pacing: the easing set widened and named, a key naming its own curve, and the demos pacing themselves | the set of names a `Curve` can be | 4 | all four demos, and their twenty-six timeline entries | nothing outside this package | written |
 | 1.3.0 | the variable-width stroke, as the filled outline of a path | what a `Stroke`'s width may be | 5 | the flat demo's tangent and the solid demo's three runs of descent | nothing outside this package | written |
 | 1.4.0 | gradients, as stops along an axis in the mark's own units | what a `Fill` may be | 5 | the flat demo's shaded region and the solid demo's plane | nothing outside this package | written |
@@ -293,12 +292,12 @@ it, and out the far side. That walk is what makes the demo a gate rather than an
 takes the operation through no crossing, one crossing, two crossings and containment, which are the
 four cases this kind of code gets silently wrong.
 
-**Which demo each of the four look versions is cut against.** 1.1.0 reaches all four, since every
-one of them writes text and none of them names a font. 1.2.0 reaches all four too, since twenty-five
+**Which demo each of the look versions is cut against.** 1.2.0 reaches all four, since twenty-five
 of their twenty-six timeline entries take the same curve. 1.3.0 is the flat demo's tangent and the
 solid demo's three runs of descent. 1.4.0 is the flat demo's shaded region and the solid demo's
-plane. So each of the four holds to Siva's rule that a feature reaches a flat picture and a solid
-one.
+plane. So each of them holds to Siva's rule that a feature reaches a flat picture and a solid one.
+1.1.0 held to it too and reached all four, since every one of them writes text and none of them
+named a font.
 
 **A version is not cut until its demos draw.** The measurement is the demo's own marks: a count at
 named times, compared by tolerance, which is the gate DESIGN.md describes and which needs no browser.
@@ -312,6 +311,44 @@ the motion in a still. 2.5.0 is the version that ends that, and the strips stay 
 README that plays a video on load is a README nobody can read.
 
 ## Now
+
+**1.1.0 is cut, and a figure's text says which of it matters.** Five steps closed it. `textScale`,
+`TextScale`, `TextRole` and `TEXT_RATIO` name four sizes by role, largest first: a title says what
+the picture is, a note is a remark beside the picture, a label is a tag on a mark, and a tick is a
+number on an axis. The ratio is the square root of two, so two steps double, and each figure builds
+its own scale because a size in figure units lands at a different size on the page in each of them.
+The flat demo went from 1.06:1 largest text against smallest to 2.000:1 and the solid demo from
+1.000:1 to 2.828:1 on the title it gained, while the four stills read 21.33, 20.00, 21.00 and 19.32
+pixels against 21.33, 20.00, 20.80 and 19.32 before, and the four strips read 14.00 as they did, so
+`tangent.svg` still draws the largest smallest glyph of the eight.
+
+**Every text mark in the four demos names a face and a weight**, from none of them before.
+`demos/typeface.ts` holds `system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif` at weight
+400, and each demo hands it to its root group, so a mark a builder made takes it too. It is a system
+stack and not a webfont, because a sheet is read inside an `<img>` and an `<img>` loads no external
+resource. Each text mark costs 67 bytes more and the eight sheets grew by 201, 804, 268, 1072, 737,
+2948, 804 and 3216 bytes.
+
+**A newline in a text node's own string starts another line.** `leading` is how far apart two
+baselines sit and `LEADING` is the six fifths of the size a node naming none falls back to. No mark
+carries a newline: a node of several lines flattens into one text mark per line, so neither painter
+changed and neither did the shape of a `TextMark`. A one-line text keeps its own id and its own
+anchor, and every sheet was byte-identical after it landed.
+
+**The step that said the rotation demo's word crosses the shape was wrong, and the measurement is
+what replaced it.** Over the whole turn at 481 times and both panels, no point of the word's box is
+ever inside the shape and the nearest it comes to the edge's own line is 0.183 units. What overlaps
+is the box round the shape, in all eight of the strip's frames, and a box round an L is mostly the
+empty corner the word rides in. The gate landed anyway, because the size scale had already eaten part
+of that clearance when the word went from 0.26 to 0.296 and nothing said so.
+
+**The rotation demo's frame is what the new sizes cost.** It went from 9 units wide to 10.15 and its
+centre from (0.67, -0.1) to (0.53, -0.08), which is the room its captions and its swinging word need.
+A gate now reads every text mark's box against its figure's extent over the whole run of all four
+figures, and the rotation demo's left caption failed it by 0.09 units before this version.
+
+**The door went from 230 names to 235 and the suite from 637 tests over 40 files to 652 over 41.**
+Every done-criterion was verified line by line in the commit that cut it.
 
 **1.0.0 is cut, and the door is a promise.** Seventeen steps closed it: the comments holding a
 measurement became assertions, the door was read name by name against three questions and ten names
@@ -409,126 +446,9 @@ no box test in front of it and the quadratic over piece pairs is not worth remov
 
 ## The items
 
-Each is a version above. What follows is what each one covers. The six of the 1.x band carry a step
+Each is a version above. What follows is what each one covers. The five of the 1.x band carry a step
 list and the five of the 2.x band do not, because writing one is a session of its own and the band is
 behind 2.0.0.
-
-### 1.1.0 The typography
-
-**A figure's text has one size and no font.** Not one text mark in the four demos names a `family` or
-a `weight`, so every one of them falls back to `DEFAULT_FAMILY`, which is `sans-serif`. The flat
-demo's three sizes are 0.32 for its tick labels, 0.32 for its typeset equation and 0.34 for its
-reading, a span of 1.06:1, so nothing in that picture is larger than anything else. Across all four
-demos the sizes are 0.22, 0.26, 0.30, 0.32 and 0.34, a span of 1.55:1.
-
-**What this is not.** No new mark, no new painter code and no new value type. `Style` already carries
-`family` and `weight` and both painters already write them. What is missing is a figure using them
-and a size that says which text matters.
-
-- [x] **1. A size scale, named by role.** A figure names a title, a label, a tick or a note rather
-  than a number, and the scale is one ratio applied throughout. **The scale is a name at the door and
-  not a set of constants in the demos**, since a consumer drawing their own figure needs the same
-  hierarchy the demos get or the package has taught nothing, and that makes it a value type the
-  format later freezes a written form for, which is why this version sits in front of 2.0.0. **The
-  ratio is the commit's own call** and the measurement below is what constrains it. **Measures:** the
-  flat demo's largest text against its smallest, from 1.06:1 to at least 2:1; the smallest glyph on
-  each of the eight sheets at or above what 0.13.0 measured, and `tangent.svg` still leading at 21.33
-  pixels, which is the gate that already asserts the lead; the door from 230 names.
-
-  **Landed.** `textScale`, `TextScale`, `TextRole` and `TEXT_RATIO` are the four names it added, and
-  the ratio is the square root of two, so two steps double: a note is twice a tick and a title is
-  twice a label. The four roles are `title`, `note`, `label` and `tick`, largest first, and a note
-  sits above a label because a note is written beside the picture while a label has to fit next to
-  the mark it names. Each figure builds its own scale, since a size in figure units means a different
-  size on the page in each of them. The flat demo went from 1.06:1 to 2.000:1 and the solid demo from
-  1.000:1 to 2.828:1, which is the title it gained. The rotation demo went from 1.154:1 to 1.414:1 and
-  the boolean demo stayed at 1.000:1, since its panel names are the only text it draws. The eight
-  sheets read 21.33, 20.00, 21.00 and 19.32 pixels for the four stills against 21.33, 20.00, 20.80 and
-  19.32 before, and 14.00 for all four strips, so `tangent.svg` still leads. The rotation demo's frame
-  went from 9 units wide to 10.15 and its centre from (0.67, -0.1) to (0.53, -0.08), which is the room
-  its captions and its swinging word need at the sizes the scale gives them, and its word went from
-  0.26 to 0.296 to hold the page floor in the wider frame. A gate reads every text mark's box against
-  its figure's extent over the whole run of all four figures, which the rotation demo's left caption
-  already failed before this by 0.09 units.
-  The door went from 230 names to 234 and the suite from 637 tests over 40 files to 644 over 41.
-
-- [ ] **2. A family and a weight the demos name.** Neither painter needs a change: `paint/svg.ts`
-  already writes `font-family` and `font-weight` and `paint/canvas.ts` already builds its `font`
-  string from the weight, the size and the family. So this is a demo commit and one choice.
-
-  **The choice is a system stack and not a webfont**, because a sheet is read inside an `<img>` and
-  an `<img>` loads no external resource: no stylesheet, no script and no font file. A `@font-face`
-  pointing anywhere would silently fall back, and a font embedded as data would put its bytes in
-  every one of the eight sheets. This is the same trap 0.13.0 found when the colour scheme query
-  answered for the browser rather than for the page. **Measures:** every text mark in the four demos
-  naming a family and a weight, from none of them today; the eight sheets' bytes re-committed with
-  the growth per sheet quoted; every family named resolvable with no network, which a test asserts by
-  reading the stack rather than by rendering it.
-
-  **Landed.** `demos/typeface.ts` holds the stack and the weight, and each demo hands them to its root
-  group, so a text mark anywhere under it is written with the same face whether the demo built it or a
-  builder did. The stack is `system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif` at weight
-  400. Every text mark in the four demos names both, from none of them before. Each mark costs 67 bytes
-  more, 54 for the longer family and 19 for a weight that was never written, and the eight sheets grew
-  by 201, 804, 268, 1072, 737, 2948, 804 and 3216 bytes over 3, 12, 4, 16, 11, 44, 12 and 48 text
-  marks. A gate reads the stack rather than rendering it: the last family is one of the six generic
-  names, every other is a bare or quoted family name, and no sheet carries `@font-face`, `@import`,
-  `url(` or a link element. The suite went from 644 tests to 646.
-
-- [x] **3. Text over more than one line.** A `TextNode` is one string at one anchor and there is no
-  newline, no leading and no wrapping anywhere in `figure/node.ts` or either painter, so a title over
-  two lines is placed by hand or not at all. A text node takes its lines and the leading between
-  them. **Measures:** a two-line title's second baseline against its first, at the leading it was
-  given, to 1e-12; a one-line text drawing the identical mark it draws today.
-
-  **Landed.** A newline in a text node's own string starts another line, `leading` is how far apart
-  two baselines sit in the same units as the size, and `LEADING` is the six fifths of the size a node
-  naming none falls back to. No mark carries a newline: a node of several lines flattens into one text
-  mark per line, named `0`, `1` and so on under the node's own name, so neither painter changed and
-  neither did the shape of a `TextMark`. The drop is taken in the node's own space and then
-  transformed, so a group scaled by three drops its lines by three times the leading and a group
-  turned a quarter turn drops them sideways, both held to 1e-12. A one-line text keeps its own id and
-  its own anchor, and all eight sheets are byte-identical. The door went from 234 names to 235 and the
-  suite from 646 tests to 651.
-
-- [x] **4. The clearance the riding label already has is held.** **This step was rewritten when it was
-  worked, because the defect it named does not exist.** It said `upright` crosses the drawn edge in two
-  of the eight frames of `rotate-strip.svg`. Measured over the whole turn at 481 times and both panels,
-  the word's box holds no point inside the shape in any of 962 readings and comes no closer to the
-  edge's own line than 0.183 units, which is 0.163 clear of the outer side of a stroke 0.04 wide, or
-  11.6 pixels on the page at the width the README shows a still. What does overlap is the box round the
-  shape, in all eight of the strip's frames and in 522 of the 962 readings, and a box round an L is
-  mostly the empty corner the word rides in. So there is nothing to move.
-
-  What is worth having is the gate, because step 1 already ate part of that clearance when the word
-  went from 0.26 to 0.296, and nothing said so. **Measures:** the smallest gap between the word's box
-  and the drawn edge over the whole turn, from 0.183 units, held by a test that walks the run rather
-  than the eight frames.
-
-  **Landed.** A gate walks the turn at 481 times and reads both panels, sampling a thirteen by five
-  grid over the word's box against the shape it rides. No point of the box is ever inside the shape,
-  and the nearest any of them comes to the edge's own line is 0.183 units. The reading is taken with
-  `flattenPath` and `nearestEdge`, which are already at the door, so the gate adds no name. The suite
-  went from 651 tests to 652 and no sheet changed.
-
-- [ ] **5. Cut 1.1.0.** The version bumped in this commit, `npm install --package-lock-only` in the
-  same one, the done-criteria verified line by line. **Measures:** the three gates; the eight sheets
-  identical after `npm run demos`; the door and the suite from 230 names and 637 tests.
-
-#### Done-criteria
-
-- Every text mark in the four demos names a family and a weight.
-- The size scale is a name at the door with a role per name, and the demos take their sizes from it
-  rather than from constants of their own.
-- A text node carries more than one line, and a one-line text draws exactly the mark it draws today.
-- The flat demo's largest text is at least twice the size of its smallest, and the solid demo's is
-  too.
-- The smallest glyph on every sheet is at or above the pixel size 0.13.0 measured for it, and
-  `tangent.svg` still draws the largest smallest glyph of the eight.
-- The word in the rotation demo clears the drawn edge of the shape it rides at every time in the
-  turn, and the gap it clears by is a number a test holds.
-- `npm test`, `npm run type-check` and `npm run build` pass, and the lock file agrees with the
-  manifest.
 
 ### 1.2.0 The pacing
 
@@ -557,7 +477,7 @@ flat and nothing more, so a track cannot name its own curve and no figure can ov
   sheet's marks at its named times re-committed with the count quoted.
 
 - [ ] **4. Cut 1.2.0.** **Measures:** the three gates; the eight sheets identical after
-  `npm run demos`; the door and the suite from wherever 1.1.0 left them.
+  `npm run demos`; the door and the suite from 235 names and 652 tests.
 
 #### Done-criteria
 
@@ -897,8 +817,8 @@ format a recorder reads a file, which is also what lets one run without a page a
 
 - **All four of the things that look worse than 3Blue1Brown are queued now**, which is Siva's call of
   2026-09-08 and the reason the ladder above is no longer empty. Motion and pacing is 1.2.0,
-  typography and labels is 1.1.0, composition and camera is done-criteria on the format's steps 3.8
-  and 7, and line quality is 1.3.0 and 1.4.0 between them. **The reading that put them there is that
+  typography and labels was 1.1.0 and is cut, composition and camera is done-criteria on the format's
+  steps 3.8 and 7, and line quality is 1.3.0 and 1.4.0 between them. **The reading that put them there is that
   three of the four are builder and demo work over the SVG painter that already draws**, and only the
   sharpness of a line is the renderer's.
 
