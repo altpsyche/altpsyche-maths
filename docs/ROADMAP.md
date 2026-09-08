@@ -461,17 +461,21 @@ demo is recompiled by steps 6 and 7 against the renamed door.
   four surfaces named with one reader each; nine of fifteen README sections sharing one shape today;
   about 300 of 402 lines moving to the guide rather than being rewritten.
 
-- [ ] **12. The README written.** A full rewrite against the step 11 outline rather than a pass with a
+- [ ] **12. The guide written.** The page a new reader lands on: what a figure is, what a mark is,
+  what a painter does with one, and how to draw and move a first picture. It teaches in the order a
+  reader needs rather than in the order the package is built, and every technical word gets its
+  everyday meaning where it first appears. **It lands before the README**, which the plan had the
+  other way round: the README's rewrite links to the guide, so writing the README first leaves a
+  commit whose page points at a file that is not there. The cost of this order is that the material
+  stands in both pages for one commit, which is visible and harmless where a dangling link is not.
+  **Measures:** the same sentence and paragraph numbers the README is held to; the count of terms
+  defined before first use, which has to be all of them; every code block in it compiles under
+  `tsconfig.demos.json`.
+
+- [ ] **13. The README written.** A full rewrite against the step 11 outline rather than a pass with a
   comb, and it sells rather than teaches. **Measures:** sentence mean from 24.7 words and the count
   over 30 from 46; prose paragraph mean from 66.5 words; the install line from absent to present; the
   opening picture from step 10; the banned-phrase count still zero.
-
-- [ ] **13. The guide written.** The page a new reader lands on: what a figure is, what a mark is,
-  what a painter does with one, and how to draw and move a first picture. It teaches in the order a
-  reader needs rather than in the order the package is built, and every technical word gets its
-  everyday meaning where it first appears. **Measures:** the same sentence and paragraph numbers as
-  step 12; the count of terms defined before first use, which has to be all of them; every code block
-  in it compiles under `tsconfig.demos.json`.
 
 - [ ] **14. The reference for the door.** One entry per name at the door, each saying what it is and
   what it takes, and a gate that fails when a name at the door has no entry or an entry names nothing
