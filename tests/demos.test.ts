@@ -18,6 +18,7 @@ import {
   flatten,
   frameTimesOf,
   interval,
+  overlapOf,
   isLoop,
   plot,
   pointAlong,
@@ -1124,6 +1125,8 @@ describe('the rotation strip', () => {
 
 describe('the solid demo', () => {
   const solidAt = (seconds: number) => marksAt(solid, seconds);
+  /** The figure's own marks, without its inset's magnified copies of them. */
+  const solidOwn = (seconds: number) => solidAt(seconds).filter((mark) => !mark.id.startsWith('solid/lens/'));
   const named = [SOLID_TIMES.entrance, SOLID_TIMES.quarter, SOLID_TIMES.half, SOLID_TIMES.round];
 
   it('holds its three runs of descent apart, so none reads as a tangle', () => {
@@ -1161,11 +1164,17 @@ describe('the solid demo', () => {
     expect(named3).toEqual(['x', 'y', 'z']);
   });
 
-  it('draws the same 245 marks at every time', () => {
+  it('draws the same 247 marks at every time, and an inset of between 67 and 77', () => {
     // A hundred and forty-four cells of saddle, sixteen panes of glass and the
     // field's thirty-six arrows at two marks each, with the rest the axes, the
-    // title and the rule.
-    for (const seconds of [0, ...SOLID_FRAMES, SOLID_TIMES.round]) expect(solidAt(seconds)).toHaveLength(245);
+    // title, the rule and the inset's own panel. What the inset draws is not
+    // fixed: it magnifies a window on the middle and the saddle turns under it.
+    for (const seconds of [0, ...SOLID_FRAMES, SOLID_TIMES.round]) {
+      expect(solidOwn(seconds)).toHaveLength(247);
+      const lens = solidAt(seconds).length - solidOwn(seconds).length;
+      expect(lens).toBeGreaterThanOrEqual(67);
+      expect(lens).toBeLessThanOrEqual(77);
+    }
   });
 
   it('runs its three descents down the saddle and never off it', () => {
@@ -1300,16 +1309,71 @@ describe('the solid demo', () => {
     expect(drawn.path[0].curves.length).toBeGreaterThan(50);
   });
 
+  it('paints its inset panel in the sheet ground, so a reading inside it keeps its contrast', () => {
+    // This figure has no empty band, so the panel sits over the saddle and has to
+    // be opaque. Painting it in the ground the sheet paints behind itself leaves a
+    // reading inside it on the ground it was measured against: ink reads 17.22:1
+    // on white and 15.87:1 on #0d1117 either side of the panel's edge.
+    const marks = solidAt(SOLID_TIMES.half);
+    const panel = marks.find((mark) => mark.id === 'solid/window/ground');
+    expect(panel?.kind === 'path' && panel.fill?.colour).toBe(`var(--ground, ${GROUND.light})`);
+    const readings = marks.filter((mark) => mark.id.startsWith('solid/lens/') && mark.kind === 'text');
+    for (const reading of readings) expect(reading.kind === 'text' && reading.fill.colour).toBe(INK);
+    // The one whose anchor lands inside the panel, which is the label the x axis
+    // writes at the origin the window is centred on.
+    const inside = readings.filter(
+      (mark) =>
+        mark.kind === 'text' &&
+        mark.clip !== undefined &&
+        interval.holds(mark.clip.x, mark.at.x) &&
+        interval.holds(mark.clip.y, mark.at.y)
+    );
+    expect(inside.map((mark) => mark.id)).toEqual(['solid/lens/solid/axes/x/labels/0/label']);
+  });
+
+  it('shows the middle of the saddle in its panel, which is what a hyperbola leaves there', () => {
+    // The crossing is a hyperbola, so its two branches pass outside a window on
+    // the middle at some bearings and holding both would need 6.3 units of the
+    // 8.2 the figure declares, which is a reduction rather than a magnification.
+    // What the panel always carries is the saddle's own cells, the three runs of
+    // descent and the axes through the middle.
+    const inPanel = (seconds: number, part: string) =>
+      solidAt(seconds).filter((mark) => {
+        if (!mark.id.startsWith(`solid/lens/solid/${part}`) || mark.kind !== 'path' || !mark.clip) return false;
+        const box = boundsOf(mark.path);
+        return box !== null && overlapOf(box, mark.clip) !== null;
+      }).length;
+    for (const seconds of named) {
+      expect(inPanel(seconds, 'body')).toBeGreaterThanOrEqual(48);
+      expect(inPanel(seconds, 'descent')).toBe(3);
+      expect(inPanel(seconds, 'axes')).toBe(6);
+    }
+    // The crossing itself is there at three of the four, and at the quarter turn
+    // both branches are outside the window.
+    expect(inPanel(SOLID_TIMES.half, 'cut')).toBe(1);
+    expect(inPanel(SOLID_TIMES.quarter, 'cut')).toBe(0);
+  });
+
   it('keeps the whole picture inside the frame it declares', () => {
     // The frame is read off the figure rather than written out again here, so
     // reshaping it to fit the picture cannot leave this holding an old number.
+    // The inset's marks are read by the rectangle they are cut to rather than by
+    // their geometry, since a magnified copy runs past the panel on purpose and
+    // what may not leave the frame is the panel.
     const frame = extentAt(solid, 0, 16 / 9);
     for (const seconds of named) {
-      const box = boundsOfMarks(solidAt(seconds));
+      const box = boundsOfMarks(solidOwn(seconds));
       expect(Math.abs(box!.x.from)).toBeLessThanOrEqual(frame.width / 2);
       expect(Math.abs(box!.x.to)).toBeLessThanOrEqual(frame.width / 2);
       expect(Math.abs(box!.y.from)).toBeLessThanOrEqual(frame.height / 2);
       expect(Math.abs(box!.y.to)).toBeLessThanOrEqual(frame.height / 2);
+      for (const mark of solidAt(seconds)) {
+        if (!mark.clip) continue;
+        expect(Math.abs(mark.clip.x.from), mark.id).toBeLessThanOrEqual(frame.width / 2);
+        expect(Math.abs(mark.clip.x.to), mark.id).toBeLessThanOrEqual(frame.width / 2);
+        expect(Math.abs(mark.clip.y.from), mark.id).toBeLessThanOrEqual(frame.height / 2);
+        expect(Math.abs(mark.clip.y.to), mark.id).toBeLessThanOrEqual(frame.height / 2);
+      }
     }
   });
 });
@@ -1317,7 +1381,10 @@ describe('the solid demo', () => {
 describe('the solid strip', () => {
   it('carries every frame with no two marks sharing an id', () => {
     const { marks } = solidStripMarks(SOLID_FRAMES, 2);
-    expect(marks).toHaveLength(245 * SOLID_FRAMES.length);
+    // Four frames of 247 own marks, and the four insets between them draw 288:
+    // each magnifies a window on a saddle that has turned, so no two of them hold
+    // the same number of marks.
+    expect(marks).toHaveLength(247 * SOLID_FRAMES.length + 288);
     expect(new Set(marks.map((mark) => mark.id)).size).toBe(marks.length);
   });
 });

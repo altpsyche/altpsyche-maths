@@ -40,6 +40,8 @@ import {
   moveBy,
   perspective,
   polyline3,
+  rect,
+  shape,
   sampleTrack,
   sectionOf,
   scene3,
@@ -61,7 +63,7 @@ import {
   type Track,
   type Vec2,
 } from '../index.js';
-import { DEEP, EMBER, FROST, GLAZE, INK, MOSS, SKY, shadeOf } from './palette.js';
+import { DEEP, EMBER, FROST, GLAZE, INK, MOSS, PANEL, SKY, shadeOf } from './palette.js';
 import { TYPE } from './typeface.js';
 
 const ink = { colour: INK };
@@ -84,6 +86,36 @@ const fall: Stroke = { colour: MOSS, width: { from: 0.035, to: 0 } };
  * orbit it spans 6.85 by 5.11, so a 16:9 frame leaves a margin no mark reaches.
  * The extra height above the picture is the band the rule is written into. */
 const extent: Extent = { width: 8.2, height: 6.4 };
+
+/**
+ * The panel the inset is drawn into, in the figure's own units, and how much of
+ * the picture it shows.
+ *
+ * This figure has no empty band, unlike the flat demo: everything it draws fits
+ * inside 7.872 by 6.155 against a declared 8.2 by 6.4, so a panel sits over the
+ * saddle rather than beside it, which is what an inset is for. The bottom left is
+ * where it sits because the rule and the title are written across the top.
+ *
+ * It is inside the extent the camera pushes to rather than inside the declared
+ * one, since the push takes the frame to 6.8 by 5.307 and a panel outside that
+ * would leave the picture half way through the orbit. An inset's marks carry no
+ * opacity of their own, so walking the panel away the way the two labels are
+ * walked away would leave the magnified copy standing on nothing.
+ *
+ * What it shows is half its size each way, so the magnification is exactly 2 and
+ * the two shapes match rather than leaving a margin the fit would resolve. The
+ * place it shows is the middle, where the two branches of the crossing meet.
+ */
+const LENS = { x: interval(-3.3, -0.7), y: interval(-2.55, -0.6) };
+const LENS_SHOWS = { width: 1.3, height: 0.975, centre: vec2(0, 0) };
+
+/** How wide the panel's own border is. It stands outside the rectangle by half
+ * its width, so its inner edge lands on the clip the inset's marks are cut to
+ * rather than being painted over by them. */
+const LENS_EDGE = 0.014;
+
+const LENS_ACROSS = interval.span(LENS.x);
+const LENS_UP = interval.span(LENS.y);
 
 /** The stretch of each parameter the surface is drawn over. */
 const OVER = interval(-1.5, 1.5);
@@ -301,6 +333,18 @@ export function sceneAt(along: number): Node {
       ticks: 4,
       names: { x: 'x', y: 'y', z: 'z' },
     }),
+    group('window', [
+      shape('ground', rect(vec2(LENS.x.from, LENS.y.from), LENS_ACROSS, LENS_UP), { fill: { colour: PANEL } }),
+      shape(
+        'edge',
+        rect(
+          vec2(LENS.x.from - LENS_EDGE / 2, LENS.y.from - LENS_EDGE / 2),
+          LENS_ACROSS + LENS_EDGE,
+          LENS_UP + LENS_EDGE
+        ),
+        { stroke: { colour: INK, width: LENS_EDGE } }
+      ),
+    ]),
     text('title', fractionOf(extent, 0.98, 0.9156), 'a saddle', TEXT.title, { fill: ink, align: 'end' }),
     equationNode('rule', written, {
       at: fractionOf(extent, 0.02, 0.93),
@@ -396,6 +440,10 @@ export const solid: Figure = {
   timeline: line,
   duration: line.duration,
   still: ORBIT_FROM + ORBIT * 0.18,
+  // Named under the figure's own root, so the strip's move carries its marks into
+  // their slot with everything else, and hiding the panel because an inset that
+  // magnified its own ground and border would paint a picture of itself.
+  insets: [{ shows: LENS_SHOWS, into: LENS, name: 'solid/lens', hides: ['solid/window'] }],
 };
 
 /** Where the eye is at a time, for a gate that would otherwise rebuild the track
@@ -417,9 +465,20 @@ export function stripMarks(
   const marks = times.flatMap((seconds, frame) => {
     const across = ((frame % columns) - (columns - 1) / 2) * SLOT;
     const up = ((rows - 1) / 2 - Math.floor(frame / columns)) * DOWN;
-    return moveBy('solid', vec2(across, up))(marksAt(solid, seconds), 1).map((mark) => ({
+    const by = vec2(across, up);
+    // A clip stays where the figure declared it while a mark moves through it,
+    // which is the rule an animation wants and the wrong one here: a slot is a
+    // second frame rather than a place inside one, so the inset's window travels
+    // with the marks it holds or it would cut every frame but the middle away.
+    return moveBy('solid', by)(marksAt(solid, seconds), 1).map((mark) => ({
       ...mark,
       id: `at${frame}/${mark.id}`,
+      clip: mark.clip
+        ? {
+            x: interval(mark.clip.x.from + by.x, mark.clip.x.to + by.x),
+            y: interval(mark.clip.y.from + by.y, mark.clip.y.to + by.y),
+          }
+        : undefined,
     }));
   });
   return { marks, extent: { width: SLOT * columns, height: DOWN * rows } };

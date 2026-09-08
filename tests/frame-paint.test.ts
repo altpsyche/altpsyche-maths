@@ -110,22 +110,29 @@ describe('a walk of the solid demo', () => {
   it('walks 354 frames and paints every one of them', () => {
     expect(frames).toHaveLength(354);
     for (const frame of frames) {
-      const counted = drawn(frame);
+      // The figure's own marks are the fixed part. What its inset draws is a
+      // window on a saddle that turns, so the count there changes frame to frame.
+      const own = frame.marks.filter((mark) => !mark.id.startsWith('solid/lens/'));
+      const counted = drawn(frame, own);
       // The three runs of descent are among the fills rather than the strokes,
       // since a stroke of two widths is drawn as the filled outline of its path.
-      expect(counted.fills).toBe(196);
-      expect(counted.strokes).toBe(54);
+      expect(counted.fills).toBe(197);
+      expect(counted.strokes).toBe(55);
       expect(counted.texts).toBe(11);
       // Sixteen more calls than marks, which are the panes of glass: a mark
       // carrying both a fill and a stroke is painted twice and written once.
-      expect(counted.fills + counted.strokes + counted.texts).toBe(frame.marks.length + 16);
-      expect(counted.elements).toBe(frame.marks.length);
+      expect(counted.fills + counted.strokes + counted.texts).toBe(own.length + 16);
+      const whole = drawn(frame);
+      expect(whole.elements).toBe(frame.marks.length);
     }
   });
 
   it('turns its eye frame by frame, so no two frames draw the same picture', () => {
-    const first = frames[0].marks;
-    const middle = frames[Math.floor(frames.length / 2)].marks;
+    // The figure's own marks, since the inset's count changes with what falls
+    // inside a window on a saddle that turns.
+    const own = (marks: readonly Mark[]) => marks.filter((mark) => !mark.id.startsWith('solid/lens/'));
+    const first = own(frames[0].marks);
+    const middle = own(frames[Math.floor(frames.length / 2)].marks);
     expect(first).toHaveLength(middle.length);
     const moved = first.filter((mark, index) => JSON.stringify(mark) !== JSON.stringify(middle[index]));
     expect(moved.length).toBeGreaterThan(200);
