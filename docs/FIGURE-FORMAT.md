@@ -321,10 +321,14 @@ to `straight` or to `polyline3`.
 
 ### The timeline, which is a structure rather than a kind
 
-A timeline is a sequence of entries built by `play`, `together`, `stagger` and `wait`. Each entry
-carries its animations, its duration, an `after` offset that may be negative so two runs overlap, and
-for a stagger a `gap`. The flat demo's entrance is eleven such entries and five of them carry a
-negative offset.
+A timeline is a list of spans, and `figure/timeline.ts` compiles it from calls to `play`, `together`,
+`stagger` and `wait`. **A `Span` is an entry, a `from`, a `to` and a `curve`**, and the timeline holds
+its own duration beside the list. An `after` offset is folded into the next `from` when the call is
+made and a stagger's `gap` into successive `from`s, so neither survives into the data. The `curve` is
+a resolved function, defaulted to `curveFor(true, true)`.
+
+The flat demo's timeline is thirty spans, twenty-three of them in its entrance, and the entrance is
+eight builder calls of which six carry a negative offset.
 
 **This was missing from the first inventory entirely.** It is not a node and not an animation, and it
 has to serialise before any figure does.
@@ -614,10 +618,17 @@ release away and has a document of its own.
   written out, read back, and drawing marks identical within tolerance; a figure of a later version
   refused; a malformed figure refused with the field named; the bytes of each demo as data.
 
-- [ ] **6. The timeline as data.** The sequence of entries, each with its animations, its duration,
-  its `after` offset and a stagger's `gap`. **Measures:** the flat demo's entrance, which is eight
-  builder calls over twenty-three spans of its thirty, six of the eight carrying a negative offset,
-  producing the same marks at the same times.
+- [ ] **6. The timeline as data, and it is the compiled spans rather than the calls that built
+  them.** A span is an entry, a `from`, a `to` and a `CurveName`, which is what `figure/timeline.ts`
+  already holds and what `marksAt` already reads. **The `after` offset and a stagger's `gap` are not
+  in the format**, because a call folds each into the next `from` when it is made and neither can be
+  read back out of the numbers: two spans starting together say nothing about which call grouped them.
+  Writing the calls instead would put the compiler in every renderer, which is the semantics Lottie
+  left loose and the drift this format exists to avoid, and an authoring API keeps the calls whatever
+  the file holds. What is lost is the author's intent behind an overlap, and the overlap itself is in
+  the numbers. **Measures:** the flat demo's thirty spans, twenty-three of them its entrance, read
+  from spans rather than built, giving the same marks at the same times; the six negative offsets of
+  its eight entrance calls showing as spans that start before the one before them ends.
 
 - [ ] **7. The extent as data.** A view that follows something becomes a named form with parameters
   rather than a function of the clock, and the forms are the ones a figure needs rather than one per

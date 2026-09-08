@@ -1042,6 +1042,12 @@ answer's cubics change every frame and cubics written out at authoring time are 
 the resolver, and step 3.1 measures against the rotation demo, whose scene is a fixed tree of the
 three kinds it lands.
 
+**A timeline as data is the compiled spans and not the calls that built them.** The plan described a
+timeline entry as carrying an `after` offset and a stagger's `gap`, which are arguments to `play`,
+`together` and `stagger` rather than fields of anything: `figure/timeline.ts` folds each into the next
+span's `from` when the call is made. Step 6 writes the spans, since that is what `marksAt` reads and
+it leaves no compiler for a second renderer to get wrong, and it says what that costs.
+
 **Nothing is signed off.** Siva reads the plan before a line is written.
 
 ### The 2.x band, which is what Manim has and this does not
