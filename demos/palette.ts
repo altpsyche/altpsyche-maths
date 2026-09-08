@@ -38,11 +38,14 @@ export const THEME = {
   frost: { light: '#e0f2fe', dark: '#17293b' },
   glaze: { light: '#a3d4f5', dark: '#23455c' },
   moss: { light: '#15803d', dark: '#3ec46d' },
+  /** The ground itself, which is here so a panel drawn over the picture can
+   * paint it as a mark rather than only as the sheet's own background. */
+  ground: { light: '#ffffff', dark: '#0d1117' },
 } as const;
 
 /** The grounds the two halves of the theme are measured against, and what each
  * sheet paints behind its own marks so the measurement holds where it is shown. */
-export const GROUND = { light: '#ffffff', dark: '#0d1117' } as const;
+export const GROUND = THEME.ground;
 
 /** One colour as a mark takes it, with the light value written in as what it
  * falls back to. */
@@ -78,6 +81,10 @@ export const FROST = painted('frost');
 export const GLAZE = painted('glaze');
 /** A run of steepest descent. */
 export const MOSS = painted('moss');
+/** What a panel drawn over the picture paints behind itself, which is the sheet's
+ * own ground rather than a colour of the panel's own, so a reading inside the
+ * panel sits on the ground that reading was measured against. */
+export const PANEL = painted('ground');
 
 /**
  * How many steps the surface's shading is cut into.

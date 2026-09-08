@@ -14,7 +14,7 @@
  */
 import { mat3, type Mat3 } from '../values/mat3.js';
 import { vec2 } from '../values/vec2.js';
-import { carried } from './animation.js';
+import { carried, touches } from './animation.js';
 import { boundsOf, centreOf, grownBy, overlapOf, type Bounds } from './bounds.js';
 import { widestWidth } from './width.js';
 import type { Extent, Fit, ViewChange } from './extent.js';
@@ -44,6 +44,15 @@ export interface Inset {
    * inset's copy of a mark from colliding with the mark itself. `inset` unless
    * named. */
   name?: string;
+  /**
+   * The marks this inset leaves out, named the way an animation names its
+   * target.
+   *
+   * What it is for is the panel an inset is drawn on: the border and the ground
+   * behind one are the figure's own marks, so an inset over the part of the
+   * picture they sit in magnifies them and paints a picture of itself.
+   */
+  hides?: readonly string[];
 }
 
 /**
@@ -91,10 +100,10 @@ function reachOf(mark: Mark): Bounds | null {
  * The marks of one inset, given the marks the figure draws.
  *
  * Every mark is magnified and clipped to the inset's rectangle, and one whose
- * whole reach falls outside that rectangle is left out. A mark already carrying a
- * clip keeps it: its clip is magnified with it and then cut down to the inset's
- * rectangle, so a mark clipped in the figure is clipped the same way in the
- * inset.
+ * whole reach falls outside that rectangle is left out, as is one the inset
+ * hides. A mark already carrying a clip keeps it: its clip is magnified with it
+ * and then cut down to the inset's rectangle, so a mark clipped in the figure is
+ * clipped the same way in the inset.
  */
 export function insetMarks(marks: readonly Mark[], inset: Inset): readonly Mark[] {
   const shows = inset.view ? inset.view.view(inset.shows, 1, () => marks) : inset.shows;
@@ -102,6 +111,7 @@ export function insetMarks(marks: readonly Mark[], inset: Inset): readonly Mark[
   const name = inset.name ?? 'inset';
   const drawn: Mark[] = [];
   for (const mark of marks) {
+    if (inset.hides?.some((hidden) => touches(mark.id, hidden))) continue;
     const clip = mark.clip ? overlapOf(movedBounds(mark.clip, through), inset.into) : inset.into;
     if (!clip) continue;
     const moved = carried(mark, through);

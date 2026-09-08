@@ -278,6 +278,17 @@ describe('the committed pictures', () => {
           // A mark at nothing is not drawn, so a view that pushes past a label
           // has cropped nothing a reader could see.
           if ((mark.opacity ?? 1) === 0) continue;
+          // A clipped label is cut by its own rectangle rather than by the frame,
+          // and an inset shows a fragment of a label on purpose. What holds for
+          // one is that the rectangle is inside the frame, since nothing can then
+          // be cropped by the frame that was not already cropped by the panel.
+          if (mark.clip) {
+            expect(mark.clip.x.from, mark.id).toBeGreaterThanOrEqual(centre.x - extent.width / 2);
+            expect(mark.clip.x.to, mark.id).toBeLessThanOrEqual(centre.x + extent.width / 2);
+            expect(mark.clip.y.from, mark.id).toBeGreaterThanOrEqual(centre.y - extent.height / 2);
+            expect(mark.clip.y.to, mark.id).toBeLessThanOrEqual(centre.y + extent.height / 2);
+            continue;
+          }
           const width = ADVANCE * mark.size * mark.text.length;
           const left = mark.align === 'middle' ? mark.at.x - width / 2 : mark.align === 'end' ? mark.at.x - width : mark.at.x;
           expect(left, mark.id).toBeGreaterThanOrEqual(centre.x - extent.width / 2);
@@ -391,10 +402,40 @@ describe('the flat demo', () => {
     }
   });
 
-  it('draws the same 144 marks at every time', () => {
-    // Forty-two of the 144 are the field's twenty-one arrows and fifteen the two
-    // rules, and nothing arrives or leaves part way through, so every time alike.
-    for (const seconds of [0, ...FRAMES, durationOf(tangent)]) expect(marksAt(tangent, seconds)).toHaveLength(144);
+  it('draws the same 146 marks at every time, and an inset of between 32 and 40', () => {
+    // Forty-two of the 146 are the field's twenty-one arrows, fifteen the two
+    // rules and two the inset's own panel, and nothing arrives or leaves part way
+    // through, so every time alike. What the inset draws is not: it magnifies a
+    // window that moves, so what falls inside the window changes as the dot walks.
+    for (const seconds of [0, ...FRAMES, durationOf(tangent)]) {
+      const marks = marksAt(tangent, seconds);
+      const lens = marks.filter((mark) => mark.id.startsWith('tangent/lens/'));
+      expect(marks.length - lens.length).toBe(146);
+      expect(lens.length).toBeGreaterThanOrEqual(32);
+      expect(lens.length).toBeLessThanOrEqual(40);
+    }
+  });
+
+  it('paints its inset panel in the sheet ground, so a reading inside it keeps its contrast', () => {
+    // The panel is opaque, or the magnified copy would sit over the picture it
+    // magnifies. Painting it in the ground the sheet paints behind itself is what
+    // leaves a reading inside the panel on the ground it was measured against:
+    // ink reads 17.22:1 on white and 15.87:1 on #0d1117 either side of the edge.
+    const marks = marksAt(tangent, TIMES.entrance);
+    const panel = marks.find((mark) => mark.id === 'tangent/window/ground');
+    expect(panel?.kind === 'path' && panel.fill?.colour).toBe(`var(--ground, ${GROUND.light})`);
+    const readings = marks.filter((mark) => mark.id.startsWith('tangent/lens/') && mark.kind === 'text');
+    for (const reading of readings) expect(reading.kind === 'text' && reading.fill.colour).toBe(INK);
+    // The one whose anchor lands inside the panel at the entrance, which is the
+    // label the x axis writes at the origin the dot starts on.
+    const inside = readings.filter(
+      (mark) =>
+        mark.kind === 'text' &&
+        mark.clip !== undefined &&
+        interval.holds(mark.clip.x, mark.at.x) &&
+        interval.holds(mark.clip.y, mark.at.y)
+    );
+    expect(inside.map((mark) => mark.id)).toEqual(['tangent/lens/tangent/axes/x/labels/0']);
   });
 
   it('braces the rise at the end and counts up to it', () => {
@@ -553,7 +594,9 @@ describe('the flat demo', () => {
   });
 
   it('flashes on a clock that does not ease either', () => {
-    const rays = marksAt(tangent, TIMES.walkTo + 0.2).filter((mark) => mark.id.includes('/flash/'));
+    const rays = marksAt(tangent, TIMES.walkTo + 0.2).filter((mark) =>
+      mark.id.startsWith('tangent/point/flash/')
+    );
     expect(rays).toHaveLength(10);
     for (const ray of rays) expect(ray.opacity).toBeCloseTo(0.5, 6);
   });
@@ -733,7 +776,10 @@ describe('the flat demo', () => {
 describe('the strip of frames', () => {
   it('carries every frame with no two marks sharing an id', () => {
     const { marks } = stripMarks(FRAMES);
-    expect(marks).toHaveLength(144 * FRAMES.length);
+    // Four frames of 146 own marks, and the four insets between them draw 142:
+    // each magnifies a window that has moved, so no two of them hold the same
+    // number of marks.
+    expect(marks).toHaveLength(146 * FRAMES.length + 142);
     expect(new Set(marks.map((mark) => mark.id)).size).toBe(marks.length);
   });
 
@@ -757,7 +803,9 @@ describe('the strip of frames', () => {
 
   it('shows a picture that moves in a still, since nothing here encodes a GIF', () => {
     const { marks } = stripMarks(FRAMES);
-    const readings = marks.filter((mark) => mark.id.endsWith('/tangent/reading'));
+    // The frame's own reading rather than the inset's copy of it, which the inset
+    // carries because a text mark is never dropped for sitting outside its clip.
+    const readings = marks.filter((mark) => /^at\d+\/tangent\/reading$/.test(mark.id));
     expect(readings.map((mark) => (mark.kind === 'text' ? mark.text : ''))).toEqual([
       'slope 0.00',
       'slope 1.59',

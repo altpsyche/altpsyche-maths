@@ -58,6 +58,7 @@ import {
   plot,
   pointAlong,
   pointOf,
+  rect,
   sampleTrack,
   scaleOf,
   shape,
@@ -80,7 +81,7 @@ import {
   type Vec2,
   type Track,
 } from '../index.js';
-import { AMBER, CREAM, DEEP, EMBER, HAZE, INK, MIST, PEACH, STEEL } from './palette.js';
+import { AMBER, CREAM, DEEP, EMBER, HAZE, INK, MIST, PANEL, PEACH, STEEL } from './palette.js';
 import { TYPE } from './typeface.js';
 
 const ink = { colour: INK };
@@ -140,6 +141,33 @@ const TIP = 0.18;
  * leave it: the frame's half-width, less the graph's, less the arrow head the
  * axis ends in. */
 const ROOM = size.width / 2 - coords.x.units.to - TIP;
+
+/**
+ * The panel the inset is drawn into, in the figure's own units, and how much of
+ * the picture it shows.
+ *
+ * It sits in the band above the graph and to the right of the reading and the
+ * rule, which is the one part of this figure nothing else draws in. The band is
+ * 1.4 units tall between the top of the graph and the top of the frame, so the
+ * panel is 1.26 of that and leaves 0.12 above itself. Its right edge stands at
+ * 4.7 because the view follows the dot and the frame's own right edge comes in
+ * to 4.78 at the start of the walk, where the dot is furthest left.
+ *
+ * What it shows is half its size each way, so the magnification is exactly 2 and
+ * the two shapes match rather than leaving a margin the fit would have to
+ * resolve.
+ */
+const LENS = { x: interval(1.9, 4.7), y: interval(1.62, 2.88) };
+const LENS_SHOWS = { width: 1.4, height: 0.63 };
+
+/** How wide the panel's own border is, and what it is drawn along: the border
+ * sits outside the rectangle by half its width, so its inner edge lands exactly
+ * on the clip the inset's marks are cut to rather than being painted over by
+ * them. */
+const LENS_EDGE = 0.02;
+
+const LENS_ACROSS = interval.span(LENS.x);
+const LENS_UP = interval.span(LENS.y);
 
 /**
  * Where the middle of the frame sits when the dot is at this point.
@@ -292,6 +320,18 @@ export function sceneAt(along: number): Node {
       fill: ink,
     }),
     group('equation', [rule('at-rest', atRest, frame), rule('moving', moving, frame)]),
+    group('window', [
+      shape('ground', rect(vec2(LENS.x.from, LENS.y.from), LENS_ACROSS, LENS_UP), { fill: { colour: PANEL } }),
+      shape(
+        'edge',
+        rect(
+          vec2(LENS.x.from - LENS_EDGE / 2, LENS.y.from - LENS_EDGE / 2),
+          LENS_ACROSS + LENS_EDGE,
+          LENS_UP + LENS_EDGE
+        ),
+        { stroke: { colour: INK, width: LENS_EDGE } }
+      ),
+    ]),
     brace('rise', pointOf(coords, 3, RISE), pointOf(coords, 3, 0), labelFor(RISE, 0.01), {
       depth: RISE_DEPTH,
       padding: 0.28,
@@ -320,7 +360,11 @@ const follows = Timeline.empty().play(
 
 /** The picture arriving, one part at a time. */
 const entrance = follows
-  .play(fadeIn('tangent/grid'), 0.6)
+  // The panel arrives with the grid rather than later, because the inset's marks
+  // carry the opacity of the marks they copy: the picture inside the panel fades
+  // in as the picture does, and a panel arriving afterwards would leave that
+  // arrival hanging over the band with no ground behind it.
+  .together([fadeIn('tangent/grid'), fadeIn('tangent/window')], 0.6)
   .together([draw('tangent/axes/x/line'), draw('tangent/axes/y/line')], 0.7, { after: -0.2 })
   .together(
     [
@@ -418,6 +462,19 @@ export const tangent: Figure = {
   tracks: { s: walk },
   timeline: line,
   scene: (_seconds, values) => sceneAt(values.s as number),
+  // The inset is named under the figure's own root, so the strip's move carries
+  // its marks into their slot along with everything else. It hides the panel,
+  // which is a figure mark: an inset that magnified its own ground and border
+  // would paint a picture of itself inside itself.
+  insets: [
+    {
+      shows: LENS_SHOWS,
+      into: LENS,
+      view: followView('tangent/point'),
+      name: 'tangent/lens',
+      hides: ['tangent/window'],
+    },
+  ],
 };
 
 /** How much wider each frame's slot is than the figure, so a strip of them has
@@ -447,9 +504,20 @@ export function stripMarks(
     // Each frame is carried by its own view as well as into its slot, or a frame
     // whose view had followed the dot would sit off its own slot by that much.
     const seen = frameAt(pointAt(seconds)).centre ?? vec2(0, 0);
-    return moveBy('tangent', vec2(across - seen.x, up - seen.y))(marksAt(tangent, seconds), 1).map((mark) => ({
+    const by = vec2(across - seen.x, up - seen.y);
+    // A clip stays where the figure declared it while a mark moves through it,
+    // which is the rule an animation wants and the wrong one here: a slot is a
+    // second frame rather than a place inside one, so the inset's window travels
+    // with the marks it holds or it would cut every frame but the middle away.
+    return moveBy('tangent', by)(marksAt(tangent, seconds), 1).map((mark) => ({
       ...mark,
       id: `at${frame}/${mark.id}`,
+      clip: mark.clip
+        ? {
+            x: interval(mark.clip.x.from + by.x, mark.clip.x.to + by.x),
+            y: interval(mark.clip.y.from + by.y, mark.clip.y.to + by.y),
+          }
+        : undefined,
     }));
   });
   return { marks, extent: { width: SLOT * columns, height: DOWN * rows } };

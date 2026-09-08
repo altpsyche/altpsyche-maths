@@ -837,6 +837,9 @@ frame round a picture is a shape.
     picture while it caught up.
   - `name` — what every mark of the inset has its id begin with, which is what keeps the inset's copy
     of a mark from colliding with the mark itself. `inset` unless named.
+  - `hides` — the marks the inset leaves out, named the way an animation names its target. What it is
+    for is the panel an inset is drawn on: an inset over the part of the picture its own border and
+    ground sit in would magnify them and paint a picture of itself.
 - `insetMarks(marks, inset)` — the marks of one inset, given the marks a figure draws. Each one is
   magnified and clipped to the inset's rectangle, and one whose whole reach falls outside it is left
   out. A mark already carrying a clip keeps it, magnified and then cut down to the rectangle.

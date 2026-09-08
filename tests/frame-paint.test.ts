@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { framesOf, paintCanvas, svgMarkup } from '@altpsyche/maths';
-import type { CanvasLike, Frame } from '@altpsyche/maths';
+import type { CanvasLike, Frame, Mark } from '@altpsyche/maths';
 import { tangent } from '../demos/tangent.js';
 import { solid } from '../demos/surface.js';
 
@@ -54,10 +54,13 @@ const countOf = (markup: string, tag: string) => markup.split(`<${tag}`).length 
 
 /** What one frame drew, on the canvas and in the markup, so the two can be held
  * to the same mark count. */
-function drawn(frame: Frame): { fills: number; strokes: number; texts: number; elements: number } {
+function drawn(
+  frame: Frame,
+  marks: readonly Mark[] = frame.marks
+): { fills: number; strokes: number; texts: number; elements: number } {
   const target = new Counter();
-  paintCanvas(target, frame.marks, frame.view);
-  const markup = svgMarkup(frame.marks, frame.view, WIDTH, HEIGHT);
+  paintCanvas(target, marks, frame.view);
+  const markup = svgMarkup(marks, frame.view, WIDTH, HEIGHT);
   return {
     fills: target.fills,
     strokes: target.strokes,
@@ -72,16 +75,22 @@ describe('a walk of the flat demo', () => {
   it('walks 308 frames and paints every one of them', () => {
     expect(frames).toHaveLength(308);
     for (const frame of frames) {
-      const counted = drawn(frame);
+      // The figure's own marks are the fixed part. What its inset draws is a
+      // window that moves, so the count there changes frame to frame.
+      const counted = drawn(
+        frame,
+        frame.marks.filter((mark) => !mark.id.startsWith('tangent/lens/'))
+      );
       // The tangent is one of the fills rather than one of the strokes, since a
       // stroke of two widths is drawn as the filled outline of its own path.
-      expect(counted.fills).toBe(43);
-      expect(counted.strokes).toBe(89);
+      expect(counted.fills).toBe(44);
+      expect(counted.strokes).toBe(90);
       expect(counted.texts).toBe(12);
       // Every mark is one element and one drawing call, so the two painters
       // agree about what the frame holds.
-      expect(counted.fills + counted.strokes + counted.texts).toBe(frame.marks.length);
-      expect(counted.elements).toBe(frame.marks.length);
+      const whole = drawn(frame);
+      expect(whole.fills + whole.strokes + whole.texts).toBe(frame.marks.length);
+      expect(whole.elements).toBe(frame.marks.length);
     }
   });
 
