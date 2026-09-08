@@ -60,9 +60,9 @@ region is the limit of at the left edge, the right edge or the middle of each on
 lays the tangent along the curve, cut where it leaves the graph. `slopeOf` reads the slope itself,
 which is what the number in the corner is.
 
-<img src="docs/tangent-strip.svg" width="960" alt="Four frames of the same figure side by side, the point walking up the curve over the field of slope arrows, the shaded region growing behind it, the typeset rule in the corner changing from a slope of nothing to one that depends on x, and a brace measuring the rise in the last frame.">
+<img src="docs/tangent-strip.svg" width="820" alt="Four frames of the same figure in two rows, the point walking up the curve over the field of slope arrows, the shaded region growing behind it, the typeset rule in the corner changing from a slope of nothing to one that depends on x, and a brace measuring the rise in the last frame.">
 
-Four times of one figure, side by side: the picture arrived, the beat at the stationary point, half
+Four times of one figure, in two rows: the picture arrived, the beat at the stationary point, half
 way up, and the top. A moving picture in a README needs a GIF and this package has no encoder, so the
 strip shows the motion in a still.
 

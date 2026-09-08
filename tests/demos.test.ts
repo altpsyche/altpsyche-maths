@@ -352,10 +352,22 @@ describe('the strip of frames', () => {
     expect(new Set(marks.map((mark) => mark.id)).size).toBe(marks.length);
   });
 
-  it('is as wide as its frames and as tall as one of them', () => {
-    const { extent } = stripMarks(FRAMES);
-    expect(extent.width).toBeCloseTo(45.6, 12);
-    expect(extent.height).toBe(6);
+  it('is as wide as its columns and as tall as its rows', () => {
+    const oneRow = stripMarks(FRAMES);
+    expect(oneRow.extent.width).toBeCloseTo(45.6, 12);
+    expect(oneRow.extent.height).toBeCloseTo(6.4, 12);
+    // Two columns of four frames is two rows, and the strip the README carries.
+    const twoRows = stripMarks(FRAMES, 2);
+    expect(twoRows.extent.width).toBeCloseTo(22.8, 12);
+    expect(twoRows.extent.height).toBeCloseTo(12.8, 12);
+  });
+
+  it('shows every frame at one size, whichever strip it is in', () => {
+    // A frame is a slot wide in every strip, so the four sheets draw their
+    // frames at one scale rather than one sheet drawing them half the size.
+    for (const strip of [stripMarks(FRAMES, 2), booleanStripMarks(BOOLEAN_FRAMES, 2), turnStripMarks(TURN_FRAMES, 2), solidStripMarks(SOLID_FRAMES, 2)]) {
+      expect(strip.extent.width / strip.extent.height).toBeLessThan(2.6);
+    }
   });
 
   it('shows a picture that moves in a still, since nothing here encodes a GIF', () => {

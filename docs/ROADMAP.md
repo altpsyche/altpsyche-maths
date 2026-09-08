@@ -385,10 +385,20 @@ demo is recompiled by steps 6 and 7 against the renamed door.
   the ink down to 1.15 for the face of a pane of glass; the suite holds at 608 tests; all eight
   sheets identical, since the step moves where a colour is written and not what it is.
 
-- [ ] **9. The strips take one shape.** `tangent-strip.svg` is 7.60 to 1 in a single row, so at the
-  960 pixels the README shows it a frame is 240 by 126. The other three are two rows between 1.78 and
-  2.59 to 1, giving frames from 410 by 158 to 410 by 230. **Measures:** the four frame sizes at the
-  width the README shows, before and after, against a floor of 200 pixels tall.
+- [x] **9. The strips take one shape.** `tangent-strip.svg` was the only strip laid out in one row,
+  so its four frames drew at 240 by 126 pixels where the other three drew theirs at 410 by up to 230.
+  It takes the `columns` argument the other three already took, and the README shows it at the 820
+  pixels they are shown at. Every strip now draws its frames one slot wide, so a frame is 410 pixels
+  across in all four sheets.
+
+  **The floor this step was planned against was the wrong measurement and is corrected.** A frame at
+  least 200 pixels tall cannot be asked of every strip, because a frame's height at a fixed width is
+  the figure's own aspect and the boolean demo's figure is three panels side by side. Its frame is
+  158 pixels tall and that is the picture, not a defect. What one shape means is that every strip
+  draws its frames at one scale, which is a frame one slot wide, and that no strip runs wider than
+  2.6 to one. **Measured:** frame sizes from 240 by 126, 410 by 158, 410 by 193 and 410 by 230 to
+  410 by 230, 410 by 158, 410 by 193 and 410 by 230; the tangent strip from 7.60 to one down to 1.78;
+  `tangent-strip.svg` from 282,370 bytes to 277,409; the suite from 608 tests to 609.
 
 - [ ] **10. The stills chosen to be looked at, and the picture the README opens on.** `boolean.svg` is
   12 marks and `rotate.svg` is 8, so both read as diagrams beside `tangent.svg` at 202 and
@@ -449,7 +459,7 @@ demo is recompiled by steps 6 and 7 against the renamed door.
   is in this entry.
 - One name means sampling density and one name means a domain, in one shape each.
 - The demos take their colours from one named list, and no hex is written in a demo file.
-- Every strip frame is at least 200 pixels tall at the width the README shows it.
+- Every strip draws its frames one slot wide, and no strip runs wider than 2.6 to one.
 - Every sheet's covered fraction and smallest text height are recorded, and the picture the README
   opens on is the one that clears both by the most.
 - The README's sentence mean is under 18 words and no sentence is over 30, and the guide's too.

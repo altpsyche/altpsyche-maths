@@ -323,6 +323,10 @@ export const tangent: Figure = {
  * white between the frames rather than one grid running into the next. */
 export const SLOT = 11.4;
 
+/** How far apart two rows of the strip sit, in figure units, the way `SLOT`
+ * spaces two columns. */
+export const DOWN = 6.4;
+
 /**
  * Several times of one figure side by side, as one list of marks.
  *
@@ -331,18 +335,23 @@ export const SLOT = 11.4;
  * Each frame's marks are carried sideways and renamed, so no two frames share an
  * id.
  */
-export function stripMarks(times: readonly number[]): { marks: readonly Mark[]; extent: Extent } {
+export function stripMarks(
+  times: readonly number[],
+  columns = times.length
+): { marks: readonly Mark[]; extent: Extent } {
+  const rows = Math.ceil(times.length / columns);
   const marks = times.flatMap((seconds, frame) => {
-    const across = (frame - (times.length - 1) / 2) * SLOT;
+    const across = ((frame % columns) - (columns - 1) / 2) * SLOT;
+    const up = ((rows - 1) / 2 - Math.floor(frame / columns)) * DOWN;
     // Each frame is carried by its own view as well as into its slot, or a frame
     // whose view had followed the dot would sit off its own slot by that much.
     const seen = frameAt(pointAt(seconds)).centre ?? vec2(0, 0);
-    return moveBy('tangent', vec2(across - seen.x, -seen.y))(marksAt(tangent, seconds), 1).map((mark) => ({
+    return moveBy('tangent', vec2(across - seen.x, up - seen.y))(marksAt(tangent, seconds), 1).map((mark) => ({
       ...mark,
       id: `at${frame}/${mark.id}`,
     }));
   });
-  return { marks, extent: { width: SLOT * times.length, height: size.height } };
+  return { marks, extent: { width: SLOT * columns, height: DOWN * rows } };
 }
 
 /** The times the strip shows, which are also the times the gate reads the demo
