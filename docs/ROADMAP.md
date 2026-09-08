@@ -155,45 +155,83 @@ convention this repository already follows makes each one a minor bump. A versio
 demos draw, not when its code compiles. A version that is cut leaves this table and its item goes
 with it, because `git log` is what keeps a closed plan.
 
-**The ladder holds the look and then the format.** Siva's call on 2026-09-08, which reversed the
-freeze in part. Four renderer versions came off it and stay off, because every one would have been
-written against an API the format is going to reshape. Four look-and-feel versions went on in front
-of the format, because each one changes a value type the format is about to freeze a written form
-for, and freezing before they land costs a major of the format's own version to add them afterwards.
+**The ladder holds the look, then the format, then what Manim has and this does not.** Siva's call
+on 2026-09-08, which reversed the freeze in part. Four renderer versions came off it and stay off,
+because every one would have been written against an API the format is going to reshape. Six versions
+went on in front of the format, because each changes something the format freezes a written form for,
+and freezing first costs a major of the format's own version to change it afterwards. Eight went on
+behind, because each adds a kind or a painter, which is a format minor an old figure survives, and
+three more are written past those because a session should not rediscover them.
 
-| version | what lands |
+| version | what lands | what it changes | steps | cut against | depends on | plan |
+| --- | --- | --- | --- | --- | --- | --- |
+| 1.1.0 | the typography: a size scale by role, a named family and a weight, text over more than one line, and a label that keeps clear | the sizes and the font a `Style` carries, and the parameters of the text kind | 5 | all four demos, and the rotation strip's eight frames | nothing outside this package | written |
+| 1.2.0 | the pacing: the easing set widened and named, a key naming its own curve, and the demos pacing themselves | the set of names a `Curve` can be | 4 | all four demos, and their twenty-six timeline entries | nothing outside this package | written |
+| 1.3.0 | the variable-width stroke, as the filled outline of a path | what a `Stroke`'s width may be | 5 | the flat demo's tangent and the solid demo's three runs of descent | nothing outside this package | written |
+| 1.4.0 | gradients, as stops along an axis in the mark's own units | what a `Fill` may be | 5 | the flat demo's shaded region and the solid demo's plane | nothing outside this package | written |
+| 1.5.0 | the view as a timeline entry, so a camera move is sequenced with the action | the shape of `Figure` | 4 | both demos' views, moved against their own entrances | nothing outside this package | written |
+| 1.6.0 | a rectangular clip, and the inset it makes possible | what a `Mark` may ask for | 4 | the flat demo's inset on its tangent point | nothing outside this package | written |
+| 2.0.0 | the figure format | every builder's shape, and the door | 28 | all four demos read from files, and the nine sheets | MathJax, which is already a dependency | written, in [`FIGURE-FORMAT.md`](FIGURE-FORMAT.md) |
+| 2.1.0 | the curves and surfaces a figure can name: parametric, polar, implicit, and the solids | adds kinds | to plan | a phase portrait, which the flat demo's field cannot express | nothing outside this package | to plan |
+| 2.2.0 | matrices and tables, and a matrix applied to a grid | adds kinds | to plan | a grid under a linear map, which nothing here can draw | nothing outside this package | to plan |
+| 2.3.0 | the indications that run along a path, and text written on rather than faded in | adds kinds, and outlines for plain text | to plan | the flat demo's reading, written on | a source of glyph outlines for plain text | to plan |
+| 2.4.0 | a group morphing into a group | adds a kind | to plan | the boolean demo's three panels, morphing into one another | nothing outside this package | to plan |
+| 2.5.0 | the recorder: a figure out as a video file | nothing in the format, and a name at the door | to plan | every demo as a file on disk rather than a strip of frames | an encoder and a container writer, neither chosen | to plan |
+| 2.6.0 | the GPU painter | nothing in the format, and a name at the door | to plan | both demos through a third painter, mark for mark against the SVG painter | `@altpsyche/engine`, with its item 2 landed | to plan |
+| 2.7.0 | dashes and quadratics drawn on a GPU | nothing; `Stroke.dash` is already in the mark and no painter draws it | to plan | a dashed figure, and the strip that shows it moving | `@altpsyche/engine` | to plan |
+| 2.8.0 | text on a GPU, and the recorder running without a page | nothing in the format | to plan | every demo recorded off a card | `@altpsyche/engine`, 2.3.0's outlines, and 2.5.0 | to plan |
+| 3.0.0 | depth, so a figure in space keeps it | what a `Mark` may ask for, which breaks the format's own version | to plan | the solid demo, whose crossing curve is drawn in the right order rather than the tree's | `@altpsyche/engine`, and the fourth decision above | blocked on a decision |
+| 3.1.0 | a clip that is a path rather than a rectangle | what a `Mark` may ask for | to plan | nothing yet, which is why it is last of the marks | `@altpsyche/engine`'s counting stencil, its item 2 | to plan |
+| 4.0.0 | a figure a reader can act on | the shape of `Figure`, which gains input | to plan | nothing yet | nothing outside this package | to plan |
+
+**The three rows past 2.8.0 are consequences rather than plans.** A major here exists only when
+something breaks, so 3.0.0 is what the fourth decision creates if it is answered one way and nothing
+at all if it is answered the other. 3.1.0 and 4.0.0 are written down so they are not rediscovered,
+and neither has a picture waiting, which is what a version needs before it is worked.
+
+**What hit testing already gives 4.0.0, so it is not built twice.** `containsPoint`, `windingAt` and
+`nearestEdge` are at the door and a flat list of marks with stable ids is why hit testing is possible
+at all. What is missing is an event reaching a figure, and that is the part that changes `Figure`.
+
+**Two dependencies are named above and neither is chosen.** The recorder needs something to encode
+frames and something to write a container, and the browser's own `VideoEncoder` covers the first
+where it exists. Whatever is picked is loaded by the recording call rather than at import, which is
+the rule MathJax already follows here. 2.3.0's outlines for plain text are the second, and the
+typesetter already hands back outlines for an equation, so the question is whether the same path
+serves a plain label.
+
+**The engine's roadmap carries the other half of this table**, as a record of which version above
+needs what from it, so neither side rediscovers the dependency by reading the other's plan. It is a
+record there rather than a queue, because that package throws out any argument amounting to a
+consumer needing something and its stencil item stands on the WebGPU specification instead.
+
+**Continuous integration is on none of these rows and is needed by four of them.** There is no
+`.github/workflows` in this tree, and 2.6.0 through 3.1.0 each carry a claim about what a device
+draws, which needs a browser gate and a card gate. `@altpsyche/engine` needed two workflows and
+seventeen gate scripts to have those, and building the same here is unestimated.
+
+**Two things on this plan are not versions and both have a deadline.** Composition and camera is
+done-criteria on steps 3.8 and 7 of the format, because a version in front of those would write
+camera moves as closures and then rewrite them. And whether a `Mark` may be a raster image is a
+decision above, answered or refused before 2.0.0 freezes, since a new kind of `Mark` is a change to
+the format's value types.
+
+**What is cut is not here.** A version that is cut leaves this table, its entry is deleted, and the
+Now section and `git log` are what keep it.
+
+**Four things wait off the ladder, and each waits on something named.**
+
+| off the ladder | what it waits on |
 | --- | --- |
-| 1.1.0 | the typography: a size scale, a named family and a weight, text over more than one line, and a label that keeps clear |
-| 1.2.0 | the pacing: the easing vocabulary widened and named, and the demos pacing themselves |
-| 1.3.0 | the variable-width stroke, as the outline of a path rather than a painter's width |
-| 1.4.0 | gradients, as a second shape of fill with stops |
-| 1.5.0 | the view as a timeline entry, so a camera move is sequenced with the action |
-| 1.6.0 | a rectangular clip, and the inset it makes possible |
-| 2.0.0 | the figure format, whose step list is in [`FIGURE-FORMAT.md`](FIGURE-FORMAT.md) |
-| 2.1.0 | the curves and surfaces a figure can name: parametric, polar, implicit, and the solids |
-| 2.2.0 | matrices and tables, and a matrix applied to a grid |
-| 2.3.0 | the indications that run along a path, and text written on rather than faded in |
-| 2.4.0 | a group morphing into a group |
-| 2.5.0 | the recorder: a figure out as a video file |
+| quadratics and dashes | the GPU painter, since a demo drawing quadratics as SVG checks the arithmetic and only a painter says whether the output is the shape a shader wants |
+| the GPU painter | the format, and the engine's stencil, which cannot count a winding number and is filed in that repository as its item 2 |
+| a figure in space keeping its depth | the fourth decision above, which is whether a figure may be undrawable in SVG |
+| text on a GPU with a recorder | the GPU painter, and 2.5.0 |
 
-**The 1.x band is in front of the format because each of its six changes something the format
-freezes.** 1.1.0 through 1.4.0 change a value type, 1.5.0 changes the shape of `Figure`, and 1.6.0
-changes what a `Mark` may ask for. The 2.x band is behind it because every one of those five adds a
-kind, which is a format minor an old figure survives.
+**The reading behind each of the four is below and in `git log`**, so none of them is rediscovered
+from nothing when it returns.
 
-**Composition and camera is not on the ladder and is not dropped.** A moving view is an
-`ExtentChoice` in the plane and a `Camera3Choice` in space, and steps 3.8 and 7 of the format turn
-both into named forms with parameters. A version in front of that would write camera moves as
-closures and then rewrite them, so what composition needs beyond those two steps is a picture, and it
-is done-criteria on them instead.
-
-**What came off the ladder, kept here so it is not rediscovered:** quadratics and dashes, the GPU
-painter, a figure in space keeping its depth, and text on a GPU with a recorder. The reading behind
-each is below and in `git log`, and the engine's stencil gap is filed in that repository as its item
-2 whatever happens here.
-
-**Every version below 1.0.0 is cut and its item is deleted.** What queues work now is the table
-above, the found list below, and whatever the consumer asks for.
+**What queues work is the table above, the found list below, and whatever the consumer asks for.**
 
 ## The two demos, which are what a version is cut against
 
