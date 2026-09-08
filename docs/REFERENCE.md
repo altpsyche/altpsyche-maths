@@ -272,6 +272,24 @@ A track is one value's keys over time. A control panel writes tracks and a figur
 - `lerpPath(from, to, along)` — part way from one path to another, point by point, after aligning
   them.
 
+## The outline of a stroke
+
+- `outlinePath(path, width, options)` — a path stroked at a width, as the filled outline of that
+  stroke. An open subpath becomes one loop: the left side out, the cap, the right side back, and the
+  cap at the start. A closed subpath becomes two loops wound against each other, which the nonzero
+  rule reads as a ring. A width of nothing or less has no outline. The loop is built on a flattening,
+  since the offset of a cubic is not a cubic.
+- `OutlineOptions` — what outlining takes. The caps, the joins and the miter limit are the SVG
+  specification's, and so are the defaults.
+  - `cap` — what the two ends of an open stroke are finished with: `butt`, `round` or `square`.
+    Default `butt`.
+  - `join` — what fills the wedge on the outside of a corner: `miter`, `round` or `bevel`. Default
+    `miter`.
+  - `miterLimit` — how far a miter may reach past its corner, as a multiple of the width, before the
+    join is cut back to a bevel. Default 4.
+  - `tolerance` — how far the outline may sit from the true offset, in figure units. Default a
+    thousandth, which is a tenth of a pixel at the hundred pixels to the unit the demos draw at.
+
 ## Marks
 
 A mark is what a painter draws. It may request only what both painters implement.

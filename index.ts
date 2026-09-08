@@ -31,6 +31,8 @@ export type { Cubic, Path, Subpath } from './figure/path.js';
 export { pathFromData } from './figure/path-data.js';
 export { TOLERANCE } from './figure/tolerance.js';
 export { areaOf } from './figure/area.js';
+export { outlinePath } from './figure/outline.js';
+export type { OutlineOptions } from './figure/outline.js';
 export { differenceOf, intersectionOf, unionOf } from './figure/boolean.js';
 export type { BooleanOptions } from './figure/boolean.js';
 export { containsPoint, flattenPath, nearestEdge, windingAt } from './figure/inside.js';

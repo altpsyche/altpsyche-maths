@@ -74,15 +74,21 @@ function walk(from: Vec2, curve: Cubic, tolerance: number, depth: number, into: 
   walk(middle, { control1: e, control2: c, to: curve.to }, tolerance, depth + 1, into);
 }
 
+/** One subpath as a run of points, keeping whether it was written closed. */
+export interface FlatRun {
+  readonly points: readonly Vec2[];
+  readonly closed: boolean;
+}
+
 /**
- * Every subpath as a run of points, each loop closed.
+ * Every subpath as a run of points, left as it was written.
  *
- * A subpath that was left open is closed by the straight run back to where it
- * started, since a path with an open loop has no inside until it has one.
+ * The ends of an open run are kept apart, because an outline has caps to put
+ * there and a run joined back to its start has no ends to put them on.
  */
-export function flattenPath(path: Path, options: FlattenOptions = {}): Vec2[][] {
+export function flattenRuns(path: Path, options: FlattenOptions = {}): FlatRun[] {
   const tolerance = options.tolerance ?? TOLERANCE;
-  const loops: Vec2[][] = [];
+  const runs: FlatRun[] = [];
   for (const subpath of path) {
     if (subpath.curves.length === 0) continue;
     const points: Vec2[] = [subpath.start];
@@ -91,11 +97,24 @@ export function flattenPath(path: Path, options: FlattenOptions = {}): Vec2[][] 
       walk(from, curve, tolerance, 0, points);
       from = curve.to;
     }
-    const last = points[points.length - 1];
-    if (last.x !== points[0].x || last.y !== points[0].y) points.push(points[0]);
-    loops.push(points);
+    runs.push({ points, closed: subpath.closed });
   }
-  return loops;
+  return runs;
+}
+
+/**
+ * Every subpath as a run of points, each loop closed.
+ *
+ * A subpath that was left open is closed by the straight run back to where it
+ * started, since a path with an open loop has no inside until it has one.
+ */
+export function flattenPath(path: Path, options: FlattenOptions = {}): Vec2[][] {
+  return flattenRuns(path, options).map(({ points }) => {
+    const loop = [...points];
+    const last = loop[loop.length - 1];
+    if (last.x !== loop[0].x || last.y !== loop[0].y) loop.push(loop[0]);
+    return loop;
+  });
 }
 
 /** Which side of the run from one point to another a third point falls on,

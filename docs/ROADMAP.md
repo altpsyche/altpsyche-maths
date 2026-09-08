@@ -493,11 +493,26 @@ renderer arrives at from the other direction.
 `trimPath`, so drawing a tapered line on has to trim the centreline and outline what is left, rather
 than trim the outline and open it.
 
-- [ ] **1. The outline of a stroked path.** A path and a width to the filled outline, with caps and
+- [x] **1. The outline of a stroked path.** A path and a width to the filled outline, with caps and
   joins. **Measures:** a straight segment's outline against the rectangle it must be, to 1e-12; a
   circle of radius r stroked at w giving an area within tolerance of `π((r + w/2)² − (r − w/2)²)`;
   the outline of the flat demo's parabola against its stroked mark, by area, within a share the
   commit quotes.
+
+  **Landed.** `outlinePath` takes a path and a width and gives the filled outline, with the SVG
+  specification's caps, joins and miter limit and its defaults: a butt cap, a miter join, and a
+  limit of four. A straight segment of length 2 stroked at 0.4 is the rectangle exactly, its four
+  corners agreeing to 1e-12 and its area 0.8 to the same. A circle of radius 1 stroked at 0.1 covers
+  0.6283471 against the ring's 0.6283185, a share of 4.549e-5. The flat demo's parabola stroked at
+  the 0.05 it is drawn at covers 0.44047672 against the 0.44048238 its length times its width comes
+  to, a share of 1.286e-5. A 2 by 2 square stroked at 0.1 covers 0.8 under a miter join and 0.795
+  under a bevel, both to 1e-12, and 0.79765367 under a round join against the 0.79785398 four
+  quarter discs leave, a share of 2.5e-4. A round cap adds a half disc at each end, 0.92485781
+  against 0.92566371, a share of 8.7e-4. The three shares that are not exact are the flattening the
+  outline is built on: the offset of a cubic is not a cubic, so the outline walks a polyline, and its
+  tolerance defaults to a thousandth of a figure unit, which is a tenth of a pixel at the hundred
+  pixels to the unit the demos draw at. The door went from 240 names to 242 and the suite from 668
+  tests to 682 over 42 files. Nothing in the demos changed and the eight sheets are byte-identical.
 
 - [ ] **2. A width that varies along the length.** The width is a number or a named taper with
   parameters. **Measures:** a taper from w to nothing over a straight segment giving a triangle's
