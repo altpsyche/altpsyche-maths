@@ -49,7 +49,9 @@ import {
   vec3,
   Timeline,
   marksAt,
+  type Camera3,
   type Extent,
+  type Fill,
   type Figure,
   type Mark,
   type Node,
@@ -57,7 +59,7 @@ import {
   type Track,
   type Vec2,
 } from '../index.js';
-import { DEEP, EMBER, FROST, INK, MOSS, SKY, shadeOf } from './palette.js';
+import { DEEP, EMBER, FROST, GLAZE, INK, MOSS, SKY, shadeOf } from './palette.js';
 import { TYPE } from './typeface.js';
 
 const ink = { colour: INK };
@@ -97,6 +99,43 @@ const surfaceAt = (u: number, v: number) => vec3(u, v, saddle(u, v));
 export const HEIGHT = 0.35;
 
 const planeAt = (u: number, v: number) => vec3(u, v, HEIGHT);
+
+/**
+ * The wash over the pane, deepest along the edge nearest the eye and palest
+ * along the edge furthest from it.
+ *
+ * The axis is the pane's own recession, which is the horizontal direction from
+ * the eye to the middle of the pane, and it reaches from one edge to the other
+ * along that direction. Built instead from the nearest and furthest corners it
+ * would jump every time the orbit crossed a diagonal, since the pane is square
+ * and two corners sit at one depth there.
+ *
+ * The axis is the same for every cell of the pane, which is what makes sixteen
+ * cells read as one sheet of glass: a gradient is measured in the units it is
+ * painted into, so one axis shared across the cells runs unbroken over all of
+ * them. Its ends are projected points rather than points in space, because the
+ * cells are flat shapes by the time they carry a fill.
+ */
+function paneWash(camera: Camera3): Fill {
+  const half = (OVER.to - OVER.from) / 2;
+  const middle = (OVER.from + OVER.to) / 2;
+  const away = vec2.normalize(vec2(middle - camera.eye.x, middle - camera.eye.y));
+  // A square of half-width h reaches h/max(|x|, |y|) along a unit direction, so
+  // the axis spans the pane whichever way the recession points.
+  const reach = half / Math.max(Math.abs(away.x), Math.abs(away.y));
+  const edgeAt = (side: number) => camera.project(planeAt(middle + side * reach * away.x, middle + side * reach * away.y)).at;
+  return {
+    colour: FROST,
+    gradient: {
+      from: edgeAt(-1),
+      to: edgeAt(1),
+      stops: [
+        { offset: 0, colour: GLAZE },
+        { offset: 1, colour: FROST },
+      ],
+    },
+  };
+}
 
 /** The curve where the two meet, found once rather than at every frame: it is the
  * same curve at every time and only the camera moves. */
@@ -212,6 +251,7 @@ const written = await equationFromTex('z = \\frac{x^2 - y^2}{2}');
 
 export function sceneAt(along: number): Node {
   const camera = eyeAt(along);
+  const pane = paneWash(camera);
   return group(
     'solid',
     [
@@ -227,7 +267,7 @@ export function sceneAt(along: number): Node {
         ...surfaceCells('pane', planeAt, camera, {
           over: { u: OVER, v: OVER },
           resolution: PANES,
-          shade: () => ({ colour: FROST }),
+          shade: () => pane,
           stroke: glass,
         }),
         ...fieldArrows3('flow', (at) => vec3(-at.x, at.y, 0), camera, {

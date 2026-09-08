@@ -62,9 +62,11 @@ import {
 import { FIELD, FRAMES, TIMES, coords, curve, slopeField, stripMarks, tangent, walk } from '../demos/tangent.js';
 import {
   AMBER,
+  CREAM,
   DEEP,
   EMBER,
   FROST,
+  GLAZE,
   GROUND,
   HAZE,
   INK,
@@ -190,7 +192,9 @@ describe('the committed pictures', () => {
       const markup = sheet.markup();
       expect(markup).not.toContain('@font-face');
       expect(markup).not.toContain('@import');
-      expect(markup).not.toContain('url(');
+      // A gradient's fill is `url(#id)`, which names an element of the sheet
+      // itself, so what is forbidden is a reference reaching outside it.
+      expect(markup).not.toMatch(/url\((?!#)/);
       expect(markup).not.toContain('<link');
     }
   });
@@ -353,6 +357,29 @@ describe('the flat demo', () => {
     const end = subpath.curves[subpath.curves.length - 1].to;
     expect(end.x).toBeCloseTo(foot.x, 12);
     expect(end.y).toBeCloseTo(foot.y, 12);
+  });
+
+  it('washes the region deepest at the top of the graph and palest at the x axis', () => {
+    // The axis is the graph's whole vertical run rather than the height of the
+    // region at the time it is drawn, so the colour at a given height is the
+    // same at every time. Fitted to the region it would be one point at the
+    // start of the walk, where the region has no height, and a gradient whose
+    // two ends are one point paints nothing on a canvas.
+    const top = pointOf(coords, 0, curve(3));
+    const foot = pointOf(coords, 0, 0);
+    for (const seconds of [TIMES.entrance, TIMES.beat, TIMES.walkTo, durationOf(tangent)]) {
+      const area = marksAt(tangent, seconds).find((mark) => mark.id === 'tangent/area')!;
+      expect(area.fill!.colour).toBe(PEACH);
+      const wash = area.fill!.gradient!;
+      expect(wash.from.x).toBeCloseTo(top.x, 12);
+      expect(wash.from.y).toBeCloseTo(top.y, 12);
+      expect(wash.to.x).toBeCloseTo(foot.x, 12);
+      expect(wash.to.y).toBeCloseTo(foot.y, 12);
+      expect(wash.stops.map((stop) => [stop.offset, stop.colour])).toEqual([
+        [0, PEACH],
+        [1, CREAM],
+      ]);
+    }
   });
 
   it('reads no slope at the stationary point and the rule for one after it', () => {
@@ -1096,6 +1123,42 @@ describe('the solid demo', () => {
     }
   });
 
+  it('washes the pane with one gradient, deepest along the edge nearest the eye', () => {
+    // Sixteen cells share one axis, which is what makes them read as one sheet
+    // of glass: a gradient is measured in the units it is painted into, so the
+    // same axis in every cell runs unbroken across the pane.
+    const axisAt = (seconds: number) => {
+      const cells = solidAt(seconds).filter((mark) => mark.id.startsWith('solid/body/pane/'));
+      expect(cells).toHaveLength(16);
+      for (const cell of cells) {
+        expect(cell.fill!.colour).toBe(FROST);
+        expect(cell.fill!.gradient!.stops.map((stop) => [stop.offset, stop.colour])).toEqual([
+          [0, GLAZE],
+          [1, FROST],
+        ]);
+        expect(cell.fill!.gradient!.from).toEqual(cells[0].fill!.gradient!.from);
+        expect(cell.fill!.gradient!.to).toEqual(cells[0].fill!.gradient!.to);
+      }
+      return cells[0].fill!.gradient!;
+    };
+    // The eye looks at where the axes cross with z up, so the pane's recession
+    // projects straight up the page at every place in the orbit. What the orbit
+    // changes is the length of the axis, since the pane is square and recedes
+    // over its own diagonal a quarter turn from where it recedes over an edge.
+    for (const seconds of named) {
+      const axis = axisAt(seconds);
+      expect(axis.from.x).toBeCloseTo(0, 9);
+      expect(axis.to.x).toBeCloseTo(0, 9);
+      expect(axis.from.y).toBeLessThan(axis.to.y);
+    }
+    const overEdge = axisAt(SOLID_TIMES.quarter);
+    expect(overEdge.from.y).toBeCloseTo(-0.876, 3);
+    expect(overEdge.to.y).toBeCloseTo(1.25, 3);
+    const overDiagonal = axisAt((SOLID_TIMES.entrance + SOLID_TIMES.quarter) / 2);
+    expect(overDiagonal.from.y).toBeCloseTo(-1.742, 3);
+    expect(overDiagonal.to.y).toBeCloseTo(1.491, 3);
+  });
+
   it('arrives with the animations the flat demo already uses', () => {
     const opacityOf = (seconds: number, id: string) =>
       solidAt(seconds).find((mark) => mark.id === id)?.opacity ?? 1;
@@ -1159,7 +1222,7 @@ describe("the demos' palette", () => {
   };
 
   const READING = ['ink', 'slate', 'ember', 'amber', 'deep', 'moss'] as const;
-  const WASH = ['mist', 'peach', 'sky', 'haze', 'steel', 'frost'] as const;
+  const WASH = ['mist', 'peach', 'cream', 'sky', 'haze', 'steel', 'frost', 'glaze'] as const;
 
   it('gives every colour a reader reads off the contrast text is asked for, on both grounds', () => {
     for (const name of READING) {
@@ -1227,11 +1290,13 @@ describe("the demos' palette", () => {
       ['ember', EMBER],
       ['amber', AMBER],
       ['peach', PEACH],
+      ['cream', CREAM],
       ['deep', DEEP],
       ['sky', SKY],
       ['haze', HAZE],
       ['steel', STEEL],
       ['frost', FROST],
+      ['glaze', GLAZE],
       ['moss', MOSS],
     ] as const) {
       expect(colour).toBe(`var(--${name}, ${THEME[name as keyof typeof THEME].light})`);

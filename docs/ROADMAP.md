@@ -587,9 +587,43 @@ and should fade toward its far edge, which is what makes a pane read as glass.
   The door went from 251 names to 252 and the suite from 716 tests to 720. The eight sheets are
   byte-identical.
 
-- [ ] **4. The demos use one.** The flat demo's region and the solid demo's plane. **Measures:** both
+- [x] **4. The demos use one.** The flat demo's region and the solid demo's plane. **Measures:** both
   sheets re-committed with their bytes quoted; every reading over the gradient still between 1.2:1
   and 4.5:1 against both grounds, which is the wash band 0.13.0 holds.
+
+  **Landed.** The flat demo's region under the parabola runs `peach` at the top of the graph to
+  `cream` at the x axis, and the solid demo's pane runs `glaze` along the edge nearest the eye to
+  `frost` along the edge furthest from it. Two colours were added to the palette for the two pale and
+  deep ends, since a fade needs a second colour and no existing wash was free.
+
+  **The region's axis is the graph's whole vertical run rather than the height of the region at the
+  time it is drawn**, so the colour at a given height is the same at every time. Fitted to the region
+  it would be one point at the start of the walk, where the region has no height, and a gradient
+  whose two ends are one point paints nothing on a canvas. The axis reads back at (-2.76, 1.6)-(-2.76,
+  -2.135) in figure units at every named time.
+
+  **The pane's axis is the pane's own recession, which is the horizontal direction from the eye to
+  the middle of the pane**, and it reaches from one edge to the other along that direction. Built
+  from the nearest and furthest corners instead it jumped every time the orbit crossed a diagonal,
+  since the pane is square and two corners sit at one depth there. The eye looks at where the axes
+  cross with z up, so the projected axis is straight up the page at every place in the orbit and what
+  the orbit changes is its length: (0, -0.876)-(0, 1.25) where the pane recedes over an edge and (0,
+  -1.742)-(0, 1.491) a quarter turn on, where it recedes over its own diagonal. All sixteen cells of
+  the pane carry that one axis, which is what makes them read as one sheet of glass.
+
+  **The four stop colours against their own grounds** are `peach` at 1.686 and 2.545, `cream` at
+  1.273 and 1.330, `glaze` at 1.580 and 1.872, and `frost` at 1.147 and 1.277. Three of the four
+  clear 1.2 on both grounds and every one is under 4.5. `frost` light is 1.147 and was before this
+  step, which is the floor the palette's own test holds at 1.1 rather than at 1.2: the face of a pane
+  of glass is the one wash meant to barely tint the page.
+
+  A sheet's `fill` of `url(#id)` names an element of the sheet itself, so the gate that forbade a
+  sheet fetching anything was narrowed from every `url(` to one not followed by a fragment. All eight
+  sheets grew. The four that draw a gradient are `docs/tangent.svg` from 62081 to 62387 bytes,
+  `docs/tangent-strip.svg` from 250543 to 251632, `docs/surface.svg` from 92609 to 97166 and
+  `docs/surface-strip.svg` from 372676 to 391601. The other four grew by 64 bytes each, which is what
+  the two new custom properties cost a sheet that never paints them, since a sheet carries the whole
+  theme. The suite went from 720 tests to 722 and the door is unchanged at 252 names.
 
 - [ ] **5. Cut 1.4.0.** **Measures:** the three gates; the eight sheets identical after
   `npm run demos`; the door and the suite from 247 names and 701 tests.

@@ -30,11 +30,13 @@ export const THEME = {
   ember: { light: '#c2410c', dark: '#f97316' },
   amber: { light: '#b45309', dark: '#eba043' },
   peach: { light: '#fdba74', dark: '#7a4a1c' },
+  cream: { light: '#fcdfc5', dark: '#3e250e' },
   deep: { light: '#0369a1', dark: '#4cb8ea' },
   sky: { light: '#38bdf8', dark: '#1f6f96' },
   haze: { light: '#7ea8c4', dark: '#3d5f76' },
   steel: { light: '#5a8fb3', dark: '#4a6f88' },
   frost: { light: '#e0f2fe', dark: '#17293b' },
+  glaze: { light: '#a3d4f5', dark: '#23455c' },
   moss: { light: '#15803d', dark: '#3ec46d' },
 } as const;
 
@@ -60,6 +62,8 @@ export const EMBER = painted('ember');
 export const AMBER = painted('amber');
 /** A region under a curve or inside a shape, which sits behind everything. */
 export const PEACH = painted('peach');
+/** The shallow end of that region, where it has fallen away from the curve. */
+export const CREAM = painted('cream');
 /** The moving thing, and the arrows of a field. */
 export const DEEP = painted('deep');
 /** The edge of a pane of glass in space. */
@@ -70,6 +74,8 @@ export const HAZE = painted('haze');
 export const STEEL = painted('steel');
 /** The face of a pane of glass. */
 export const FROST = painted('frost');
+/** The face of that pane at the edge nearest the eye. */
+export const GLAZE = painted('glaze');
 /** A run of steepest descent. */
 export const MOSS = painted('moss');
 

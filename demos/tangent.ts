@@ -70,6 +70,7 @@ import {
   Timeline,
   marksAt,
   type Equation,
+  type Fill,
   type Extent,
   type Figure,
   type Mark,
@@ -78,7 +79,7 @@ import {
   type Vec2,
   type Track,
 } from '../index.js';
-import { AMBER, DEEP, EMBER, HAZE, INK, MIST, PEACH, STEEL } from './palette.js';
+import { AMBER, CREAM, DEEP, EMBER, HAZE, INK, MIST, PEACH, STEEL } from './palette.js';
 import { TYPE } from './typeface.js';
 
 const ink = { colour: INK };
@@ -97,7 +98,6 @@ const accent = { colour: DEEP, width: 0.035 };
  * whole of it.
  */
 const slope: Stroke = { colour: DEEP, width: { from: 0, to: 0.035, curve: 'thereAndBack' } };
-const wash = { colour: PEACH };
 const lit = AMBER;
 
 /** The two colours a field arrow takes, the second where the curve has begun to
@@ -158,6 +158,28 @@ function frameAt(point: Vec2): Extent {
 }
 
 export const curve = (x: number) => x * x;
+
+/**
+ * The wash under the curve, deepest at the top of the graph and palest at the x
+ * axis.
+ *
+ * The axis is the whole vertical run of the graph rather than the height of the
+ * region at the time it is drawn, which is what keeps the colour at a given
+ * height the same at every time. An axis fitted to the region would also be a
+ * point at the start of the walk, where the region has no height, and a gradient
+ * whose two ends are one point paints nothing on a canvas.
+ */
+const wash: Fill = {
+  colour: PEACH,
+  gradient: {
+    from: pointOf(coords, 0, curve(3)),
+    to: pointOf(coords, 0, 0),
+    stops: [
+      { offset: 0, colour: PEACH },
+      { offset: 1, colour: CREAM },
+    ],
+  },
+};
 
 /**
  * The direction the curve has at a place, which is one across and the curve's
