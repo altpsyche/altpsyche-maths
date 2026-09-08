@@ -24,27 +24,15 @@ const edge = { colour: DEEP, width: 0.04 };
 const wash = { colour: PEACH };
 const marker = { colour: EMBER };
 
-/**
- * The rotation demo's scene as records, written the way the demo writes it as
- * calls.
- *
- * `dot` is a group holding one shape, so it is written out here rather than
- * named: the eighteen builders over the tree resolve into these three kinds, and
- * each one gains a record of its own with the step that carries it.
- */
+/** The rotation demo's scene as records, written the way the demo writes it as
+ * calls. */
 function panel(name: string, pivot: Vec2, swing: number, label: string): NodeRecord {
   const centre = vec2(pivot.x + swing, pivot.y);
   return {
     kind: 'group',
     name,
     children: [
-      {
-        kind: 'group',
-        name: 'pivot',
-        children: [
-          { kind: 'shape', name: 'disc', path: { kind: 'circle', centre: pivot, radius: 0.07 }, style: { fill: marker } },
-        ],
-      },
+      { kind: 'dot', name: 'pivot', at: pivot, radius: 0.07, fill: marker },
       {
         kind: 'group',
         name: 'rider',

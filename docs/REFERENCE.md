@@ -517,7 +517,21 @@ functions, which is what lets the same tree survive being written to a file and 
   node takes.
 - `GroupRecord` — a `kind` of `group`, a `name`, its `children` as records, and an optional
   `transform` and `style`.
-- `NodeRecord` — a `ShapeRecord`, a `TextRecord` or a `GroupRecord`.
+- `DotRecord` — a `kind` of `dot`, a `name`, an `at`, a `radius` and a `fill`.
+- `ArrowRecord` — a `kind` of `arrow`, a `name`, a `from`, a `to` and its `options`.
+- `BraceRecord` — a `kind` of `brace`, a `name`, a `from`, a `to`, a `content` and its `options`.
+- `CalloutRecord` — a `kind` of `callout`, a `name`, the `at` it names, the `to` its word sits at, a
+  `content` and its `options`.
+- `ArrowRecordOptions` — a `stroke`, an optional `fill`, and a `head` and `spread` as expressions.
+- `BraceRecordOptions` — a `stroke`, a `fill`, a `size`, a `depth`, and an optional `curl`, `padding`,
+  `align`, `baseline`, `family` and `weight`. The distances are expressions and the size is a plain
+  number.
+- `CalloutRecordOptions` — a `stroke`, a `fill`, a `size`, and an optional `marker`, `align`,
+  `baseline`, `family` and `weight`. A marker of nothing leaves the disc out, which is what a callout
+  pointing at a moving thing wants.
+- `NodeRecord` — a `ShapeRecord`, a `TextRecord`, a `GroupRecord`, a `DotRecord`, an `ArrowRecord`, a
+  `BraceRecord` or a `CalloutRecord`. The four annotations resolve through their own calls, so a
+  brace's curls and an arrow's head are one piece of arithmetic with one set of gates over it.
 - `TextContent` — what a text record draws: a plain string, or a `TextTemplate`.
 - `TextTemplate` — a `template` string with numbered holes, `{0}` for the first and `{1}` for the
   second, and one `holes` entry per hole. `{{` writes one brace, which leaves a set in braces
@@ -529,7 +543,10 @@ functions, which is what lets the same tree survive being written to a file and 
   own precision. A hole naming an index the list has no entry for is refused, and so is a hole whose
   expression is a place or a true or false.
 - `resolveNode(record, bindings)` — the record walked into the node it describes. The bindings reach
-  the text holes and the parameters of every path, which is every expression a node record carries.
+  every expression a record carries: the text holes, the parameters of every path, and the places and
+  distances an annotation is built from. A kind outside the set is refused with a sentence naming it.
+  A text size is a plain number rather than an expression, since a figure that grows a label does it
+  with `scale` over the marks.
 - `PathRecord` — one path written as data, either a named form with its parameters or its cubics. A
   figure chooses between the two per path rather than by a rule: a named form is shorter and says what
   the shape is, and cubics carry a shape no named form describes. Every parameter is an `Expression`,

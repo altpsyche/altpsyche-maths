@@ -57,7 +57,22 @@ export type { Arithmetic, Bindings, Comparison, Expression, ExpressionValue, Var
 export { resolvePath } from './figure/path-record.js';
 export type { IntervalRecord, PathRecord } from './figure/path-record.js';
 export { resolveNode, writeTemplate } from './figure/node-record.js';
-export type { GroupRecord, NodeRecord, ShapeRecord, TextContent, TextHole, TextRecord, TextTemplate } from './figure/node-record.js';
+export type {
+  ArrowRecord,
+  ArrowRecordOptions,
+  BraceRecord,
+  BraceRecordOptions,
+  CalloutRecord,
+  CalloutRecordOptions,
+  DotRecord,
+  GroupRecord,
+  NodeRecord,
+  ShapeRecord,
+  TextContent,
+  TextHole,
+  TextRecord,
+  TextTemplate,
+} from './figure/node-record.js';
 export { areaUnder, plot, riemannBars, slopeOf, tangentAt } from './figure/plot.js';
 export type { AreaOptions, BarsOptions, PlotOptions, TangentOptions } from './figure/plot.js';
 export { vectorField } from './figure/field.js';

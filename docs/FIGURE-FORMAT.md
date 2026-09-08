@@ -612,9 +612,22 @@ release away and has a document of its own.
     outlines a tapered stroke after its timeline has run and the tangent it hands back is the polygon
     round the line. What a path producer answers for is the geometry it makes.
 
-  - [ ] **3.5 The annotation nodes.** `dot`, `arrow`, `brace` and `callout`. **Measures:** the flat
-    demo's dots, arrows and braces at its named times; `callout` against its call, since no demo
-    draws one.
+  - [x] **3.5 The annotation nodes.** `dot`, `arrow`, `brace` and `callout` are forms of `NodeRecord`,
+    each resolving through its own call rather than by rebuilding what the call builds, so a brace's
+    curls and an arrow's head stay one piece of arithmetic with one set of gates over it.
+    **No demo draws a bare `arrow` and the plan was wrong to say one does**, since the flat demo's
+    arrows all come from `vectorField`, which is step 3.8, and its axis tips from `axes`, which is
+    3.6. So `arrow` is measured against its call the way `callout` is.
+    **Measured:** the flat demo's walking dot at each of its seven named times, mark for mark within
+    a tolerance of 1e-6, with the place it stands bound as a variable, and reading as different
+    between two of those times; its brace and the word on it, both marks, with the word `9.00` from a
+    template at a precision of 0.01; the rotation demo's two pivots as `dot` records, still drawing
+    the same eight marks at each of the four times its strip draws; `arrow` and `callout` against
+    their calls, with a head of 0.4 and a spread of 0.9 carried through and reading as different from
+    the defaults, and a callout marker of nothing leaving two marks rather than three; an arrow whose
+    end follows a track reading as different at 1 and at 4; three refusals naming what was asked for,
+    a number where a dot's place belongs, a place where its radius belongs, and a kind the vocabulary
+    has no entry for; the suite from 845 to 856 and the door from 286 names to 293.
 
   - [ ] **3.6 The graph frame nodes.** `numberLine`, `axes`, `numberPlane` and `riemannBars`, which
     share the tick list and the scale. **Measures:** the flat demo's axes and number planes and the

@@ -450,9 +450,10 @@ added `union`, `intersection` and `difference` as forms over two path records, a
 parameter an expression, so the boolean demo's twelve marks draw through records at each of its seven
 named times with its walking disc read off a track. Step 3.4 added `plot`, `areaUnder`, `tangentAt`
 and `bracePath` as forms, so the flat demo's parabola comes from the expression `x * x` and its
-shaded region runs from nothing to the x its dot stands at. The door is 286 names and the suite is
-845 tests over 52 files. **Step 3.5 is what runs next**, which is `dot`, `arrow`, `brace` and
-`callout` as node records.
+shaded region runs from nothing to the x its dot stands at. Step 3.5 added `dot`, `arrow`, `brace`
+and `callout` as node records, each resolving through its own call, so the flat demo's walking dot and
+its brace both draw from records. The door is 293 names and the suite is 856 tests over 53 files.
+**Step 3.6 is what runs next**, which is `numberLine`, `axes`, `numberPlane` and `riemannBars`.
 
 **Two things fall due before the format freezes and both are Siva's**, which are
 whether a `Mark` may be a raster image, due by step 3 where the node vocabulary lands, and the

@@ -275,15 +275,15 @@ const rule = (name: string, equation: Equation, frame: Extent) =>
 
 /** How far the curve climbs over the stretch the dot walks, which is what the
  * brace at the end measures and what its number counts to. */
-const RISE = curve(3);
+export const RISE = curve(3);
 
 /** The brace stands on the right of the shaded region, so it is pushed the way
  * the perpendicular of a downward span points, which is away from the curve. */
-const RISE_DEPTH = 0.3;
+export const RISE_DEPTH = 0.3;
 
 /** The sizes this figure's text takes, from the numbers on its axes, which are
  * the smallest text it draws. */
-const TEXT = textScale(0.32);
+export const TEXT = textScale(0.32);
 
 /** Every label along the x axis, named after the number it shows, which is what
  * lets them arrive one after another. */
