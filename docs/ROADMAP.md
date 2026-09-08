@@ -626,16 +626,41 @@ than after it.
 
   The door went from 252 names to 255 and the suite from 722 tests to 732 over 45 files.
 
-- [ ] **2. The named view moves.** A move to a fixed extent, a follow with a margin, a framing of
-  named marks, and a hold. These are the same forms step 7 of the format needs, written here first so
-  that step names them rather than inventing them. **Measures:** each form's matrix at eleven times
+- [ ] **2. The named view moves, and the marks a follow reads.** A move to a fixed extent, a follow
+  with a margin, and a framing of named marks. **Measures:** each form's matrix at eleven times
   against its closed form; the flat demo's dot held within 1.2 figure units of the middle, which is
-  the number that view already quotes.
+  the number that view already quotes; `marksAt` called once rather than twice for a figure whose
+  view reads no mark.
+
+  **Two corrections to this step, found by reading step 7 of the format before working it.** This
+  step defers to that list and the list is not the one written here first.
+
+  **There are three forms rather than four, and a hold is not one of them.** Step 7 names "a fixed
+  extent, an aspect choice, a follow with a margin, and a framing of named marks", of which the first
+  two are what a figure declares today: a plain `Extent` and `byAspect`. So what this step adds is a
+  move to a fixed extent, a follow and a framing. A hold was this file's own invention. `wait` already
+  inserts dead time, and a finished view entry stays applied in full, so the view holding while a
+  brace arrives is the absence of a view entry over that span rather than an entry of its own.
+
+  **A follow and a framing both read the marks, which `ViewAnimation` cannot see.** Step 1 landed it
+  as the extent and how far along, because nothing then needed more. A follow of a named mark needs
+  that mark's place and a framing of named marks needs their bounds, so this step widens it. **The
+  marks arrive as a getter rather than as a list**, since every painter calls `marksAt` and `viewAt`
+  both and computing the marks inside `viewAt` would build the solid demo's 245 marks and its depth
+  sort a second time at every frame. A figure whose view reads no mark then pays nothing.
 
 - [ ] **3. Both demos move their view against the action.** The flat demo's follow becomes an entry
-  after its entrance, and the solid demo's orbit gains a held beat at the face of the saddle.
-  **Measures:** both demos' marks and view matrices at their named times, re-committed with the
-  seconds each hold lasts quoted; the flat demo's duration unchanged within a tenth of a second.
+  after its entrance. **Measures:** both demos' marks and view matrices at their named times,
+  re-committed with the seconds each hold lasts quoted; the flat demo's duration unchanged within a
+  tenth of a second.
+
+  **What the solid demo gains is not what this step said, and the call is open.** It said the orbit
+  gains a held beat at the face of the saddle. The orbit is a `Camera3` inside the scene driven by a
+  track, not the figure's view, so pacing it is a track change and belongs to step 3.8 of the format,
+  where the camera becomes parameters. The solid demo's own view is a fixed 8.2 by 6.4 extent and has
+  never moved. **A framing of the cut is what would exercise a form in a solid picture**, since
+  Siva's rule is that a feature reaches a flat picture and a solid one, and the crossing curve is what
+  that demo is about. Whether that picture is wanted is Siva's.
 
 - [ ] **4. Cut 1.5.0.** **Measures:** the three gates; the eight sheets identical after
   `npm run demos`; the door and the suite from wherever 1.4.0 left them.
@@ -644,9 +669,9 @@ than after it.
 
 - A view move is an entry in the timeline, sequenced with `after` and `stagger` like any animation.
 - A figure with no view entry gets the same matrix at every time it gets today.
-- The four view forms are named, and each one's matrix agrees with its closed form at eleven times.
-- Both demos move their view as a timeline entry, and the flat demo's dot stays within 1.2 figure
-  units of the middle.
+- The three view forms are named, and each one's matrix agrees with its closed form at eleven times.
+- The flat demo moves its view as a timeline entry, and its dot stays within 1.2 figure units of the
+  middle.
 - The three gates pass and the lock file agrees with the manifest.
 
 ### 1.6.0 The rectangular clip
