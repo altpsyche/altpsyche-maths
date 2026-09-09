@@ -1111,6 +1111,78 @@ release away and has a document of its own.
   assembled in a test is a serialiser no picture has been through.
   **Measures:** all eight sheets byte for byte as committed after `npm run demos`.
 
+  **Planned on 2026-09-09, and it is three commits, one per demo.** The three are 221 lines of
+  `demos/boolean.ts`, 550 of `demos/tangent.ts` and 527 of `demos/surface.ts`.
+
+  **Nothing here needs a new form, which is what makes it a transcription rather than a design.**
+  Every difficulty these three carry was closed by a step already ticked: a point recovered from a
+  length fraction is the expression `pointAlong`, which step 3.12 published with `lengthOf` and
+  `slopeOf`; the pane whose gradient turns with the orbit is `project` and a `FillRecord`, which step
+  3.13 took both halves of; the surface's shading is a ramp over a band from step 3.11; the extent
+  that follows the dot is an `ExtentRecord` from step 7 and the panel over it an `InsetRecord` from
+  step 7.5. So a commit that cannot express something has found a gap in the vocabulary rather than a
+  hard demo, and it stops and says so.
+
+  **Each commit follows step 5.8's shape exactly**, which is the only shape a file has been written
+  in: the module holds `written: FigureRecord` and `resolveFigure` builds the `Figure` beside it,
+  `demos/render.ts` gains the file in its `figures` list, and `tests/figure-file.test.ts` gains a gate
+  reading the committed bytes. **The module keeps the record and the file is written from it**, rather
+  than the module reading the file it also produces, which would be the same transcription twice with
+  nothing between them to disagree. What stays module code is what draws the strip rather than what
+  the figure is: `stripMarks`, the named times and the frame list.
+
+  **What measures each rewrite is that demo's committed sheets**, since those were drawn by the calls
+  the records replace, so a record resolving to anything else moves a byte of them.
+
+  - [ ] **8.1 The boolean demo is a file.** 221 lines. Its record is written already, in
+    `tests/figures.ts` as `operations`, but only half: the extent, the tracks, the timeline and the
+    duration are read off the module's own figure rather than written down. So this commit writes
+    those four and `tests/figures.ts` reads the demo's record instead of assembling one, which takes a
+    duplicate transcription out of the tree in the same change.
+    **It goes first** because it is the smallest of the three and the one whose record already exists,
+    so the shape is checked on twelve marks before it is used on three hundred.
+    **Measures:** `docs/boolean.svg` at 4,111 bytes and `docs/boolean-strip.svg` at 15,903 byte for
+    byte after `npm run demos`; the committed file read back drawing the demo's twelve marks at each
+    of its seven named times and at its still time of 2.7608, within a tolerance of 1e-6; the file's
+    own bytes and lines; the nine spans of its entrance surviving as records.
+
+  - [ ] **8.2 The flat demo is a file.** 550 lines, and the widest scene of the three: the grid, both
+    axes, the shaded region, the field of tangents, the plotted parabola, the tangent at the dot, the
+    dot, the reading, the typeset rule the reading is a value of, the brace and the number counting to
+    the rise.
+    **It goes before the solid demo** because its extent follows the dot and it carries the panel, so
+    the `ExtentRecord` and the `InsetRecord` are written once here and are the second time rather than
+    the first when the solid demo reaches them.
+    **Measures:** `docs/tangent.svg` at 80,701 bytes and `docs/tangent-strip.svg` at 324,852 byte for
+    byte after `npm run demos`; the committed file read back drawing 181 marks at its still time of
+    7.86 and 186, 185, 185, 182, 178, 178 and 178 at its seven named times, mark for mark within a
+    tolerance of 1e-6; the panel's marks each carrying a clip at each of those times; the reading
+    giving the same seven strings step 3.12 measured; the file's own bytes and lines.
+
+  - [ ] **8.3 The solid demo is a file.** 527 lines: the saddle, the plane cutting it, the two
+    branches of the crossing, three axes in space, the three runs of steepest descent, the field they
+    follow, the typeset equation, the panel, and the eye going round once on a track.
+    **The held beat of step 3.9b is not in this commit.** It is a look and it is Siva's, it changes
+    this demo's pacing and every byte of its two sheets, and a commit measured by sheets byte for byte
+    cannot also move them. So it lands before this one or after it, never inside it.
+    **Measures:** `docs/surface.svg` at 126,905 bytes and `docs/surface-strip.svg` at 522,337 byte for
+    byte after `npm run demos`; the committed file read back drawing 321 marks at its still time of
+    5.24 and 316, 317, 316 and 316 at its four named times, mark for mark within a tolerance of 1e-6;
+    the pane's wash reading as different a half-orbit apart, which is what says the camera reached the
+    fill; the file's own bytes and lines.
+
+  #### Done-criteria for step 8
+
+  - `demos/boolean.figure.json`, `demos/tangent.figure.json` and `demos/surface.figure.json` are
+    committed, `npm run demos` writes all four figure files, and the gate reads the committed bytes of
+    each.
+  - Each of the three modules holds a `FigureRecord` and builds its `Figure` with `resolveFigure`, and
+    no one of the three passes a function to anything.
+  - All eight sheets are byte for byte what they are today after `npm run demos`.
+  - Each committed file read back draws its demo's marks at every named time and at its still time,
+    within a tolerance of 1e-6.
+  - `tests/figures.ts` assembles no record of its own.
+
 - [ ] **9. The guide and the reference rewritten.** 709 and 976 lines describing an API that changed.
   **Measures:** the guide's code blocks compiling in order; the reference's entries against the door
   with the gate holding them equal.

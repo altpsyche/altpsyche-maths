@@ -481,8 +481,13 @@ Step 12 made a colour four channels and an optional name, so no mark carries a C
 and the SVG painter writes the `var()` from the channels it holds. All eight sheets are byte for byte
 what they were, demos/rotate.figure.json went from 6,624 bytes to 8,244 with no `var(` left in it,
 and the flat demo's 185 colour slots at its still time each carry four channels and a name over 9
-distinct colours. The door is 375 names and the suite is 1,024 tests over 65 files. **Step 8 is what
-a session runs next**, which is the three demos rewritten as files.
+distinct colours. The door is 375 names and the suite is 1,024 tests over 65 files.
+
+**Step 8 is planned and is three commits, one per demo**, in the order boolean, flat, solid. Nothing
+in it needs a new form: every difficulty the three carry was closed by a step already ticked, so a
+commit that cannot express something has found a gap in the vocabulary rather than a hard demo.
+**Step 8.1 is what a session runs next**, which is the boolean demo, 221 lines, whose record is
+already half written in `tests/figures.ts`.
 
 **Two things fall due before the format freezes and both are Siva's**, which are
 whether a `Mark` may be a raster image, due by step 3 where the node vocabulary lands, and the
