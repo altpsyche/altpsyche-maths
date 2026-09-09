@@ -80,15 +80,17 @@ passing the camera as data.
 **The website becomes a plain consumer.** It asks for a picture rather than assembling one, and the
 GPU painter and the recording move here from there.
 
-**A fifth decision is open, it is Siva's, and 2.0.0 is its deadline.** May a `Mark` be a raster
-image? There is no image mark today, so a figure cannot carry a photograph or a diagram somebody
-drew, and `ImageMobject` is how Manim carries one. Both painters could draw it, `<image>` and
-`drawImage`. **What makes it a deadline rather than an item is that a new kind of `Mark` is a change
-to the format's value types**, so adding one after 2.0.0 costs a major of the format's own version.
-**What is missing is the other half of this repository's test:** no demo and no chapter is waiting to
-draw an image, and a feature nothing is waiting to draw is a feature nobody has checked. So it is
-answered before the format freezes or it is refused before the format freezes, and either answer is
-cheaper than the third.
+**A fifth decision was open with 2.0.0 as its deadline, and Siva answered it on 2026-09-09: a `Mark`
+may not be a raster image.** There is no image mark, so a figure carries no photograph and no diagram
+somebody drew, where `ImageMobject` is how Manim carries one. **What decided it is how a figure would
+carry the pixels rather than whether a painter could draw them**: `<image>`, `drawImage` and a
+textured quad all draw a raster, while a figure is one file, so an image is a path out of that file,
+which breaks the property, or bytes inlined, which puts a photograph inside an eight-kilobyte record.
+Fit, sampling and colour space each want an answer too, and no demo and no chapter is waiting to draw
+an image to give one. **What refusal costs is one bump of `FIGURE_FORMAT_VERSION` from 0 to 1**
+whenever a picture wants an image, which is the number that exists so a kind can be added: an old file
+reads under a new reader, and only a new file under an old reader fails. **What would change this
+answer** is a chapter whose picture is a photograph.
 
 **A fourth decision is open and it is Siva's. It gates the frozen renderer work rather than the format,
 so nothing below waits on it.**
@@ -536,10 +538,29 @@ meant, which is that no figure passes one. `plot`, `vectorField`, `surface3`, `s
 `sectionOf` take one at the door and always will, since a function making fixed geometry never had to
 serialise.
 
-**Step 11 is what a session runs next and it is Siva's**: the version bumped to 2.0.0 in that commit
-with `npm install --package-lock-only` beside it, the README's migration section rewritten from
-1.0.0 to 2.0.0, this ladder's 2.0.0 row and its item deleted, and publishing asked for rather than
-assumed.
+**Step 10.6 is what a session runs next**, and step 11 is the cut behind it. The cut is Siva's: the
+version bumped to 2.0.0 in that commit with `npm install --package-lock-only` beside it, the README's
+migration section rewritten from 1.0.0 to 2.0.0, this ladder's 2.0.0 row and its item deleted, and
+publishing asked for rather than assumed.
+
+**Two calls inside the cut are answered.** Siva's, on 2026-09-09. A `Mark` may not be a raster image,
+which closes the fifth decision above: no painter is what blocks one, since `<image>`, `drawImage` and
+a textured quad all draw a raster, and what is unanswered is how a figure carries the pixels. A figure
+is one file, so an image is a path out of that file, which breaks the property, or bytes inlined,
+which puts a photograph inside an eight-kilobyte record, and fit, sampling and colour space each want
+an answer no picture is waiting to give. Refusal costs one bump of `FIGURE_FORMAT_VERSION` from 0 to 1
+whenever a picture wants one, which is the number that exists so a kind can be added. And
+[`FIGURE-FORMAT.md`](FIGURE-FORMAT.md) keeps its name and loses its plan at the cut, since a document
+of that name sits in each of the three repositories the change crosses.
+
+**Which is what puts step 10.6 in front of the cut.** [`SPECIFICATION.md`](SPECIFICATION.md) is the
+format's specification and says of itself that three sections are written and the vocabulary is not,
+with its "What has to be specified" pointing at the plan for the inventory. Dropping the plan before
+the vocabulary is written takes the only written vocabulary with it, so the five commits of 10.6 write
+it first: the value types and the expression form, the paths, the nodes, the animations with the
+timeline and the extent, and the document read as one specification. Its counts are already right at
+23 node kinds, 15 animation kinds, 13 forms of path in 15 kinds and 11 value types, so what is missing
+is each kind's fields rather than the shape of the document.
 
 **The polish pass ran before the cut**, which is Siva's call of 2026-09-09 on the argument that 2.x
 is a major release. The 1.x band was cut the same way: an audit read the whole band against the tree
@@ -588,11 +609,11 @@ README to that host and to a sheet the tree carries.
 becomes of [`FIGURE-FORMAT.md`](FIGURE-FORMAT.md), a document `CLAUDE.md` calls the change in flight
 and which a cut version leaves as a specification rather than a plan.
 
-**Two things fall due before the format freezes and both are Siva's**, which are
-whether a `Mark` may be a raster image, due by step 3 where the node vocabulary lands, and the
-consumer's move from 0.6.0, which is now unblocked and is the only thing that would draw the 1.x band
-in a shipping page. **A third is new from the spike and is also the format's**: a colour's written
-form, since a figure read by a renderer in another language cannot carry a CSS custom property.
+**Three things fell due before the format freezes and all three are answered.** A `Mark` may not be a
+raster image, which is the decision above. The consumer's move from 0.6.0 is read in step 10.5a and
+lands in that tree as one commit after the release. And a colour's written form, which the spike
+found, is four channels and a name as of step 12, since a figure read by a renderer in another
+language cannot carry a CSS custom property.
 
 **The 1.x band is closed and 1.6.0 is published.** An audit on 2026-09-08 read the
 whole band against the tree and found nine things, and seven commits closed them. Nothing since

@@ -1437,6 +1437,67 @@ release away and has a document of its own.
     `<img>` in the README to that host and to a sheet the tree carries, and putting `docs/rotate.svg`
     back fails it. The suite goes from 1,045 tests over 66 files to 1,046.
 
+- [ ] **10.6. The specification's vocabulary, which is five commits.** Siva's call of 2026-09-09.
+  [`SPECIFICATION.md`](SPECIFICATION.md) says of itself that three sections are written and the
+  vocabulary is not, and its "What has to be specified" is ten bullets pointing at this document for
+  the inventory. **The order is what makes this a step rather than a note**: the cut keeps that
+  document's name and drops this one's plan, so the vocabulary is written from the inventory before the
+  inventory goes, or the drop takes the only written vocabulary with it. 2.0.0's claim is that a figure
+  is a file a renderer in another language reads, and a specification naming what has to be specified
+  does not carry that claim.
+
+  **The material is transcription rather than design.** The 68 record interfaces of `figure/` are the
+  format, [`REFERENCE.md`](REFERENCE.md) already names every field of every one of them, and step
+  10.5b's gate holds those entries to the source. What the specification adds is the same vocabulary
+  stated as rules a second implementer reads: which fields are required, which are expressions, which
+  are choices, and what a renderer does with each.
+
+  **Each step lands one section and the gate clause that holds it**, so no commit leaves the suite
+  failing on prose that is not written yet and every step is measured rather than read by eye. The
+  gate is step 10.5b's comparison pointed at a second page: a kind's `kind` string and each of its
+  fields named in backticks inside that kind's own entry.
+
+  - [ ] **10.6a The value types and the expression form.** The eleven value types with their fields,
+    the expression form's cases, and the thirty-seven functions an expression may call, which the
+    reference already lists with their arguments. It goes first because every other section is written
+    in terms of it: a node's field is an expression or a value type, and neither can be named before
+    it is defined. **Measures:** the eleven types and the expression cases named, against the union
+    `figure/expression.ts` declares; the document's lines before and after; the gate holding every
+    value type and function name.
+
+  - [ ] **10.6b The path vocabulary.** The thirteen forms of path in fifteen kinds, each with its
+    fields, and the two point producers. **Measures:** each `kind` string of `PathRecord` and its
+    fields against the entry; the two producers; the lines added; the suite's count.
+
+  - [ ] **10.6c The node vocabulary.** The twenty-three node kinds, each with its fields, and the two
+    item producers a `scene3` holds beside its nodes. It is the largest section and the one a renderer
+    spends its time in. **Measures:** each `kind` string of `NodeRecord` and its fields against the
+    entry; the two item producers; the lines added; the suite's count.
+
+  - [ ] **10.6d The animation vocabulary, the timeline, the extent and the insets.** The fifteen
+    animation kinds with their fields, `TimelineRecord` and `SpanRecord`, the extent with the three
+    view moves folded over it, and `InsetRecord`. **Measures:** each `kind` string of
+    `AnimationRecord` and its fields against the entry; the four structures; the lines added; the
+    suite's count.
+
+  - [ ] **10.6e The document reads as one specification.** The "What has to be specified" list
+    replaced by what is specified, the pointer at this document left only where it is history, and
+    conformance stated against the four committed figure files, which are the fixtures a second
+    implementation would read. **Measures:** the document's lines and sections; every remaining
+    reference to this file; the four files named with their bytes.
+
+  #### Done-criteria
+
+  - Every `kind` string in `figure/node-record.ts`, `figure/animation-record.ts` and
+    `figure/path-record.ts` is in [`SPECIFICATION.md`](SPECIFICATION.md) with each of its fields in
+    backticks, and a gate holds it there the way step 10.5b holds the reference's entries.
+  - The eleven value types, the expression form's cases and the thirty-seven function names are each
+    in the document.
+  - The document names nothing as still to be specified, and reaches this file only for history.
+  - The file envelope, the standing refusals, the version rule and the conformance claim are all in
+    the document, so a renderer is written from it without reading this one.
+  - The three gates pass and the suite's count is quoted with the gate clauses that moved it.
+
 - [ ] **11. Cut 2.0.0.** The version bumped in this commit, `npm install --package-lock-only` in the
   same one, the done-criteria verified line by line with the number that satisfies each, and
   publishing asked for rather than assumed. It is a major because `areaUnder`, `plot`, `riemannBars`,
