@@ -556,8 +556,9 @@ damage each does if it ships, and four of them are closed.
 | the thirty-seven expression functions were named nowhere a reader could look them up | closed, and the reference lists them with their arguments |
 | `tests/figures.ts` described two demos as records when four are | closed |
 
-**The open three are what a session runs before step 11**, and the first of them is the one that can
-find a defect rather than a stale sentence. **One call inside the cut is still Siva's**, which is what
+**The open three are step 10.5 of the plan**, written there as 10.5a, 10.5b and 10.5c with the
+measurement each will quote, so a session resumes at the first unticked one rather than at the cut.
+The first of them is the one that can find a defect rather than a stale sentence. **One call inside the cut is still Siva's**, which is what
 becomes of [`FIGURE-FORMAT.md`](FIGURE-FORMAT.md), a document `CLAUDE.md` calls the change in flight
 and which a cut version leaves as a specification rather than a plan.
 

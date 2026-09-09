@@ -1375,6 +1375,42 @@ release away and has a document of its own.
   from a file; the suite from 1,042 tests to 1,043 over 66 files, the new one holding each still's
   marks against the marks of the figure its file describes.
 
+- [ ] **10.5. The polish pass before the cut**, which is Siva's call of 2026-09-09 on the argument
+  that 2.x is a major release. The 1.x band was cut the same way and its audit found nine things. The
+  reading of 2026-09-09 found seven, four of them closed in the commits behind this entry, and the
+  three below are what is left. **They run in this order because it is the damage each does if it
+  ships**, and the first is the only one that can find a defect rather than a stale sentence.
+
+  - [ ] **10.5a The consumer draws a 2.x figure.** `altpsyche.dev` holds 0.6.0 and has drawn nothing
+    of the 1.x band or the format. `npm pack` here, `npm install --no-save` the tarball there, build
+    the site and draw its figures. **The site is never committed with that tarball installed**, since
+    its manifest would name a version no gate measured.
+    **Measures:** the tarball's own name and size; whether the site's type-check and build pass
+    against it; every call the site makes that this door no longer answers, named one by one; the
+    figures it draws and what moves in them.
+    **What would make this a commit here rather than a session there** is a defect it finds, since a
+    fix belongs in this tree and the reading belongs in the consumer's.
+
+  - [ ] **10.5b The reference's entries name their fields, and a gate reads them.**
+    `tests/reference.test.ts` holds every name at the door to one entry and reads nothing inside one,
+    so `TextRecord` described a place that had changed and nothing failed. A comparison run by hand
+    over the 68 record interfaces of `figure/` found that one and no other. The gate is the same
+    comparison run by the suite, and what stops it being written already is that an entry may name a
+    field in words rather than in backticks.
+    **Measures:** the interfaces compared and the entries that name a field in words today; the gate
+    catching a field widened in the source and not on the page, which is the defect it exists for; the
+    suite's own count.
+
+  - [ ] **10.5c What the npm page shows.** The tarball is `dist`, `LICENSE` and `README.md`, which is
+    133 files and 162.5 kB, and the README shows four pictures by relative path into `docs/`, a
+    directory the tarball does not carry. npm rewrites a relative image against the repository a
+    manifest names, and this manifest names one, so the page may render them from the default branch
+    or may show four broken images.
+    **Measures:** what the four `<img>` paths resolve to on the published page; whether the answer is
+    the repository's raw content or nothing; the change if the answer is nothing, which is an absolute
+    URL per picture rather than a directory added to `files`, since a package shipping its own
+    documentation ships four SVGs a consumer never reads.
+
 - [ ] **11. Cut 2.0.0.** The version bumped in this commit, `npm install --package-lock-only` in the
   same one, the done-criteria verified line by line with the number that satisfies each, and
   publishing asked for rather than assumed. It is a major because `areaUnder`, `plot`, `riemannBars`,
