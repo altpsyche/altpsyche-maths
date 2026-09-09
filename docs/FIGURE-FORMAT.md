@@ -816,10 +816,15 @@ release away and has a document of its own.
     demo plays one, and a path whose end follows a track carrying further at three than at one; the
     door from 338 names to 343 and the suite from 925 to 931.
 
-  - [ ] **4.3 The kinds that put one shape in place of another.** `morph`, which carries a path, and
-    `morphEquation`, which names two targets and leaves glyph matching where it is. **Measures:** the
-    flat demo's rule walking from `\frac{dy}{dx} = 0` into `\frac{dy}{dx} = 2x`, glyph for glyph at
-    its named times; `morph` against its own call, since no demo plays one.
+  - [x] **4.3 The kinds that put one shape in place of another.** `morph` carries a `PathRecord`, so a
+    figure that morphs into a curve it also draws names that curve's own form. `morphEquation` names
+    two targets and no geometry, since both expressions are already in the scene and the glyphs are
+    paired at play time.
+    **Measured:** the flat demo's rule walked from one typeset expression into the other at each of
+    its seven named times and five fractions of the span, mark for mark against its own call; the
+    glyphs of the leaving rule standing where they stood at the start of the span; `morph` against its
+    own call with a circle whose radius follows a track, since no demo plays one; the door from 343
+    names to 345 and the suite from 931 to 934.
 
   - [ ] **4.4 The kinds that make marks rather than change them.** `indicate`, `flash` and
     `circumscribe`. Each adds marks, so a record says how the marks it adds are named, which is the

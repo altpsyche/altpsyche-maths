@@ -6,6 +6,8 @@ import {
   fadeTo,
   growFrom,
   marksAt,
+  morph,
+  morphEquation,
   moveAlong,
   moveBy,
   resolveAnimation,
@@ -156,5 +158,40 @@ describe('the moving animations no demo plays', () => {
     expect(
       agrees({ kind: 'growFrom', target: 'tangent/curve', from: vec2(1, 1) }, growFrom('tangent/curve', vec2(1, 1)), marks)
     ).toBe(true);
+  });
+});
+
+describe('the animations that put one shape in place of another', () => {
+  const from = 'tangent/equation/at-rest';
+  const to = 'tangent/equation/moving';
+
+  it('walks the flat demo rule into the one it becomes, glyph for glyph at each of its named times', () => {
+    const resolved = resolveAnimation({ kind: 'morphEquation', from, to });
+    for (const seconds of Object.values(FLAT_TIMES)) {
+      const marks = marksAt(tangent, seconds);
+      const glyphs = marks.filter((mark) => mark.id.startsWith(`${from}/`) || mark.id.startsWith(`${to}/`));
+      expect(glyphs.length, `the rule at ${seconds}`).toBeGreaterThan(0);
+      for (const along of ALONG) {
+        expect(sameMarks(resolved(marks, along), morphEquation(from, to)(marks, along)), `${seconds} at ${along}`).toBe(
+          true
+        );
+      }
+    }
+  });
+
+  it('leaves the shared glyphs where they stand and moves only the difference', () => {
+    const marks = marksAt(tangent, FLAT_TIMES.morphTo);
+    const still = resolveAnimation({ kind: 'morphEquation', from, to })(marks, 0);
+    const leaving = (list: readonly Mark[]) => list.filter((mark) => mark.id.startsWith(`${from}/`));
+    expect(sameMarks(leaving(still), leaving(marks))).toBe(true);
+  });
+
+  it('walks one shape into another where its own call walks it, which no demo plays', () => {
+    const marks = marksAt(tangent, FLAT_TIMES.walkTo);
+    const into: PathRecord = { kind: 'circle', centre: vec2(0, 0), radius: { kind: 'track', name: 'wide' } };
+    const bindings = { tracks: { wide: 2 } };
+    const resolved = resolveAnimation({ kind: 'morph', target: 'tangent/point', into }, bindings);
+    const called = morph('tangent/point', resolvePath(into, bindings));
+    expect(ALONG.every((along) => sameMarks(resolved(marks, along), called(marks, along)))).toBe(true);
   });
 });

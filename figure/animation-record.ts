@@ -24,6 +24,8 @@ import {
   fadeOut,
   fadeTo,
   growFrom,
+  morph,
+  morphEquation,
   moveAlong,
   moveBy,
   rotate,
@@ -99,6 +101,31 @@ export interface GrowFromRecord {
   readonly from?: Vec2;
 }
 
+/**
+ * One shape walked into another, point by point.
+ *
+ * The shape it becomes is a record, so a figure that morphs into a curve it also
+ * draws names that curve's own form.
+ */
+export interface MorphRecord {
+  readonly kind: 'morph';
+  readonly target: string;
+  readonly into: PathRecord;
+}
+
+/**
+ * One typeset expression walked into another, the shared glyphs staying put and
+ * only the difference moving.
+ *
+ * This names two targets and no geometry, since both expressions are already in
+ * the scene and the pairing is read off their glyphs at play time.
+ */
+export interface MorphEquationRecord {
+  readonly kind: 'morphEquation';
+  readonly from: string;
+  readonly to: string;
+}
+
 export type AnimationRecord =
   | FadeInRecord
   | FadeOutRecord
@@ -108,7 +135,9 @@ export type AnimationRecord =
   | MoveAlongRecord
   | RotateRecord
   | ScaleRecord
-  | GrowFromRecord;
+  | GrowFromRecord
+  | MorphRecord
+  | MorphEquationRecord;
 
 /**
  * The animation a record describes.
@@ -138,6 +167,10 @@ export function resolveAnimation(record: AnimationRecord, bindings: Bindings = {
       return scale(record.target, record.to, record.options);
     case 'growFrom':
       return growFrom(record.target, record.from);
+    case 'morph':
+      return morph(record.target, resolvePath(record.into, bindings));
+    case 'morphEquation':
+      return morphEquation(record.from, record.to);
   }
   throw new Error(`an animation has no kind called ${String((record as { kind?: unknown }).kind)}`);
 }

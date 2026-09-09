@@ -152,6 +152,8 @@ export type {
   FadeOutRecord,
   FadeToRecord,
   GrowFromRecord,
+  MorphEquationRecord,
+  MorphRecord,
   MoveAlongRecord,
   MoveByRecord,
   RotateRecord,
