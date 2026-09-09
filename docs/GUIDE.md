@@ -324,6 +324,54 @@ crosses each edge once. All three readers take the plotted path rather than the 
 `slopeOf` reads the slope off the cubic covering the x it is asked for, and hands back `NaN` where
 the curve does not reach that x.
 
+## Curves no function of x describes
+
+`plot` takes a function of x, so it draws nothing that stands over one x in two places. Three forms
+draw the rest.
+
+<img src="portrait.svg" width="640" alt="A phase portrait on a square grid: blue and amber arrows show the flow turning about the origin, two green curves cross where the flow stands still, and two blue spirals wind in from inside and outside onto an orange circle of radius one.">
+
+`parametric` takes a function of one number to a place on the graph. It samples at a fixed count and
+joins the samples by the Hermite construction `plot` uses, carrying the function's own derivative, so
+a unit circle at 96 samples reads within 4.3 × 10⁻⁷ of the true radius. `closed` joins the last
+sample back to the first.
+
+`polar` is `parametric` under the map from a radius and an angle to a place, so a curve given as a
+radius at each angle is written as one.
+
+```ts
+import { implicit, interval, parametric, polar, shape, vec2 } from '@altpsyche/maths';
+
+shape('cycle', parametric(coords, (t) => vec2(Math.cos(t), Math.sin(t)), {
+  over: interval(0, 2 * Math.PI),
+  resolution: 96,
+  closed: true,
+}), { stroke: drawn });
+
+shape('rose', polar(coords, (angle) => Math.cos(5 * angle), {
+  over: interval(0, Math.PI),
+  resolution: 200,
+}), { stroke: drawn });
+
+shape('hyperbola', implicit(coords, (x, y) => x * x - y * y, {
+  level: 1,
+  resolution: 64,
+}), { stroke: drawn });
+```
+
+`implicit` finds the curve where a function of two numbers reaches a level, by **marching squares**:
+the grid is walked cell by cell, and a cell whose corners straddle the level contributes a crossing on
+each edge that straddles it. A crossing is bisected on the edge rather than interpolated along it,
+which holds it to a millionth of a cell's width. A cell whose four corners alternate is ambiguous, and
+the value at its middle chooses the pairing, which is what keeps the two branches of a hyperbola apart
+where they pass through one cell. Each place leaves along the gradient turned a quarter turn, since
+the curve crosses the gradient at a right angle there, and that holds a unit circle within
+2.3 × 10⁻⁷ of the true radius at 64 cells.
+
+An implicit curve is the one curve here whose count of places the figure does not fix: the count is
+how many cells the curve crosses, which the function decides. So an implicit curve cannot be a morph's
+source, since a morph pairs the points of one path with the points of another.
+
 ## Timelines and animations
 
 An **animation** maps an array of marks and a fraction of a span to an array of marks. A **span** is
@@ -694,6 +742,39 @@ A **cell** is one four-cornered piece of that grid, small enough to be treated a
 surface is drawn from. Every point it returns lies on the plane exactly. It does not lie on the
 surface exactly: it sits on the chord between two samples, and halving the cell size quarters that
 error.
+
+<img src="solids.svg" width="640" alt="Four panels: a shaded sphere, a shaded cube, a cylinder with an orange helix wound three times round it, and a torus with a blue trefoil knot wound through its hole.">
+
+`sphere3`, `cube3`, `cylinder3` and `torus3` draw the four solids, and `sphereCells`, `cubeCells`,
+`cylinderCells` and `torusCells` hand their cells to a scene instead. Each parametrisation is run in
+the order that faces every cell away from the solid, so a solid lit from outside is shaded as such. A
+sphere's poles and a cylinder's cap centres are places a whole edge of the grid collapses to; those
+cells are kept, and their direction is read by **Newell's method**, the sum over every edge, since
+crossing two edges of a cell gives nothing when those two are the same edge.
+
+`curveOf3` reads a curve in space from one parameter and `curvePieces3` cuts that curve into one entry
+per step, each sorted on its own.
+
+```ts
+import { curvePieces3, cylinderCells, scene3, vec3 } from '@altpsyche/maths';
+
+const shade = (amount: number) => ({ colour: { r: 220, g: Math.round(200 * amount), b: 160, a: 1 } });
+
+scene3('can', [
+  ...cylinderCells('skin', vec3(0, 0, 0), 0.8, 2.1, camera, { shade, resolution: 10 }),
+  ...curvePieces3('coil', (t) => vec3(0.87 * Math.cos(6 * Math.PI * t), 0.87 * Math.sin(6 * Math.PI * t), 2.1 * (t - 0.5)), camera, {
+    resolution: 96,
+    stroke: drawn,
+  }),
+], camera);
+```
+
+A curve handed to a scene whole takes the depth of its middle, so a helix round a cylinder is painted
+entirely in front of the cylinder or entirely behind it. Cut into pieces it is painted in front where
+it is in front: in the picture above, all 300 of the cylinder's cells stand between the first piece of
+the helix and the last. Stand the curve off the solid it lies on by more than half its own stroke. A
+curve drawn at the solid's own radius shares a depth with the cells under it, and the sort between two
+pieces at one depth falls to the order they were given.
 
 `axes3` draws three axes with their ticks and numbers. `arrow3` and `fieldArrows3` draw a field in
 space. An arrow there is measured in world units, since a distant arrow drawing shorter than a near

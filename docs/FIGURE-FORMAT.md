@@ -518,6 +518,51 @@ and it answers half the case: a figure fitting glyphs to a box needs its scale t
 aspect as well as its places, and a field naming a place cannot say that. Every node field is already
 an expression, so one kind answers both.
 
+## Why an implicit curve's count of places is not fixed, and one form in this format is not a morph source
+
+**Every other path form fixes its count of places from the figure rather than from the function.**
+`plot` and `parametric` take a resolution and hand back that many samples whatever the function does,
+which is what makes a morph possible at all: a morph walks one path into another by pairing their
+points in order, so a path that resampled itself between frames would pair points that do not
+correspond and the drawn shape would swim.
+
+**An implicit curve cannot do this and the reason is the technique rather than the writing.** Marching
+squares hands back one place per cell edge the level crosses, so the count is how many cells the curve
+passes through, which the function decides. Fixing it would mean resampling the run afterwards, and a
+resampled run is no longer a curve whose places are on the level: every one of them would sit on a
+chord instead, at an error the cell size sets rather than the bisection.
+
+**So the specification states the count is not fixed and states the consequence.** An implicit curve is
+not a morph's source. The alternative weighed against it was leaving the count unstated, which reads as
+an oversight to a renderer written in another language and would have each of them guess differently.
+
+**What would change the answer** is a use for a morph between two implicit curves. There is none, and
+the picture that wanted one would need a pairing rule of its own before the count could be fixed for it.
+
+## Why a curve on a solid is an entry of a scene rather than a node over one
+
+**A scene sorts its entries whole.** So a curve handed to one as a single piece takes the depth of its
+middle, and a helix round a cylinder is painted entirely in front of the cylinder or entirely behind
+it, neither of which is what the curve looks like. Drawing the curve as a node beside the scene has the
+same fault by another route: the whole curve is painted in front, so its far half shows through the
+solid.
+
+**The answer the format already carries is smaller pieces.** A surface is not one entry of a scene, it
+is a grid of cells, because two pieces that pass through each other have no one order and no comparison
+of depths finds one. A curve that wraps a solid is that case, so `curvePieces3` cuts it into one entry
+per step of its run. This is a kind added rather than a value type changed, which is a minor of the
+format and a file an older reader refuses by name.
+
+**A standoff is part of using it and is not in the format.** A curve drawn at the solid's own radius
+shares a depth with the cells under it and the sort falls to the order they were given, so the curve
+comes out broken. Standing the curve off the solid is arithmetic in the figure's own parametrisation,
+and putting a standoff field in the format would name a distance that only a renderer's own sort could
+interpret.
+
+**What would change the answer** is a curve whose own pieces cannot be sorted against each other, which
+per-piece depth cannot fix. That is what depth per pixel is for, and it changes what a `Mark` may ask
+for rather than what a scene may hold.
+
 ## The precedent
 
 **Lottie.** Vector animation as JSON, with independent renderers on the web, on two mobile platforms
