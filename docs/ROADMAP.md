@@ -273,7 +273,7 @@ three more are written past those because a session should not rediscover them.
 
 | version | what lands | what it changes | steps | cut against | depends on | plan |
 | --- | --- | --- | --- | --- | --- | --- |
-| 2.1.0 | a figure's marks may be read against the frame they are drawn in | adds an expression kind and a parameter at the seam | to plan | the consumer's two figures written as files and read back at every aspect each is drawn at | nothing outside this package | to plan |
+| 2.1.0 | a figure's marks may be read against the frame they are drawn in | adds an expression kind and a parameter at the seam | to plan, and both design calls are answered | the consumer's two figures written as files and read back at every aspect each is drawn at | nothing outside this package | to plan |
 | 2.2.0 | the curves and surfaces a figure can name: parametric, polar, implicit, and the solids | adds kinds | to plan | a phase portrait, which the flat demo's field cannot express | nothing outside this package | to plan |
 | 2.3.0 | matrices and tables, and a matrix applied to a grid | adds kinds | to plan | a grid under a linear map, which nothing here can draw | nothing outside this package | to plan |
 | 2.4.0 | the indications that run along a path, and text written on rather than faded in | adds kinds, and outlines for plain text | to plan | the flat demo's reading, written on | a source of glyph outlines for plain text | to plan |
@@ -1156,7 +1156,11 @@ What responds to the frame today is the extent alone, through `byAspect` and `ma
 changes what a figure shows and not where its marks sit inside it. The site gets what it needs by
 calling `build(palette, aspect)` outside this package, which is the one thing a file cannot do.
 
-**Three answers, and choosing between them is Siva's.**
+**Siva answered both calls on 2026-09-10, and the answer is the first row with the declared extent.**
+An expression may ask for the frame, `marksAt` takes the frame's shape as an optional argument, and
+what the new kind reads is **the extent the figure declares, resolved at the aspect being drawn** and
+never the extent a view move or a follow has changed. The two answers left standing are recorded
+below as what was weighed rather than as what is open.
 
 | answer | what it costs |
 | --- | --- |
@@ -1164,10 +1168,14 @@ calling `build(palette, aspect)` outside this package, which is the one thing a 
 | **placement in frame units**: a kind may give a place as a fraction of the frame rather than in figure units | a new field on every kind that places something, and it answers half the case: `circle-distance`'s glyph *scale* moves with the aspect and not only its places |
 | **refuse it**: a figure's geometry is in figure units, and fitting a frame is the view's business | the format's claim narrows from a figure being a document to a frame-independent figure being one, the consumer's two figures never become files, and the strongest argument for the format loses its only consumer |
 
-**The recommendation is the first**, and what would change it is a reader in another language for which
-a second argument at the seam is harder to carry than a new kind. **A kind added leaves every existing
-figure meaning what it meant**, and a reader that does not carry it refuses the file and names the
-kind, so the format stays at version 0 by its own rule.
+**Reading the declared extent is what makes the circularity impossible rather than avoided.** A view
+that follows a mark resolves its extent from the marks, so a mark reading that extent would ask for
+what is being built, and `extentAt`'s own header describes the loop. A figure that wants the moved
+extent is a second question with a picture of its own, and there is none. **What would change the
+answer** is a figure whose marks have to sit against the frame after a follow has moved it.
+
+**A kind added leaves every existing figure meaning what it meant**, and a reader that does not carry
+it refuses the file and names the kind, so the format stays at version 0 by its own rule.
 
 **The call whose written form is missing already exists**, and it is `fractionOf(extent, across, up)`.
 The consumer's `one-pixel` places all four of its marks with it and reads its aspect off a shader
@@ -1176,11 +1184,11 @@ has laid the page out. What a file cannot hold is not the arithmetic but the arg
 expression kinds are `track`, `variable`, `point`, `member`, `arithmetic`, `compare`, `choice`,
 `call`, `path`, `coords` and `camera`, and the thirty-seven functions are arithmetic and geometry.
 
-**What has to be settled before a step is written**, and it is the reason this is a question rather
-than a plan: what such a kind reads. The resolved extent is the honest answer, and a view that
-follows a mark resolves its extent *from* the marks, so a scene reading the frame through one is
-asking for what is being built. `extentAt`'s own header describes that circularity, and the answer
-decides whether the kind reads the declared extent, the resolved one, or the frame's pixels alone.
+**What a planning session has to settle**, now that what the kind reads is answered: whether the
+optional argument at the seam is an aspect or a width and a height, since a figure reading the frame's
+pixels wants both and one number cannot give them; what `marksAt` does when nothing passes one, which
+has to be the extent's own ratio or every existing caller changes; and whether the strips and sheets
+in this tree pass it, since each draws at a shape of its own.
 
 **The measurement, when it is taken.** Each of the consumer's figures written as a file and read back,
 its marks against the module's at every aspect that figure is drawn at, by tolerance: `one-pixel`'s
