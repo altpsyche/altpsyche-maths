@@ -1381,15 +1381,28 @@ release away and has a document of its own.
   three below are what is left. **They run in this order because it is the damage each does if it
   ships**, and the first is the only one that can find a defect rather than a stale sentence.
 
-  - [ ] **10.5a The consumer draws a 2.x figure.** `altpsyche.dev` holds 0.6.0 and has drawn nothing
+  - [x] **10.5a The consumer draws a 2.x figure.** `altpsyche.dev` holds 0.6.0 and had drawn nothing
     of the 1.x band or the format. `npm pack` here, `npm install --no-save` the tarball there, build
     the site and draw its figures. **The site is never committed with that tarball installed**, since
     its manifest would name a version no gate measured.
-    **Measures:** the tarball's own name and size; whether the site's type-check and build pass
-    against it; every call the site makes that this door no longer answers, named one by one; the
-    figures it draws and what moves in them.
-    **What would make this a commit here rather than a session there** is a defect it finds, since a
-    fix belongs in this tree and the reading belongs in the consumer's.
+    **Measured:** `altpsyche-maths-1.6.0.tgz`, 162,542 bytes over 133 files, installed with the
+    manifest and the lock untouched. The site's type-check reported 26 errors over 9 files against it
+    and every one is a name this package moved rather than a defect: `at` is `marksAt` in four files,
+    `loops` is `isLoop` in one and `pathData` is `pathToData` in one, all three renamed at 1.0.0, and
+    a colour is four channels and a name at 22 lines over five files. Migrating those nine files, 42
+    lines in and 38 out, took the type-check to clean, the site's suite to 793 tests over 52 files
+    passing and `npm run build` to prerendering both figure pages. `circle-distance` draws 11 marks at
+    aspect 3.0000, every one under `fg-primary`, as 18,556 bytes of markup carrying 11 `var()`.
+    `one-pixel` draws 4 marks over 1.6 seconds under `accent` and `bg-surface`, its marker rising from
+    nothing to 1.000 by 0.80 and its plate and word from nothing through 0.156 to 1.000 over the last
+    0.4. A figure read from a file in that tree is `format` 0 over 8,244 bytes drawing 8 marks at 0,
+    0.75, 3.00 and 6.00. **No defect, so this is a session in the consumer's tree and a reading here.**
+    The colour form is the only 2.x work the migration needed: five `var(--token)` strings become
+    `colourFrom('#hex', 'token')`, the page resolver probes `var(--name, #hex)` and reparses the
+    computed value with `colourOf` keeping the name, and the recorder's ground goes through
+    `colourText`, since a canvas fill is text. **The migration lands in that tree after the release**,
+    in one commit bumping the dependency to `^2.0.0`, since source calling `marksAt` with 0.6.0
+    installed is a state no gate there measures.
 
   - [ ] **10.5b The reference's entries name their fields, and a gate reads them.**
     `tests/reference.test.ts` holds every name at the door to one entry and reads nothing inside one,
