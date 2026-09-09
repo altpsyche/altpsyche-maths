@@ -157,8 +157,8 @@ export const ROOM = size.width / 2 - coords.x.units.to - TIP;
  * the two shapes match rather than leaving a margin the fit would have to
  * resolve.
  */
-const LENS = { x: interval(1.9, 4.7), y: interval(1.62, 2.88) };
-const LENS_SHOWS = { width: 1.4, height: 0.63 };
+export const LENS = { x: interval(1.9, 4.7), y: interval(1.62, 2.88) };
+export const LENS_SHOWS = { width: 1.4, height: 0.63 };
 
 /** How wide the panel's own border is, and what it is drawn along: the border
  * sits outside the rectangle by half its width, so its inner edge lands exactly

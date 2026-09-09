@@ -48,12 +48,13 @@ export { byAspect, fractionOf, matchingAspect, resolveExtent, viewMatrix } from 
 export type { Extent, ExtentChoice, Fit, ViewAnimation, ViewChange } from './figure/extent.js';
 export { followView, frameView, moveView } from './figure/view.js';
 export type { FollowOptions, FrameOptions } from './figure/view.js';
-export { resolveExtentChoice, resolveViewChange } from './figure/view-record.js';
+export { resolveExtentChoice, resolveInset, resolveViewChange } from './figure/view-record.js';
 export type {
   ByAspectRecord,
   ExtentRecord,
   FollowViewRecord,
   FrameViewRecord,
+  InsetRecord,
   MatchingAspectRecord,
   MoveViewRecord,
   ViewChangeRecord,

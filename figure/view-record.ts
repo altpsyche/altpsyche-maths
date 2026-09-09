@@ -11,6 +11,7 @@
  */
 import { byAspect, matchingAspect, type Extent, type ExtentChoice, type ViewChange } from './extent.js';
 import { followView, frameView, moveView, type FollowOptions, type FrameOptions } from './view.js';
+import type { Inset } from './inset.js';
 
 /** An extent per shape, for a figure whose composition does not survive being
  * reframed. */
@@ -76,4 +77,21 @@ export function resolveViewChange(record: ViewChangeRecord): ViewChange {
       return frameView(record.targets, record.options);
   }
   throw new Error(`a view move has no kind called ${String((record as { kind?: unknown }).kind)}`);
+}
+
+/**
+ * An inset written as data: the part of the figure it shows, the rectangle it
+ * draws into, and the view move it puts its own extent through.
+ *
+ * Every field is a value the records above already carry, so this adds no
+ * vocabulary of its own.
+ */
+export interface InsetRecord extends Omit<Inset, 'view'> {
+  readonly view?: ViewChangeRecord;
+}
+
+/** The inset a record describes, with its view move built. */
+export function resolveInset(record: InsetRecord): Inset {
+  const { view, ...rest } = record;
+  return view ? { ...rest, view: resolveViewChange(view) } : rest;
 }

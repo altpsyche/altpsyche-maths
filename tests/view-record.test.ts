@@ -7,19 +7,23 @@ import {
   durationOf,
   followView,
   frameView,
+  insetMarks,
   marksAt,
   matchingAspect,
   moveView,
   resolveExtent,
   resolveExtentChoice,
+  resolveInset,
   resolveViewChange,
+  sameMarks,
   vec2,
   type Extent,
   type ExtentRecord,
+  type InsetRecord,
   type Mark,
   type ViewChangeRecord,
 } from '../index.js';
-import { REACH, ROOM, TIMES as FLAT_TIMES, size, tangent } from '../demos/tangent.js';
+import { LENS, LENS_SHOWS, REACH, ROOM, TIMES as FLAT_TIMES, size, tangent } from '../demos/tangent.js';
 
 /** The flat demo's follow, as the record the demo writes as a call. */
 const follows: ViewChangeRecord = {
@@ -138,5 +142,51 @@ describe('the extent a figure declares as a record', () => {
   it('refuses an extent the set has no form for', () => {
     const record = { kind: 'byDuration', height: 6 } as unknown as ExtentRecord;
     expect(() => resolveExtentChoice(record)).toThrow('an extent has no kind called byDuration');
+  });
+});
+
+describe('an inset as a record', () => {
+  const record: InsetRecord = {
+    shows: LENS_SHOWS,
+    into: LENS,
+    view: { kind: 'followView', target: 'tangent/point' },
+    name: 'tangent/lens',
+    hides: ['tangent/window'],
+  };
+
+  it('draws the flat demo panel where the demo own inset draws it, at each of its named times', () => {
+    for (const seconds of Object.values(FLAT_TIMES)) {
+      const marks = marksAt(tangent, seconds);
+      const theirs = marks.filter((mark) => mark.id.startsWith('tangent/lens'));
+      const whole = marks.filter((mark) => !mark.id.startsWith('tangent/lens'));
+      const ours = insetMarks(whole, resolveInset(record));
+      expect(theirs.length, `the inset at ${seconds}`).toBeGreaterThanOrEqual(32);
+      expect(theirs.length).toBeLessThanOrEqual(40);
+      expect(marks.length).toBeGreaterThanOrEqual(178);
+      expect(marks.length).toBeLessThanOrEqual(186);
+      expect(sameMarks(ours, theirs)).toBe(true);
+    }
+  });
+
+  it('holds the panel inside the rectangle it draws into, which is a clip on every mark', () => {
+    // The marks are clipped rather than cut, so a magnified curve runs well past
+    // the rectangle and what holds the panel inside it is the clip each carries.
+    for (const seconds of Object.values(FLAT_TIMES)) {
+      const marks = marksAt(tangent, seconds).filter((mark) => !mark.id.startsWith('tangent/lens'));
+      const drawn = insetMarks(marks, resolveInset(record));
+      expect(drawn.length).toBeGreaterThan(0);
+      for (const mark of drawn) {
+        expect(mark.clip, mark.id).toBeDefined();
+        expect(mark.clip!.x.from).toBeGreaterThanOrEqual(LENS.x.from - 1e-9);
+        expect(mark.clip!.x.to).toBeLessThanOrEqual(LENS.x.to + 1e-9);
+        expect(mark.clip!.y.from).toBeGreaterThanOrEqual(LENS.y.from - 1e-9);
+        expect(mark.clip!.y.to).toBeLessThanOrEqual(LENS.y.to + 1e-9);
+      }
+    }
+  });
+
+  it('carries an inset with no view move of its own', () => {
+    const still: InsetRecord = { shows: LENS_SHOWS, into: LENS, name: 'plain' };
+    expect(resolveInset(still)).toEqual(still);
   });
 });

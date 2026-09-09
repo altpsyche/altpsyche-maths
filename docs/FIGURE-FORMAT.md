@@ -890,14 +890,17 @@ release away and has a document of its own.
   each refused with the sentence naming it; the door from 349 names to 358 and the suite from 939 to
   948.
 
-- [ ] **7.5. The insets as data.** `Figure.insets` is a list, each entry an extent it shows, a
-  rectangle of the frame it draws into, a fit, one view form applied in full, a name and the marks it
-  hides. Every part of it is already a value the steps above carry, so this step writes the record
-  and the resolver and adds no vocabulary. **It exists because 1.6.0 landed after this plan was
-  written**, and without it step 8 could not write the flat demo out as a file with the panel that
-  demo draws. **Measures:** the flat demo's inset built from a record giving the same marks at its own
-  named times, which is 32 to 40 marks against the 178 to 186 the whole figure draws at those times;
-  the panel inside the frame at each of them.
+- [x] **7.5. The insets as data.** An `InsetRecord` is the extent it shows, the rectangle it draws
+  into, a fit, one `ViewChangeRecord` applied in full, a name and the marks it hides, and
+  `resolveInset` builds the view move. Every field is a value the steps above carry, so this added no
+  vocabulary.
+  **What holds a panel inside its rectangle is the clip on every mark rather than the geometry**,
+  since a magnified curve runs well past the rectangle and is cut at paint time.
+  **Measured:** the flat demo's inset built from a record giving the same marks as the demo's own at
+  each of its seven named times, which is 32 to 40 marks against the 178 to 186 the whole figure draws
+  there; every mark of the panel carrying a clip inside the rectangle at each of them; an inset with
+  no view move of its own carried through unchanged; the door from 358 names to 360 and the suite from
+  948 to 951.
 
 - [ ] **8. The four demos rewritten as files**, 1,484 lines of module becoming descriptions.
   **Measures:** all eight sheets byte for byte as committed after `npm run demos`.

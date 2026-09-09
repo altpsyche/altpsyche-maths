@@ -659,6 +659,10 @@ functions, which is what lets the same tree survive being written to a file and 
 - `resolveExtentChoice(record)` — the choice a record describes, as the fixed extent itself or the
   function that picks one from the shape of the surface. `resolveExtent` is what then reads a choice
   at an aspect.
+- `InsetRecord` — an inset written as data: what it `shows`, the rectangle it draws `into`, its
+  `fit`, the `view` move it puts its own extent through as a `ViewChangeRecord`, its `name` and what
+  it `hides`. Every field is a value the records above already carry, so it adds no vocabulary.
+- `resolveInset(record)` — the inset a record describes, with its view move built.
 - `resolveViewChange(record)` — the view move a record describes, as the timeline entry it is played
   as. A kind outside the set is refused with a sentence naming it.
 - `AnimationRecord` — one animation written as data: a `FadeInRecord`, a `FadeOutRecord`, a
