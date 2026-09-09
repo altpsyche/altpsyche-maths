@@ -598,7 +598,8 @@ in `git log`.
 Step 10.5a drew the consumer's figures against this tree and found no defect. `npm pack` here is
 162,542 bytes over 133 files, and installed there with the manifest untouched it left 26 type errors
 over 9 files, all of them names this package moved: `at` is `marksAt`, `loops` is `isLoop` and
-`pathData` is `pathToData` from 1.0.0, and a colour is four channels and a name from step 12.
+`pathData` is `pathToData`, all three shipped in 0.13.0, and a colour is four channels and a name
+from step 12.
 Migrating the nine files took the site's type-check to clean, its suite to 793 tests over 52 files and
 `npm run build` to prerendering both figure pages, where `circle-distance` draws 11 marks and
 `one-pixel` draws 4 over 1.6 seconds, and a figure read from a file there draws 8 marks at each of
@@ -703,7 +704,10 @@ crosses 1.0.0's own major whatever this one is called. **What would change the a
 consumer adopting 1.0.0 from npm, which would be someone the number misleads.
 
 **The consumer's own plan was wrong about this and is corrected.** Its roadmap said the first move is
-a door read name by name at 1.0.0, ten names renamed and two removed. It is that and these four.
+a door read name by name at 1.0.0, ten names renamed and two removed. It is that and these four, and
+the version is wrong as well: the renames shipped in 0.13.0, which is the release the door read
+landed in, and 1.0.0 froze the door rather than moving it. Eleven names were renamed and two removed,
+which is what the door itself says at that version.
 
 **1.6.0 is cut, and a mark may be drawn inside a rectangle.** Four steps and a fifth found while
 working closed it. A clip is a rectangle and no other shape: a path clip needs a winding number
@@ -1008,10 +1012,12 @@ figures, and the rotation demo's left caption failed it by 0.09 units before thi
 Every done-criterion was verified line by line in the commit that cut it.
 
 **1.0.0 is cut, and the door is a promise.** Seventeen steps closed it: the comments holding a
-measurement became assertions, the door was read name by name against three questions and ten names
-were renamed and two removed, the option bags took one shape, the demos took one palette, the strips
-took one shape, the sheets were chosen to be looked at, and the four prose surfaces were written in
-one register. The door is 230 names, the suite is 637 tests over 40 files, and the prose is a 175
+measurement became assertions, the door was read name by name against three questions and eleven
+names were renamed and two removed, the option bags took one shape, the demos took one palette, the
+strips took one shape, the sheets were chosen to be looked at, and the four prose surfaces were
+written in one register. **The renames reached npm in 0.13.0 rather than in 1.0.0**, since the read
+landed at version 0.12.0 and the sheets release carried it out, so a consumer crossing 0.12.0 to
+0.13.0 is the one that felt them. The door is 230 names, the suite is 637 tests over 40 files, and the prose is a 175
 line README, a 544 line guide, a 805 line reference and a 387 line DESIGN.md. Every done-criterion
 was verified line by line in the commit that cut it.
 
