@@ -916,13 +916,20 @@ release away and has a document of its own.
     and the panel's six each carry the clip of its rectangle; the door from 365 names to 367 and the
     suite from 959 to 965.
 
-  - [ ] **5.3 The serialiser, and the format's version.** `writeFigure` turns a `FigureRecord` into
+  - [x] **5.3 The serialiser, and the format's version.** `writeFigure` turns a `FigureRecord` into
     the text of a file, and `FIGURE_FORMAT_VERSION` is the number the envelope carries.
     **The keys are written in sorted order**, so the bytes are a function of the record rather than of
     the order its fields were built in, which is what lets a byte gate hold a figure at all.
-    **Measures:** the rotation demo's file in bytes; two records of that figure whose fields are built
-    in different orders writing the same bytes; a number that is not finite, a value that is
-    `undefined` inside a list and a function each refused with the path of the field named.
+    **The two demos moved into a fixture module of their own**, since the writer, the reader and the
+    validator all read the same two records and three copies of one record is three things to correct.
+    **Measured:** the rotation demo's file 6,624 bytes over 253 lines, against the 208 lines of module
+    it will replace, and the boolean demo's 12,159 bytes over 453; the envelope's two keys `format`
+    and `figure` and nothing else; the same figure with its six fields named in the other order
+    writing the same bytes; the figure's own keys written `duration`, `extent`, `loop`, `scene`,
+    `still`, `timeline`, which is sorted at every depth rather than at the top; a field that is
+    absent left out rather than written as null; a number that is not finite, a hole in a list, a
+    null and a function each refused with the path of the field named, `timeline.spans.1` and
+    `extent.centre` among them; the door from 367 names to 370 and the suite from 965 to 974.
 
   - [ ] **5.4 The reader, and the round trip.** `readFigure` parses the text, reads the version,
     refuses one it does not read, and resolves the figure.

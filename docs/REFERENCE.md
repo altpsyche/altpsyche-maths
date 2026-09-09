@@ -1106,6 +1106,15 @@ a group of that name.
   the sampled track values as its bindings, so a scene a track drives stays a record rather than a
   closure. An animation's parameters are read once, since a figure carries one timeline and every
   time reads that same one.
+- `FigureFile` — what a file holds: the `format` version the figure is written in, and the `figure`
+  itself. Nothing else is in the envelope.
+- `FIGURE_FORMAT_VERSION` — the version of the format this package writes and reads, which is 0.
+- `writeFigure(record)` — a figure as the text of a file, ending in a newline. The keys of every
+  object are written in sorted order, so the bytes are a function of the figure rather than of the
+  order its fields were built in. A field that is absent is left out rather than written as null. A
+  number that is not finite, a hole in a list, a null and a function are each refused with the path
+  of the field named. What is written is a `FigureRecord` and never a `Figure`, since a figure's
+  scene may be a closure and no reading recovers one.
 - `marksAt(figure, seconds)` — the marks a figure shows at a time. A tapered stroke is turned into
   its filled outline after the timeline has run, so an animation that trims a path trims the
   centreline and the outline follows it.
