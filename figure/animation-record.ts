@@ -19,11 +19,14 @@
  */
 import type { Vec2 } from '../values/vec2.js';
 import {
+  circumscribe,
   draw,
   fadeIn,
   fadeOut,
   fadeTo,
+  flash,
   growFrom,
+  indicate,
   morph,
   morphEquation,
   moveAlong,
@@ -32,6 +35,9 @@ import {
   scale,
   type AboutOptions,
   type Animation,
+  type CircumscribeOptions,
+  type FlashOptions,
+  type IndicateOptions,
   type ScaleOptions,
 } from './animation.js';
 import { resolvePath, type PathRecord } from './path-record.js';
@@ -126,6 +132,32 @@ export interface MorphEquationRecord {
   readonly to: string;
 }
 
+/**
+ * The three that add marks rather than change them.
+ *
+ * Each names its target alone, since the marks it adds are named from that
+ * target: a flash's rays and the shape a circumscribe draws carry the target's
+ * own name in front of theirs, so a record naming them again would be a second
+ * place the same name is written.
+ */
+export interface IndicateRecord {
+  readonly kind: 'indicate';
+  readonly target: string;
+  readonly options?: IndicateOptions;
+}
+
+export interface FlashRecord {
+  readonly kind: 'flash';
+  readonly target: string;
+  readonly options: FlashOptions;
+}
+
+export interface CircumscribeRecord {
+  readonly kind: 'circumscribe';
+  readonly target: string;
+  readonly options: CircumscribeOptions;
+}
+
 export type AnimationRecord =
   | FadeInRecord
   | FadeOutRecord
@@ -137,7 +169,10 @@ export type AnimationRecord =
   | ScaleRecord
   | GrowFromRecord
   | MorphRecord
-  | MorphEquationRecord;
+  | MorphEquationRecord
+  | IndicateRecord
+  | FlashRecord
+  | CircumscribeRecord;
 
 /**
  * The animation a record describes.
@@ -171,6 +206,12 @@ export function resolveAnimation(record: AnimationRecord, bindings: Bindings = {
       return morph(record.target, resolvePath(record.into, bindings));
     case 'morphEquation':
       return morphEquation(record.from, record.to);
+    case 'indicate':
+      return indicate(record.target, record.options);
+    case 'flash':
+      return flash(record.target, record.options);
+    case 'circumscribe':
+      return circumscribe(record.target, record.options);
   }
   throw new Error(`an animation has no kind called ${String((record as { kind?: unknown }).kind)}`);
 }

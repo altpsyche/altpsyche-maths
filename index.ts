@@ -147,11 +147,14 @@ export type { AboutOptions, Animation, CircumscribeOptions, FlashOptions, Indica
 export { resolveAnimation } from './figure/animation-record.js';
 export type {
   AnimationRecord,
+  CircumscribeRecord,
   DrawRecord,
   FadeInRecord,
   FadeOutRecord,
   FadeToRecord,
+  FlashRecord,
   GrowFromRecord,
+  IndicateRecord,
   MorphEquationRecord,
   MorphRecord,
   MoveAlongRecord,

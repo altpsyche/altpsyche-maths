@@ -1,10 +1,13 @@
 import { describe, expect, it } from 'vitest';
 import {
+  circumscribe,
   draw,
   fadeIn,
   fadeOut,
   fadeTo,
+  flash,
   growFrom,
+  indicate,
   marksAt,
   morph,
   morphEquation,
@@ -21,6 +24,7 @@ import {
   type Mark,
   type PathRecord,
 } from '../index.js';
+import { AMBER, DEEP } from '../demos/palette.js';
 import { PANELS, TIMES as BOOLEAN_TIMES, booleans } from '../demos/boolean.js';
 import { TIMES as SOLID_TIMES, solid } from '../demos/surface.js';
 import { TIMES as FLAT_TIMES, tangent } from '../demos/tangent.js';
@@ -193,5 +197,52 @@ describe('the animations that put one shape in place of another', () => {
     const resolved = resolveAnimation({ kind: 'morph', target: 'tangent/point', into }, bindings);
     const called = morph('tangent/point', resolvePath(into, bindings));
     expect(ALONG.every((along) => sameMarks(resolved(marks, along), called(marks, along)))).toBe(true);
+  });
+});
+
+describe('the animations that make marks rather than change them', () => {
+  const accent = { colour: DEEP, width: 0.035 };
+  const lit = AMBER;
+
+  it('swells the flat demo dot where its own call swells it', () => {
+    const options = { factor: 2, colour: lit };
+    for (const seconds of Object.values(FLAT_TIMES)) {
+      const marks = marksAt(tangent, seconds);
+      expect(
+        agrees({ kind: 'indicate', target: 'tangent/point', options }, indicate('tangent/point', options), marks),
+        `the dot at ${seconds}`
+      ).toBe(true);
+    }
+  });
+
+  it('flashes the ten rays of the flat demo, each named from the target it points at', () => {
+    const options = { stroke: accent, rays: 10 };
+    for (const seconds of Object.values(FLAT_TIMES)) {
+      const marks = marksAt(tangent, seconds);
+      const resolved = resolveAnimation({ kind: 'flash', target: 'tangent/point', options });
+      for (const along of ALONG) {
+        expect(sameMarks(resolved(marks, along), flash('tangent/point', options)(marks, along))).toBe(true);
+      }
+      // The demo plays a flash of its own, so what this counts is the rays this
+      // animation adds rather than the rays in the picture.
+      const rays = (list: readonly Mark[]) => list.filter((mark) => mark.id.startsWith('tangent/point/flash/'));
+      const added = rays(resolved(marks, 0.5)).slice(rays(marks).length);
+      expect(added.map((mark) => mark.id)).toEqual(
+        Array.from({ length: 10 }, (unused, ray) => `tangent/point/flash/${ray}`)
+      );
+    }
+  });
+
+  it('draws a shape round the flat demo reading where its own call draws one', () => {
+    const options = { stroke: accent, padding: 0.14 };
+    for (const seconds of Object.values(FLAT_TIMES)) {
+      const marks = marksAt(tangent, seconds);
+      const resolved = resolveAnimation({ kind: 'circumscribe', target: 'tangent/reading', options });
+      for (const along of ALONG) {
+        expect(sameMarks(resolved(marks, along), circumscribe('tangent/reading', options)(marks, along))).toBe(true);
+      }
+      const drawn = (list: readonly Mark[]) => list.filter((mark) => mark.id === 'tangent/reading/circumscribed');
+      expect(drawn(resolved(marks, 0.5))).toHaveLength(drawn(marks).length + 1);
+    }
   });
 });

@@ -826,10 +826,17 @@ release away and has a document of its own.
     own call with a circle whose radius follows a track, since no demo plays one; the door from 343
     names to 345 and the suite from 931 to 934.
 
-  - [ ] **4.4 The kinds that make marks rather than change them.** `indicate`, `flash` and
-    `circumscribe`. Each adds marks, so a record says how the marks it adds are named, which is the
-    one thing this group needs that the others do not. **Measures:** the flat demo's marks by id and
-    within tolerance at the times each of the three plays.
+  - [x] **4.4 The kinds that make marks rather than change them.** `indicate`, `flash` and
+    `circumscribe`.
+    **A record does not say how the marks it adds are named and the plan was wrong to want that**,
+    because the calls already name them from the target: a ray is `<target>/flash/<n>` and a shape
+    round something is `<target>/circumscribed`. A record naming them again would be a second place
+    the same name is written.
+    **Measured:** the flat demo's dot swelled and lit, its ten rays flashed and the shape round its
+    reading, at each of its seven named times and five fractions of the span, mark for mark against
+    their own calls; the ten rays this animation adds named `tangent/point/flash/0` upwards and the
+    one shape it adds named `tangent/reading/circumscribed`, counted past the ones the demo's own
+    timeline already drew; the door from 345 names to 348 and the suite from 934 to 937.
 
   - [ ] **4.5 `countTo`, whose writer becomes a precision.** The writer is
     `(value) => labelFor(value, 0.01)` in the one demo that plays it and one of three precisions in

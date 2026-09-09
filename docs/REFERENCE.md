@@ -646,7 +646,8 @@ functions, which is what lets the same tree survive being written to a file and 
   expression is a place or a true or false.
 - `AnimationRecord` — one animation written as data: a `FadeInRecord`, a `FadeOutRecord`, a
   `FadeToRecord`, a `DrawRecord`, a `MoveByRecord`, a `MoveAlongRecord`, a `RotateRecord`, a
-  `ScaleRecord`, a `GrowFromRecord`, a `MorphRecord` or a `MorphEquationRecord`. A parameter is a plain value rather than an expression, since
+  `ScaleRecord`, a `GrowFromRecord`, a `MorphRecord`, a `MorphEquationRecord`, an `IndicateRecord`, a
+  `FlashRecord` or a `CircumscribeRecord`. A parameter is a plain value rather than an expression, since
   an animation is built once and then asked what the marks are at a fraction of its own span. A path
   is the exception, since a path record is the only form a path has and its own parameters are
   expressions.
@@ -667,6 +668,11 @@ functions, which is what lets the same tree survive being written to a file and 
   `PathRecord`.
 - `MorphEquationRecord` — a `kind` of `morphEquation` and the two targets `from` and `to`. It names no
   geometry, since both expressions are already in the scene and the glyphs are paired at play time.
+- `IndicateRecord` — a `kind` of `indicate`, the `target` and its `options`.
+- `FlashRecord` — a `kind` of `flash`, the `target` and its `options`.
+- `CircumscribeRecord` — a `kind` of `circumscribe`, the `target` and its `options`. It names its
+  target alone, the way a flash does: the marks each adds carry the target's own name in front of
+  theirs, so a record naming them again would be a second place the same name is written.
 - `resolveAnimation(record, bindings)` — the animation a record describes, as the `Animation` the timeline
   already plays. A kind outside the set is refused with a sentence naming it. A target stays an id or
   the front of one, so naming a group reaches everything inside it.
