@@ -38,6 +38,32 @@ export type Surface3Options = {
 };
 
 /**
+ * Which way a cell faces, by Newell's method, which sums a term over every edge
+ * of the cell rather than crossing two of them.
+ *
+ * Two edges of a cell can be the same edge: a sphere's parametrisation puts the
+ * whole of its first row of corners on one pole, and a cap of a cylinder puts the
+ * whole of its inner ring at the middle. Crossing those two gives nothing, which
+ * reads as a cell facing nowhere and shades it as if it were edge on to the
+ * light. Every other edge of such a cell still carries the direction, and the sum
+ * is what reaches it. The sum also handles a cell whose four corners are not in
+ * one plane, which any surface with curvature has.
+ */
+function newellNormal(corners: readonly Vec3[]): Vec3 {
+  let x = 0;
+  let y = 0;
+  let z = 0;
+  for (let at = 0; at < corners.length; at += 1) {
+    const from = corners[at];
+    const to = corners[(at + 1) % corners.length];
+    x += (from.y - to.y) * (from.z + to.z);
+    y += (from.z - to.z) * (from.x + to.x);
+    z += (from.x - to.x) * (from.y + to.y);
+  }
+  return vec3(x, y, z);
+}
+
+/**
  * The cells a surface is made of, before they are put in an order.
  *
  * Cells rather than one shape is what makes the depth sort work at all: a surface
@@ -63,9 +89,7 @@ export function surfaceCells(name: string, of: (u: number, v: number) => Vec3, c
   for (let i = 0; i < steps.u; i += 1) {
     for (let j = 0; j < steps.v; j += 1) {
       const corners = [grid[i][j], grid[i + 1][j], grid[i + 1][j + 1], grid[i][j + 1]];
-      const normal = vec3.normalize(
-        vec3.cross(vec3.sub(corners[1], corners[0]), vec3.sub(corners[3], corners[0])),
-      );
+      const normal = vec3.normalize(newellNormal(corners));
       if (cull) {
         const middle = corners.reduce((sum, corner) => vec3.add(sum, vec3.scale(corner, 1 / 4)), vec3.ZERO);
         if (vec3.dot(normal, vec3.sub(camera.eye, middle)) <= 0) continue;

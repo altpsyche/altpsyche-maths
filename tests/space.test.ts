@@ -372,3 +372,69 @@ describe('vectorField3', () => {
     expect(marks.filter((mark) => mark.id.endsWith('/head'))).toHaveLength(24);
   });
 });
+
+describe('a cell of a surface whose parametrisation collapses an edge', () => {
+  // A sphere's first row of corners is all one place, so two edges of every cell
+  // in that row are the same edge and crossing them gives nothing.
+  const ball = (u: number, v: number) =>
+    vec3(
+      Math.cos(2 * Math.PI * u) * Math.sin(Math.PI * v),
+      Math.sin(2 * Math.PI * u) * Math.sin(Math.PI * v),
+      Math.cos(Math.PI * v)
+    );
+
+  const STEPS = 24;
+
+  /** How squarely each cell faces the light, which is the number a surface hands
+   * its own shading, read back out of the call that asked for a fill. Cells
+   * arrive by column and then by row, so a cell is at its column times the count
+   * of rows plus its row. */
+  function shades(): number[] {
+    const out: number[] = [];
+    surface3('ball', ball, flat, {
+      resolution: STEPS,
+      shade: (amount) => {
+        out.push(amount);
+        return { colour: colourFrom('#000000') };
+      },
+    });
+    return out;
+  }
+
+  const rowOf = (read: number[], row: number) => read.filter((_, at) => at % STEPS === row);
+
+  it('faces the way the rest of the surface does there rather than nowhere', () => {
+    const read = shades();
+    expect(read).toHaveLength(STEPS * STEPS);
+    // The row at the pole and the row under it cover a fortieth of a turn of the
+    // sphere between them, so their cells face almost the same way. A cell facing
+    // nowhere reads a half and would be most of the way from either.
+    const pole = rowOf(read, 0);
+    const under = rowOf(read, 1);
+    for (let at = 0; at < STEPS; at++) expect(Math.abs(pole[at] - under[at])).toBeLessThan(0.02);
+    for (const amount of pole) expect(Math.abs(amount - 0.5)).toBeGreaterThan(0.45);
+  });
+
+  it('leaves the cells whose edges do not collapse where they were', () => {
+    const read = shades();
+    let compared = 0;
+    for (let column = 0; column < STEPS; column++) {
+      for (let row = 0; row < STEPS; row++) {
+        const corners = [
+          ball(column / STEPS, row / STEPS),
+          ball((column + 1) / STEPS, row / STEPS),
+          ball((column + 1) / STEPS, (row + 1) / STEPS),
+          ball(column / STEPS, (row + 1) / STEPS),
+        ];
+        // What crossing the first edge with the last gave, which is what every
+        // cell whose edges are four distinct edges still gives.
+        const crossed = vec3.cross(vec3.sub(corners[1], corners[0]), vec3.sub(corners[3], corners[0]));
+        if (vec3.magnitude(crossed) === 0) continue;
+        const facing = (vec3.dot(vec3.normalize(crossed), vec3(0, 0, 1)) + 1) / 2;
+        expect(read[column * STEPS + row]).toBeCloseTo(facing, 12);
+        compared++;
+      }
+    }
+    expect(compared).toBe(STEPS * STEPS - STEPS);
+  });
+});
