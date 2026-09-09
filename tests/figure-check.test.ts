@@ -87,6 +87,46 @@ const EVERY_KIND: readonly Record<string, unknown>[] = [
     options: { lengthOf: 0.2, colourFor: colourFrom('#101010'), stroke: STROKE },
   },
   {
+    kind: 'curve3',
+    name: 'coil',
+    curve: { of: SPOT, resolution: 12, over: { from: 0, to: 1 } },
+    camera: CAMERA,
+  },
+  {
+    kind: 'sphere3',
+    name: 'ball',
+    centre: SPOT,
+    radius: 1,
+    camera: CAMERA,
+    options: { shade: { ramp: [FILL] } },
+  },
+  {
+    kind: 'cube3',
+    name: 'box',
+    centre: SPOT,
+    size: 1,
+    camera: CAMERA,
+    options: { shade: { ramp: [FILL] } },
+  },
+  {
+    kind: 'cylinder3',
+    name: 'can',
+    centre: SPOT,
+    radius: 1,
+    height: 2,
+    camera: CAMERA,
+    options: { shade: { ramp: [FILL] } },
+  },
+  {
+    kind: 'torus3',
+    name: 'ring',
+    centre: SPOT,
+    ring: 2,
+    tube: 0.5,
+    camera: CAMERA,
+    options: { shade: { ramp: [FILL] } },
+  },
+  {
     kind: 'section3',
     name: 'section',
     curve: { of: SPOT, plane: { point: SPOT, normal: { x: 0, y: 0, z: 1 } } },
@@ -263,7 +303,7 @@ describe('a figure held to the vocabulary', () => {
   });
 
   it('takes one node of every kind of the vocabulary', () => {
-    expect(EVERY_KIND).toHaveLength(23);
+    expect(EVERY_KIND).toHaveLength(28);
     expect(checkFigure({ ...turning, scene: { kind: 'group', name: 'all', children: EVERY_KIND } })).toBeTruthy();
   });
 

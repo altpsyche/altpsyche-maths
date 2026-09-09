@@ -1266,10 +1266,15 @@ shaded correctly, and their count is a measurement rather than a silence.
   sphere's cells and a torus's is 72 marks sorted as one run, 36 named for each. A sphere whose radius
   follows a track draws 36 marks at both 0.5 and 2 and they are not the same marks. The checker refuses
   a solid with no radius as `scene.children.0.radius is required and is missing`.
-- [ ] **7. A parametric curve in space.** `figure/curve3.ts` hands back places in space from a function
+- [x] **7. A parametric curve in space.** `figure/curve3.ts` hands back places in space from a function
   of one number, which is a point producer beside `sectionOf` and `streamlineOf`, and `SPECIFICATION.md`
-  reads three producers rather than two. **The measurement**: the point count at a named resolution, and
-  the greatest distance from a helix's drawn places to the cylinder it lies on.
+  reads three producers rather than two and twenty-eight node kinds rather than twenty-seven.
+  **The measurement**: a curve hands back one place more than the steps it is cut into, 97 at 96 and 2 at
+  1. A helix of three turns lies on the cylinder it is written round to under 1e-15 of the radius at 200
+  places, and stays inside the cylinder's own height. A record reads the same places as the call to
+  twelve places, and a run of the parameter driven by a track hands back 49 places at both a quarter and
+  the whole of it. A curve sorted among a cylinder's cells lands in the middle of the run rather than in
+  front of all of them.
 - [ ] **8. The phase portrait demo.** `demos/portrait.ts` draws the field of `ẋ = x − y − x(x² + y²)`
   and `ẏ = x + y − y(x² + y²)`, whose polar form is `ṙ = r(1 − r²)` and `θ̇ = 1`: the limit cycle at
   `r = 1` as a parametric, two spirals as polar curves at the closed form

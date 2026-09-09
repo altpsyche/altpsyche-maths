@@ -8,7 +8,7 @@ the value types and the expression form every kind is written in terms of, then 
 the animations, the timeline and the extent, and conformance last. A renderer is written from this
 page and needs nothing else.
 
-**Five counts say how large the format is.** Twenty-seven node kinds, fifteen animation kinds,
+**Five counts say how large the format is.** Twenty-eight node kinds, fifteen animation kinds,
 sixteen forms of path in eighteen kinds, eleven value types, and thirty-seven functions an expression
 may call.
 
@@ -345,7 +345,7 @@ left to read.
 
 ## The point producers
 
-**A point producer hands back places rather than a path, and a node draws them.** There are two, and
+**A point producer hands back places rather than a path, and a node draws them.** There are three, and
 each is a field of the node that draws it rather than a kind of its own.
 
 ### The section of a surface
@@ -357,6 +357,20 @@ parameter, and `tolerance` as how close two ends come before they are read as th
 
 **The runs come back as several rather than one**, since a plane cutting a saddle meets it in two
 branches, and a renderer draws each run as its own subpath.
+
+### The curve in space
+
+`SpaceCurveRecord` is a curve in space read from one parameter. `of` is the curve as a place in space
+read from the bound variable `t`, `resolution` is how many steps the run is cut into, and `over` is the
+run of the parameter as a pair of expressions, nothing to one where it is left out.
+
+**It hands back one step more places than the resolution**, since both ends of the run are included. A
+curve that closes hands back its first place again at the end, because the function it reads is what
+says so.
+
+**`over` is expressions where a section's and a streamline's parameters are plain.** The count of places
+is fixed by the resolution whichever way the run moves, so a curve that grows along itself is a track on
+one end of it and the count of places does not change.
 
 ### The streamline of a field
 
@@ -374,7 +388,7 @@ hand back a different number of points at every time, and a morph pairs two runs
 ## The nodes
 
 **A node is a named record with a `kind`, and every one of them carries a `name`.** Three kinds are
-the tree itself and the other twenty-four resolve into a tree of those three, so a renderer implementing
+the tree itself and the other twenty-five resolve into a tree of those three, so a renderer implementing
 `group`, `shape` and `text` and resolving the rest draws every figure there is.
 
 **A name is what an animation and an inset reach a node by**, and a mark's id is the names of the
@@ -462,6 +476,7 @@ holding above it, read in order so the last threshold a magnitude clears decides
 | `scene3` | `items`, `camera` |
 | `axes3` | `camera`, `options` |
 | `surface3` | `of`, `camera`, `options` |
+| `curve3` | `curve`, `camera`, `options`, `style` |
 | `sphere3` | `centre`, `radius`, `camera`, `options` |
 | `cube3` | `centre`, `size`, `camera`, `options` |
 | `cylinder3` | `centre`, `radius`, `height`, `camera`, `options` |
@@ -512,6 +527,9 @@ parameters in the order that faces the cells out, or the solid is shaded as thou
 Those cells are drawn rather than dropped, and a renderer reading a cell's direction by crossing two
 of its edges gets nothing for them. The direction is the sum over every edge, which is Newell's
 method.
+
+**`curve3` draws one run from a curve in space**, taking its places from the producer above rather than
+from a list written out, and its `options` is a run in space's own.
 
 **`section3` draws the curve a plane cuts in a surface** and `streamline3` draws `runs` walked
 through a flat field and lifted onto the surface named by `on`. Both take their points from a

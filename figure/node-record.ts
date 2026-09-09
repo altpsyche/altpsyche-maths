@@ -44,6 +44,7 @@ import { surface3, surfaceCells, type Surface3Options } from './surface3.js';
 import { cubeCells, cylinderCells, sphereCells, torusCells, type Solid3Options } from './solid3.js';
 import { fieldArrows3, vectorField3, type VectorField3Options } from './field3.js';
 import { sectionOf, type SectionOptions } from './section.js';
+import { curveOf3, type Curve3Options } from './curve3.js';
 import { streamlineOf, type StreamlineOptions } from './streamline.js';
 import type { Camera3 } from './camera.js';
 import { resolveCamera, resolvePoint3, type Camera3Record, type Point3Record } from './camera-record.js';
@@ -527,6 +528,35 @@ export interface SectionRecord {
   readonly options?: SectionOptions;
 }
 
+/**
+ * A curve in space read from one parameter, as the parameters it is read from.
+ *
+ * What this describes is places in space rather than a node, the way a section
+ * does, so `resolveSpaceCurve` hands back points and `Curve3Record` is the node
+ * that draws them. It is not called a curve record on its own because `Curve` is
+ * already the name of an easing curve.
+ *
+ * The run of the parameter is a pair of expressions, so a curve that grows along
+ * itself is a track on one end of it. The count of places is fixed by the
+ * resolution whichever way that run moves.
+ */
+export interface SpaceCurveRecord {
+  /** The curve, as a place in space read from the bound variable `t`. */
+  readonly of: Point3Record;
+  readonly resolution?: number;
+  readonly over?: IntervalRecord;
+}
+
+export interface Curve3Record {
+  readonly kind: 'curve3';
+  readonly name: string;
+  readonly curve: SpaceCurveRecord;
+  readonly camera: Camera3Record;
+  /** How the run is drawn. */
+  readonly options?: Polyline3Options;
+  readonly style?: Style;
+}
+
 export interface Section3Record {
   readonly kind: 'section3';
   readonly name: string;
@@ -607,6 +637,7 @@ export type NodeRecord =
   | Scene3Record
   | Axes3Record
   | Surface3Record
+  | Curve3Record
   | Sphere3Record
   | Cube3Record
   | Cylinder3Record
@@ -810,6 +841,16 @@ export function resolveSection(record: SectionRecord, bindings: Bindings = {}): 
   );
 }
 
+/** The places a curve in space passes through, from the record naming the curve
+ * and the run of its parameter. */
+export function resolveSpaceCurve(record: SpaceCurveRecord, bindings: Bindings = {}): Vec3[] {
+  const options: Curve3Options = {
+    resolution: record.resolution,
+    over: record.over ? spanOf(record.over, bindings, 'a curve in space') : undefined,
+  };
+  return curveOf3((t) => resolvePoint3(record.of, binding(bindings, { t }), 'a place on a curve in space'), options);
+}
+
 /** The points a run through a flat field passes, from the record naming the field
  * and the seed. */
 export function resolveStreamline(record: StreamlineRecord, bindings: Bindings = {}): Vec2[] {
@@ -994,6 +1035,12 @@ export function resolveNode(record: NodeRecord, bindings: Bindings = {}): Node {
         resolveCamera(record.camera, bindings),
         field3Options(record.options, bindings)
       );
+    case 'curve3': {
+      const camera = resolveCamera(record.camera, bindings);
+      return group(record.name, [polyline3('run', resolveSpaceCurve(record.curve, bindings), camera, record.options)], {
+        style: record.style,
+      });
+    }
     case 'section3': {
       const camera = resolveCamera(record.camera, bindings);
       return group(

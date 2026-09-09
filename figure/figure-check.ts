@@ -432,6 +432,11 @@ const SHAPES: Readonly<Record<string, Shape>> = {
     direction: may(named('a direction', ['forward', 'backward', 'both'])),
     least: may(number),
   }),
+  spaceCurve: fields('a curve in space', {
+    of: need(ref('point3')),
+    resolution: may(number),
+    over: may(ref('expressionInterval')),
+  }),
   plane: fields('a plane', { point: need(ref('point3')), normal: need(ref('point3')) }),
   section: fields('a section', {
     of: need(ref('point3')),
@@ -630,6 +635,13 @@ const SHAPES: Readonly<Record<string, Shape>> = {
         of: need(ref('point3')),
         camera: need(ref('camera')),
         options: need(ref('surfaceOptions')),
+      },
+      curve3: {
+        name: need(text),
+        curve: need(ref('spaceCurve')),
+        camera: need(ref('camera')),
+        options: may(ref('polyline3Options')),
+        style: may(ref('style')),
       },
       sphere3: { ...SPHERE, camera: need(ref('camera')) },
       cube3: { ...CUBE, camera: need(ref('camera')) },

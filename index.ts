@@ -69,7 +69,7 @@ export { EXPRESSION_FUNCTIONS, evaluate } from './figure/expression.js';
 export type { Arithmetic, Bindings, Comparison, Expression, ExpressionValue, Variables } from './figure/expression.js';
 export { resolvePath } from './figure/path-record.js';
 export type { IntervalRecord, PathRecord } from './figure/path-record.js';
-export { resolveNode, resolveSection, resolveStreamline, writeTemplate } from './figure/node-record.js';
+export { resolveNode, resolveSection, resolveSpaceCurve, resolveStreamline, writeTemplate } from './figure/node-record.js';
 export type {
   Arrow3Record,
   ArrowRecord,
@@ -106,6 +106,8 @@ export type {
   ShapeRecord,
   Streamline3Record,
   StreamlineRecord,
+  Curve3Record,
+  SpaceCurveRecord,
   Solid3RecordOptions,
   SphereFields,
   CubeFields,
@@ -164,6 +166,8 @@ export { cube3, cubeCells, cylinder3, cylinderCells, sphere3, sphereCells, torus
 export type { Solid3Options } from './figure/solid3.js';
 export { axes3 } from './figure/axis3.js';
 export type { Axes3Options } from './figure/axis3.js';
+export { curveOf3 } from './figure/curve3.js';
+export type { Curve3Options } from './figure/curve3.js';
 export { sectionOf } from './figure/section.js';
 export type { Plane, SectionOptions } from './figure/section.js';
 export { coordsOf, pointOf, scaleOf, toGraph, toUnits } from './figure/scale.js';

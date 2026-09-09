@@ -626,6 +626,11 @@ functions, which is what lets the same tree survive being written to a file and 
 - `SurfaceCellsRecord` — a `kind` of `surfaceCells`, a `name`, its `of` and its `options`. It carries
   no camera and takes the scene's, so a surface sharing a depth sort with a second surface is written
   as a piece of that scene.
+- `SpaceCurveRecord` — a curve in space read from one parameter: its `of` as a `Point3Record` read
+  from the bound variable `t`, its `resolution` and its `over` as a pair of expressions. It is not
+  called a curve record on its own because `Curve` is already the name of an easing curve.
+- `Curve3Record` — a `kind` of `curve3`, a `name`, its `curve` as a `SpaceCurveRecord`, its `camera`,
+  its `options` and its `style`.
 - `Solid3RecordOptions` — what a solid takes, which is what a surface takes without `over`, since a
   solid fixes the runs of its two parameters itself.
 - `SphereFields` — what a sphere carries: a `name`, a `centre` as a `Point3Record`, its `options` and
@@ -1067,6 +1072,14 @@ animations reach a picture in space and a picture on a graph.
   - `names` — what each axis is called, written past its far end under `name`. An axis this does not
     name carries no name.
   - `family`, `weight` — the font the labels are asked for.
+- `curveOf3(of, options)` — the places a curve in space passes through, in order, both ends of the run
+  included, so the count is one more than the resolution. Nothing here draws them: `polyline3` draws one
+  run, and a scene sorts a run against the solid it lies on.
+- `Curve3Options` — what a curve in space takes.
+  - `resolution` — how many steps the run is cut into.
+  - `over` — the run of the parameter, nothing to one where it is left out.
+- `resolveSpaceCurve(record, bindings)` — the places a curve in space passes through, from the record
+  naming the curve and the run of its parameter.
 - `sectionOf(of, plane, options)` — the runs of points where a plane cuts a surface, in space. A run
   whose two ends meet comes back with its first point repeated at the end, so drawing the points as
   they are given draws the loop closed.

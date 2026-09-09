@@ -181,7 +181,7 @@ const nodeProse = [
 describe('the specification and the nodes', () => {
   it('names every node kind and its fields', () => {
     const kinds = membersOf('figure/node-record.ts', 'NodeRecord');
-    expect(kinds).toHaveLength(27);
+    expect(kinds).toHaveLength(28);
     const inside = quoted(nodeProse);
     const absent = kinds.flatMap((name) => {
       const missing = fieldsOf('figure/node-record.ts', name).filter((field) => !inside.has(field));
@@ -296,7 +296,7 @@ const WRITTEN = new Map([
   ['fifteen', 15],
   ['sixteen', 16],
   ['twenty-three', 23],
-  ['twenty-seven', 27],
+  ['twenty-eight', 28],
   ['thirty-seven', 37],
 ]);
 
