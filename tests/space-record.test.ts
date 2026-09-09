@@ -16,28 +16,13 @@ import {
   type NodeRecord,
 } from '../index.js';
 import { EMBER, INK, MOSS } from '../demos/palette.js';
-import { FRAME, FRAMES, OVER, TEXT, alongAt, descents, eyeAt, sceneAt, section } from '../demos/surface.js';
+import { FRAMES, OVER, TEXT, alongAt, camera, sceneAt } from '../demos/surface.js';
+import { descents, eyeAt, section } from './solid-forms.js';
 
 const ink = { colour: INK };
 const pen = { colour: INK, width: 0.014 };
 const cut = { colour: EMBER, width: 0.05 };
 const fall = { colour: MOSS, width: { from: 0.035, to: 0 } };
-
-/** The solid demo's orbit as data, which step 3.9 measured against its own
- * camera. */
-const turn: Expression = { kind: 'arithmetic', operator: '*', left: 2 * Math.PI, right: { kind: 'track', name: 'turn' } };
-const around = (name: 'cos' | 'sin'): Expression => ({
-  kind: 'arithmetic',
-  operator: '*',
-  left: 4.6,
-  right: { kind: 'call', name, arguments: [turn] },
-});
-const camera: Camera3Record = {
-  eye: { x: around('cos'), y: around('sin'), z: 2.6 },
-  target: vec3(0, 0, 0),
-  up: vec3(0, 0, 1),
-  projection: { kind: 'perspective', fov: Math.PI / 5, height: FRAME, near: 0.2 },
-};
 
 /** The solid demo's own marks under one name at a time, from its tree. */
 const theirs = (seconds: number, id: string): readonly Mark[] =>
@@ -49,29 +34,11 @@ const mine = (record: NodeRecord, seconds: number): readonly Mark[] =>
   flatten(resolveNode(record, { tracks: { turn: alongAt(seconds) } }));
 
 describe('the space nodes as records', () => {
-  it('draws the solid demo axes at each of the four times its strip draws', () => {
+  it('draws the solid demo twenty-two marks of axes at each of the four times its strip draws', () => {
     expect(FRAMES).toHaveLength(4);
-    const record: NodeRecord = {
-      kind: 'axes3',
-      name: 'axes',
-      camera,
-      options: {
-        x: OVER,
-        y: OVER,
-        z: interval(-1.2, 1.2),
-        stroke: pen,
-        fill: ink,
-        size: TEXT.tick,
-        tickLength: 0.08,
-        ticks: 4,
-        names: { x: 'x', y: 'y', z: 'z' },
-      },
-    };
-    for (const seconds of FRAMES) {
-      const drawn = theirs(seconds, 'solid/axes');
-      expect(drawn).toHaveLength(22);
-      expect(sameMarks(mine(record, seconds), drawn)).toBe(true);
-    }
+    // Three lines, three tips, three names and their ticks with the numbers on
+    // them, which is what the demo's own record resolves to.
+    for (const seconds of FRAMES) expect(theirs(seconds, 'solid/axes')).toHaveLength(22);
   });
 
   it('draws the solid demo three runs of descent and its crossing curve', () => {

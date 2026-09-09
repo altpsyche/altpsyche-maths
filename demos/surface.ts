@@ -23,47 +23,40 @@
  * At 0.11.0 three runs of steepest descent are drawn on the saddle. Each is a
  * streamline of the field that points the way the surface falls, walked in the
  * plane the surface is drawn over and then lifted onto it.
+ *
+ * At 2.0.0 the whole of it is a record. The saddle, the crossing, the runs and
+ * the wash on the pane are forms with the orbit's own track in them, and
+ * `demos/surface.figure.json` is written from that record beside the pictures.
  */
 import {
-  axes3,
-  camera3,
-  draw,
-  equationFromTex,
-  equationNode,
-  fadeIn,
-  fadeTo,
-  moveView,
-  fieldArrows3,
   fractionOf,
-  group,
   interval,
+  marksAt,
   moveBy,
-  perspective,
-  polyline3,
   rect,
-  shape,
+  resolveFigure,
+  resolveNode,
   sampleTrack,
-  sectionOf,
-  scene3,
-  streamlineOf,
-  surfaceCells,
-  text,
   textScale,
   vec2,
   vec3,
-  Timeline,
-  marksAt,
-  type Camera3,
+  equationFromTex,
+  type Camera3Record,
+  type Expression,
   type Extent,
-  type Fill,
+  type FigureRecord,
+  type FillRecord,
   type Figure,
   type Mark,
   type Node,
+  type NodeRecord,
+  type Point3Record,
+  type ShadeRecord,
+  type SpanRecord,
   type Stroke,
   type Track,
-  type Vec2,
 } from '../index.js';
-import { DEEP, EMBER, FROST, GLAZE, INK, MOSS, PANEL, SKY, shadeOf } from './palette.js';
+import { DEEP, EMBER, FROST, GLAZE, INK, MOSS, PANEL, SHADE_THEME, SKY, shadeOf } from './palette.js';
 import { TYPE } from './typeface.js';
 
 const ink = { colour: INK };
@@ -120,19 +113,69 @@ const LENS_UP = interval.span(LENS.y);
 /** The stretch of each parameter the surface is drawn over. */
 export const OVER = interval(-1.5, 1.5);
 
-/** A saddle, because it is the shape a level plane cuts a curve out of rather
- * than a circle, and a curve with two branches is what says the crossing was
- * found rather than assumed. */
-export const saddle = (x: number, y: number) => (x * x - y * y) / 2;
+const spread = { over: { u: OVER, v: OVER } };
 
-const surfaceAt = (u: number, v: number) => vec3(u, v, saddle(u, v));
+const u: Expression = { kind: 'variable', name: 'u' };
+const v: Expression = { kind: 'variable', name: 'v' };
+const at = (name: 'x' | 'y'): Expression => ({ kind: 'member', of: { kind: 'variable', name: 'at' }, name });
+const over = (operator: '+' | '-' | '*' | '/', left: Expression, right: Expression): Expression => ({
+  kind: 'arithmetic',
+  operator,
+  left,
+  right,
+});
+const call = (name: string, ...args: readonly Expression[]): Expression => ({
+  kind: 'call',
+  name,
+  arguments: args,
+});
+
+/**
+ * A saddle, because it is the shape a level plane cuts a curve out of rather
+ * than a circle, and a curve with two branches is what says the crossing was
+ * found rather than assumed.
+ *
+ * Its height is half of u squared less half of v squared, over the two
+ * parameters every surface here is read from.
+ */
+export const saddle: Point3Record = {
+  x: u,
+  y: v,
+  z: over('/', over('-', over('*', u, u), over('*', v, v)), 2),
+};
 
 /** How high the plane sits. At nothing it would cut the saddle in two straight
  * lines crossing at the middle, which is the one height that says nothing about
  * the method. */
 export const HEIGHT = 0.35;
 
-const planeAt = (u: number, v: number) => vec3(u, v, HEIGHT);
+const plane: Point3Record = { x: u, y: v, z: HEIGHT };
+
+/** How far the eye stands from the middle and how high it sits, in the units the
+ * surface is drawn in. */
+const AWAY = 4.6;
+const UP = 2.6;
+
+/**
+ * How tall the projection's own frame is, in figure units.
+ *
+ * Shorter than the extent on purpose: what fills that frame is the middle of the
+ * picture, and the tips of the axes and their numbers reach past it, so handing
+ * the camera the extent's own height would carry them off the top and bottom.
+ */
+export const FRAME = 5;
+
+/** Where the eye sits: once round the middle on the one track this figure turns
+ * on, kept at one height, looking at where the axes cross. */
+const turn: Expression = { kind: 'arithmetic', operator: '*', left: 2 * Math.PI, right: { kind: 'track', name: 'turn' } };
+const around = (name: 'cos' | 'sin'): Expression => over('*', AWAY, call(name, turn));
+
+export const camera: Camera3Record = {
+  eye: { x: around('cos'), y: around('sin'), z: UP },
+  target: vec3(0, 0, 0),
+  up: vec3(0, 0, 1),
+  projection: { kind: 'perspective', fov: Math.PI / 5, height: FRAME, near: 0.2 },
+};
 
 /**
  * The wash over the pane, deepest along the edge nearest the eye and palest
@@ -147,36 +190,40 @@ const planeAt = (u: number, v: number) => vec3(u, v, HEIGHT);
  * The axis is the same for every cell of the pane, which is what makes sixteen
  * cells read as one sheet of glass: a gradient is measured in the units it is
  * painted into, so one axis shared across the cells runs unbroken over all of
- * them. Its ends are projected points rather than points in space, because the
- * cells are flat shapes by the time they carry a fill.
+ * them. Its ends are places in space put on the page by the camera, so the wash
+ * turns as the orbit does.
  */
-export function paneWash(camera: Camera3): Fill {
-  const half = (OVER.to - OVER.from) / 2;
-  const middle = (OVER.from + OVER.to) / 2;
-  const away = vec2.normalize(vec2(middle - camera.eye.x, middle - camera.eye.y));
-  // A square of half-width h reaches h/max(|x|, |y|) along a unit direction, so
-  // the axis spans the pane whichever way the recession points.
-  const reach = half / Math.max(Math.abs(away.x), Math.abs(away.y));
-  const edgeAt = (side: number) => camera.project(planeAt(middle + side * reach * away.x, middle + side * reach * away.y)).at;
-  return {
-    colour: FROST,
-    gradient: {
-      from: edgeAt(-1),
-      to: edgeAt(1),
-      stops: [
-        { offset: 0, colour: GLAZE },
-        { offset: 1, colour: FROST },
-      ],
-    },
-  };
-}
-
-/** The curve where the two meet, found once rather than at every frame: it is the
- * same curve at every time and only the camera moves. */
-export const section = sectionOf(surfaceAt, { point: vec3(0, 0, HEIGHT), normal: vec3(0, 0, 1) }, {
-  over: { u: OVER, v: OVER },
-  resolution: 48,
+const half = (OVER.to - OVER.from) / 2;
+const middle = (OVER.from + OVER.to) / 2;
+const away: Expression = call('normalize', {
+  kind: 'point',
+  x: over('-', middle, around('cos')),
+  y: over('-', middle, around('sin')),
 });
+const awayAt = (name: 'x' | 'y'): Expression => ({ kind: 'member', of: away, name });
+// A square of half-width h reaches h/max(|x|, |y|) along a unit direction, so the
+// axis spans the pane whichever way the recession points.
+const reach: Expression = over('/', half, call('max', call('abs', awayAt('x')), call('abs', awayAt('y'))));
+const edgeAt = (side: number): Expression =>
+  call(
+    'project',
+    { kind: 'camera', of: camera },
+    over('+', middle, over('*', over('*', side, reach), awayAt('x'))),
+    over('+', middle, over('*', over('*', side, reach), awayAt('y'))),
+    HEIGHT
+  );
+
+const wash: FillRecord = {
+  colour: FROST,
+  gradient: {
+    from: edgeAt(-1),
+    to: edgeAt(1),
+    stops: [
+      { offset: 0, colour: GLAZE },
+      { offset: 1, colour: FROST },
+    ],
+  },
+};
 
 /**
  * The way the saddle falls at a place, which is the gradient of its own height
@@ -186,7 +233,15 @@ export const section = sectionOf(surfaceAt, { point: vec3(0, 0, HEIGHT), normal:
  * falls towards the middle along x and away from it along y, and no run of
  * steepest descent here is a straight line except the two through the middle.
  */
-const descent = (at: Vec2) => vec2(-at.x, at.y);
+const descent: Expression = { kind: 'point', x: over('-', 0, at('x')), y: at('y') };
+
+/** The same field as the arrows over the plane draw it, which is a vector in
+ * space at the place being sampled. */
+const flowing: Point3Record = {
+  x: over('-', 0, { kind: 'variable', name: 'x' }),
+  y: { kind: 'variable', name: 'y' },
+  z: 0,
+};
 
 /**
  * Where the three runs start.
@@ -205,37 +260,19 @@ export const SEEDS = [vec2(1.3, 0.3), vec2(-1.3, 0.3), vec2(0.6, -0.3)];
 export const STEP = 0.05;
 export const STEPS = 300;
 
-/**
- * The three runs of steepest descent, walked once rather than at every frame,
- * each lifted from the plane it was walked in onto the surface itself.
- */
-export const descents = SEEDS.map((seed) =>
-  streamlineOf(descent, seed, { step: STEP, steps: STEPS, within: { x: OVER, y: OVER } }).map((at) =>
-    surfaceAt(at.x, at.y)
-  )
-);
-
 /** How many arrows of the field are drawn across the plane, and how long one is
  * in the units the surface is drawn in. An arrow settles towards a third of a
  * unit rather than growing with the gradient, since the gradient at the corner
  * of the saddle is thirty times the gradient near the middle. */
 export const FLOW = { x: 5, y: 5, z: 1 };
-const arrowLength = (magnitude: number) => (0.34 * magnitude) / (0.9 + magnitude);
+const magnitude: Expression = { kind: 'variable', name: 'magnitude' };
+const arrowLength: Expression = over('/', over('*', 0.34, magnitude), over('+', 0.9, magnitude));
 
 /** How many cells each grid is cut into. Enough that the saddle reads as a
  * curved sheet and few enough that the committed pictures stay small: every cell
  * is a path in the file, and the strip holds four frames of them. */
 export const CELLS = 12;
 export const PANES = 4;
-
-/**
- * How tall the projection's own frame is, in figure units.
- *
- * Shorter than the extent on purpose: what fills that frame is the middle of the
- * picture, and the tips of the axes and their numbers reach past it, so handing
- * the camera the extent's own height would carry them off the top and bottom.
- */
-export const FRAME = 5;
 
 /**
  * Which way the light comes from, over the shoulder and to one side.
@@ -259,21 +296,14 @@ export const LIGHT = vec3(-0.4, -0.6, 0.7);
  */
 export const FACING = interval(0.346, 1);
 
-/** The shading of a cell, its amount read against the band this saddle uses
- * rather than against the whole of nothing to one. */
-const shadeSpread = (amount: number) => shadeOf(interval.remap(amount, FACING, interval(0, 1)));
-
-/** Where the eye sits at a fraction of the orbit: once round the middle, kept at
- * one height, looking at where the axes cross. */
-export function eyeAt(along: number) {
-  const turn = 2 * Math.PI * along;
-  return camera3({
-    eye: vec3(4.6 * Math.cos(turn), 4.6 * Math.sin(turn), 2.6),
-    target: vec3(0, 0, 0),
-    up: vec3(0, 0, 1),
-    projection: perspective({ fov: Math.PI / 5, height: FRAME, near: 0.2 }),
-  });
-}
+/** The washes of the palette as the ramp a cell's shading picks a step of, read
+ * against the band this saddle uses rather than against the whole of nothing to
+ * one. */
+const SHADES = Object.keys(SHADE_THEME).length;
+const shade: ShadeRecord = {
+  ramp: Array.from({ length: SHADES }, (_, step) => shadeOf(step / (SHADES - 1))),
+  band: FACING,
+};
 
 /** The sizes this figure's text takes, from the numbers on its axes, which are
  * the smallest text it draws. */
@@ -281,99 +311,131 @@ export const TEXT = textScale(0.22);
 
 /** The equation of the surface, typeset when this module loads rather than at
  * every frame, since its geometry is the same at every time. */
-const written = await equationFromTex('z = \\frac{x^2 - y^2}{2}');
+const rule = await equationFromTex('z = \\frac{x^2 - y^2}{2}');
 
-export function sceneAt(along: number): Node {
-  const camera = eyeAt(along);
-  const pane = paneWash(camera);
-  return group(
-    'solid',
-    [
-    scene3(
-      'body',
-      [
-        ...surfaceCells('hill', surfaceAt, camera, {
-          over: { u: OVER, v: OVER },
-          resolution: CELLS,
-          shade: shadeSpread,
-          light: LIGHT,
-        }),
-        ...surfaceCells('pane', planeAt, camera, {
-          over: { u: OVER, v: OVER },
-          resolution: PANES,
-          shade: () => pane,
-          stroke: glass,
-        }),
-        ...fieldArrows3('flow', (at) => vec3(-at.x, at.y, 0), camera, {
-          over: { x: OVER, y: OVER, z: interval(HEIGHT, HEIGHT) },
-          resolution: FLOW,
-          lengthOf: arrowLength,
-          colourFor: () => flow.colour,
-          stroke: flow,
-          head: 0.13,
-        }),
+export const scene: NodeRecord = {
+  kind: 'group',
+  name: 'solid',
+  children: [
+    {
+      kind: 'scene3',
+      name: 'body',
+      camera,
+      items: [
+        { kind: 'surfaceCells', name: 'hill', of: saddle, options: { ...spread, resolution: CELLS, shade, light: LIGHT } },
+        {
+          kind: 'surfaceCells',
+          name: 'pane',
+          of: plane,
+          options: { ...spread, resolution: PANES, shade: { ramp: [wash] }, stroke: glass },
+        },
+        {
+          kind: 'fieldArrows3',
+          name: 'flow',
+          of: flowing,
+          options: {
+            over: { x: OVER, y: OVER, z: interval(HEIGHT, HEIGHT) },
+            resolution: FLOW,
+            lengthOf: arrowLength,
+            colourFor: flow.colour,
+            stroke: flow,
+            head: 0.13,
+          },
+        },
       ],
-      camera
-    ),
-    group(
-      'descent',
-      descents.map((run, at) => polyline3(`run${at}`, run, camera, { stroke: fall }))
-    ),
-    group('cut', section.map((run, at) => polyline3(`run${at}`, run, camera, { stroke: cut })), {
+    },
+    {
+      kind: 'streamline3',
+      name: 'descent',
+      runs: SEEDS.map((seed) => ({ of: descent, from: seed, options: { step: STEP, steps: STEPS, within: { x: OVER, y: OVER } } })),
+      on: saddle,
+      camera,
+      options: { stroke: fall },
+    },
+    {
+      kind: 'section3',
+      name: 'cut',
+      curve: { of: saddle, plane: { point: vec3(0, 0, HEIGHT), normal: vec3(0, 0, 1) }, options: { ...spread, resolution: 48 } },
+      camera,
+      options: { stroke: cut },
       style: { opacity: 1 },
-    }),
-    axes3('axes', camera, {
-      x: OVER,
-      y: OVER,
-      z: interval(-1.2, 1.2),
-      stroke: pen,
-      fill: ink,
-      size: TEXT.tick,
-      tickLength: 0.08,
-      ticks: 4,
-      names: { x: 'x', y: 'y', z: 'z' },
-    }),
-    group('window', [
-      shape('ground', rect(vec2(LENS.x.from, LENS.y.from), LENS_ACROSS, LENS_UP), { fill: { colour: PANEL } }),
-      shape(
-        'edge',
-        rect(
-          vec2(LENS.x.from - LENS_EDGE / 2, LENS.y.from - LENS_EDGE / 2),
-          LENS_ACROSS + LENS_EDGE,
-          LENS_UP + LENS_EDGE
-        ),
-        { stroke: { colour: INK, width: LENS_EDGE } }
-      ),
-    ]),
-    text('title', fractionOf(extent, 0.98, 0.9156), 'a saddle', TEXT.title, { fill: ink, align: 'end' }),
-    equationNode('rule', written, {
-      at: fractionOf(extent, 0.02, 0.93),
-      align: 'start',
-      width: 1.6,
-      height: 0.7,
-      fill: ink,
-    }),
-    ],
-    { style: TYPE }
-  );
-}
+    },
+    {
+      kind: 'axes3',
+      name: 'axes',
+      camera,
+      options: {
+        x: OVER,
+        y: OVER,
+        z: interval(-1.2, 1.2),
+        stroke: pen,
+        fill: ink,
+        size: TEXT.tick,
+        tickLength: 0.08,
+        ticks: 4,
+        names: { x: 'x', y: 'y', z: 'z' },
+      },
+    },
+    {
+      kind: 'group',
+      name: 'window',
+      children: [
+        {
+          kind: 'shape',
+          name: 'ground',
+          path: { kind: 'rect', corner: vec2(LENS.x.from, LENS.y.from), width: LENS_ACROSS, height: LENS_UP },
+          style: { fill: { colour: PANEL } },
+        },
+        {
+          kind: 'shape',
+          name: 'edge',
+          path: {
+            kind: 'rect',
+            corner: vec2(LENS.x.from - LENS_EDGE / 2, LENS.y.from - LENS_EDGE / 2),
+            width: LENS_ACROSS + LENS_EDGE,
+            height: LENS_UP + LENS_EDGE,
+          },
+          style: { stroke: { colour: INK, width: LENS_EDGE } },
+        },
+      ],
+    },
+    {
+      kind: 'text',
+      name: 'title',
+      at: fractionOf(extent, 0.98, 0.9156),
+      content: 'a saddle',
+      size: TEXT.title,
+      options: { fill: ink, align: 'end' },
+    },
+    {
+      kind: 'equationNode',
+      name: 'rule',
+      equation: rule,
+      options: { at: fractionOf(extent, 0.02, 0.93), align: 'start', width: 1.6, height: 0.7, fill: ink },
+    },
+  ],
+  style: TYPE,
+};
 
 /** How long one orbit takes. */
 export const ORBIT = 8;
 
-/** The picture arrives, then the eye goes round once. The plane fades in and the
+/**
+ * When each part of the entrance runs, in seconds.
+ *
+ * The picture arrives, then the eye goes round once. The plane fades in and the
  * curve draws on, which is the whole of what this demo has to show about
- * animations reaching marks in space. */
-const entrance = Timeline.empty()
-  .play(fadeIn('solid/axes'), 0.6)
-  .play(fadeIn('solid/body/hill'), 0.7, { after: -0.3 })
-  .play(fadeIn('solid/rule'), 0.5, { after: -0.3 })
-  .play(fadeIn('solid/body/pane'), 0.7, { after: 0.1 })
-  .play(draw('solid/cut'), 0.9, { after: -0.2 })
-  .play(fadeIn('solid/body/flow'), 0.5, { after: -0.2 })
-  .play(draw('solid/descent'), 0.9, { after: -0.1 });
+ * animations reaching marks in space.
+ */
+const AXES = { from: 0, to: 0.6 };
+const HILL = { from: 0.3, to: 1 };
+const RULE = { from: 0.7, to: 1.2 };
+const PANE = { from: 1.3, to: 2 };
+const CUT = { from: 1.8, to: 2.7 };
+const FLOW_IN = { from: 2.5, to: 3 };
+const DESCENT = { from: 2.9, to: 3.8 };
 
-const ORBIT_FROM = entrance.duration;
+const ORBIT_FROM = DESCENT.to;
 
 /** Where in the turn the eye stops, and for how long, in seconds. A quarter round
  * is the bearing the saddle faces along the axis it falls away on. */
@@ -419,21 +481,11 @@ const PUSH = 6.8;
 const pushed: Extent = { width: PUSH, height: (PUSH * extent.height) / extent.width };
 
 /**
- * When the push starts, how long each half of it takes, and how long the two
- * labels take to go, in seconds.
+ * When the two labels go, when the camera pushes in, and when both come back.
  *
- * It starts after the still and after the last frame the strip shows, so a reader
- * shown one frame gets the whole saddle with its equation rather than a crop of
- * the middle of it, and the strip is four frames of one composition.
- */
-const PUSH_FROM = 2.2 + BEAT;
-const PUSH_IN = 1;
-const PULL_OUT = 1.2;
-const LABELS = 0.4;
-
-/**
- * The picture arrives, the eye goes round once, and the camera pushes in on the
- * crossing while it does.
+ * The push starts after the still and after the last frame the strip shows, so a
+ * reader shown one frame gets the whole saddle with its equation rather than a
+ * crop of the middle of it, and the strip is four frames of one composition.
  *
  * The equation and the title are placed at fractions of the declared extent and
  * are what reach nearest its edge, so the push crops them: everything drawn fits
@@ -441,31 +493,59 @@ const LABELS = 0.4;
  * is further in than that. They go before the camera moves and return after it
  * has come back, rather than fading while it moves, since a label at half its
  * opacity outside the frame reads as one that slid off the edge.
+ */
+const LABELS_OUT = { from: 7.5, to: 7.9 };
+const PUSH_IN = { from: 7.9, to: 8.9 };
+const PULL_OUT = { from: 11.7, to: 12.9 };
+const LABELS_BACK = { from: 12.9, to: 13.3 };
+
+/** How long the figure runs, which is where its last span ends. */
+const DURATION = LABELS_BACK.to;
+
+/**
+ * The picture arriving, the two labels going and coming back, and the camera
+ * pushing in on the crossing between them.
  *
  * `fadeTo` rather than `fadeOut` and `fadeIn`, since those two multiply the
  * opacity they are handed: a mark faded out is at nothing, and a fade in over it
  * walks nothing towards nothing and the mark never returns.
  */
-const line = entrance
-  .wait(PUSH_FROM)
-  .together([fadeTo('solid/rule', 0), fadeTo('solid/title', 0)], LABELS)
-  .play(moveView(pushed), PUSH_IN)
-  .wait(ORBIT + BEAT - PUSH_FROM - 2 * LABELS - PUSH_IN - PULL_OUT)
-  .play(moveView({ width: extent.width, height: extent.height }), PULL_OUT)
-  .together([fadeTo('solid/rule', 1), fadeTo('solid/title', 1)], LABELS);
+const spans: readonly SpanRecord[] = [
+  { entry: { kind: 'fadeIn', target: 'solid/axes' }, ...AXES },
+  { entry: { kind: 'fadeIn', target: 'solid/body/hill' }, ...HILL },
+  { entry: { kind: 'fadeIn', target: 'solid/rule' }, ...RULE },
+  { entry: { kind: 'fadeIn', target: 'solid/body/pane' }, ...PANE },
+  { entry: { kind: 'draw', target: 'solid/cut' }, ...CUT },
+  { entry: { kind: 'fadeIn', target: 'solid/body/flow' }, ...FLOW_IN },
+  { entry: { kind: 'draw', target: 'solid/descent' }, ...DESCENT },
+  { entry: { kind: 'fadeTo', target: 'solid/rule', opacity: 0 }, ...LABELS_OUT },
+  { entry: { kind: 'fadeTo', target: 'solid/title', opacity: 0 }, ...LABELS_OUT },
+  { entry: { kind: 'moveView', to: pushed }, ...PUSH_IN },
+  { entry: { kind: 'moveView', to: { width: extent.width, height: extent.height } }, ...PULL_OUT },
+  { entry: { kind: 'fadeTo', target: 'solid/rule', opacity: 1 }, ...LABELS_BACK },
+  { entry: { kind: 'fadeTo', target: 'solid/title', opacity: 1 }, ...LABELS_BACK },
+];
 
-export const solid: Figure = {
+export const written: FigureRecord = {
   extent,
-  scene: (_seconds, values) => sceneAt(values.turn as number),
+  scene,
   tracks: { turn: orbit },
-  timeline: line,
-  duration: line.duration,
+  timeline: { spans, duration: DURATION },
+  duration: DURATION,
   still: ORBIT_FROM + ORBIT * 0.18,
   // Named under the figure's own root, so the strip's move carries its marks into
   // their slot with everything else, and hiding the panel because an inset that
   // magnified its own ground and border would paint a picture of itself.
   insets: [{ shows: LENS_SHOWS, into: LENS, name: 'solid/lens', hides: ['solid/window'] }],
 };
+
+export const solid: Figure = resolveFigure(written);
+
+/** The picture at one place in the orbit, given as a fraction of the turn, which
+ * is the scene read with that one track bound. */
+export function sceneAt(along: number): Node {
+  return resolveNode(scene, { tracks: { turn: along } });
+}
 
 /** Where the eye is at a time, for a gate that would otherwise rebuild the track
  * to find out. */

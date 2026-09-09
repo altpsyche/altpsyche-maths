@@ -27,7 +27,12 @@ import {
   written as booleansWritten,
 } from './boolean.js';
 import { FRAMES as TURN_FRAMES, stripMarks as turnStripMarks, turns, written as turnsWritten } from './rotate.js';
-import { FRAMES as SOLID_FRAMES, solid, stripMarks as solidStripMarks } from './surface.js';
+import {
+  FRAMES as SOLID_FRAMES,
+  solid,
+  stripMarks as solidStripMarks,
+  written as solidWritten,
+} from './surface.js';
 
 /** A hundred pixels to the figure unit, which is what turns an extent into the
  * frame a still is written into. A frame shaped differently from the extent it
@@ -153,4 +158,5 @@ export const figures: readonly { file: string; text: () => string }[] = [
   { file: 'demos/boolean.figure.json', text: () => writeFigure(booleansWritten) },
   { file: 'demos/tangent.figure.json', text: () => writeFigure(tangentWritten) },
   { file: 'demos/rotate.figure.json', text: () => writeFigure(turnsWritten) },
+  { file: 'demos/surface.figure.json', text: () => writeFigure(solidWritten) },
 ];

@@ -60,13 +60,10 @@ import {
   BEAT as SOLID_BEAT,
   TIMES as SOLID_TIMES,
   alongAt,
-  descents,
-  eyeAt,
-  saddle,
-  section,
   solid,
   stripMarks as solidStripMarks,
 } from '../demos/surface.js';
+import { descents, eyeAt, saddle, section } from './solid-forms.js';
 import { FIELD, FRAMES, TIMES, coords, curve, slopeField, stripMarks, tangent, walk } from '../demos/tangent.js';
 import {
   AMBER,

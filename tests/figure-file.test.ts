@@ -13,6 +13,7 @@ import {
 import { FRAMES, turns } from '../demos/rotate.js';
 import { TIMES as BOOLEAN_TIMES, booleans } from '../demos/boolean.js';
 import { TIMES as FLAT_TIMES, tangent, written as flat } from '../demos/tangent.js';
+import { FRAMES as SOLID_FRAMES, TIMES as SOLID_TIMES, solid, written as solidWritten } from '../demos/surface.js';
 import { operations, turning } from './figures.js';
 
 /** The names of every object of a written file, in the order they are written,
@@ -194,6 +195,46 @@ describe('the rotation demo as a committed file', () => {
       expect(drawn).toHaveLength(8);
       expect(sameMarks(marksAt(read, seconds), drawn)).toBe(true);
     }
+  });
+
+  it('is read as the version this package writes', () => {
+    expect(JSON.parse(committed).format).toBe(FIGURE_FORMAT_VERSION);
+  });
+});
+
+describe('the solid demo as a committed file', () => {
+  const committed = readFileSync('demos/surface.figure.json', 'utf8');
+  const times = Object.values(SOLID_TIMES);
+
+  it('is what the demo writes now', () => {
+    expect(committed).toBe(writeFigure(solidWritten));
+  });
+
+  it('draws the demo mark for mark at each of the four times its strip draws and at its still time', () => {
+    const read = readFigure(committed);
+    expect(SOLID_FRAMES).toHaveLength(4);
+    for (const seconds of [...SOLID_FRAMES, solid.still]) {
+      expect(sameMarks(marksAt(read, seconds), marksAt(solid, seconds))).toBe(true);
+    }
+  });
+
+  it('draws the counts its still time and its four named times each have', () => {
+    const read = readFigure(committed);
+    expect(marksAt(read, solid.still)).toHaveLength(321);
+    expect(times.map((seconds) => marksAt(read, seconds).length)).toEqual([316, 317, 316, 316]);
+  });
+
+  it('washes the pane differently at two bearings, which is the camera reaching the fill', () => {
+    const read = readFigure(committed);
+    const paneAt = (seconds: number) => {
+      const mark = marksAt(read, seconds).find((one) => one.id.startsWith('solid/body/pane/'));
+      return mark?.kind === 'path' ? mark.fill?.gradient?.from : undefined;
+    };
+    // The pane is a square, so an eye a quarter turn on sees the same shape and
+    // its wash starts at the same place. The strip's own bearings are off those
+    // corners, which is where the axis of the wash has turned.
+    expect(paneAt(SOLID_FRAMES[0])).toBeDefined();
+    expect(paneAt(SOLID_FRAMES[0])).not.toEqual(paneAt(SOLID_FRAMES[2]));
   });
 
   it('is read as the version this package writes', () => {

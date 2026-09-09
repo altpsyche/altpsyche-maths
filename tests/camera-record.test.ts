@@ -6,24 +6,8 @@ import {
   type Camera3Record,
   type Expression,
 } from '../index.js';
-import { FRAME, FRAMES, TIMES, alongAt, eyeAt } from '../demos/surface.js';
-
-/** The solid demo's orbit as data: the eye a cosine and a sine of the one track
- * its whole camera turns on. */
-const turn: Expression = { kind: 'arithmetic', operator: '*', left: 2 * Math.PI, right: { kind: 'track', name: 'turn' } };
-const around = (name: 'cos' | 'sin'): Expression => ({
-  kind: 'arithmetic',
-  operator: '*',
-  left: 4.6,
-  right: { kind: 'call', name, arguments: [turn] },
-});
-
-const record: Camera3Record = {
-  eye: { x: around('cos'), y: around('sin'), z: 2.6 },
-  target: vec3(0, 0, 0),
-  up: vec3(0, 0, 1),
-  projection: { kind: 'perspective', fov: Math.PI / 5, height: FRAME, near: 0.2 },
-};
+import { FRAMES, TIMES, alongAt, camera as record } from '../demos/surface.js';
+import { eyeAt } from './solid-forms.js';
 
 /** Places spread through the box the saddle stands in, which is what says two
  * cameras agree about more than the middle of the frame. */

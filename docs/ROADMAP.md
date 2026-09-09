@@ -501,8 +501,17 @@ shape for a follow held `within` and `room` and not `axis`, so a figure that fol
 and down was refused by the reader. Each is a commit of its own in front of the transcription.
 `demos/tangent.figure.json` is 394,881 bytes over 10,637 lines, eleven children and thirty spans, and
 read back it draws 181 marks at the still time of 7.86 and 186, 185, 185, 182, 178, 178 and 178 at the
-seven named times. All eight sheets are byte for byte what they were. **Step 8.3 is what a session
-runs next**, which is the solid demo, 527 lines, and the held beat of step 3.9b is not in it.
+seven named times. All eight sheets are byte for byte what they were.
+
+Step 8.3 made the solid demo a record, and it found a third gap: the validator's table named the
+frame height of a perspective camera as a field of a parallel one, so this demo's camera was refused
+for naming its own. `demos/surface.figure.json` is 263,847 bytes over 7,110 lines, and read back it
+draws 321 marks at the still time of 5.24 and 316, 317, 316 and 316 at its four named times. The
+record had been written in two test files rather than in the demo, and the calls those files measure
+it against are now `tests/solid-forms.ts`. **Step 8 is cut**: all four demos are files, all eight
+sheets are byte for byte what they were, and the suite is 1,038 tests over 65 files. **Step 9 is what
+a session runs next**, which is the guide and the reference rewritten, 709 and 976 lines describing an
+API that changed.
 
 **Two things fall due before the format freezes and both are Siva's**, which are
 whether a `Mark` may be a raster image, due by step 3 where the node vocabulary lands, and the

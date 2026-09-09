@@ -1106,7 +1106,7 @@ release away and has a document of its own.
   no view move of its own carried through unchanged; the door from 358 names to 360 and the suite from
   948 to 951.
 
-- [ ] **8. The three demos step 5.8 leaves, rewritten as files**, 1,298 lines of module becoming
+- [x] **8. The three demos step 5.8 leaves, rewritten as files**, 1,298 lines of module becoming
   descriptions. The rotation demo is a file already, since a serialiser measured against records
   assembled in a test is a serialiser no picture has been through.
   **Measures:** all eight sheets byte for byte as committed after `npm run demos`.
@@ -1218,7 +1218,7 @@ release away and has a document of its own.
     names its fields where a call passes them in order; the suite from 1,027 tests to 1,033 over 65
     files.
 
-  - [ ] **8.3 The solid demo is a file.** 527 lines: the saddle, the plane cutting it, the two
+  - [x] **8.3 The solid demo is a file.** 527 lines: the saddle, the plane cutting it, the two
     branches of the crossing, three axes in space, the three runs of steepest descent, the field they
     follow, the typeset equation, the panel, and the eye going round once on a track.
     **The held beat of step 3.9b is not in this commit.** It is a look and it is Siva's, it changes
@@ -1229,6 +1229,27 @@ release away and has a document of its own.
     5.24 and 316, 317, 316 and 316 at its four named times, mark for mark within a tolerance of 1e-6;
     the pane's wash reading as different a half-orbit apart, which is what says the camera reached the
     fill; the file's own bytes and lines.
+    **The wash reads the same a half-orbit apart and the plan was wrong to ask for that.** The pane is
+    a square, so an eye a quarter turn on sees the same shape and the near edge of the wash lands on
+    the same place of the page: the start of the gradient is x of 0 and y of -0.8762 at the entrance,
+    at the quarter and at the half alike. The two bearings the strip draws are off those corners, and
+    there the axis has turned, which is what the gate reads instead.
+    **A third gap turned up in the reader**, and it is the commit in front of this one: the
+    validator's table named `height` on a parallel projection and left it off a perspective one, so
+    the camera of this demo was refused for naming the height of its own frame.
+    **The record was written in the tests rather than in the demo**, the way the boolean demo's was.
+    `tests/surface-record.test.ts` and `tests/space-record.test.ts` each held the camera, the saddle
+    and the wash as records, so the demo now holds them and those two read the demo's. The calls they
+    are measured against are in `tests/solid-forms.ts`, since a closed form the figure does not draw
+    belongs with what checks it.
+    **Measured:** all eight sheets byte for byte after `npm run demos`, `docs/surface.svg` at 126,906
+    bytes and `docs/surface-strip.svg` at 522,338, each the number above and the newline it ends in;
+    `demos/surface.figure.json` at 263,847 bytes over 7,110 lines; the committed file read back
+    drawing 321 marks at the still time of 5.24 and 316, 317, 316 and 316 at the four named times,
+    mark for mark by tolerance; the pane's wash starting at two different places at the first and
+    third frames of the strip; the module from 527 lines to 607, against 212 lines out of four test
+    files and 91 into `tests/solid-forms.ts`, which holds calls rather than cases; the suite from
+    1,033 tests to 1,038 over 65 files.
 
   #### Done-criteria for step 8
 
