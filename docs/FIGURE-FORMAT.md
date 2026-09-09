@@ -1446,6 +1446,10 @@ release away and has a document of its own.
 
 #### Done-criteria
 
+**Verified on 2026-09-09, with the number that satisfies each line.** Two of them were written before
+the work and their numbers moved while it ran, which is said under the lines they belong to rather
+than corrected in silence.
+
 - Every demo is a file, and reading it draws marks identical within tolerance to the module it
   replaced, at every named time, the flat demo's inset included.
 - None of the nineteen names at the door that take a function takes one, the three fields of a type
@@ -1463,6 +1467,43 @@ release away and has a document of its own.
 - The reference has an entry per name at the door and the gate holds them equal.
 - `npm test`, `npm run type-check` and `npm run build` pass, and the lock file agrees with the
   manifest.
+
+**Line by line, and what satisfies each.**
+
+1. **Every demo is a file.** Four files: `demos/boolean.figure.json` at 13,914 bytes,
+   `demos/rotate.figure.json` at 8,244, `demos/tangent.figure.json` at 394,881 and
+   `demos/surface.figure.json` at 263,847. Each read back draws its demo's marks by tolerance at every
+   named time and at its still time, which is 12 marks at seven times, 8 at four, 181 at eight and 321
+   at five. The flat demo's inset is in that count and every mark of its panel carries a clip at all
+   seven of its times.
+2. **No figure holds a closure.** The three fields that carried one each have a written form:
+   `PlayOptions.curve` is a `SpanRecord.curve` by name, `Figure.scene` is what `resolveFigure` builds
+   from a `NodeRecord`, and `ExtentChoice` is an `ExtentRecord`. A figure stores a camera as a
+   `Camera3Record` of expressions. **The first clause of this line reads stricter than the design
+   holds it.** `plot`, `vectorField`, `surface3`, `streamlineOf` and `sectionOf` still take a function
+   at the door, and the section above says why: a function that makes fixed geometry does not have to
+   serialise, an author writes it in TypeScript, and the format carries the cubics or the form. What
+   the line means and what is true is that no figure in this tree passes one.
+3. **The vocabulary.** Twenty-three node kinds in `NodeRecord`, two item producers, eleven path
+   producers, two point producers and fifteen animation kinds. **Twenty-three rather than the
+   twenty-one this line was written with**, since step 3.11 made `section3` and `streamline3` node
+   kinds of their own, which step 3's own note records.
+4. **The eleven names no demo draws.** `numberLine`, `callout`, `riemannBars`, `dot3`, `text3`,
+   `arrow3`, `surface3`, `vectorField3`, `morph`, `moveAlong` and `scale` each have a record test in
+   `tests/frame-record.ts`, `tests/annotate-record.ts`, `tests/space-record.ts`,
+   `tests/surface-record.ts` or `tests/animation-record.ts`, comparing the record's marks against the
+   call's.
+5. **The expression vocabulary is closed.** `EXPRESSION_FUNCTIONS` is thirty-seven names, `evaluate`
+   refuses one it does not carry with `an expression names the function <name>, which the vocabulary
+   does not carry`, and the validator holds a call's name to the same list.
+6. **The format carries a version.** `FIGURE_FORMAT_VERSION` is 0, `readFigure` reads it before
+   anything else, and `checkFigure` refuses with the path of the field and what it found there.
+7. **A colour is four channels and a name.** No `var(` is written into any of the four figure files,
+   and all eight sheets are byte for byte what they were.
+8. **The reference against the door.** 375 names and 375 entries, held equal by
+   `tests/reference.test.ts`.
+9. **The three gates.** `npm test` is 1,043 tests over 66 files, `npm run type-check` and
+   `npm run build` are clean, and `npm install --package-lock-only` leaves the tree unchanged.
 
 **What is not in these steps and is deliberately left out.** A curve whose shape a track drives, since
 nothing draws one. Re-sampling geometry at another resolution, for the same reason. An editor, a
