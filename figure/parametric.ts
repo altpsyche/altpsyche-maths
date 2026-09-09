@@ -17,6 +17,10 @@
  * The count is fixed and the curve is never subdivided by how much it bends. One
  * path is walked into another by pairing their points, so a curve that resamples
  * itself between frames could not be morphed into anything.
+ *
+ * A curve given as a radius at each angle is the same curve under the map from
+ * polar coordinates to a place, so it is written here as one call over the other
+ * rather than as a second sampling with its own cuts and its own seam.
  */
 import { interval, type Interval } from '../values/interval.js';
 import { vec2, type Vec2 } from '../values/vec2.js';
@@ -225,4 +229,32 @@ export function parametric(coords: Coords, of: (t: number) => Vec2, options: Par
   }
 
   return runs.filter((run) => run.places.length > 1).map((run) => openSubpath(coords, run.ts, run.places));
+}
+
+/** The run of the angle a polar curve is drawn over when a figure does not say,
+ * which is one whole turn. */
+const WHOLE_TURN = interval(0, 2 * Math.PI);
+
+/** What a polar curve takes, which is what a parametric curve takes under
+ * another name. The one difference is the default of `over`, since the natural
+ * run of an angle is a whole turn where the natural run of a parameter is
+ * nothing to one. */
+export type PolarOptions = ParametricOptions;
+
+/**
+ * The curve of a radius at each angle, about the place both axes read as
+ * nothing, in the figure's own units.
+ *
+ * A negative radius places the point opposite the angle rather than being
+ * refused, which is what draws the second half of a rose with an odd number of
+ * petals: `cos(5*angle)` is negative over five of the ten runs of the angle it
+ * passes through and the petals it draws there lie over the five it draws where
+ * the radius is positive.
+ */
+export function polar(coords: Coords, of: (angle: number) => number, options: PolarOptions = {}): Path {
+  const at = (angle: number) => {
+    const radius = of(angle);
+    return vec2(radius * Math.cos(angle), radius * Math.sin(angle));
+  };
+  return parametric(coords, at, { ...options, over: options.over ?? WHOLE_TURN });
 }

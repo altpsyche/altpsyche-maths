@@ -812,6 +812,13 @@ functions, which is what lets the same tree survive being written to a file and 
   - `over` — the run of the parameter the curve is drawn over, nothing to one where it is left out.
   - `closed` — whether the last place joins back to the first, which is also what makes the direction
     at the seam read across the join rather than one-sidedly.
+- `polar(coords, of, options)` — the curve of a radius at each angle, about the place both axes read
+  as nothing, which is `parametric` under the map from polar coordinates to a place. A negative radius
+  places the point opposite the angle rather than being refused, which is what draws the second half of
+  a rose with an odd number of petals.
+- `PolarOptions` — what a polar curve takes, which is what a parametric curve takes. The one difference
+  is the default of `over`: the natural run of an angle is a whole turn where the natural run of a
+  parameter is nothing to one.
 - `areaUnder(coords, curve, options)` — the region between a plotted curve and a level line, closed,
   one subpath per subpath of the curve. The top is the path the caller drew rather than a second plot
   of the function behind it.

@@ -1211,10 +1211,13 @@ cylinder, and the count of what is dropped is a measurement rather than a silenc
   stretch the run of the parameter cuts at its own end is joined. A closed curve's last piece returns to
   its first place to 0, and the direction across the seam turns by 0 radians. A cut end sits inside the
   edge by at most 3.3785e-9 graph units.
-- [ ] **2. `polar` is a path.** `figure/parametric.ts` gains the curve from a radius at each angle,
-  built on step 1 rather than sampling of its own. **The measurement**: the drawn radius of `r = 1` over
-  a whole turn at resolution 96, in parts in ten thousand; the place of a cardioid's cusp against the
-  origin; and the subpath count of a rose with five petals.
+- [x] **2. `polar` is a path.** `figure/parametric.ts` gains the curve from a radius at each angle,
+  built on step 1 rather than sampling of its own. **The measurement**: `r = 1` over a whole turn at
+  resolutions 16, 48 and 96 reads 5.50261, 0.06871 and 0.00430 parts in ten thousand of the true radius,
+  which is the parametrisation of the same circle to 0 figure units, piece for piece. A cardioid's cusp
+  sits on the origin to 0 and the drawn curve comes to 0 of it. A rose with five petals over half a turn
+  is one closed run of 200 pieces, and the same rose in a graph reaching 0.8 is five runs, one per
+  petal.
 - [ ] **3. `implicit` is a path.** `figure/implicit.ts` holds marching squares with bisected crossings,
   centre disambiguation and centripetal Catmull-Rom joining. **The measurement**: the drawn radius of
   `x² + y² = 1` on grids of 16, 32 and 64 cells, in parts in ten thousand; the subpath count of

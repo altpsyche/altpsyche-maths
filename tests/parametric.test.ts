@@ -3,6 +3,7 @@ import {
   coordsOf,
   interval,
   parametric,
+  polar,
   pointCount,
   pointOf,
   pointOn,
@@ -152,5 +153,54 @@ describe('a parametric curve leaving the graph', () => {
     expect(path).toHaveLength(1);
     expect(path[0].closed).toBe(false);
     expect(path[0].curves).toHaveLength(2);
+  });
+});
+
+describe('a polar curve', () => {
+  it('is the same geometry as the parametrisation it stands for', () => {
+    const ring = polar(square, () => 1, { resolution: 96, closed: true });
+    const same = parametric(square, circleAt, { over: TURN, resolution: 96, closed: true });
+    expect(ring[0].curves).toHaveLength(same[0].curves.length);
+    expect(ring[0].start).toEqual(same[0].start);
+    for (let at = 0; at < ring[0].curves.length; at++) expect(ring[0].curves[at]).toEqual(same[0].curves[at]);
+  });
+
+  it('draws a whole turn where the run of the angle is left out', () => {
+    const ring = polar(square, () => 1, { resolution: 96, closed: true });
+    expect(ring).toHaveLength(1);
+    expect(ring[0].closed).toBe(true);
+    expect(worstRadius(ring, square)).toBeLessThan(5e-7);
+  });
+
+  it('puts the cusp of a cardioid on the place both axes read as nothing', () => {
+    const heart = polar(square, (angle) => 1 - Math.cos(angle), { resolution: 96, closed: true });
+    const origin = pointOf(square, 0, 0);
+    expect(heart).toHaveLength(1);
+    expect(heart[0].start.x).toBeCloseTo(origin.x, 15);
+    expect(heart[0].start.y).toBeCloseTo(origin.y, 15);
+  });
+
+  it('draws the five petals of a rose as one closed run', () => {
+    // An odd count of petals is drawn over half a turn, since the radius is
+    // negative over the other half and the petals it draws there lie over these.
+    const rose = polar(square, (angle) => Math.cos(5 * angle), {
+      over: interval(0, Math.PI),
+      resolution: 200,
+      closed: true,
+    });
+    expect(rose).toHaveLength(1);
+    expect(rose[0].closed).toBe(true);
+    expect(rose[0].curves).toHaveLength(200);
+  });
+
+  it('cuts a rose whose petals reach past the graph into one run per petal', () => {
+    const inside = coordsOf(scaleOf(interval(-0.8, 0.8), interval(-2, 2)), scaleOf(interval(-0.8, 0.8), interval(-2, 2)));
+    const rose = polar(inside, (angle) => Math.cos(5 * angle), {
+      over: interval(0, Math.PI),
+      resolution: 200,
+      closed: true,
+    });
+    expect(rose).toHaveLength(5);
+    for (const petal of rose) expect(petal.closed).toBe(false);
   });
 });
