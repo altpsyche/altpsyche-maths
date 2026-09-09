@@ -49,6 +49,8 @@ export type { Extent, ExtentChoice, Fit, ViewAnimation, ViewChange } from './fig
 export { followView, frameView, moveView } from './figure/view.js';
 export type { FollowOptions, FrameOptions } from './figure/view.js';
 export { resolveExtentChoice, resolveInset, resolveViewChange } from './figure/view-record.js';
+export { resolveEntry, resolveTimeline } from './figure/timeline-record.js';
+export type { EntryRecord, SpanRecord, TimelineRecord } from './figure/timeline-record.js';
 export type {
   ByAspectRecord,
   ExtentRecord,

@@ -860,17 +860,19 @@ release away and has a document of its own.
   figure of a later version refused; a malformed figure refused with the field named; the bytes of
   each demo as data.
 
-- [ ] **6. The timeline as data, and it is the compiled spans rather than the calls that built
-  them.** A span is an entry, a `from`, a `to` and a `CurveName`, which is what `figure/timeline.ts`
-  already holds and what `marksAt` already reads. **The `after` offset and a stagger's `gap` are not
-  in the format**, because a call folds each into the next `from` when it is made and neither can be
-  read back out of the numbers: two spans starting together say nothing about which call grouped them.
-  Writing the calls instead would put the compiler in every renderer, which is the semantics Lottie
-  left loose and the drift this format exists to avoid, and an authoring API keeps the calls whatever
-  the file holds. What is lost is the author's intent behind an overlap, and the overlap itself is in
-  the numbers. **Measures:** the flat demo's thirty spans, twenty-three of them its entrance, read
-  from spans rather than built, giving the same marks at the same times; the six negative offsets of
-  its eight entrance calls showing as spans that start before the one before them ends.
+- [x] **6. The timeline as data, and it is the compiled spans rather than the calls that built
+  them.** A `SpanRecord` is an entry, a `from`, a `to` and a `CurveName`, and a `TimelineRecord` is
+  those spans and how long the figure runs. `Timeline.of` builds one from spans already compiled, and
+  the duration is given rather than read off them, since a figure that waits at the end runs past the
+  end of its last span. The `after` offset and a stagger's gap are not in the format, because a call
+  folds each into the next `from` when it is made and neither can be read back out of the numbers.
+  **Measured:** the boolean demo's nine spans read from numbers rather than built, giving the same
+  marks at each of its seven named times and the same duration, which is past the end of its last
+  span; the curve of each of those spans carried by name, `easeOut` for the three outlines and
+  `smoothstep` for the six that follow; the flat demo's thirty spans, twenty-three of them its
+  entrance, and six of them starting before the one before them ends, which is what a negative offset
+  looks like once it is a number; a view entry whose span has no width applied in full; the door from
+  360 names to 365 and the suite from 951 to 957.
 
 - [x] **7. The extent as data.** An `ExtentRecord` is a fixed extent, a `byAspect` choice or a
   `matchingAspect` one, and `resolveExtentChoice` builds the function a figure is handed, which

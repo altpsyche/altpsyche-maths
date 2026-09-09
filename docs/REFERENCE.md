@@ -644,6 +644,18 @@ functions, which is what lets the same tree survive being written to a file and 
 - `writeTemplate(content, bindings)` — the template with its holes filled, each hole written to its
   own precision. A hole naming an index the list has no entry for is refused, and so is a hole whose
   expression is a place or a true or false.
+- `TimelineRecord` — the timeline written as data: its `spans` and how long it runs. The duration is
+  past the end of the last span where a figure waits at the end, and is the last span's own end unless
+  named.
+- `SpanRecord` — one span: the `entry` it plays, its `from` and `to` in seconds, and the `curve` it is
+  paced by, by name. The `after` offset a call takes and a stagger's gap are not here, since each is
+  folded into the next `from` when the call is made and neither can be read back out of the numbers.
+- `EntryRecord` — what one span changes: an `AnimationRecord` or a `ViewChangeRecord`, told apart by
+  the kind.
+- `resolveEntry(record, bindings)` — the entry a record describes, which is an animation or a view
+  move.
+- `resolveTimeline(record, bindings)` — the timeline a record describes, as the spans it is played
+  from.
 - `ExtentRecord` — what a figure declares its extent as: a fixed `Extent`, a `ByAspectRecord` or a
   `MatchingAspectRecord`. A fixed extent carries no kind, the way a fixed place in an expression
   carries none.
@@ -1042,6 +1054,9 @@ a group of that name.
 - `Timeline` — the animations a figure plays and when. Every method hands back a new timeline rather
   than changing this one.
   - `Timeline.empty()` — a timeline with nothing in it.
+  - `Timeline.of(spans, duration)` — a timeline from spans already compiled, which is what a figure
+    read from a file carries. The duration is given rather than read off the spans, since a figure
+    that waits at the end runs past the end of its last one.
   - `play(entry, seconds, options)` — one change over a span of that length.
   - `together(entries, seconds, options)` — several changes over one span, which is how two
     things move at once.

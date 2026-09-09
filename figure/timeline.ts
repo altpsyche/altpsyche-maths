@@ -59,6 +59,17 @@ export class Timeline {
     return new Timeline([], 0);
   }
 
+  /**
+   * A timeline from spans already compiled, which is what a figure read from a
+   * file carries.
+   *
+   * The duration is given rather than read off the spans, since a figure that
+   * waits at the end runs past the end of its last one.
+   */
+  static of(spans: readonly Span[], duration?: number): Timeline {
+    return new Timeline(spans, duration ?? spans.reduce((last, span) => Math.max(last, span.to), 0));
+  }
+
   play(entry: Entry, seconds: number, options: PlayOptions = {}): Timeline {
     const from = this.duration + (options.after ?? 0);
     const to = from + seconds;
