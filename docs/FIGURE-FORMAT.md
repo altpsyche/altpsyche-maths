@@ -1470,9 +1470,16 @@ release away and has a document of its own.
     the list of eleven predates step 12. The suite goes from 1,046 tests over 66 files to 1,051 over
     67.
 
-  - [ ] **10.6b The path vocabulary.** The thirteen forms of path in fifteen kinds, each with its
-    fields, and the two point producers. **Measures:** each `kind` string of `PathRecord` and its
-    fields against the entry; the two producers; the lines added; the suite's count.
+  - [x] **10.6b The path vocabulary.** The thirteen forms of path in fifteen kinds, each with its
+    fields, and the two point producers. **Measured:** the thirteen forms are a table of kind, fields
+    and what each is, with the fifteenth kind being the boolean form's three names, and the two
+    producers get a section each: `SectionRecord` with its plane and its three options, and
+    `StreamlineRecord` with its five. The document goes from 277 lines to 354. The gate reads the
+    union member by member rather than by its kind strings alone, so a form's fields are held to the
+    section that carries them, and dropping `curl` from `bracePath` fails it with `bracePath: curl`.
+    Keying the sections on the whole heading rather than its first word is what makes that scoping
+    hold, since five headings here begin with the same word. The suite goes from 1,051 tests over 67
+    files to 1,053.
 
   - [ ] **10.6c The node vocabulary.** The twenty-three node kinds, each with its fields, and the two
     item producers a `scene3` holds beside its nodes. It is the largest section and the one a renderer

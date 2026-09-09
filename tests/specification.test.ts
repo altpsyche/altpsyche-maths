@@ -22,10 +22,12 @@ function sections(text: string): Map<string, string> {
   let holding: string | undefined;
   let body: string[] = [];
   for (const line of text.split('\n')) {
-    const heading = /^#{2,4} `?([A-Za-z0-9_$]+)`?/.exec(line);
+    const heading = /^#{2,4} (.+)$/.exec(line);
     if (heading) {
       if (holding !== undefined) found.set(holding, body.join('\n'));
-      holding = heading[1];
+      // Keyed on the whole heading rather than its first word, since several of
+      // them begin with the same one.
+      holding = heading[1].replaceAll('`', '').trim();
       body = [];
       continue;
     }
@@ -100,6 +102,52 @@ describe('the specification and the value types', () => {
       const inside = quoted(written.get(section) ?? '');
       const missing = fieldsOf(file, name).filter((field) => !inside.has(field));
       return missing.length === 0 ? [] : [`${name} in ${section}: ${missing.join(', ')}`];
+    });
+    expect(absent).toEqual([]);
+  });
+});
+
+/** Each form of a union whose members carry a `kind`, as the kind and the fields
+ * declared beside it. A member naming several kinds at once is one form. */
+function formsOf(file: string, name: string): { kinds: string[]; fields: string[] }[] {
+  const text = readFileSync(path.join(root, file), 'utf8');
+  const from = text.indexOf(`export type ${name} =`);
+  if (from < 0) throw new Error(`${name} is not declared in ${file}`);
+  const union = text.slice(from, text.indexOf('\n\n', from));
+  return union
+    .split(/\n\s*\|/)
+    .slice(1)
+    .map((member) => ({
+      kinds: [...member.matchAll(/'([a-zA-Z0-9]+)'/g)].map((match) => match[1]),
+      fields: [...member.matchAll(/readonly ([A-Za-z_$][A-Za-z0-9_$]*)\s*\??\s*:/g)]
+        .map((match) => match[1])
+        .filter((field) => field !== 'kind'),
+    }));
+}
+
+describe('the specification and the paths', () => {
+  it('names every form of path with its fields', () => {
+    const forms = formsOf('figure/path-record.ts', 'PathRecord');
+    expect(forms).toHaveLength(13);
+    const inside = quoted(written.get('The paths') ?? '');
+    const absent = forms.flatMap(({ kinds, fields }) => {
+      const missing = [...kinds, ...fields].filter((each) => !inside.has(each));
+      return missing.length === 0 ? [] : [`${kinds.join(' | ')}: ${missing.join(', ')}`];
+    });
+    expect(absent).toEqual([]);
+  });
+
+  it('names both point producers and every field each carries', () => {
+    const absent = [
+      { name: 'SectionRecord', file: 'figure/node-record.ts', section: 'The section of a surface' },
+      { name: 'PlaneRecord', file: 'figure/node-record.ts', section: 'The section of a surface' },
+      { name: 'SectionOptions', file: 'figure/section.ts', section: 'The section of a surface' },
+      { name: 'StreamlineRecord', file: 'figure/node-record.ts', section: 'The streamline of a field' },
+      { name: 'StreamlineOptions', file: 'figure/streamline.ts', section: 'The streamline of a field' },
+    ].flatMap(({ name, file, section }) => {
+      const inside = quoted(written.get(section) ?? '');
+      const missing = fieldsOf(file, name).filter((field) => !inside.has(field));
+      return missing.length === 0 ? [] : [`${name}: ${missing.join(', ')}`];
     });
     expect(absent).toEqual([]);
   });

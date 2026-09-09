@@ -248,15 +248,92 @@ the set is refused with the name in the sentence.
   `slopeOf(coords, path, x)` and `project(camera, x, y, z)`. `pointAlong` given a path with no points
   in it is refused rather than read, and `project` gives the place whether or not the eye can see it.
 
+## The paths
+
+**A path is a list of subpaths, and every subpath is a run of cubic Bézier pieces.** That is what a
+renderer draws, and a figure names one of thirteen forms to say which path it means. Every form
+carries a `kind` and the fields below. A form outside the set is refused with the kind in the
+sentence.
+
+**A figure may name a producer or write the cubics out, and which of the two is a choice per figure
+rather than a rule.** A producer read at authoring time is one frame of a shape a track drives, so a
+path a track moves is named and a path fixed for the life of the figure is either.
+
+**Every field below is an expression unless it says otherwise**, so a track drives any of them.
+
+| kind | fields | what it is |
+| --- | --- | --- |
+| `line` | `from`, `to` | one straight piece between two places |
+| `polyline` | `points` | an open run through the places, in order |
+| `polygon` | `points` | the same run closed back to its first place |
+| `rect` | `corner`, `width`, `height` | a rectangle from the corner at the low end of both axes |
+| `circle` | `centre`, `radius` | a closed circle as four cubic quarters |
+| `arc` | `centre`, `radius`, `from`, `to` | part of a circle, the angles in radians anticlockwise |
+| `plot` | `coords`, `of`, `resolution`, `over` | a curve sampled in the graph domain |
+| `areaUnder` | `coords`, `curve`, `baseline` | the region between a curve and a level |
+| `tangentAt` | `coords`, `curve`, `x`, `reach` | the straight line touching a curve at one graph x |
+| `bracePath` | `from`, `to`, `depth`, `curl` | a curly brace spanning two places |
+| `data` | `d` | the path data of an SVG `d` attribute, as a string |
+| `cubics` | `subpaths` | the path written out, which is the geometry itself |
+| `union` | `first`, `second`, `tolerance` | one of the three boolean operations, by its kind |
+
+**A cubic quarter of a circle is not a quarter circle exactly.** The control distance is
+(4/3)·tan(θ/4), which leaves the drawn edge between 2.6 and 2.8 parts in ten thousand of the true
+radius, and a renderer holding a circle tighter than that is holding it to something the form does
+not say.
+
+**`plot` reads its curve from the bound variable `x`.** The variable is named by this rule rather
+than by a field, which keeps the form closed: a figure naming its own variable would make a renderer
+look a name up rather than bind one. `resolution` is how many samples the curve is taken at and
+`over` is the `Interval` of graph x it is taken across, each a plain number and a pair of expressions
+respectively.
+
+**`areaUnder` and `tangentAt` take the path rather than the function.** Both carry a `curve` as a
+path record of its own, so the region and the tangent are read off the same geometry the curve draws
+rather than off a second sampling of the function behind it. `baseline` is the graph y the region
+closes at, nothing unless named, and `reach` is how far the tangent runs either side in graph units.
+
+**A boolean operation's `kind` is `union`, `intersection` or `difference`**, and `first` and `second`
+are path records. `tolerance` is a plain number rather than an expression, since it says how close
+two places come before they count as one and nothing a figure animates changes that. The operations
+here agree to 1.776e-15 of a figure unit.
+
+**A path in a file may be `data` or `cubics` and the two are not the same claim.** `data` is a string
+a renderer parses, including the elliptical arc commands, and `cubics` is the geometry with nothing
+left to read.
+
+## The point producers
+
+**A point producer hands back places rather than a path, and a node draws them.** There are two, and
+each is a field of the node that draws it rather than a kind of its own.
+
+### The section of a surface
+
+`SectionRecord` is the curve where a plane cuts a surface. `of` is the surface as a place in space
+read from the bound variables `u` and `v`, `plane` is a `point` and a `normal` as places in space,
+and `options` carries `over` as the runs of the two parameters, `resolution` as one number or one per
+parameter, and `tolerance` as how close two ends come before they are read as the same place.
+
+**The runs come back as several rather than one**, since a plane cutting a saddle meets it in two
+branches, and a renderer draws each run as its own subpath.
+
+### The streamline of a field
+
+`StreamlineRecord` is a run walked through a flat field from a seed. `of` is the field as a vector
+read from the bound variable `at`, `from` is the seed, and `options` carries a required `step` in
+graph units, `steps` as how many steps the run takes at most in each direction, `within` as the
+region the run is held inside, `direction` as `forward`, `backward` or `both`, and `least` as the
+magnitude below which the field is taken to have vanished.
+
+**`step` and `steps` are plain numbers rather than expressions.** A step that followed a track would
+hand back a different number of points at every time, and a morph pairs two runs up by their points.
+
+**`both` puts the backward half first**, so the points read from one end of the curve to the other.
+
 ## What has to be specified
 
 - **Twenty-three node kinds**, each with its parameters, and the two item producers a `scene3`
   holds beside its nodes.
-- **Thirteen forms of path in fifteen kinds**: the ten producers a figure names with their
-  parameters, a path written out as cubics, the path data of an SVG `d` attribute, and one form
-  carrying the three boolean operations. A figure names a producer and stores cubics both, since a
-  producer read at authoring time is one frame of a shape a track drives. And **two point
-  producers**, which hand back the points a path is then drawn through.
 - **Fifteen animation kinds**, each with its parameters.
 - **The timeline**, which is the compiled spans and how long the figure runs. A span is an entry, a
   `from`, a `to` and a curve by name. The `after` offset a call takes and a stagger's gap are not in
