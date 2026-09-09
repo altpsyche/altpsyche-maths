@@ -1290,6 +1290,24 @@ shaded correctly, and their count is a measurement rather than a silence.
   one turn on a track, with a helix drawn on the cylinder and a torus knot on the torus. **The
   measurement**: the cell count of each solid, the marks at named times, and the still and the strip
   regenerating byte for byte.
+
+  **A session started this step and stopped it on a gap the plan did not foresee**, and nothing of it
+  landed. A curve a producer makes cannot be an entry of a scene. `SceneItemRecord` takes a
+  `SpaceItemRecord`, which is a `points` list written out beside the node drawn for it, or one of the
+  six producers, and `curve3` is a node rather than a producer. So a helix handed to a cylinder's own
+  scene is refused by name: `scene.children.2.children.0.items.1 is an entry of a scene in space and
+  has no kind called the text "curve3"`. **The precedent in this tree is that a curve on a surface is
+  drawn as a node over the scene rather than sorted into it**: `demos/surface.ts` draws the curve where
+  the plane cuts the saddle as a `section3` beside the scene, so it is painted whole in front. That
+  reads correctly for a curve lying on the near face of a saddle and does not for a helix, whose back
+  half would show through the cylinder.
+
+  **Three answers, and which one is taken is Siva's.** Draw the two curves as nodes over their panels
+  and accept the back half showing through, which is what the tree already does elsewhere and costs
+  nothing. Add a producer that cuts a curve into one sorted piece per segment, which is a seventh
+  producer, a format minor and a step of its own. Or leave the two curves out and draw the four solids
+  alone, which loses the picture that makes the demo mathematics rather than a catalogue. **The second
+  is what 3.0.0 on the ladder is about**, so the first is the answer that does not reach into a major.
 - [ ] **10. The reference, the guide, the reasoning, and 2.2.0 cut.** `docs/REFERENCE.md` names every new
   door name, `docs/GUIDE.md` gains the section that draws a curve no function of x describes,
   `docs/FIGURE-FORMAT.md` carries why an implicit curve's count is not fixed, and the version is bumped
