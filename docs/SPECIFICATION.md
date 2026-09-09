@@ -330,10 +330,146 @@ hand back a different number of points at every time, and a morph pairs two runs
 
 **`both` puts the backward half first**, so the points read from one end of the curve to the other.
 
+## The nodes
+
+**A node is a named record with a `kind`, and every one of them carries a `name`.** Three kinds are
+the tree itself and the other twenty resolve into a tree of those three, so a renderer implementing
+`group`, `shape` and `text` and resolving the rest draws every figure there is.
+
+**A name is what an animation and an inset reach a node by**, and a mark's id is the names of the
+nodes above it joined by `/`. So a name is unique among its siblings and stable frame to frame.
+
+### The tree's own three
+
+| kind | fields |
+| --- | --- |
+| `group` | `children` as nodes, `transform` as a `Mat3`, `style` |
+| `shape` | `path` as a path record, `style` |
+| `text` | `at`, `content`, `size` as a plain number, `options` |
+
+**A group's `style` is inherited by everything under it** and a child naming its own wins over it. A
+group's `transform` applies outside its children's, which is the order the column-major product
+gives.
+
+**A text node's `content` is a string or a template.** A template carries `template`, the text with
+numbered holes where `{0}` is the first and `{{` writes one brace, and `holes`, each a `value` as an
+expression and a `precision` the number is rounded and padded to, so a hole a track drives keeps its
+width as the number moves.
+
+**A text node's `options` is a `Style` with `align`, `baseline` and `leading` beside it.** Leading is
+how far apart two baselines sit against the size, and 1.2 is what a line of type is set at where
+nothing asks for more air.
+
+### The flat builders
+
+| kind | fields beyond the name |
+| --- | --- |
+| `dot` | `at`, `radius`, `fill` |
+| `arrow` | `from`, `to`, `options` |
+| `brace` | `from`, `to`, `content`, `options` |
+| `callout` | `at`, `to`, `content`, `options` |
+| `numberLine` | `scale`, `options` |
+| `axes` | `coords`, `options` |
+| `numberPlane` | `coords`, `options` |
+| `riemannBars` | `coords`, `of`, `options` |
+| `equationNode` | `equation`, `options` |
+| `vectorField` | `coords`, `of`, `options` |
+
+**An arrow's `options` carries a required `stroke`, and `fill`, `head` and `spread` beside it.** The
+head is how long the head is in figure units and the spread is how wide, both expressions.
+
+**A brace's `options` carries `stroke`, `fill`, `size` and `depth`, and `curl`, `padding`, `align`,
+`baseline`, `family` and `weight` beside them.** A callout's carries `stroke`, `fill` and `size`,
+with `marker` as the radius of the disc it plants, and the same four text fields.
+
+**A number line's `options` carries a required `stroke`**, and `fill`, `size`, `at`, `direction`,
+`ticks`, `tickLength`, `gap`, `tip`, `spread`, `family`, `weight`, `skipZero` and `crossedAt` beside
+it. `direction` is `across` or `up`, `at` is where the line sits on the other axis, `ticks` is the
+step between them in graph units, `crossedAt` is where the other axis crosses so a label there is
+moved clear, and `skipZero` leaves the label at the crossing off.
+
+**Axes take the same options without `at`, `direction` and `skipZero`**, since a pair of axes decides
+those for each of its two lines.
+
+**A number plane's `options` carries a required `stroke`**, with `minors` as how many minor lines
+fall between two majors, `minorOpacity` and `minorWidth` as what those are drawn with, and `ticks` as
+the major step.
+
+**`riemannBars` reads its curve from the bound variable `x`**, the way `plot` does, and its
+`options` carries `over` as the `Interval` of graph x the bars cover.
+
+**An equation node's `options` carries `at`, an expression, so a typeset rule hangs off a frame that
+moves.** The equation itself is geometry, since a renderer in another language has no typesetter.
+
+**A vector field's `of` is the field, read from the bound variable `at`**, and its `options` carries
+`lengthOf` and `colourFor`. `lengthOf` is an expression of the bound variable `magnitude`, which
+spells a constant, a scaling and a clamped curve alike. `colourFor` is a `ColourChoice`: a colour, or
+a `bands` form carrying `first` and `then`, where each entry is an `above` threshold and the `colour`
+holding above it, read in order so the last threshold a magnitude clears decides.
+
+### The space builders
+
+**Every kind here carries a `camera` as a `Camera3Choice`**, and a place in space is a
+`Point3Record`, which is `x`, `y` and `z` as expressions.
+
+| kind | fields beyond the name |
+| --- | --- |
+| `polyline3` | `points`, `camera`, `options` |
+| `dot3` | `at`, `radius`, `fill`, `camera` |
+| `text3` | `at`, `content`, `size`, `camera`, `options` |
+| `arrow3` | `from`, `to`, `camera`, `options` |
+| `scene3` | `items`, `camera` |
+| `axes3` | `camera`, `options` |
+| `surface3` | `of`, `camera`, `options` |
+| `vectorField3` | `of`, `camera`, `options` |
+| `section3` | `curve`, `camera`, `options`, `style` |
+| `streamline3` | `runs`, `on`, `camera`, `options`, `style` |
+
+**A run of points cut by the near plane comes back as several runs**, and `options` for a run is a
+`Style` with `close` beside it. A run the near plane cut comes back open however `close` is set, since
+closing it would draw an edge that is nowhere in the world.
+
+**A dot in space keeps its `radius` in figure units and does not shrink with distance**, since a dot
+marks where something is rather than how big it is. A label in space keeps its size and stays
+upright for the same reason, and its `options` is a text node's with `offset` beside it, which is how
+far the label stands off the point it names.
+
+**`scene3` is what puts pieces in the right order.** Its `items` are entries sorted by depth and
+drawn back to front, which is the painter's algorithm. An entry written out is a `points` list and
+the `node` drawn for it; an entry that produces many carries a `kind` and is one of the two producers
+below.
+
+**Axes in space take `x`, `y` and `z` as the `Interval` each axis covers**, a required `stroke`, and
+`fill`, `size`, `ticks`, `tickLength`, `gap`, `names` and the two font fields beside them. `names` is
+what each axis is labelled, by `x`, `y` and `z`.
+
+**A surface's `of` is the surface, read from the bound variables `u` and `v`**, and its `options`
+carries `shade` and `light`. A `shade` is a `ramp`, which is a list of fills read as even steps from
+nothing to one, and a `band`, the stretch of squareness-to-the-light the ramp is spread over. `light`
+is the direction the light comes from, a place in space.
+
+**A field in space reads the same way as a flat one**, so `vectorField3` and `fieldArrows3` each
+carry `lengthOf` and `colourFor`.
+
+**`section3` draws the curve a plane cuts in a surface** and `streamline3` draws `runs` walked
+through a flat field and lifted onto the surface named by `on`. Both take their points from a
+producer above rather than from a path.
+
+### The two item producers
+
+**These are entries of a `scene3` rather than nodes**, since what each hands back is many pieces the
+scene then sorts by depth.
+
+| kind | fields beyond the name | what it is |
+| --- | --- | --- |
+| `surfaceCells` | `of`, `options` | the surface as a grid of four-cornered cells, each shaded |
+| `fieldArrows3` | `of`, `options` | an arrow at each sample of a field in space |
+
+**Neither carries a camera.** The scene holding them has one, and a producer taking a second could
+disagree with it.
+
 ## What has to be specified
 
-- **Twenty-three node kinds**, each with its parameters, and the two item producers a `scene3`
-  holds beside its nodes.
 - **Fifteen animation kinds**, each with its parameters.
 - **The timeline**, which is the compiled spans and how long the figure runs. A span is an entry, a
   `from`, a `to` and a curve by name. The `after` offset a call takes and a stagger's gap are not in

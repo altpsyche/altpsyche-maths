@@ -153,6 +153,75 @@ describe('the specification and the paths', () => {
   });
 });
 
+/** Every member of a union of named interfaces, as the interface names. */
+function membersOf(file: string, name: string): string[] {
+  const text = readFileSync(path.join(root, file), 'utf8');
+  const from = text.indexOf(`export type ${name} =`);
+  if (from < 0) throw new Error(`${name} is not declared in ${file}`);
+  return text
+    .slice(from, text.indexOf(';', from))
+    .split('|')
+    .slice(1)
+    .map((member) => member.trim())
+    .filter((member) => /^[A-Za-z0-9_]+$/.test(member));
+}
+
+/** What a node section is allowed to name a field in: the tables and prose of
+ * the nodes, which is three sections and the producers' own. */
+const nodeProse = [
+  'The nodes',
+  'The tree\'s own three',
+  'The flat builders',
+  'The space builders',
+  'The two item producers',
+]
+  .map((heading) => written.get(heading) ?? '')
+  .join('\n');
+
+describe('the specification and the nodes', () => {
+  it('names every node kind and its fields', () => {
+    const kinds = membersOf('figure/node-record.ts', 'NodeRecord');
+    expect(kinds).toHaveLength(23);
+    const inside = quoted(nodeProse);
+    const absent = kinds.flatMap((name) => {
+      const missing = fieldsOf('figure/node-record.ts', name).filter((field) => !inside.has(field));
+      return missing.length === 0 ? [] : [`${name}: ${missing.join(', ')}`];
+    });
+    expect(absent).toEqual([]);
+  });
+
+  it('names every field of every options record a node carries', () => {
+    const inside = quoted(nodeProse);
+    const absent = [
+      { name: 'ArrowRecordOptions', file: 'figure/node-record.ts' },
+      { name: 'BraceRecordOptions', file: 'figure/node-record.ts' },
+      { name: 'CalloutRecordOptions', file: 'figure/node-record.ts' },
+      { name: 'BarsRecordOptions', file: 'figure/node-record.ts' },
+      { name: 'EquationRecordOptions', file: 'figure/node-record.ts' },
+      { name: 'FieldRecordOptions', file: 'figure/node-record.ts' },
+      { name: 'Field3RecordOptions', file: 'figure/node-record.ts' },
+      { name: 'Surface3RecordOptions', file: 'figure/node-record.ts' },
+      { name: 'ShadeRecord', file: 'figure/node-record.ts' },
+      { name: 'SpaceItemRecord', file: 'figure/node-record.ts' },
+      { name: 'TextTemplate', file: 'figure/node-record.ts' },
+      { name: 'TextHole', file: 'figure/node-record.ts' },
+      { name: 'Point3Record', file: 'figure/camera-record.ts' },
+      { name: 'NumberLineOptions', file: 'figure/axis.ts' },
+      { name: 'NumberPlaneOptions', file: 'figure/axis.ts' },
+      { name: 'Axes3Options', file: 'figure/axis3.ts' },
+    ].flatMap(({ name, file }) => {
+      const missing = fieldsOf(file, name).filter((field) => !inside.has(field));
+      return missing.length === 0 ? [] : [`${name}: ${missing.join(', ')}`];
+    });
+    expect(absent).toEqual([]);
+  });
+
+  it('names both item producers, which are entries of a scene rather than nodes', () => {
+    const inside = quoted(written.get('The two item producers') ?? '');
+    for (const name of ['surfaceCells', 'fieldArrows3']) expect(inside.has(name), name).toBe(true);
+  });
+});
+
 describe('the specification and the expression form', () => {
   it('names every kind an expression may carry', () => {
     const source = readFileSync(path.join(root, 'figure/expression.ts'), 'utf8');

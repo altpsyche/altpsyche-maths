@@ -1481,10 +1481,16 @@ release away and has a document of its own.
     hold, since five headings here begin with the same word. The suite goes from 1,051 tests over 67
     files to 1,053.
 
-  - [ ] **10.6c The node vocabulary.** The twenty-three node kinds, each with its fields, and the two
+  - [x] **10.6c The node vocabulary.** The twenty-three node kinds, each with its fields, and the two
     item producers a `scene3` holds beside its nodes. It is the largest section and the one a renderer
-    spends its time in. **Measures:** each `kind` string of `NodeRecord` and its fields against the
-    entry; the two item producers; the lines added; the suite's count.
+    spends its time in. **Measured:** four tables and the prose between them, taking the document from
+    354 lines to 490: the tree's own three, the ten flat builders, the ten in space, and the two
+    producers. Sixteen options records are held to that prose beside the twenty-three kinds, which is
+    where a field like `crossedAt` or `minorOpacity` lives, and dropping `minorOpacity` fails the gate
+    with `NumberPlaneOptions: minorOpacity`. The bound variables are stated where the kind that binds
+    them is: `x` for a plotted curve and for `riemannBars`, `at` for a flat field, `magnitude` for an
+    arrow's length, and `u` and `v` for a surface. The suite goes from 1,053 tests over 67 files to
+    1,056.
 
   - [ ] **10.6d The animation vocabulary, the timeline, the extent and the insets.** The fifteen
     animation kinds with their fields, `TimelineRecord` and `SpanRecord`, the extent with the three
