@@ -269,11 +269,11 @@ because every one would have been written against an API the format is going to 
 went on in front of the format, because each changes something the format freezes a written form for,
 and freezing first costs a major of the format's own version to change it afterwards. Eight went on
 behind, because each adds a kind or a painter, which is a format minor an old figure survives, and
-three more are written past those because a session should not rediscover them.
+three more are written past those because a session should not rediscover them. Seven of those eight
+are left, since 2.1.0 is cut.
 
 | version | what lands | what it changes | steps | cut against | depends on | plan |
 | --- | --- | --- | --- | --- | --- | --- |
-| 2.1.0 | a figure's marks may be read against the frame they are drawn in | adds an expression kind and a parameter at the seam | seven, and every design call is answered | the consumer's two figures written as files and read back at every aspect each is drawn at, and a demo of its own | nothing outside this package | planned |
 | 2.2.0 | the curves and surfaces a figure can name: parametric, polar, implicit, and the solids | adds kinds | to plan | a phase portrait, which the flat demo's field cannot express | nothing outside this package | to plan |
 | 2.3.0 | matrices and tables, and a matrix applied to a grid | adds kinds | to plan | a grid under a linear map, which nothing here can draw | nothing outside this package | to plan |
 | 2.4.0 | the indications that run along a path, and text written on rather than faded in | adds kinds, and outlines for plain text | to plan | the flat demo's reading, written on | a source of glyph outlines for plain text | to plan |
@@ -418,10 +418,17 @@ README that plays a video on load is a README nobody can read.
 
 ## Now
 
+**2.1.0 is cut and unpublished, and its eight done-criteria are verified line by line in the cut's
+own commit.** A figure's marks may now be read against the frame they are drawn in. `frame` is the
+twelfth expression kind, answering the `width`, `height`, `aspect` and `centre` of the extent the
+figure declares resolved at the aspect being drawn, `marksAt` takes that aspect, and a scene is
+handed the frame it draws in. The consumer's `one-pixel` is a record here placing its plate at -20.2,
+-12.8668 and -8.2 at aspects 3, 1.7778 and 1, which are the numbers their module gives.
+
 **2.0.0 is published, and `npm view @altpsyche/maths version` answers it.** The nine done-criteria are
 verified line by line in the cut's own commit. What a consumer gets is the figure format: a figure is
-a JSON document, [`SPECIFICATION.md`](SPECIFICATION.md) states the whole of it in 605 lines for a
-renderer written in another language, and the four committed figure files are its fixtures.
+a JSON document, [`SPECIFICATION.md`](SPECIFICATION.md) states the whole of it in 613 lines for a
+renderer written in another language, and the five committed figure files are its fixtures.
 
 **The consumer crossed on 2026-09-09 and the crossing is landed there**, in six commits on its
 `maths-package` branch: the dependency and the colour form in one, then the two silent defects step
@@ -437,17 +444,18 @@ painted time, which their fixture zooming from 200 by 100 units to 40 by 20 show
 recorded frames where there was one. And two figures on one page wrote the same `figure-2f-plate` id,
 so the second figure's wash resolved to the first figure's element.
 
-**What their session found that this package has to answer is 2.1.0 below.** A figure whose marks are
-placed against the frame cannot be a document, so the format's claim does not yet reach the only
-consumer there is.
+**What their session found is answered by 2.1.0.** A figure whose marks are placed against the frame
+is a document now, and `one-pixel` is written as one in this tree. `circle-distance` is the half that
+is theirs: its glyph scale moves with the aspect as well as its places, and the scale reaches the
+typesetter rather than the kind.
 
 **How much of this package that consumer reaches, which they read off the door on 2026-09-09: 50
 runtime names of 180.** The door is 180 values and 195 types. Every name the format is made of is
 among the unreached: `readFigure`, `writeFigure`, `checkFigure`, `resolveFigure` and `evaluate` are
 called nowhere there, because no figure of theirs is a file. **So the crossing being complete and the
-format being adopted are different questions**, and 2.1.0 is what stands between the two. Of the
-colour readers the crossing reached `colourFrom`, `colourOf` and `colourText`, leaving `hexOf` and
-`lerpColour`.
+format being adopted are different questions**, and what stands between the two is a release of 2.1.0
+and their two figures written as files against it. Of the colour readers the crossing reached
+`colourFrom`, `colourOf` and `colourText`, leaving `hexOf` and `lerpColour`.
 
 **1.6.0 is published, the GPU spike is done, and 2.0.0 was what ran next.** Siva's call of 2026-09-09
 put the spike in front of the format work, on the argument that a gap found in the engine costs an
@@ -1133,175 +1141,6 @@ no box test in front of it and the quadratic over piece pairs is not worth remov
 
 Each is a version above. What follows is what each one covers. None of the 2.x band carries a step
 list, because writing one is a session of its own.
-
-### 2.1.0 A figure's marks may be read against the frame they are drawn in
-
-**The consumer found this on 2026-09-09, one commit into writing its figures as files, and it is why
-that step stopped.** Both figures `altpsyche.dev` draws place every mark against the frame, and no
-figure this package can describe does that. So the site's two figures stay TypeScript modules, and
-2.0.0's claim that a figure is a document holds for every figure in this tree and for neither of
-theirs.
-
-**The reading, in their numbers.** `circle-distance` lays its glyphs inside a box of
-`extent.width * 0.84` by `extent.height * 0.46` and scales them to fit it, so the glyph scale is a
-function of the aspect and every glyph's place moves with it. Its first glyph sits at x = -114.029 on
-its own route, -67.573 at 1080p, -38.010 at square and -21.380 at a reel, a factor of 5.3333 across a
-picture 100 units tall. `one-pixel` is the same finding by another route: all four of its marks move,
-its plate starting at -20.200, -12.867 and -8.200 at aspects 3, 1.7778 and 1, and it reads its aspect
-off a shader embed's box at run time rather than declaring one.
-
-**Why no record can hold that.** `marksAt(figure, seconds)` takes one number, `scene` as a function
-takes `(seconds, values)`, and a record's scene is a static `NodeRecord`. The frame reaches nothing.
-What responds to the frame today is the extent alone, through `byAspect` and `matchingAspect`, which
-changes what a figure shows and not where its marks sit inside it. The site gets what it needs by
-calling `build(palette, aspect)` outside this package, which is the one thing a file cannot do.
-
-**Siva answered both calls on 2026-09-10, and the answer is the first row with the declared extent.**
-An expression may ask for the frame, `marksAt` takes the frame's shape as an optional argument, and
-what the new kind reads is **the extent the figure declares, resolved at the aspect being drawn** and
-never the extent a view move or a follow has changed. The two answers left standing are recorded
-below as what was weighed rather than as what is open.
-
-| answer | what it costs |
-| --- | --- |
-| **the frame becomes a binding**: `marksAt` takes an optional aspect and an expression may name the frame's `width`, `height` or `aspect`, resolved from `extentAt` at that time | one expression kind and one optional parameter at the seam. Every node field is already an expression, so scale and placement are both answered at once and no kind changes shape. The specification's own version rule keeps the format at 0, since a reader that does not carry the kind refuses the file and names it |
-| **placement in frame units**: a kind may give a place as a fraction of the frame rather than in figure units | a new field on every kind that places something, and it answers half the case: `circle-distance`'s glyph *scale* moves with the aspect and not only its places |
-| **refuse it**: a figure's geometry is in figure units, and fitting a frame is the view's business | the format's claim narrows from a figure being a document to a frame-independent figure being one, the consumer's two figures never become files, and the strongest argument for the format loses its only consumer |
-
-**Reading the declared extent is what makes the circularity impossible rather than avoided.** A view
-that follows a mark resolves its extent from the marks, so a mark reading that extent would ask for
-what is being built, and `extentAt`'s own header describes the loop. A figure that wants the moved
-extent is a second question with a picture of its own, and there is none. **What would change the
-answer** is a figure whose marks have to sit against the frame after a follow has moved it.
-
-**A kind added leaves every existing figure meaning what it meant**, and a reader that does not carry
-it refuses the file and names the kind, so the format stays at version 0 by its own rule.
-
-**The call whose written form is missing already exists**, and it is `fractionOf(extent, across, up)`.
-The consumer's `one-pixel` places all four of its marks with it and reads its aspect off a shader
-embed's box through a `ResizeObserver`, so that figure's shape is not known until the reader's browser
-has laid the page out. What a file cannot hold is not the arithmetic but the argument: the eleven
-expression kinds are `track`, `variable`, `point`, `member`, `arithmetic`, `compare`, `choice`,
-`call`, `path`, `coords` and `camera`, and the thirty-seven functions are arithmetic and geometry.
-
-**The three calls the planning session was left are answered, on 2026-09-10, and each is answered by
-what a mark is.** The optional argument at the seam is **an aspect**, one number, because a mark is in
-the figure's own units and the declared extent already gives the width and the height in those units.
-A frame's pixels reach a painter through `viewAt` and reach no mark, so a width and a height in pixels
-would be a second unit inside a figure that has one. **`marksAt` given no aspect resolves the frame
-from a declared extent that is already an extent**, since `resolveExtent` reads no aspect there, and a
-declared extent that is a function has no frame without one: a `frame` expression under such a figure
-refuses with a sentence naming what it read, the way an expression naming a track the figure does not
-carry already does. No existing caller changes, because no figure in this tree reads the frame.
-**The strips and the sheets pass it**, and `stillDrawn` is where the two shapes can differ: it
-resolves the extent at 1080 by 600 and then writes the still into a frame the resolved extent itself
-shapes, which is the same shape for a `matchingAspect` extent and need not be for a `byAspect` one.
-
-**The fourth name is `centre` and it is Siva's call of 2026-09-10.** The answer above named `width`,
-`height` and `aspect`, and `fractionOf` also reads the extent's `centre`, so a figure whose declared
-extent is off the origin could not write `fractionOf` as an expression from those three. The fourth
-name answers a place rather than a number, the way `member` reads a place, and it costs one row in the
-specification's table and nothing at the seam. **What it buys** is that the kind describes the whole of
-the declared extent, so a `byAspect` extent carrying a different centre per shape has a written form.
-Neither of the consumer's two figures needs it, since both declare `matchingAspect` and neither moves
-its centre.
-
-**The measurement, when it is taken.** Each of the consumer's figures written as a file and read back,
-its marks against the module's at every aspect that figure is drawn at, by tolerance: `one-pixel`'s
-four marks at 0, 0.50, 1.20 and 1.60, and `circle-distance`'s eleven at 3, 1.7778, 1.0 and 0.5625.
-
-**What it is cut against, which the consumer has already written down.** Their register asks for a
-published version whose expression form answers where the frame is, then each of their two figures
-written as a file and read back, its marks compared against the module's at every aspect that figure
-is drawn at, by the tolerance the specification names. `circle-distance` is drawn at four: 3 on its own
-route and 1.7778, 1.0 and 0.5625 through the export's three shapes.
-
-**A demo here has to move with it.** Nothing in this tree draws a figure whose marks answer to the
-frame, so a version that shipped only the kind would be a version nothing checks. The flat demo's
-inset is the nearest thing and it is a rectangle of the frame rather than a mark placed against one.
-
-**The steps, seven of them, and each one is a commit.**
-
-- [x] **1. The frame is a binding and the twelfth expression kind.** `Bindings` gains a `frame`
-  holding the extent the figure declares, `Expression` gains `{ kind: 'frame', name }`, and `evaluate`
-  answers `width`, `height`, `aspect` and `centre` off it and refuses with a sentence when the bindings
-  carry no frame. The specification's expression table gains the row, its count goes from eleven to
-  twelve, and the count gate in `tests/specification.test.ts` learns the word. **The measurement**: the
-  kinds the union carries, eleven before and twelve after, read by the gate out of the source and out
-  of the sentence, and the sentence a frame expression refuses with when nothing bound one. **Landed
-  2026-09-10**: the union counts twelve and the specification writes twelve, both read by the count
-  gate; `FRAME_MEASURES` holds `name` to `width`, `height`, `aspect` and `centre`; a frame expression
-  with nothing bound refuses with `an expression reads the frame's width, which is not among the
-  values it was given`; `fractionOf` written as expressions matches the call at aspects 3, 1.7778, 1
-  and 0.5625 to ten places. 1070 tests pass, up from 1066.
-- [x] **2. A file carrying the frame kind is read, or refused by name.** `figure/figure-check.ts` gains
-  the kind under `SHAPES.expression`, with its `name` held to the four measures. **The measurement**:
-  the four committed fixtures read unchanged, byte for byte, and a file naming a fifth measure refused
-  with the path of the field and the four names in the sentence. **Landed 2026-09-10**: the four
-  fixtures are unmodified in the tree and their `figure-file` gate reads them; a fifth measure refuses
-  with `scene.children.0.path.radius.name is a measure of the frame, one of width, height, aspect,
-  centre, and is the text "depth"`. 1073 tests pass, up from 1070.
-- [x] **3. The seam takes an aspect and the frame reaches the scene.** `marksAt(figure, seconds,
-  aspect?)` resolves the declared extent at that aspect and hands it to the scene, to the insets and to
-  `resolveFigure`, `Figure.scene` widens to `(seconds, values, frame?)`, and `viewAt`, `framesOf` and
-  `isLoop` pass the aspect each already holds. **The measurement**: the four demos' marks at their named
-  times against the same marks before the change, by tolerance, and one mark placed by the frame read at
-  three aspects. **Landed 2026-09-10**: `npm run demos` rewrote every committed sheet and strip and the
-  tree stayed clean, so all four demos draw the same picture byte for byte. A record placing a dot by
-  `fractionOf` written as expressions reads -143, -84.3344 and -26 at aspects 3, 1.7778 and 0.5625, and
-  the same figure asked for with no aspect refuses, since a `matchingAspect` extent has no frame without
-  one. Insets needed nothing: they copy marks that are already placed. 1073 tests before, 1075 after.
-- [x] **4. The consumer's `one-pixel` is a record here and hits their numbers.** A test writes their
-  four marks as a `FigureRecord`, with the plate, the marker, the leader and the word all placed by
-  `fractionOf` written as expressions, and reads the plate's x at aspects 3, 1.7778 and 1. **The
-  measurement**: -20.200, -12.867 and -8.200, which are the numbers their module gives, to the tolerance
-  the specification names. **Landed 2026-09-10**: `tests/one-pixel.test.ts` reads -20.2, -12.8668 and
-  -8.2 at aspects 3, 1.7778 and 1, to three decimal places, and draws the four marks
-  `figure/plate`, `figure/pixel/marker`, `figure/pixel/leader` and `figure/pixel/word` with every one
-  of them moving by more than one figure unit between aspect 3 and aspect 1. 1075 tests before, 1078
-  after.
-- [x] **5. A flat demo whose marks answer to the frame.** `demos/frame.ts` declares `matchingAspect`,
-  places its marks by the frame beside one shape in the figure's own units, and is written out as
-  `demos/frame.figure.json` with a still and a strip whose three columns are that figure at 1.7778, 1.0
-  and 0.5625. It is the exception the boolean demo and the rotation demo already are, since a mark
-  placed against the frame has no picture in a graph of a function. **The measurement**: the pinned
-  mark's place at each of the three shapes, and the place of the mark in figure units at all three,
-  which is one place. **Landed 2026-09-10**: the plate is 9.6, 5.4 and 3.0375 units across at 1.7778,
-  1.0 and 0.5625, which is nine tenths of a frame six units tall, and the disc's box is -1.05 to 1.05
-  in both members at all three. `docs/frame.svg` is 1,950 bytes and `docs/frame-strip.svg` 4,406, and
-  they read 25.46 and 14.60 pixels at their smallest glyph on the page with 9.1% and 9.3% of the frame
-  bare. 1078 tests before, 1082 after.
-- [x] **6. The solid demo's title and its equation are placed by the frame.** `demos/surface.ts` writes
-  its two `fractionOf` calls as frame expressions, so the kind is carried by a fixture whose subject is
-  something else. **The measurement**: `demos/surface.figure.json` before and after, and the demo's
-  marks at its named times, which are the marks it drew before. **Landed 2026-09-10**: the file goes
-  from 263,847 to 266,174 bytes, and `docs/surface.svg` and `docs/surface-strip.svg` regenerate to the
-  same md5 they had before, so the demo draws the marks it drew. 1082 tests, unchanged.
-- [ ] **7. The reference, the guide, the reasoning, and 2.1.0 cut.** `docs/REFERENCE.md` names the
-  widened seam and the kind, `docs/GUIDE.md` gains the section that places a mark against the frame,
-  `docs/FIGURE-FORMAT.md` carries why the frame is the declared extent rather than the moved one, and
-  the version is bumped in that commit. **The measurement**: the reference gate over the door, the
-  guide's blocks compiled, and the done-criteria below verified line by line.
-
-**Which step the demos gain from: 5 and 6.** Step 5 is the picture the version is cut against, since it
-is the only figure in this tree whose marks move when the frame changes shape. Step 6 is the solid half
-of Siva's rule, and it moves no mark on purpose: the surface's extent is fixed, so writing its title's
-place as an expression proves the path through the file without changing the picture.
-
-**Done-criteria, checkable line by line.**
-
-- `evaluate` answers a `frame` expression for `width`, `height`, `aspect` and `centre`, and refuses one
-  with no frame bound, naming the measure it was asked for.
-- The specification writes twelve expression kinds, and the count gate reads twelve out of
-  `figure/expression.ts`.
-- `checkFigure` accepts the kind and refuses a measure outside the four, naming the field's path.
-- `marksAt` takes an optional aspect, and the four committed fixtures draw at every named time the
-  marks they drew before the seam widened.
-- A record built from the consumer's `one-pixel` places its plate at -20.200, -12.867 and -8.200 at
-  aspects 3, 1.7778 and 1.
-- `demos/frame.figure.json` is committed, and its still and its strip regenerate byte for byte.
-- `demos/surface.figure.json` carries frame expressions and draws the marks it drew before.
-- `npm test`, `npm run type-check` and `npm run build` pass, and `package.json` reads 2.1.0.
 
 ### The 2.x band, which is what Manim has and this does not
 

@@ -205,6 +205,10 @@ numbers and a pointwise map of a shape.
   - `track` — a track's value at the time being drawn, by `name`.
   - `variable` — a bound value by `name`: the x of a curve, the place a field is read at, the two
     numbers of a surface.
+  - `frame` — the `width`, `height`, `aspect` or `centre` of the frame the figure is drawn in, by
+    `name`. The frame is the extent the figure declares resolved at the aspect being drawn, never the
+    extent a view move has left, so a mark placed against the frame moves when the frame changes
+    shape and a figure drawn with no frame refuses the expression with the measure named.
   - `point` — a place from its two members, `x` and `y`.
   - `member` — the `x` or the `y` of a place.
   - `arithmetic` — `+`, `-`, `*` or `/` over two numbers. Places are combined by the point calls
@@ -225,8 +229,8 @@ numbers and a pointwise map of a shape.
   number. A path and a pair of scales are values because the three calls that read geometry take them,
   and neither is arithmetic and neither is compared.
 - `Variables` — the bound values by name.
-- `Bindings` — what the names stand for: the `tracks` sampled at the time being drawn and the
-  `variables` bound for the place being evaluated.
+- `Bindings` — what the names stand for: the `tracks` sampled at the time being drawn, the
+  `variables` bound for the place being evaluated, and the `frame` the figure is drawn in.
 - `Arithmetic` — the four operators.
 - `Comparison` — the six comparisons.
 - `EXPRESSION_FUNCTIONS` — every function an expression may name, sorted, which is thirty-seven names.
@@ -1113,7 +1117,8 @@ a group of that name.
 - `Figure` — the whole picture.
   - `extent` — how much of the world it shows, fixed or a function of the surface and the clock.
   - `fit` — `contain` or `cover`.
-  - `scene` — the tree, either fixed or rebuilt from the clock and the sampled track values.
+  - `scene` — the tree, either fixed or rebuilt from the clock, the sampled track values and the
+    frame it is drawn in.
   - `tracks` — the keyed values the scene reads.
   - `timeline` — the animations it plays.
   - `duration` — overrides the timeline's own length, for a figure that should hold after its last
@@ -1153,21 +1158,29 @@ a group of that name.
   is not a JSON document, a document that is not an object, a file with no `format` and a file with
   no `figure` are each refused with what was found. What it parsed goes through `checkFigure`, so a
   field of the wrong shape is refused with its path before anything is drawn.
-- `marksAt(figure, seconds)` — the marks a figure shows at a time. A tapered stroke is turned into
-  its filled outline after the timeline has run, so an animation that trims a path trims the
-  centreline and the outline follows it.
+- `marksAt(figure, seconds, aspect)` — the marks a figure shows at a time. A tapered stroke is
+  turned into its filled outline after the timeline has run, so an animation that trims a path trims
+  the centreline and the outline follows it. The aspect is the shape of the surface the marks are
+  headed for, and it is what a scene placing a mark against the frame is answered from: the extent
+  the figure declares, resolved at that aspect. A figure whose declared extent is already an extent
+  has the same frame at every aspect and may be asked with none, and a figure whose declared extent
+  is a function has no frame without one, so a `frame` expression under it is refused with the
+  measure named.
 - `extentAt(figure, seconds, aspect)` — how much of the world a figure shows at a time, after its
   view entries. The extent a figure declares is the base those entries are folded over rather than
   the answer, so this is the call that says where the frame is. A scene placing a mark against the
-  frame cannot read it from here, since a view that follows something reads the marks.
+  frame is not answered from here. It reads the extent the figure declares, since a view that
+  follows something reads the marks and a scene reading this answer would be asking for what is
+  being built.
 - `viewAt(figure, seconds, width, height)` — the matrix a painter needs at a time, in one call. A
   figure whose view moves has to be asked for its extent at the time its marks were asked for.
   Writing that as two calls has two chances to pass different times.
 - `durationOf(figure)` — how long a figure runs, which is its own duration where it names one and
   its timeline's otherwise.
-- `isLoop(figure, tolerance)` — whether a figure declaring itself a loop actually is one. The
-  comparison is by tolerance, because the sine and cosine a figure is built from are not specified
-  to the last bit and differ between engines.
+- `isLoop(figure, tolerance, aspect)` — whether a figure declaring itself a loop actually is one.
+  The comparison is by tolerance, because the sine and cosine a figure is built from are not
+  specified to the last bit and differ between engines. The aspect is passed to both readings, so a
+  figure whose marks answer to the frame is compared against itself at one shape.
 - `sameMarks(one, two, tolerance)` — two lists holding the same marks in the same order, to a
   tolerance.
 

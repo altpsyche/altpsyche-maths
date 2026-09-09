@@ -72,6 +72,62 @@ The **frame** is the rectangle a figure is drawn into. An extent may carry a `ce
 point of the figure sitting at the middle of the frame. The extent may be a function of the
 surface's aspect ratio and of the time, which is how a view follows a moving subject.
 
+## A mark placed against the frame
+
+A **frame expression** is the width, the height, the aspect or the centre of the frame, read while
+the figure is drawn. A mark whose place is built from one moves when the frame changes shape, which
+is what a figure drawn over something else needs: a mark put at a place inside that other picture
+would need the camera it is drawn through, and nothing can read one.
+
+The frame is the extent the figure declares, resolved at the aspect being drawn. It is never the
+extent a view move has left, because a view that follows a mark reads the marks and a mark reading
+that extent would ask for what is being built.
+
+```ts
+import { marksAt, resolveFigure } from '@altpsyche/maths';
+import type { Expression, FigureRecord } from '@altpsyche/maths';
+
+/** A share of the frame as a length, which is what sizes a mark that fills part of it. */
+const shareOfWidth = (of: number): Expression => ({
+  kind: 'arithmetic',
+  operator: '*',
+  left: of,
+  right: { kind: 'frame', name: 'width' },
+});
+
+const plated: FigureRecord = {
+  extent: { kind: 'matchingAspect', height: 6 },
+  scene: {
+    kind: 'shape',
+    name: 'plate',
+    path: {
+      kind: 'rect',
+      corner: { kind: 'point', x: shareOfWidth(-0.45), y: -2.7 },
+      width: shareOfWidth(0.9),
+      height: 5.4,
+    },
+    style: { fill: ink },
+  },
+  still: 0,
+};
+
+const platedFigure = resolveFigure(plated);
+const wide = marksAt(platedFigure, 0, 16 / 9);
+const tall = marksAt(platedFigure, 0, 9 / 16);
+```
+
+The plate is 9.6 units across in `wide` and 3.0375 across in `tall`, which is nine tenths of a frame
+six units tall at each shape. A mark written in the figure's own units is the same mark in both.
+
+`marksAt` takes the aspect as its third argument, and `framesOf` and the painters' own callers pass
+the shape of the surface they are drawing on. A figure whose declared extent is already an extent
+has one frame at every aspect and may be asked for its marks with none. A figure whose declared
+extent is a function of the aspect has no frame without one, and a frame expression under it is
+refused with the measure it was asked for named.
+
+The `centre` measure answers a place rather than a number, so a figure whose declared extent sits
+off the origin builds a fraction of the frame from `centre` and `width` together.
+
 ## Painters
 
 `svgMarkup` returns one SVG document as a string. It requires no browser, so a test reads the text

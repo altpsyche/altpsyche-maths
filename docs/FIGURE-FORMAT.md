@@ -493,6 +493,31 @@ planning session rather than a thing to solve now.
 The comparison is by tolerance and never by hash, for the reason `CLAUDE.md` already gives:
 `Math.sin`, `Math.cos` and `Math.pow` are not specified to the last bit and differ between engines.
 
+## What the frame kind is read against, and why it is the declared extent
+
+**A figure whose marks are placed against the frame is what the consumer found first.** Both figures
+`altpsyche.dev` draws place every mark as a fraction of the frame, and the format as it was frozen
+could not describe either. `marksAt` took one number, a record's scene was a static tree, and the
+frame reached nothing. The site got what it needed by calling `build(palette, aspect)` outside the
+package, which is the one thing a file cannot do.
+
+**The kind reads the extent the figure declares, resolved at the aspect being drawn.** It does not
+read the extent a view move or a follow has left. A view that follows a mark resolves its extent from
+the marks, so a mark reading that extent would ask for the list that is being built, and the loop has
+no fixed point a renderer could be held to. Reading the declared extent makes the circularity
+impossible rather than merely avoided, and it costs a figure nothing it can currently express.
+
+**What would change the answer** is a figure whose marks have to sit against the frame after a follow
+has moved it. There is no such picture, and the second question would need one before it is worth a
+form.
+
+**A kind added leaves every existing figure meaning what it meant.** A reader that does not carry the
+kind refuses the file and names the kind, which is what keeps the format at version 0 by its own
+rule. The alternative weighed against it was a placement field on every kind that places something,
+and it answers half the case: a figure fitting glyphs to a box needs its scale to move with the
+aspect as well as its places, and a field naming a place cannot say that. Every node field is already
+an expression, so one kind answers both.
+
 ## The precedent
 
 **Lottie.** Vector animation as JSON, with independent renderers on the web, on two mobile platforms

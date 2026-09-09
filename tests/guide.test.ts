@@ -114,7 +114,7 @@ function compile(source: string): string {
 
 describe('the guide and the tree', () => {
   it('writes its examples in TypeScript and nothing else', () => {
-    expect(blocks).toHaveLength(27);
+    expect(blocks).toHaveLength(28);
     expect(guide.match(/```/g)).toHaveLength(blocks.length * 2);
   });
 
