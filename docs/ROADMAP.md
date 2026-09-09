@@ -1201,12 +1201,16 @@ cylinder, and the count of what is dropped is a measurement rather than a silenc
 
 **The steps.**
 
-- [ ] **1. `parametric` is a path.** `figure/parametric.ts` holds the curve from a function of one
+- [x] **1. `parametric` is a path.** `figure/parametric.ts` holds the curve from a function of one
   number to a place on the graph, cut where it leaves either axis by the bisection `plot` uses, closed
-  where the caller says the curve closes. **The measurement**: the drawn radius of a unit circle
-  written as a parametric at resolutions 16, 48 and 96, in parts in ten thousand of the true radius,
-  against the 2.6 to 2.8 that `circle` sits in; the subpath count of a Lissajous figure that leaves the
-  graph twice; and the gap between the first and the last point of a closed curve.
+  where the caller says the curve closes. **The measurement**: a unit circle written as a parametric
+  reads 5.5026, 0.0687 and 0.0043 parts in ten thousand of the true radius at resolutions 16, 48 and 96,
+  where `circle` reads 2.7199 and `plot` over the upper half alone reads -37.2813 to 14.7356 at 96. The
+  error falls by 15.93 and 15.98 as the samples double, which is the fourth order a Hermite cubic has.
+  A Lissajous figure crossing the height eight times draws as four stretches rather than five, since the
+  stretch the run of the parameter cuts at its own end is joined. A closed curve's last piece returns to
+  its first place to 0, and the direction across the seam turns by 0 radians. A cut end sits inside the
+  edge by at most 3.3785e-9 graph units.
 - [ ] **2. `polar` is a path.** `figure/parametric.ts` gains the curve from a radius at each angle,
   built on step 1 rather than sampling of its own. **The measurement**: the drawn radius of `r = 1` over
   a whole turn at resolution 96, in parts in ten thousand; the place of a cardioid's cusp against the
@@ -1301,6 +1305,24 @@ import. **It goes after 2.0.0 rather than before** because a recorder reads a fi
 format a recorder reads a file, which is also what lets one run without a page around it.
 
 ## Found while working, not yet queued
+
+- **A plotted curve is cut on the height alone, so a run of x wider than the graph draws off it.**
+  `plot` takes `over` as the run of x it samples and its `drawable` test reads only `coords.y.graph`,
+  so nothing holds the samples inside the width. A graph counting x from -1 to 1 into figure units of
+  -1 to 1, plotted over -3 to 3, draws from -3.000 to 3.000 in figure units, which is three times the
+  graph's own width and outside every axis the figure drew. `parametric` over the same run is held to
+  -1.000 to 1.000, since it tests both coordinates. The fix is one clause in `plot`'s `drawable` and a
+  cut on x at both ends, which is the machinery `parametric` now carries. Nothing in this tree passes
+  an `over` wider than its graph, which is why it has never shown.
+
+- **The clamp at the end of a plotted curve's crossing is dead and its comment describes what it would
+  do.** `crossing` bisects until `near` is the last parameter still drawable, then hands back
+  `interval.clampTo(bounds, of(near))`. A drawable y is inside `bounds` by the same test, so the clamp
+  is the identity on every call and the cut end sits inside the edge rather than on it. The comment says
+  the y "is held on the edge rather than taken from the function", which is the line that does not
+  happen. `parametric` drops the clamp and says what the bisection leaves instead, measured at 3.3785e-9
+  graph units inside the edge. Whether `plot` should place the end on the edge or say what it leaves is
+  the call the fix has to make.
 
 - **The reference is held to the door by name and to the records by nothing.** `tests/reference.test.ts`
   says every name at the door has one entry and no entry names a name the door lacks, which is what

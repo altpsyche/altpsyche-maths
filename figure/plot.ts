@@ -39,34 +39,38 @@ export interface PlotOptions {
 const SAMPLES = 96;
 
 /**
- * The slope at each sample of one run, from the central difference of its
- * neighbours, which is the tangent a Catmull-Rom spline uses.
+ * The rate of change at each sample of one run, from the central difference of
+ * its neighbours, which is the tangent a Catmull-Rom spline uses.
+ *
+ * The run is a plotted curve's x and the values its height, and a parametric
+ * curve's parameter and one of its two coordinates, since a direction is the two
+ * rates read against the same run.
  *
  * An end with evenly spaced neighbours takes the three-point one-sided
  * difference, which is second order like the middle and exact for a quadratic.
  * An end that was cut at the edge of the graph is not evenly spaced, so the
  * three-point form does not hold there and it takes the two-point difference.
  */
-function slopes(xs: readonly number[], ys: readonly number[]): number[] {
-  const last = xs.length - 1;
+export function slopes(along: readonly number[], values: readonly number[]): number[] {
+  const last = along.length - 1;
   if (last < 1) return [0];
   const even = (a: number, b: number, c: number) => Math.abs((b - a) - (c - b)) < Math.abs(c - a) * 1e-9;
   const out: number[] = [];
   for (let at = 0; at <= last; at++) {
-    if (last < 2) out.push((ys[last] - ys[0]) / (xs[last] - xs[0]));
+    if (last < 2) out.push((values[last] - values[0]) / (along[last] - along[0]));
     else if (at === 0) {
       out.push(
-        even(xs[0], xs[1], xs[2])
-          ? (-3 * ys[0] + 4 * ys[1] - ys[2]) / (xs[2] - xs[0])
-          : (ys[1] - ys[0]) / (xs[1] - xs[0])
+        even(along[0], along[1], along[2])
+          ? (-3 * values[0] + 4 * values[1] - values[2]) / (along[2] - along[0])
+          : (values[1] - values[0]) / (along[1] - along[0])
       );
     } else if (at === last) {
       out.push(
-        even(xs[last - 2], xs[last - 1], xs[last])
-          ? (3 * ys[last] - 4 * ys[last - 1] + ys[last - 2]) / (xs[last] - xs[last - 2])
-          : (ys[last] - ys[last - 1]) / (xs[last] - xs[last - 1])
+        even(along[last - 2], along[last - 1], along[last])
+          ? (3 * values[last] - 4 * values[last - 1] + values[last - 2]) / (along[last] - along[last - 2])
+          : (values[last] - values[last - 1]) / (along[last] - along[last - 1])
       );
-    } else out.push((ys[at + 1] - ys[at - 1]) / (xs[at + 1] - xs[at - 1]));
+    } else out.push((values[at + 1] - values[at - 1]) / (along[at + 1] - along[at - 1]));
   }
   return out;
 }

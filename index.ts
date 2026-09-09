@@ -119,6 +119,8 @@ export type {
 } from './figure/node-record.js';
 export { areaUnder, plot, riemannBars, slopeOf, tangentAt } from './figure/plot.js';
 export type { AreaOptions, BarsOptions, PlotOptions, TangentOptions } from './figure/plot.js';
+export { parametric } from './figure/parametric.js';
+export type { ParametricOptions } from './figure/parametric.js';
 export { vectorField } from './figure/field.js';
 export { streamlineOf } from './figure/streamline.js';
 export type { StreamlineOptions } from './figure/streamline.js';

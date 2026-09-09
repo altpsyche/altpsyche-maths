@@ -803,6 +803,15 @@ functions, which is what lets the same tree survive being written to a file and 
   - `resolution` — how many pieces the curve is cut into.
   - `over` — the run of x the curve is drawn over, the whole width of the graph where it is left
     out.
+- `parametric(coords, of, options)` — the curve of a function of one number to a place on the graph,
+  as one subpath per stretch of it that is on the graph. A curve is cut across the width as well as
+  the height, since a parameter carries it across both, and a closed curve wholly on the graph is one
+  closed subpath. The default of 96 samples draws a unit circle within 4.3e-7 of the true radius.
+- `ParametricOptions` — what a parametric curve takes.
+  - `resolution` — how many pieces the curve is cut into.
+  - `over` — the run of the parameter the curve is drawn over, nothing to one where it is left out.
+  - `closed` — whether the last place joins back to the first, which is also what makes the direction
+    at the seam read across the join rather than one-sidedly.
 - `areaUnder(coords, curve, options)` — the region between a plotted curve and a level line, closed,
   one subpath per subpath of the curve. The top is the path the caller drew rather than a second plot
   of the function behind it.
