@@ -553,14 +553,21 @@ whenever a picture wants one, which is the number that exists so a kind can be a
 [`FIGURE-FORMAT.md`](FIGURE-FORMAT.md) keeps its name and loses its plan at the cut, since a document
 of that name sits in each of the three repositories the change crosses.
 
-**Which is what puts step 10.6 in front of the cut.** [`SPECIFICATION.md`](SPECIFICATION.md) is the
-format's specification and says of itself that three sections are written and the vocabulary is not,
-with its "What has to be specified" pointing at the plan for the inventory. Dropping the plan before
-the vocabulary is written takes the only written vocabulary with it, so the five commits of 10.6 write
-it first: the value types and the expression form, the paths, the nodes, the animations with the
-timeline and the extent, and the document read as one specification. Its counts are already right at
-23 node kinds, 15 animation kinds, 13 forms of path in 15 kinds and 11 value types, so what is missing
-is each kind's fields rather than the shape of the document.
+**Step 10.6 is landed and it was five commits.** [`SPECIFICATION.md`](SPECIFICATION.md) said of
+itself that three sections were written and the vocabulary was not, with its "What has to be
+specified" pointing at the plan for the inventory, so dropping the plan first would have taken the
+only written vocabulary with it. The document goes from 112 lines to 605: the eleven value types, the
+expression form and the thirty-seven callable names, the thirteen forms of path with both point
+producers, the twenty-three node kinds with both item producers, the fifteen animation kinds with the
+timeline and the extent, and conformance against the four committed figure files as its fixtures. It
+reaches the plan twice in one paragraph, as the reasoning rather than as the inventory.
+
+**`tests/specification.test.ts` holds the document to the source, and writing it before the prose was
+checked found three things.** An `Inset` carries `name` and `hides`, which neither the document nor
+the plan's list of value types mentioned. The extent section had to say that a choice carries a `kind`
+and a bare extent carries none. And the section keying had to read a whole heading rather than its
+first word, since five headings begin with the same one. The suite goes from 1,046 tests over 66 files
+to 1,065 over 67.
 
 **The polish pass ran before the cut**, which is Siva's call of 2026-09-09 on the argument that 2.x
 is a major release. The 1.x band was cut the same way: an audit read the whole band against the tree

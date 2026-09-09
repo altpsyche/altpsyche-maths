@@ -1,7 +1,7 @@
-import { readFileSync } from 'node:fs';
+import { readFileSync, statSync } from 'node:fs';
 import path from 'node:path';
 import { describe, expect, it } from 'vitest';
-import { CURVE_NAMES, EXPRESSION_FUNCTIONS } from '../index.js';
+import { CURVE_NAMES, EXPRESSION_FUNCTIONS, FIGURE_FORMAT_VERSION } from '../index.js';
 
 /**
  * The specification against the format it specifies.
@@ -280,6 +280,32 @@ describe('the specification and the timeline', () => {
   it('names every field a figure itself carries', () => {
     const inside = quoted(written.get('The figure') ?? '');
     expect(fieldsOf('figure/figure-record.ts', 'FigureRecord').filter((field) => !inside.has(field))).toEqual([]);
+  });
+});
+
+describe('the specification as one document', () => {
+  it('names nothing as still to be specified', () => {
+    expect(specification).not.toMatch(/has to be specified|is not written|still a list/);
+  });
+
+  it('reaches the plan once, as the reasoning behind it rather than as its inventory', () => {
+    // A specification a renderer cannot read without a second document is a
+    // specification with a hole in it.
+    expect([...specification.matchAll(/FIGURE-FORMAT\.md/g)]).toHaveLength(2);
+  });
+
+  it('names each committed figure as a fixture, with the bytes it holds', () => {
+    const inside = written.get('The fixtures') ?? '';
+    for (const name of ['tangent', 'surface', 'boolean', 'rotate']) {
+      const file = `demos/${name}.figure.json`;
+      expect(inside, file).toContain(file);
+      const bytes = statSync(path.join(root, file)).size.toLocaleString('en-US');
+      expect(inside, `${file} is ${bytes} bytes`).toContain(bytes);
+    }
+  });
+
+  it('holds the format version to the one the reader carries', () => {
+    expect(specification).toContain(`version ${FIGURE_FORMAT_VERSION}`);
   });
 });
 

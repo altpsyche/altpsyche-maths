@@ -1437,7 +1437,7 @@ release away and has a document of its own.
     `<img>` in the README to that host and to a sheet the tree carries, and putting `docs/rotate.svg`
     back fails it. The suite goes from 1,045 tests over 66 files to 1,046.
 
-- [ ] **10.6. The specification's vocabulary, which is five commits.** Siva's call of 2026-09-09.
+- [x] **10.6. The specification's vocabulary, which is five commits.** Siva's call of 2026-09-09.
   [`SPECIFICATION.md`](SPECIFICATION.md) says of itself that three sections are written and the
   vocabulary is not, and its "What has to be specified" is ten bullets pointing at this document for
   the inventory. **The order is what makes this a step rather than a note**: the cut keeps that
@@ -1502,11 +1502,17 @@ release away and has a document of its own.
     from `countTo` fails with `CountToRecord: precision`. The suite goes from 1,056 tests over 67
     files to 1,061.
 
-  - [ ] **10.6e The document reads as one specification.** The "What has to be specified" list
+  - [x] **10.6e The document reads as one specification.** The "What has to be specified" list
     replaced by what is specified, the pointer at this document left only where it is history, and
     conformance stated against the four committed figure files, which are the fixtures a second
-    implementation would read. **Measures:** the document's lines and sections; every remaining
-    reference to this file; the four files named with their bytes.
+    implementation would read. **Measured:** the document is 605 lines over seventeen sections and
+    reaches this file twice in one paragraph, which names it as the reasoning rather than as the
+    inventory. Conformance is a section of its own: two lists of marks compared by tolerance, the
+    reason a hash is refused, what a flat figure covers, and the one band a tolerance is named in
+    rather than chosen. The four fixtures are `demos/tangent.figure.json` at 394,881 bytes,
+    `demos/surface.figure.json` at 263,847, `demos/boolean.figure.json` at 13,914 and
+    `demos/rotate.figure.json` at 8,244, each read from disk by the gate, so a figure rewritten and
+    its byte count left standing fails. The suite goes from 1,061 tests over 67 files to 1,065.
 
   #### Done-criteria
 

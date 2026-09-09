@@ -3,9 +3,14 @@
 **A figure format is a declarative description of a picture over time.** It carries nodes, a timeline,
 value types and expressions, and a program reads one rather than running it.
 
-**The refusals, the version, the file, the value types and the expression form are written.** Every
-kind and its parameters is still a list of what has to be specified, taken from the planning in
-[`FIGURE-FORMAT.md`](FIGURE-FORMAT.md), which is the design and the reason.
+**This document is the whole format.** The refusals come first, then the version and the file, then
+the value types and the expression form every kind is written in terms of, then the paths, the nodes,
+the animations, the timeline and the extent, and conformance last. A renderer is written from this
+page and needs nothing else.
+
+**Two counts say how large the format is.** Twenty-three node kinds, fifteen animation kinds,
+thirteen forms of path in fifteen kinds, eleven value types, and thirty-seven functions an expression
+may call.
 
 ## Standing refusals
 
@@ -561,16 +566,40 @@ expression in that node, which is what keeps a figure a file.
 figure ends where it began. A renderer holding a figure to its `loop` compares the marks at nothing
 and at the duration by tolerance.
 
-## What has to be specified
+## Conformance
 
-- **The standing refusals**, in the first section rather than an appendix: no loops, no recursion, no
-  user-defined functions, no assignment, and not Turing-complete. A reader deciding whether to write
-  a renderer needs the bound before the vocabulary.
-- **The version field**, which the section above answers.
-- **Conformance**: two renderers agree if they draw the same marks at the same times, compared by
-  tolerance and never by hash. That covers a flat figure and covers nothing a depth buffer does.
+**Two renderers agree if they draw the same marks at the same times.** A mark carries an id, a kind
+and the geometry and style it is drawn with, so agreement is a comparison of two lists rather than of
+two pictures, and it needs no screen.
 
-## The inventory it is written from
+**The comparison is by tolerance and never by hash.** `sin`, `cos` and `pow` are not specified to the
+last bit in every language, so two renderers computing the same circle differ in the last places of
+its control points. A hash makes that a failure with nothing to say what moved.
 
-[`FIGURE-FORMAT.md`](FIGURE-FORMAT.md) carries the inventory with every kind and its parameters, which
-surfaces refactor in which repository, and what is deliberately left out.
+**What conformance covers is a flat figure.** A figure in space is drawn in the order its scene sorts,
+which is the painter's algorithm, and two renderers agreeing on the marks agree on the order. What it
+does not cover is anything a depth buffer would decide, since the format has none.
+
+**A cubic quarter of a circle is the one place a tolerance is named rather than chosen.** The control
+distance leaves the drawn edge between 2.6 and 2.8 parts in ten thousand of the true radius, so a
+renderer is conformant inside that band and wrong outside it in either direction.
+
+## The fixtures
+
+**Four figures are the conformance suite, and each is a file in this repository.**
+
+| file | bytes | what it exercises |
+| --- | --- | --- |
+| `demos/tangent.figure.json` | 394,881 | the graph domain, a moving view, an inset, two typeset rules, a brace and a field |
+| `demos/surface.figure.json` | 263,847 | a surface, a plane, a section, streamlines, axes in space and an orbiting camera |
+| `demos/boolean.figure.json` | 13,914 | the three boolean operations through no crossing, one, two and containment |
+| `demos/rotate.figure.json` | 8,244 | a rotation about a box's middle and about a named place, and a loop |
+
+**Each carries `format` 0 and reads with no renderer at all.** A reader in another language that draws
+the same marks at these figures' named times, inside the tolerances above, is conformant.
+
+## The design behind it
+
+[`FIGURE-FORMAT.md`](FIGURE-FORMAT.md) is the reasoning: which surfaces refactored in which
+repository, what was deliberately left out, and why each answer is the one it is. It is history rather
+than specification, and nothing in it is needed to read a figure.
