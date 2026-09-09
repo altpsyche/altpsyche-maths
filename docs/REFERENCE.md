@@ -644,6 +644,16 @@ functions, which is what lets the same tree survive being written to a file and 
 - `writeTemplate(content, bindings)` — the template with its holes filled, each hole written to its
   own precision. A hole naming an index the list has no entry for is refused, and so is a hole whose
   expression is a place or a true or false.
+- `AnimationRecord` — one animation written as data: a `FadeInRecord`, a `FadeOutRecord`, a
+  `FadeToRecord` or a `DrawRecord`. A parameter is a plain value rather than an expression, since an
+  animation is built once and then asked what the marks are at a fraction of its own span.
+- `FadeInRecord` — a `kind` of `fadeIn` and the `target` it fades.
+- `FadeOutRecord` — a `kind` of `fadeOut` and the `target` it fades.
+- `FadeToRecord` — a `kind` of `fadeTo`, the `target` and the `opacity` it fades to.
+- `DrawRecord` — a `kind` of `draw` and the `target` it draws.
+- `resolveAnimation(record)` — the animation a record describes, as the `Animation` the timeline
+  already plays. A kind outside the set is refused with a sentence naming it. A target stays an id or
+  the front of one, so naming a group reaches everything inside it.
 - `resolveNode(record, bindings)` — the record walked into the node it describes. The bindings reach
   every expression a record carries: the text holes, the parameters of every path, and the places and
   distances an annotation is built from. A kind outside the set is refused with a sentence naming it.

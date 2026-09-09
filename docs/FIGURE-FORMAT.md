@@ -784,11 +784,21 @@ release away and has a document of its own.
   commit gives the same marks at the same times, and a kind no demo plays is measured against its own
   call.
 
-  - [ ] **4.1 The animation record and the four kinds that change opacity.** A record is a kind, a
-    target and its parameters, and a target stays an id or the front of one. `fadeIn`, `fadeOut`,
-    `fadeTo` and `draw`. **Measures:** the boolean demo's fades, the solid demo's two `fadeTo` walking
-    its rule and its title away, and the flat demo's `draw` over its axes, its curve and its brace, at
-    their named times.
+  - [x] **4.1 The animation record and the four kinds that change opacity.** A record is a kind, a
+    target and its parameters, and `resolveAnimation` hands back the `Animation` the timeline already
+    plays. A target stays an id or the front of one. `fadeIn`, `fadeOut`, `fadeTo` and `draw`.
+    **A parameter here is a plain value rather than an expression**, since an animation is built once
+    and then asked what the marks are at a fraction of its own span, so a parameter following a track
+    would be read at the time the figure was built and never again. Widening one later costs a minor,
+    because a bare number is a literal already.
+    **Measured:** the boolean demo's nine fades, three parts of each of its three panels, at each of
+    its seven named times; the solid demo's two `fadeTo` at nothing and at one, at each of its four
+    named times; the flat demo's `draw` over both axis lines, its curve and its brace, at each of its
+    seven named times; each at nothing, a quarter, a half, three quarters and the whole of its span,
+    mark for mark against its own call; `fadeOut` against its call, since no demo plays one; a group
+    named by its own name faded to nothing with every mark outside it unchanged; a kind the set has no
+    animation for refused with the sentence naming it; the door from 332 names to 338 and the suite
+    from 919 to 925.
 
   - [ ] **4.2 The kinds that move marks.** `moveBy`, `moveAlong`, `rotate`, `scale` and `growFrom`.
     `about` is a point or the centre of the marks' own bounds, read at play time rather than stored,

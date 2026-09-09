@@ -144,6 +144,8 @@ export { LEADING, flatten, group, shape, text } from './figure/node.js';
 export type { GroupNode, Node, ShapeNode, Style, TextNode, TextOptions } from './figure/node.js';
 export { circumscribe, countTo, fadeIn, fadeOut, fadeTo, draw, flash, growFrom, indicate, morph, morphEquation, moveAlong, moveBy, rotate, scale } from './figure/animation.js';
 export type { AboutOptions, Animation, CircumscribeOptions, FlashOptions, IndicateOptions, ScaleOptions } from './figure/animation.js';
+export { resolveAnimation } from './figure/animation-record.js';
+export type { AnimationRecord, DrawRecord, FadeInRecord, FadeOutRecord, FadeToRecord } from './figure/animation-record.js';
 export { Timeline } from './figure/timeline.js';
 export type { Entry, PlayOptions, Span, StaggerOptions } from './figure/timeline.js';
 export { lengthOf, pointAlong } from './figure/length.js';
