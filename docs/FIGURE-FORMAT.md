@@ -1163,6 +1163,17 @@ release away and has a document of its own.
     where a call passes them in order, against 108 lines out of `tests/figures.ts` and 103 out of
     `tests/boolean-record.test.ts`; the suite from 1,024 tests to 1,026 over 65 files.
 
+  - [x] **8.2a A text record's place is an expression.** The transcription stopped on it before it
+    started: `TextRecord.at` was a `Vec2` where `EquationRecordOptions.at` is already an expression,
+    so the two rules could hang off the frame the view has moved to and the reading standing between
+    them could not. The widening is the field, the resolver reading it through `pointOf`, and the
+    validator's shape for a text node's place.
+    **A written place stays a written place**, since a bare point is a literal of the expression form,
+    so every figure file in the tree reads back unchanged.
+    **Measured:** the suite from 1,026 tests to 1,027 over 65 files, the door unchanged at 375 names,
+    all eight sheets byte for byte after `npm run demos`, and `demos/rotate.figure.json` and
+    `demos/boolean.figure.json` unmoved.
+
   - [ ] **8.2 The flat demo is a file.** 550 lines, and the widest scene of the three: the grid, both
     axes, the shaded region, the field of tangents, the plotted parabola, the tangent at the dot, the
     dot, the reading, the typeset rule the reading is a value of, the brace and the number counting to
@@ -1170,8 +1181,9 @@ release away and has a document of its own.
     **It goes before the solid demo** because its extent follows the dot and it carries the panel, so
     the `ExtentRecord` and the `InsetRecord` are written once here and are the second time rather than
     the first when the solid demo reaches them.
-    **Its hard part is the followed frame and the expression set already carries it**, checked on
-    2026-09-09 before any of it was written. The reading and the two rules are placed with
+    **Its hard part is the followed frame and the expression set carries it**, checked on
+    2026-09-09 before any of it was written, and step 8.2a widened the one place that could not read
+    it. The reading and the two rules are placed with
     `fractionOf` against the extent the view has moved to rather than against the figure's own, so
     they hold their place on the page while the picture slides under them. `frameAt` computes that
     centre as `clamp(x - clamp(x, -REACH, REACH), -ROOM, ROOM)` off the dot's own place, and

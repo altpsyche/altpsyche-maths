@@ -81,7 +81,9 @@ export interface ShapeRecord {
 export interface TextRecord {
   readonly kind: 'text';
   readonly name: string;
-  readonly at: Vec2;
+  /** Where the string is hung from, as an expression, since a reading placed
+   * against a frame that follows a dot moves as the view does. */
+  readonly at: Expression;
   readonly content: TextContent;
   readonly size: number;
   readonly options?: TextOptions;
@@ -723,7 +725,13 @@ export function resolveNode(record: NodeRecord, bindings: Bindings = {}): Node {
     case 'shape':
       return shape(record.name, resolvePath(record.path, bindings), record.style);
     case 'text':
-      return text(record.name, record.at, writeTemplate(record.content, bindings), record.size, record.options);
+      return text(
+        record.name,
+        pointOf(record.at, bindings, "a text's place"),
+        writeTemplate(record.content, bindings),
+        record.size,
+        record.options
+      );
     case 'group':
       return group(
         record.name,

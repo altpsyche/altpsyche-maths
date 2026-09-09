@@ -167,6 +167,20 @@ describe('a text record', () => {
     expect(node.kind === 'text' && node.text).toBe('slope 1.16');
   });
 
+  it('hangs its string off a place the track moves', () => {
+    const place = {
+      kind: 'point' as const,
+      x: { kind: 'track' as const, name: 'centre' },
+      y: 0.91,
+    };
+    const written = { kind: 'text' as const, name: 'reading', at: place, content: 'slope', size: 0.3 };
+    const near = resolveNode(written, { tracks: { centre: -0.4 } });
+    const far = resolveNode(written, { tracks: { centre: 2.2 } });
+    expect(near.kind === 'text' && near.at.x).toBeCloseTo(-0.4, 12);
+    expect(far.kind === 'text' && far.at.x).toBeCloseTo(2.2, 12);
+    expect(far.kind === 'text' && far.at.y).toBeCloseTo(0.91, 12);
+  });
+
   it('follows a track through a hole and keeps the width the precision names', () => {
     const content = { template: 'slope {0}', holes: [{ value: { kind: 'track' as const, name: 's' }, precision: 0.01 }] };
     expect(writeTemplate(content, { tracks: { s: 0 } })).toBe('slope 0.00');

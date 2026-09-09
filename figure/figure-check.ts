@@ -491,7 +491,7 @@ const SHAPES: Readonly<Record<string, Shape>> = {
       shape: { name: need(text), path: need(ref('carriedPath')), style: may(ref('style')) },
       text: {
         name: need(text),
-        at: need(ref('point')),
+        at: need(ref('expression')),
         content: need(ref('content')),
         size: need(number),
         options: may(ref('textOptions')),
