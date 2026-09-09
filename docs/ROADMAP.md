@@ -549,15 +549,15 @@ damage each does if it ships, and four of them are closed.
 | found | state |
 | --- | --- |
 | the consumer has drawn no 2.x figure and holds 0.6.0 | closed here, and the migration is a session in that tree after the release |
-| the reference is held to the door by name and to the records by nothing | **open**, and it needs every entry to name its fields in backticks first |
+| the reference is held to the door by name and to the records by nothing | closed, and 66 record interfaces have every field held to its entry |
 | the npm tarball is `dist`, `LICENSE` and `README.md` while the README shows four pictures out of `docs/` | **open**, and what settles it is how that page renders |
 | `DESIGN.md` quoted 3.9 and 4.2 milliseconds a frame | closed, and it reads 5.13 and 5.14 measured on 2026-09-09 |
 | `stripMarks` was written four times | closed, and `demos/strip.ts` holds `stripOf` |
 | the thirty-seven expression functions were named nowhere a reader could look them up | closed, and the reference lists them with their arguments |
 | `tests/figures.ts` described two demos as records when four are | closed |
 
-**The open two are step 10.5 of the plan**, written there as 10.5b and 10.5c with the
-measurement each will quote, so a session resumes at the first unticked one rather than at the cut.
+**The open one is step 10.5 of the plan**, written there as 10.5c with the
+measurement it will quote, so a session resumes at it rather than at the cut.
 
 Step 10.5a drew the consumer's figures against this tree and found no defect. `npm pack` here is
 162,542 bytes over 133 files, and installed there with the manifest untouched it left 26 type errors
@@ -568,7 +568,16 @@ Migrating the nine files took the site's type-check to clean, its suite to 793 t
 `one-pixel` draws 4 over 1.6 seconds, and a figure read from a file there draws 8 marks at each of
 four times. **The migration lands in the consumer after the release**, in one commit bumping the
 dependency to `^2.0.0`, since source calling `marksAt` with 0.6.0 installed is a state no gate there
-measures. **One call inside the cut is still Siva's**, which is what
+measures.
+
+Step 10.5b holds the reference's record entries to the records themselves. 66 record interfaces across
+`figure/` are read by walking each body to the brace that closes it, and every field declared at that
+body's own depth is held to a backticked name in that record's entry. One entry named a field in words
+and it is `TimelineRecord`, whose `duration` read as "how long it runs". A `settle` added to that
+record and not to the page fails the gate with `TimelineRecord: settle`, which is the defect it exists
+for.
+
+**One call inside the cut is still Siva's**, which is what
 becomes of [`FIGURE-FORMAT.md`](FIGURE-FORMAT.md), a document `CLAUDE.md` calls the change in flight
 and which a cut version leaves as a specification rather than a plan.
 

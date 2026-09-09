@@ -1404,15 +1404,20 @@ release away and has a document of its own.
     in one commit bumping the dependency to `^2.0.0`, since source calling `marksAt` with 0.6.0
     installed is a state no gate there measures.
 
-  - [ ] **10.5b The reference's entries name their fields, and a gate reads them.**
-    `tests/reference.test.ts` holds every name at the door to one entry and reads nothing inside one,
+  - [x] **10.5b The reference's entries name their fields, and a gate reads them.**
+    `tests/reference.test.ts` held every name at the door to one entry and read nothing inside one,
     so `TextRecord` described a place that had changed and nothing failed. A comparison run by hand
-    over the 68 record interfaces of `figure/` found that one and no other. The gate is the same
-    comparison run by the suite, and what stops it being written already is that an entry may name a
+    over the record interfaces of `figure/` found that one and no other. The gate is the same
+    comparison run by the suite, and what stopped it being written already is that an entry may name a
     field in words rather than in backticks.
-    **Measures:** the interfaces compared and the entries that name a field in words today; the gate
-    catching a field widened in the source and not on the page, which is the defect it exists for; the
-    suite's own count.
+    **Measured:** 66 record interfaces across `figure/`, read by walking each `export interface` body
+    to the brace that closes it and taking the names declared at its own depth, so a nested object
+    type's members stay out of the count. One entry named a field in words and it is `TimelineRecord`,
+    whose `duration` was "how long it runs"; the other 65 named every field in backticks already,
+    since step 9.3 closed `TextRecord`. The gate catches the defect it exists for: a `settle` added to
+    `TimelineRecord` and not to the page fails with `TimelineRecord: settle`. The suite goes from
+    1,043 tests over 66 files to 1,045, the two new ones holding the record count above sixty and
+    every field to its entry.
 
   - [ ] **10.5c What the npm page shows.** The tarball is `dist`, `LICENSE` and `README.md`, which is
     133 files and 162.5 kB, and the README shows four pictures by relative path into `docs/`, a

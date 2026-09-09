@@ -670,7 +670,7 @@ functions, which is what lets the same tree survive being written to a file and 
 - `writeTemplate(content, bindings)` — the template with its holes filled, each hole written to its
   own precision. A hole naming an index the list has no entry for is refused, and so is a hole whose
   expression is a place or a true or false.
-- `TimelineRecord` — the timeline written as data: its `spans` and how long it runs. The duration is
+- `TimelineRecord` — the timeline written as data: its `spans` and its `duration`. The `duration` is
   past the end of the last span where a figure waits at the end, and is the last span's own end unless
   named.
 - `SpanRecord` — one span: the `entry` it plays, its `from` and `to` in seconds, and the `curve` it is
