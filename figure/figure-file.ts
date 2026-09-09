@@ -12,7 +12,8 @@
  * record whose fields were written the other way round and draw the same
  * picture.
  */
-import type { FigureRecord } from './figure-record.js';
+import { resolveFigure, type FigureRecord } from './figure-record.js';
+import type { Figure } from './figure.js';
 
 /** The version of the format this package writes and reads. A figure declares
  * its own and a reader refuses one it does not know. */
@@ -28,6 +29,7 @@ const INDENT = '  ';
 
 /** The name of what a value is, for the sentence that refuses it. */
 function nameOf(value: unknown): string {
+  if (value === undefined) return 'missing';
   if (value === null) return 'null';
   if (Array.isArray(value)) return 'a list';
   if (typeof value === 'number') return String(value);
@@ -82,4 +84,37 @@ function write(value: unknown, path: string, depth: number): string {
 export function writeFigure(record: FigureRecord): string {
   const figure = write(record, '', 1);
   return `{\n${INDENT}"format": ${FIGURE_FORMAT_VERSION},\n${INDENT}"figure": ${figure}\n}\n`;
+}
+
+/**
+ * The figure a file's text describes.
+ *
+ * The version is read before anything else, because a file written in a version
+ * this package does not know may use a field for something else entirely, and a
+ * figure drawn from a guess is a wrong picture with nothing to say it went
+ * wrong.
+ */
+export function readFigure(text: string): Figure {
+  let held: unknown;
+  try {
+    held = JSON.parse(text);
+  } catch (cause) {
+    throw new Error(`a file is a JSON document and this text is not one: ${(cause as Error).message}`);
+  }
+  if (typeof held !== 'object' || held === null || Array.isArray(held)) {
+    throw new Error(`a file is an object carrying a format and a figure, and this is ${nameOf(held)}`);
+  }
+  const file = held as { format?: unknown; figure?: unknown };
+  if (typeof file.format !== 'number') {
+    throw new Error('a file names the version of the format it is written in, and format is missing');
+  }
+  if (file.format !== FIGURE_FORMAT_VERSION) {
+    throw new Error(
+      `this reads version ${FIGURE_FORMAT_VERSION} of the format and the file is written in version ${file.format}`,
+    );
+  }
+  if (typeof file.figure !== 'object' || file.figure === null || Array.isArray(file.figure)) {
+    throw new Error(`a file carries a figure, and figure is ${nameOf(file.figure)}`);
+  }
+  return resolveFigure(file.figure as FigureRecord);
 }

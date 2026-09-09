@@ -1,5 +1,16 @@
 import { describe, expect, it } from 'vitest';
-import { FIGURE_FORMAT_VERSION, writeFigure, type FigureRecord } from '../index.js';
+import {
+  FIGURE_FORMAT_VERSION,
+  durationOf,
+  isLoop,
+  marksAt,
+  readFigure,
+  sameMarks,
+  writeFigure,
+  type FigureRecord,
+} from '../index.js';
+import { FRAMES, turns } from '../demos/rotate.js';
+import { TIMES as BOOLEAN_TIMES, booleans } from '../demos/boolean.js';
 import { operations, turning } from './figures.js';
 
 /** The names of every object of a written file, in the order they are written,
@@ -83,5 +94,57 @@ describe('a figure written as a file', () => {
     expect(() => writeFigure(holed)).toThrow('timeline.spans.1 is a list with nothing in it');
     const nulled = { ...turning, still: null } as unknown as FigureRecord;
     expect(() => writeFigure(nulled)).toThrow('still is null, which a file has no way to write');
+  });
+});
+
+describe('a figure read back from a file', () => {
+  it('draws the rotation demo mark for mark at each frame of its strip', () => {
+    const read = readFigure(writeFigure(turning));
+    expect(FRAMES).toHaveLength(4);
+    for (const seconds of [...FRAMES, turns.still]) {
+      const drawn = marksAt(turns, seconds);
+      expect(drawn).toHaveLength(8);
+      expect(sameMarks(marksAt(read, seconds), drawn)).toBe(true);
+    }
+  });
+
+  it('draws the boolean demo mark for mark at each of its named times', () => {
+    const read = readFigure(writeFigure(operations));
+    for (const seconds of Object.values(BOOLEAN_TIMES)) {
+      const drawn = marksAt(booleans, seconds);
+      expect(drawn).toHaveLength(12);
+      expect(sameMarks(marksAt(read, seconds), drawn)).toBe(true);
+    }
+  });
+
+  it('carries the duration, the still time and the loop flag through the file', () => {
+    const read = readFigure(writeFigure(turning));
+    expect(durationOf(read)).toBe(durationOf(turns));
+    expect(read.still).toBe(turns.still);
+    expect(isLoop(read)).toBe(true);
+  });
+
+  it('writes what it read back to the same bytes', () => {
+    const once = writeFigure(turning);
+    expect(writeFigure(JSON.parse(once).figure)).toBe(once);
+  });
+
+  it('refuses a version it does not read, naming both numbers', () => {
+    const text = writeFigure(turning).replace('"format": 0', '"format": 1');
+    expect(() => readFigure(text)).toThrow(
+      'this reads version 0 of the format and the file is written in version 1',
+    );
+  });
+
+  it('refuses a file with no version and a file with no figure', () => {
+    expect(() => readFigure('{"figure": {}}')).toThrow(
+      'a file names the version of the format it is written in, and format is missing',
+    );
+    expect(() => readFigure('{"format": 0}')).toThrow('a file carries a figure, and figure is missing');
+  });
+
+  it('refuses text that is not a JSON document, and one that is not an object', () => {
+    expect(() => readFigure('{ figure: }')).toThrow('a file is a JSON document and this text is not one');
+    expect(() => readFigure('[]')).toThrow('a file is an object carrying a format and a figure, and this is a list');
   });
 });

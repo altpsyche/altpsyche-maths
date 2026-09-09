@@ -931,12 +931,18 @@ release away and has a document of its own.
     null and a function each refused with the path of the field named, `timeline.spans.1` and
     `extent.centre` among them; the door from 367 names to 370 and the suite from 965 to 974.
 
-  - [ ] **5.4 The reader, and the round trip.** `readFigure` parses the text, reads the version,
-    refuses one it does not read, and resolves the figure.
-    **Measures:** the rotation demo and the boolean demo each written out and read back, drawing the
-    same marks as their own figures at every named time within 1e-6; a file declaring version 1
-    refused with both numbers in the sentence; text that is not JSON refused with what was read at the
-    front of it.
+  - [x] **5.4 The reader, and the round trip.** `readFigure` parses the text, reads the version,
+    refuses one it does not read, and resolves the figure. **The version is read before anything
+    else**, since a file written in a version this package does not know may use a field for
+    something else entirely.
+    **Measured:** the rotation demo written out and read back drawing its eight marks at each of the
+    four times its strip draws and at its still time, and the boolean demo its twelve at each of its
+    seven named times, both within a tolerance of 1e-6; a duration of 6, a still of 0.75 and the loop
+    flag through the file; what the reader read written again to the same 6,624 bytes; a file
+    declaring version 1 refused with both numbers, `this reads version 0 of the format and the file
+    is written in version 1`; a file with no version, a file with no figure, text that is not a JSON
+    document and a document that is a list each refused with what was found; the door from 370 names
+    to 371 and the suite from 974 to 981.
 
   - [ ] **5.5 The validator, and the value types and expressions.** `checkFigure` walks a value
     against a description of the vocabulary and names the path of the field it refuses,

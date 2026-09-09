@@ -187,7 +187,7 @@ export type { Frame, FrameStep, FramesOptions } from './figure/frames.js';
 export type { Figure, TrackValues } from './figure/figure.js';
 export { resolveFigure } from './figure/figure-record.js';
 export type { FigureRecord } from './figure/figure-record.js';
-export { FIGURE_FORMAT_VERSION, writeFigure } from './figure/figure-file.js';
+export { FIGURE_FORMAT_VERSION, readFigure, writeFigure } from './figure/figure-file.js';
 export type { FigureFile } from './figure/figure-file.js';
 export { paintSvg, pathToData, svgElements, svgMarkup } from './paint/svg.js';
 export type { ElementMaker, PaintNode, PaintTarget, SvgColour, SvgElement, SvgMarkupOptions, SvgTheme } from './paint/svg.js';

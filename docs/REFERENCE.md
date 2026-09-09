@@ -1115,6 +1115,10 @@ a group of that name.
   number that is not finite, a hole in a list, a null and a function are each refused with the path
   of the field named. What is written is a `FigureRecord` and never a `Figure`, since a figure's
   scene may be a closure and no reading recovers one.
+- `readFigure(text)` — the figure a file's text describes. The version is read before anything else,
+  and a version this package does not read is refused with both numbers in the sentence. Text that
+  is not a JSON document, a document that is not an object, a file with no `format` and a file with
+  no `figure` are each refused with what was found.
 - `marksAt(figure, seconds)` — the marks a figure shows at a time. A tapered stroke is turned into
   its filled outline after the timeline has run, so an animation that trims a path trims the
   centreline and the outline follows it.
