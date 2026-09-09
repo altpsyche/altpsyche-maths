@@ -3,21 +3,25 @@ import {
   mat3,
   marksAt,
   resolveNode,
+  sampleTrack,
   sameMarks,
   slopeOf,
   toGraph,
   vec2,
   writeTemplate,
   type Figure,
+  type Expression,
   type GroupRecord,
   type Mark,
   type NodeRecord,
+  type PathRecord,
+  type TextTemplate,
   type Vec2,
 } from '../index.js';
 import { DEEP, EMBER, INK, PEACH } from '../demos/palette.js';
 import { TYPE } from '../demos/typeface.js';
 import { FRAMES, GIVEN, LABEL_Y, LOCAL, OWN, RIDER, SWING, TEXT, turns } from '../demos/rotate.js';
-import { TIMES as FLAT_TIMES, coords, pointAt, tangent, walkPath } from '../demos/tangent.js';
+import { TIMES as FLAT_TIMES, coords, pointAt, tangent, walk, walkPath } from '../demos/tangent.js';
 
 const ink = { colour: INK };
 const edge = { colour: DEEP, width: 0.04 };
@@ -210,5 +214,63 @@ describe('a text record', () => {
     expect(() =>
       writeTemplate({ template: '{0}', holes: [{ value: true, precision: 1 }] })
     ).toThrow('hole 0 is a number and was given a true or false');
+  });
+});
+
+/**
+ * The flat demo's reading with nothing computed outside the record: the walked
+ * path is a plot record, the graph x is the place the walk lands on read back
+ * through the x scale, and the slope is read off the path at that x.
+ */
+const walked: PathRecord = {
+  kind: 'plot',
+  coords,
+  of: { kind: 'arithmetic', operator: '*', left: { kind: 'variable', name: 'x' }, right: { kind: 'variable', name: 'x' } },
+  over: { from: 0, to: 3 },
+};
+const along: Expression = {
+  kind: 'call',
+  name: 'pointAlong',
+  arguments: [{ kind: 'path', of: walked }, { kind: 'track', name: 'walk' }],
+};
+const graphX: Expression = {
+  kind: 'call',
+  name: 'remap',
+  arguments: [
+    { kind: 'member', of: along, name: 'x' },
+    coords.x.units.from,
+    coords.x.units.to,
+    coords.x.graph.from,
+    coords.x.graph.to,
+  ],
+};
+const read: TextTemplate = {
+  template: 'slope {0}',
+  holes: [
+    {
+      value: {
+        kind: 'call',
+        name: 'slopeOf',
+        arguments: [{ kind: 'coords', of: coords }, { kind: 'path', of: walked }, graphX],
+      },
+      precision: 0.01,
+    },
+  ],
+};
+
+describe('a text hole that reads geometry', () => {
+  it('writes the flat demo reading from a record alone at each of its named times', () => {
+    const times = Object.values(FLAT_TIMES);
+    expect(times).toHaveLength(7);
+    for (const seconds of times) {
+      const bindings = { tracks: { walk: sampleTrack(walk, seconds) as number } };
+      expect(writeTemplate(read, bindings)).toBe(writeTemplate(reading(seconds)));
+    }
+  });
+
+  it('writes the seven strings the reading itself writes', () => {
+    expect(
+      Object.values(FLAT_TIMES).map((seconds) => writeTemplate(read, { tracks: { walk: sampleTrack(walk, seconds) as number } }))
+    ).toEqual(['slope 0.00', 'slope 0.00', 'slope 0.00', 'slope 1.16', 'slope 6.00', 'slope 6.00', 'slope 6.00']);
   });
 });

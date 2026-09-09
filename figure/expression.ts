@@ -14,6 +14,10 @@
  * map of a shape. A form written for a scalar and widened afterwards costs a
  * major version to widen.
  *
+ * The three calls that read geometry take a path, and a path carries expressions
+ * of its own, so this module and the path records name each other. Neither reads
+ * the other while it is loading, which is what makes that safe.
+ *
  * What it refuses is a map this vocabulary cannot spell. A complex square, a
  * complex exponential and a Möbius map are all here, since each is arithmetic
  * over the two members of a point. Anything else is refused rather than drawn,
@@ -22,10 +26,21 @@
 import { clamp, inverseLerp, lerp, remap } from '../values/scalar.js';
 import { vec2, type Vec2 } from '../values/vec2.js';
 import type { TrackValue } from '../timing/track.js';
+import type { Path } from './path.js';
+import type { Coords } from './scale.js';
+import { lengthOf, pointAlong } from './length.js';
+import { slopeOf } from './plot.js';
+import { resolvePath, type PathRecord } from './path-record.js';
 
-/** What an expression evaluates to. A list-valued track has no place here, since
- * the vocabulary has no list. */
-export type ExpressionValue = number | boolean | Vec2;
+/**
+ * What an expression evaluates to. A list-valued track has no place here, since
+ * the vocabulary has no list.
+ *
+ * A path and a pair of scales are values because the three calls that read
+ * geometry take them. Neither is arithmetic and neither is compared, so what
+ * they widen is the argument of a call rather than the vocabulary at large.
+ */
+export type ExpressionValue = number | boolean | Vec2 | Path | Coords;
 
 /** A number or a place the expression is evaluated for: the x of a curve, the
  * place a field is read at, the two numbers of a surface. */
@@ -76,27 +91,49 @@ export type Expression =
       readonly then: Expression;
       readonly otherwise: Expression;
     }
-  | { readonly kind: 'call'; readonly name: string; readonly arguments: readonly Expression[] };
+  | { readonly kind: 'call'; readonly name: string; readonly arguments: readonly Expression[] }
+  | { readonly kind: 'path'; readonly of: PathRecord }
+  | { readonly kind: 'coords'; readonly of: Coords };
 
-/** A place rather than a number, told apart by carrying both members. */
+/** A place rather than a number, a path or a pair of scales, told apart by
+ * carrying a number in both members. */
 function isPoint(value: ExpressionValue): value is Vec2 {
-  return typeof value === 'object';
+  return typeof value === 'object' && !Array.isArray(value) && typeof (value as Vec2).x === 'number';
 }
 
-function asNumber(value: ExpressionValue, what: string): number {
+/** A path is the one value that is a list, which is what tells it from a pair of
+ * scales. */
+const isPath = (value: ExpressionValue): value is Path => Array.isArray(value);
+
+export function asNumber(value: ExpressionValue, what: string): number {
   if (typeof value !== 'number') throw new Error(`${what} is a number and was given ${nameOfKind(value)}`);
   return value;
 }
 
-function asPoint(value: ExpressionValue, what: string): Vec2 {
+export function asPoint(value: ExpressionValue, what: string): Vec2 {
   if (!isPoint(value)) throw new Error(`${what} is a point and was given ${nameOfKind(value)}`);
   return value;
 }
 
-function nameOfKind(value: ExpressionValue): string {
+function asPath(value: ExpressionValue, what: string): Path {
+  if (!isPath(value)) throw new Error(`${what} is a path and was given ${nameOfKind(value)}`);
+  return value;
+}
+
+function asCoords(value: ExpressionValue, what: string): Coords {
+  if (typeof value !== 'object' || isPath(value) || isPoint(value)) {
+    throw new Error(`${what} is a pair of scales and was given ${nameOfKind(value)}`);
+  }
+  return value;
+}
+
+/** What a value is called in the sentence a refusal is written with. */
+export function nameOfKind(value: ExpressionValue): string {
   if (typeof value === 'number') return 'a number';
   if (typeof value === 'boolean') return 'a true or false';
-  return 'a point';
+  if (isPath(value)) return 'a path';
+  if (isPoint(value)) return 'a point';
+  return 'a pair of scales';
 }
 
 /** One callable form: how many arguments it takes and what it does with them.
@@ -174,6 +211,27 @@ const FUNCTIONS: Record<string, Callable> = {
     takes: 2,
     of: (values, name) =>
       vec2.rotate(asPoint(values[0], `the first argument of ${name}`), asNumber(values[1], `the second argument of ${name}`)),
+  },
+  lengthOf: { takes: 1, of: (values, name) => lengthOf(asPath(values[0], `the argument of ${name}`)) },
+  pointAlong: {
+    takes: 2,
+    of: (values, name) => {
+      const place = pointAlong(
+        asPath(values[0], `the first argument of ${name}`),
+        asNumber(values[1], `the second argument of ${name}`)
+      );
+      if (!place) throw new Error(`${name} is given a path with no points in it, which has no place to read`);
+      return place;
+    },
+  },
+  slopeOf: {
+    takes: 3,
+    of: (values, name) =>
+      slopeOf(
+        asCoords(values[0], `the first argument of ${name}`),
+        asPath(values[1], `the second argument of ${name}`),
+        asNumber(values[2], `the third argument of ${name}`)
+      ),
   },
 };
 
@@ -295,6 +353,10 @@ export function evaluate(expression: Expression, bindings: Bindings = {}): Expre
       if (typeof when !== 'boolean') throw new Error(`a choice is made on a true or false and was given ${nameOfKind(when)}`);
       return evaluate(when ? expression.then : expression.otherwise, bindings);
     }
+    case 'path':
+      return resolvePath(expression.of, bindings);
+    case 'coords':
+      return expression.of;
     case 'call': {
       const callable = FUNCTIONS[expression.name];
       if (!callable) {

@@ -17,7 +17,7 @@
  */
 import { vec3, type Vec3 } from '../values/vec3.js';
 import { camera3, resolveProjection, type Camera3, type ProjectionChoice } from './camera.js';
-import { evaluate, type Bindings, type Expression } from './expression.js';
+import { asNumber, evaluate, type Bindings, type Expression } from './expression.js';
 
 /** A place in space whose three numbers may each follow a track. */
 export interface Point3Record {
@@ -33,13 +33,8 @@ export interface Camera3Record {
   readonly projection?: ProjectionChoice;
 }
 
-function numberOf(expression: Expression, bindings: Bindings, what: string): number {
-  const value = evaluate(expression, bindings);
-  if (typeof value !== 'number') {
-    throw new Error(`${what} is a number and was given ${typeof value === 'boolean' ? 'a true or false' : 'a point'}`);
-  }
-  return value;
-}
+const numberOf = (expression: Expression, bindings: Bindings, what: string): number =>
+  asNumber(evaluate(expression, bindings), what);
 
 /** A place in space read out of its three expressions. */
 export function resolvePoint3(record: Point3Record, bindings: Bindings = {}, what = 'a place in space'): Vec3 {

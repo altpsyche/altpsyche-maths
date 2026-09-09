@@ -205,15 +205,22 @@ numbers and a pointwise map of a shape.
   - `choice` — the `then` where `when` is true and the `otherwise` where it is false. Only the side
     taken is evaluated.
   - `call` — one of the published functions by `name`, with its `arguments`.
-- `ExpressionValue` — what an expression evaluates to: a number, a true or false, or a place. A
-  list-valued track has no form here and is named rather than read as its first number.
+  - `path` — the geometry a `PathRecord` names, for the three calls that read a path. A path carries
+    expressions of its own, so the parameters of the path are read at the same time as the expression
+    around it.
+  - `coords` — a pair of scales, which is what `slopeOf` reads a graph x against.
+- `ExpressionValue` — what an expression evaluates to: a number, a true or false, a place, a path or a
+  pair of scales. A list-valued track has no form here and is named rather than read as its first
+  number. A path and a pair of scales are values because the three calls that read geometry take them,
+  and neither is arithmetic and neither is compared.
 - `Variables` — the bound values by name.
 - `Bindings` — what the names stand for: the `tracks` sampled at the time being drawn and the
   `variables` bound for the place being evaluated.
 - `Arithmetic` — the four operators.
 - `Comparison` — the six comparisons.
-- `EXPRESSION_FUNCTIONS` — every function an expression may name, sorted. The set is versioned the way
-  the node set is.
+- `EXPRESSION_FUNCTIONS` — every function an expression may name, sorted, which is thirty-six names.
+  The set is versioned the way the node set is. `lengthOf`, `pointAlong` and `slopeOf` are the three
+  that read geometry, and `pointAlong` given a path with no points in it is refused rather than read.
 - `evaluate(expression, bindings)` — the value an expression has for a set of tracks and variables.
   Division by nothing is left as the infinity the arithmetic gives, so a field sampled at a pole reads
   as a pole.

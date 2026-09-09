@@ -1,5 +1,23 @@
 import { describe, expect, it } from 'vitest';
-import { EXPRESSION_FUNCTIONS, clamp, evaluate, inverseLerp, lerp, remap, vec2, type Expression, type Vec2 } from '../index.js';
+import {
+  EXPRESSION_FUNCTIONS,
+  clamp,
+  coordsOf,
+  evaluate,
+  interval,
+  inverseLerp,
+  lengthOf,
+  lerp,
+  pointAlong,
+  remap,
+  resolvePath,
+  scaleOf,
+  slopeOf,
+  vec2,
+  type Expression,
+  type PathRecord,
+  type Vec2,
+} from '../index.js';
 
 /** Ten inputs every numeric form is read at, spread over both signs and past
  * one, so a form that is right at nothing and at one is not called right. */
@@ -19,6 +37,10 @@ const PLACES: readonly Vec2[] = [
   vec2(-2, 1.5),
   vec2(3, -0.5),
 ];
+
+/** The three calls that read geometry, which take a path and are measured
+ * against their own calls rather than over the ten numbers. */
+const GEOMETRY = ['lengthOf', 'pointAlong', 'slopeOf'];
 
 const literal = (value: number): Expression => value;
 const of = (name: string, ...args: Expression[]): Expression => ({ kind: 'call', name, arguments: args });
@@ -169,7 +191,8 @@ describe('the functions an expression may name', () => {
   });
 
   it('are the published set and nothing besides', () => {
-    expect(EXPRESSION_FUNCTIONS).toEqual(Object.keys(wanted).sort());
+    expect(EXPRESSION_FUNCTIONS).toEqual([...Object.keys(wanted), ...GEOMETRY].sort());
+    expect(EXPRESSION_FUNCTIONS).toHaveLength(36);
   });
 
   it('names a function it does not carry', () => {
@@ -275,5 +298,69 @@ describe('the option forms the demos pass', () => {
     for (const m of [0, 0.25, 0.5, 1, 1.5, 2, 3, 4.5, 6, 9]) {
       expect(evaluate(form, { variables: { m } })).toBe(m > 3 ? 1 : 0);
     }
+  });
+});
+
+describe('the calls that read geometry', () => {
+  const coords = coordsOf(scaleOf(interval(0, 3), interval(0, 6)), scaleOf(interval(0, 9), interval(0, 4.5)));
+  const record: PathRecord = {
+    kind: 'plot',
+    coords,
+    of: { kind: 'arithmetic', operator: '*', left: at('x'), right: at('x') },
+    over: { from: 0, to: 3 },
+  };
+  const path = resolvePath(record);
+  const written: Expression = { kind: 'path', of: record };
+
+  it('measures a path where its own call measures it', () => {
+    expect(evaluate(of('lengthOf', written))).toBe(lengthOf(path));
+  });
+
+  it('walks a path at ten fractions where its own call walks it', () => {
+    for (const fraction of TEN) {
+      expect(evaluate(of('pointAlong', written, fraction)), `pointAlong at ${fraction}`).toEqual(
+        pointAlong(path, fraction)
+      );
+    }
+  });
+
+  it('reads a slope at ten places where its own call reads it', () => {
+    const scales: Expression = { kind: 'coords', of: coords };
+    for (const step of TEN) {
+      const x = Math.abs(step);
+      expect(evaluate(of('slopeOf', scales, written, x)), `slopeOf at ${x}`).toBe(slopeOf(coords, path, x));
+    }
+  });
+
+  it('reads a path whose own parameters follow a track', () => {
+    const moving: Expression = {
+      kind: 'path',
+      of: { ...record, over: { from: 0, to: { kind: 'track', name: 'walk' } } },
+    };
+    const at3 = evaluate(of('lengthOf', moving), { tracks: { walk: 3 } });
+    expect(at3).toBe(lengthOf(path));
+    expect(evaluate(of('lengthOf', moving), { tracks: { walk: 1.5 } })).toBeLessThan(at3 as number);
+  });
+
+  it('refuses a number where a path belongs', () => {
+    expect(() => evaluate(of('lengthOf', 1))).toThrow('the argument of lengthOf is a path and was given a number');
+  });
+
+  it('refuses a path where a pair of scales belongs', () => {
+    expect(() => evaluate(of('slopeOf', written, written, 1))).toThrow(
+      'the first argument of slopeOf is a pair of scales and was given a path'
+    );
+  });
+
+  it('refuses a pair of scales where a number belongs', () => {
+    expect(() => evaluate(of('sqrt', { kind: 'coords', of: coords }))).toThrow(
+      'the argument of sqrt is a number and was given a pair of scales'
+    );
+  });
+
+  it('refuses a path with no points in it', () => {
+    expect(() => evaluate(of('pointAlong', { kind: 'path', of: { kind: 'cubics', subpaths: [] } }, 0.5))).toThrow(
+      'pointAlong is given a path with no points in it, which has no place to read'
+    );
   });
 });

@@ -49,7 +49,7 @@ import { resolveCamera, resolvePoint3, type Camera3Record, type Point3Record } f
 import type { Colour } from './mark.js';
 import type { Coords, Scale } from './scale.js';
 import type { Fill, Stroke } from './mark.js';
-import { evaluate, type Bindings, type Expression } from './expression.js';
+import { asNumber, asPoint, evaluate, type Bindings, type Expression } from './expression.js';
 import { labelFor } from './ticks.js';
 
 /** One number written into a template, and how it is written. */
@@ -510,12 +510,6 @@ export type NodeRecord =
   | Section3Record
   | Streamline3Record;
 
-function nameOfValue(value: number | boolean | Vec2): string {
-  if (typeof value === 'number') return 'a number';
-  if (typeof value === 'boolean') return 'a true or false';
-  return 'a point';
-}
-
 /** A hole and everything up to it, or a doubled brace. The alternation is
  * ordered so `{{0}` reads as a brace before a hole rather than as a hole. */
 const HOLE = /\{\{|\{(\d+)\}/g;
@@ -534,23 +528,15 @@ export function writeTemplate(content: TextContent, bindings: Bindings = {}): st
     const at = Number(digits);
     const hole = content.holes[at];
     if (!hole) throw new Error(`the template asks for hole ${at} and carries ${content.holes.length}`);
-    const value = evaluate(hole.value, bindings);
-    if (typeof value !== 'number') throw new Error(`hole ${at} is a number and was given ${nameOfValue(value)}`);
-    return labelFor(value, hole.precision);
+    return labelFor(asNumber(evaluate(hole.value, bindings), `hole ${at}`), hole.precision);
   });
 }
 
-function numberOf(expression: Expression, bindings: Bindings, what: string): number {
-  const value = evaluate(expression, bindings);
-  if (typeof value !== 'number') throw new Error(`${what} is a number and was given ${nameOfValue(value)}`);
-  return value;
-}
+const numberOf = (expression: Expression, bindings: Bindings, what: string): number =>
+  asNumber(evaluate(expression, bindings), what);
 
-function pointOf(expression: Expression, bindings: Bindings, what: string): Vec2 {
-  const value = evaluate(expression, bindings);
-  if (typeof value !== 'object') throw new Error(`${what} is a point and was given ${nameOfValue(value)}`);
-  return value;
-}
+const pointOf = (expression: Expression, bindings: Bindings, what: string): Vec2 =>
+  asPoint(evaluate(expression, bindings), what);
 
 /** Values bound under their names for the reading of an inner expression, so a
  * field sampled at a place, an arrow sized off a magnitude and a surface read

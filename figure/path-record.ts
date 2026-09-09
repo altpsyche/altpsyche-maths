@@ -38,7 +38,7 @@ import { areaUnder, plot, tangentAt } from './plot.js';
 import { bracePath } from './annotate.js';
 import { interval, type Interval } from '../values/interval.js';
 import type { Coords } from './scale.js';
-import { evaluate, type Bindings, type Expression } from './expression.js';
+import { asNumber, asPoint, evaluate, type Bindings, type Expression } from './expression.js';
 
 /** A run of numbers whose ends may follow a track. A plain `Interval` is one
  * already, since a bare number is a literal. */
@@ -110,23 +110,11 @@ export type PathRecord =
       readonly tolerance?: number;
     };
 
-function numberOf(expression: Expression, bindings: Bindings, what: string): number {
-  const value = evaluate(expression, bindings);
-  if (typeof value !== 'number') throw new Error(`${what} is a number and was given ${nameOf(value)}`);
-  return value;
-}
+const numberOf = (expression: Expression, bindings: Bindings, what: string): number =>
+  asNumber(evaluate(expression, bindings), what);
 
-function pointOf(expression: Expression, bindings: Bindings, what: string): Vec2 {
-  const value = evaluate(expression, bindings);
-  if (typeof value !== 'object') throw new Error(`${what} is a point and was given ${nameOf(value)}`);
-  return value;
-}
-
-function nameOf(value: number | boolean | Vec2): string {
-  if (typeof value === 'number') return 'a number';
-  if (typeof value === 'boolean') return 'a true or false';
-  return 'a point';
-}
+const pointOf = (expression: Expression, bindings: Bindings, what: string): Vec2 =>
+  asPoint(evaluate(expression, bindings), what);
 
 const points = (list: readonly Expression[], bindings: Bindings, what: string): Vec2[] =>
   list.map((point, at) => pointOf(point, bindings, `point ${at} of ${what}`));

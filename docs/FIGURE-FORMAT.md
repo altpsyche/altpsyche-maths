@@ -745,16 +745,22 @@ release away and has a document of its own.
     never leaving the drawn curve by more than 4.688e-10 of a figure unit; the suite from 894 to 903
     and the door from 316 names to 331.
 
-  - [ ] **3.12 The three calls that take geometry join the expression set.** `pointAlong`, `lengthOf`
-    and `slopeOf` each take a path, and step 2 said they would arrive with the written form for one.
-    They did not: step 3.2 gave a path its form and left the set at thirty-four, because a call taking
-    a path widens `ExpressionValue` past a number, a true or false and a point, which is a change to
-    the expression form rather than to the path form. **This lands before step 8**, since the flat
-    demo's reading is `slopeOf` inside a text hole and step 3.1 put a literal there.
-    **Measures:** each of the three against its own call at ten places; the flat demo's reading from a
-    hole whose expression is `slopeOf` over a path record, at each of the flat demo's seven named
-    times, giving the same seven strings step 3.1 measured; the set from thirty-four names to
-    thirty-seven.
+  - [x] **3.12 The three calls that take geometry join the expression set.** `pointAlong`, `lengthOf`
+    and `slopeOf` each take a path, so `ExpressionValue` widened past a number, a true or false and a
+    point to carry a path and a pair of scales. `path` and `coords` are the two forms that write one:
+    a `path` carries a `PathRecord` and resolves it with the bindings around it, so a path whose own
+    parameters follow a track is read at the time the expression is.
+    **The expression form and the path form name each other**, which is what mutually recursive data
+    is, and neither reads the other while it is loading.
+    **The set was thirty-three names rather than the thirty-four step 2 wrote**, and one commit ever
+    touched it, so that number was miscounted rather than changed.
+    **Measured:** `lengthOf`, `pointAlong` at ten fractions and `slopeOf` at ten x each against their
+    own calls; a path whose end follows a track measuring shorter at half the walk; the flat demo's
+    reading written from a record alone at each of its seven named times, giving the same seven
+    strings step 3.1 measured, `slope 0.00` three times, `slope 1.16` and `slope 6.00` three times; a
+    number where a path belongs, a path where a pair of scales belongs, a pair of scales where a
+    number belongs and a path with no points in it each refused with the sentence naming it; the set
+    from 33 names to 36 and the suite from 903 to 913.
 
   - [ ] **3.13 The wash over a pane, which is a fill a record cannot carry.** The solid demo's pane is
     filled with a gradient whose two ends are places in space projected through the camera, so the
