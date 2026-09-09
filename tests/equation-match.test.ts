@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { equationFromTex, glyphToken, matchGlyphs } from '@altpsyche/maths';
+import { colourFrom, equationFromTex, glyphToken, matchGlyphs } from '@altpsyche/maths';
 import type { Mark, PathMark } from '@altpsyche/maths';
 
 /**
@@ -76,7 +76,7 @@ describe('matchGlyphs', () => {
   it('leaves out a mark that is not a path, since a glyph is an outline', () => {
     const marks: Mark[] = [
       glyph('0-1D465'),
-      { kind: 'text', id: '1-label', at: { x: 0, y: 0 }, text: 'x', size: 1, family: 'sans-serif', fill: { colour: 'red' } },
+      { kind: 'text', id: '1-label', at: { x: 0, y: 0 }, text: 'x', size: 1, family: 'sans-serif', fill: { colour: colourFrom('#ff0000') } },
     ];
     const { pairs, leaving } = matchGlyphs(marks, row('0-1D465'));
     expect(pairs).toHaveLength(1);

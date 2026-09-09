@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { countTo, labelFor, vec2 } from '@altpsyche/maths';
+import { colourFrom, countTo, labelFor, vec2 } from '@altpsyche/maths';
 import type { Mark } from '@altpsyche/maths';
 
 /**
@@ -17,7 +17,7 @@ const reading = (id: string, content: string): Mark => ({
   text: content,
   size: 0.3,
   family: 'sans-serif',
-  fill: { colour: '#111' },
+  fill: { colour: colourFrom('#111') },
 });
 const marks: Mark[] = [
   reading('fig/reading', '9.00'),

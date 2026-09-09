@@ -1,36 +1,8 @@
 import { describe, expect, it } from 'vitest';
-import {
-  boundsOf,
-  boundsOfMarks,
-  circumscribe,
-  centreOf,
-  circle,
-  colourOf,
-  coordsOf,
-  dot,
-  flash,
-  flatten,
-  group,
-  growFrom,
-  indicate,
-  interval,
-  lengthOf,
-  moveAlong,
-  plot,
-  pointAlong,
-  polygon,
-  rotate,
-  sameMarks,
-  scale,
-  scaleOf,
-  shape,
-  text,
-  vec2,
-  type Mark,
-} from '../index.js';
+import { boundsOf, boundsOfMarks, centreOf, circle, circumscribe, colourFrom, coordsOf, dot, flash, flatten, group, growFrom, hexOf, indicate, interval, lengthOf, moveAlong, plot, pointAlong, polygon, rotate, sameMarks, scale, scaleOf, shape, text, vec2, type Mark } from '../index.js';
 
-const pen = { colour: '#222', width: 0.1 };
-const ink = { colour: '#222' };
+const pen = { colour: colourFrom('#222'), width: 0.1 };
+const ink = { colour: colourFrom('#222') };
 
 /** An L, whose box centre is a long way from where its weight is, which is what
  * makes it worth turning. */
@@ -272,7 +244,7 @@ describe('a thing indicated', () => {
   const ring = () =>
     flatten(
       group('fig', [
-        shape('ring', circle(vec2(2, 1), 1), { stroke: pen, fill: { colour: '#eee' } }),
+        shape('ring', circle(vec2(2, 1), 1), { stroke: pen, fill: { colour: colourFrom('#eee') } }),
         text('word', vec2(2, 1), 'hi', 0.5, { fill: ink }),
       ])
     );
@@ -283,8 +255,8 @@ describe('a thing indicated', () => {
 
   it('is the very same marks at both ends of its span', () => {
     const marks = ring();
-    expect(indicate('fig', { colour: '#f00' })(marks, 0)).toBe(marks);
-    expect(indicate('fig', { colour: '#f00' })(marks, 1)).toBe(marks);
+    expect(indicate('fig', { colour: colourFrom('#f00') })(marks, 0)).toBe(marks);
+    expect(indicate('fig', { colour: colourFrom('#f00') })(marks, 1)).toBe(marks);
   });
 
   it('is at its fullest half way through', () => {
@@ -311,22 +283,22 @@ describe('a thing indicated', () => {
 
   it('reaches a colour at the middle of the span and lets it go at the ends', () => {
     const marks = ring();
-    const held = indicate('fig', { colour: '#f00' })(marks, 0.5);
+    const held = indicate('fig', { colour: colourFrom('#f00') })(marks, 0.5);
     const ringMark = held[0];
     const word = held[1];
     if (ringMark.kind !== 'path' || word.kind !== 'text') throw new Error('a ring is a path and a word is text');
-    expect(ringMark.stroke?.colour).toBe('rgb(255, 0, 0)');
-    expect(ringMark.fill?.colour).toBe('rgb(255, 0, 0)');
-    expect(word.fill.colour).toBe('rgb(255, 0, 0)');
-    const ended = indicate('fig', { colour: '#f00' })(marks, 1)[0];
+    expect(hexOf(ringMark.stroke!.colour)).toBe('#ff0000');
+    expect(hexOf(ringMark.fill!.colour)).toBe('#ff0000');
+    expect(hexOf(word.fill.colour)).toBe('#ff0000');
+    const ended = indicate('fig', { colour: colourFrom('#f00') })(marks, 1)[0];
     if (ended.kind !== 'path') throw new Error('a ring is a path');
-    expect(ended.stroke?.colour).toBe('#222');
+    expect(hexOf(ended.stroke!.colour)).toBe('#222222');
   });
 
   it('walks into the colour rather than swapping to it', () => {
-    const part = indicate('fig', { colour: '#f00' })(ring(), 0.25)[0];
+    const part = indicate('fig', { colour: colourFrom('#f00') })(ring(), 0.25)[0];
     if (part.kind !== 'path') throw new Error('a ring is a path');
-    const read = colourOf(part.stroke!.colour)!;
+    const read = part.stroke!.colour;
     // Its own grey is 34 in every channel and the colour it walks to is red, so
     // part way the red channel has risen and the other two have fallen.
     expect(read.r).toBeGreaterThan(34);
@@ -335,22 +307,27 @@ describe('a thing indicated', () => {
     expect(read.g).toBeGreaterThan(0);
   });
 
-  it('holds a colour it cannot read at the far end rather than guessing at it', () => {
-    // A named colour is a form nothing here reads, so there is no mix to make.
-    const part = indicate('fig', { colour: 'rebeccapurple' })(ring(), 0.25)[0];
+  it('drops the name a mark was themed under while it is part of the way there', () => {
+    // A page has a value for either end and none for the mix, so a mark on its
+    // way carries the channels alone and stops following the theme.
+    const themed = flatten(group('fig', [shape('ring', circle(vec2(0, 0), 1), { stroke: { colour: colourFrom('#222', 'ink'), width: 0.02 } })]));
+    const part = indicate('fig', { colour: colourFrom('#663399') })(themed, 0.25)[0];
     if (part.kind !== 'path') throw new Error('a ring is a path');
-    expect(part.stroke?.colour).toBe('rebeccapurple');
+    expect(part.stroke?.colour.name).toBeUndefined();
+    const ended = indicate('fig', { colour: colourFrom('#663399') })(themed, 1)[0];
+    if (ended.kind !== 'path') throw new Error('a ring is a path');
+    expect(ended.stroke?.colour.name).toBe('ink');
   });
 
   it('leaves the colours alone where none is named', () => {
     const held = indicate('fig')(ring(), 0.5)[0];
     if (held.kind !== 'path') throw new Error('a ring is a path');
-    expect(held.stroke?.colour).toBe('#222');
+    expect(hexOf(held.stroke!.colour)).toBe('#222222');
   });
 
   it('changes nothing where its target matches nothing', () => {
     const marks = ring();
-    expect(indicate('nowhere', { colour: '#f00' })(marks, 0.5)).toBe(marks);
+    expect(indicate('nowhere', { colour: colourFrom('#f00') })(marks, 0.5)).toBe(marks);
   });
 });
 

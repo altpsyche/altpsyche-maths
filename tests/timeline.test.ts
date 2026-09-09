@@ -1,30 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import {
-  Timeline,
-  alignPaths,
-  marksAt,
-  circle,
-  draw,
-  durationOf,
-  flatten,
-  fadeIn,
-  fadeOut,
-  fadeTo,
-  group,
-  line,
-  linear,
-  lerpPath,
-  isLoop,
-  morph,
-  moveBy,
-  pointCount,
-  polygon,
-  sameMarks,
-  shape,
-  text,
-  trimPath,
-  vec2,
-} from '@altpsyche/maths';
+import { alignPaths, circle, colourFrom, draw, durationOf, fadeIn, fadeOut, fadeTo, flatten, group, isLoop, lerpPath, line, linear, marksAt, morph, moveBy, pointCount, polygon, sameMarks, shape, text, Timeline, trimPath, vec2 } from '@altpsyche/maths';
 import type { Figure, Mark, PathMark } from '@altpsyche/maths';
 
 /**
@@ -33,8 +8,8 @@ import type { Figure, Mark, PathMark } from '@altpsyche/maths';
  * finished is applied in full, so nothing depends on how the clock arrived.
  */
 
-const pen = { colour: '#fff', width: 1 };
-const ink = { colour: '#fff' };
+const pen = { colour: colourFrom('#fff'), width: 1 };
+const ink = { colour: colourFrom('#fff') };
 const only = (marks: readonly Mark[]) => marks[0] as PathMark;
 
 const oneLine = (name = 'l') => group('g', [shape(name, line(vec2(0, 0), vec2(10, 0)), { stroke: pen })]);
@@ -285,7 +260,7 @@ describe('a row of changes staggered', () => {
   it('shows each part arriving in turn', () => {
     const tree = group(
       'fig',
-      Array.from({ length: 6 }, (_, at) => shape(`part${at}`, circle(vec2(at, 0), 0.2), { fill: { colour: '#222' } }))
+      Array.from({ length: 6 }, (_, at) => shape(`part${at}`, circle(vec2(at, 0), 0.2), { fill: { colour: colourFrom('#222') } }))
     );
     const line = Timeline.empty().stagger(six, 0.8, { gap: 0.2 });
     const shown = line.at(flatten(tree), 0.5).map((mark) => (mark.opacity ?? 1) > 0.01);

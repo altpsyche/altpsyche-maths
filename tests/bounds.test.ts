@@ -1,24 +1,8 @@
 import { describe, expect, it } from 'vitest';
-import {
-  boundsOf,
-  boundsOfMarks,
-  circle,
-  coordsOf,
-  flatten,
-  group,
-  interval,
-  line,
-  plot,
-  polygon,
-  scaleOf,
-  shape,
-  text,
-  vec2,
-  type Path,
-} from '../index.js';
+import { boundsOf, boundsOfMarks, circle, colourFrom, coordsOf, flatten, group, interval, line, plot, polygon, scaleOf, shape, text, vec2, type Path } from '../index.js';
 
-const ink = { colour: '#222' };
-const pen = { colour: '#222', width: 0.02 };
+const ink = { colour: colourFrom('#222') };
+const pen = { colour: colourFrom('#222'), width: 0.02 };
 
 /** One cubic whose two controls stand a long way off the curve itself, which is
  * where the box round the control points and the box round the curve differ. */

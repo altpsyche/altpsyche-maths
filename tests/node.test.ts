@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { LEADING, circle, flatten, group, line, mat3, shape, text, vec2 } from '@altpsyche/maths';
+import { circle, colourFrom, flatten, group, LEADING, line, mat3, shape, text, vec2 } from '@altpsyche/maths';
 import type { Mark, PathMark, TextMark } from '@altpsyche/maths';
 
 /**
@@ -8,8 +8,8 @@ import type { Mark, PathMark, TextMark } from '@altpsyche/maths';
  * style with nothing left to inherit.
  */
 
-const red = { colour: '#f00' };
-const pen = { colour: '#00f', width: 2 };
+const red = { colour: colourFrom('#f00') };
+const pen = { colour: colourFrom('#00f'), width: 2 };
 const ids = (marks: readonly Mark[]) => marks.map((mark) => mark.id);
 const paths = (marks: readonly Mark[]) => marks.filter((mark): mark is PathMark => mark.kind === 'path');
 const texts = (marks: readonly Mark[]) => marks.filter((mark): mark is TextMark => mark.kind === 'text');
@@ -43,7 +43,7 @@ describe('style', () => {
   });
 
   it('lets a child override what the group handed down', () => {
-    const own = { colour: '#0f0' };
+    const own = { colour: colourFrom('#0f0') };
     const tree = group('g', [shape('s', circle(vec2(0, 0), 1), { fill: own })], { style: { fill: red } });
     expect(paths(flatten(tree))[0].fill).toEqual(own);
   });

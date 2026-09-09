@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { arrow, marksAt, callout, dot, flatten, fractionOf, group, matchingAspect, mat3, resolveExtent, vec2, viewMatrix } from '@altpsyche/maths';
+import { arrow, callout, colourFrom, dot, flatten, fractionOf, group, marksAt, mat3, matchingAspect, resolveExtent, vec2, viewMatrix } from '@altpsyche/maths';
 import type { Mark, PathMark } from '@altpsyche/maths';
 
 /**
@@ -8,8 +8,8 @@ import type { Mark, PathMark } from '@altpsyche/maths';
  * the tree, because the list is what a painter and a reader both see.
  */
 
-const pen = { colour: '#fff', width: 0.1 };
-const ink = { colour: '#fff' };
+const pen = { colour: colourFrom('#fff'), width: 0.1 };
+const ink = { colour: colourFrom('#fff') };
 const ids = (marks: readonly Mark[]) => marks.map((mark) => mark.id);
 const paths = (marks: readonly Mark[]) => marks.filter((m): m is PathMark => m.kind === 'path');
 const ends = (mark: PathMark) => mark.path[0].curves[mark.path[0].curves.length - 1].to;
@@ -35,9 +35,9 @@ describe('arrow', () => {
   });
 
   it('takes the shaft colour for the head unless told another', () => {
-    expect(paths(built)[1].fill).toEqual({ colour: '#fff' });
-    const two = flatten(arrow('a', vec2(0, 0), vec2(1, 0), { stroke: pen, fill: { colour: '#f00' } }));
-    expect(paths(two)[1].fill).toEqual({ colour: '#f00' });
+    expect(paths(built)[1].fill).toEqual({ colour: colourFrom('#fff') });
+    const two = flatten(arrow('a', vec2(0, 0), vec2(1, 0), { stroke: pen, fill: { colour: colourFrom('#f00') } }));
+    expect(paths(two)[1].fill).toEqual({ colour: colourFrom('#f00') });
   });
 
   it('never draws a head longer than the arrow itself', () => {

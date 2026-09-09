@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { colourOf, colourText, lerpColour } from '../index.js';
+import { colourFrom, colourOf, colourText, hexOf, lerpColour } from '../index.js';
 
 describe('a colour read out of its text', () => {
   it('reads hex in three digits and in six', () => {
@@ -68,23 +68,61 @@ describe('a colour written back out', () => {
   });
 });
 
+describe('a colour built from its text', () => {
+  it('carries the name a sheet themes it under, and none where it is given none', () => {
+    expect(colourFrom('#1b1b1b', 'ink')).toEqual({ r: 27, g: 27, b: 27, a: 1, name: 'ink' });
+    expect(colourFrom('#1b1b1b')).toEqual({ r: 27, g: 27, b: 27, a: 1 });
+  });
+
+  it('refuses a form it cannot read, naming the text it was given', () => {
+    expect(() => colourFrom('rebeccapurple')).toThrow(
+      'a colour is a hex or an rgb() and this is neither: rebeccapurple'
+    );
+    expect(() => colourFrom('hsl(0, 100%, 50%)')).toThrow('hsl(0, 100%, 50%)');
+  });
+});
+
+describe('a colour written back out as hex', () => {
+  it('is six digits where it is opaque and eight where it is not', () => {
+    expect(hexOf({ r: 3, g: 105, b: 161, a: 1 })).toBe('#0369a1');
+    expect(hexOf({ r: 255, g: 0, b: 0, a: 128 / 255 })).toBe('#ff000080');
+  });
+
+  it('writes back the hex it was read from, which is what holds a sheet byte for byte', () => {
+    for (const form of ['#1b1b1b', '#fdba74', '#0369a1', '#ff000080']) {
+      expect(hexOf(colourOf(form)!)).toBe(form);
+    }
+  });
+
+  it('grows a three-digit hex to six, since a channel is a whole number', () => {
+    expect(hexOf(colourOf('#f00')!)).toBe('#ff0000');
+  });
+
+  it('holds a channel inside its own run', () => {
+    expect(hexOf({ r: -20, g: 300, b: 0, a: 4 })).toBe('#00ff00');
+  });
+});
+
 describe('a colour walked between two', () => {
+  const black = colourFrom('#000');
+  const white = colourFrom('#fff');
+
   it('is either end at either end', () => {
-    expect(lerpColour('#000', '#fff', 0)).toBe('rgb(0, 0, 0)');
-    expect(lerpColour('#000', '#fff', 1)).toBe('rgb(255, 255, 255)');
+    expect(lerpColour(black, white, 0)).toEqual({ r: 0, g: 0, b: 0, a: 1 });
+    expect(lerpColour(black, white, 1)).toEqual({ r: 255, g: 255, b: 255, a: 1 });
   });
 
   it('is straight through each channel', () => {
-    expect(lerpColour('#000', '#fff', 0.5)).toBe('rgb(128, 128, 128)');
-    expect(lerpColour('rgb(0, 0, 0)', 'rgb(100, 200, 40)', 0.25)).toBe('rgb(25, 50, 10)');
+    expect(hexOf(lerpColour(black, white, 0.5))).toBe('#808080');
+    expect(hexOf(lerpColour(black, colourFrom('rgb(100, 200, 40)'), 0.25))).toBe('#19320a');
   });
 
   it('walks the alpha with the channels', () => {
-    expect(lerpColour('rgba(0, 0, 0, 0)', 'rgba(0, 0, 0, 1)', 0.5)).toBe('rgba(0, 0, 0, 0.5)');
+    const clear = colourFrom('rgba(0, 0, 0, 0)');
+    expect(lerpColour(clear, black, 0.5).a).toBeCloseTo(0.5, 12);
   });
 
-  it('is nothing where either end is a form it cannot read', () => {
-    expect(lerpColour('red', '#fff', 0.5)).toBeUndefined();
-    expect(lerpColour('#fff', 'hsl(0, 0%, 0%)', 0.5)).toBeUndefined();
+  it('carries no name, since a page has no value for what lies between two it themes', () => {
+    expect(lerpColour(colourFrom('#000', 'ink'), colourFrom('#fff', 'ground'), 0.5).name).toBeUndefined();
   });
 });

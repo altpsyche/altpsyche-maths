@@ -286,11 +286,10 @@ function painted(mark: Mark, colour: Colour): Mark {
 }
 
 /** A mark walked a fraction of the way towards a colour, each of its own colours
- * from where that colour stands. A colour neither end can be read from is held at
- * the far end rather than mixed towards a guess. */
+ * from where that colour stands. */
 function paintedTowards(mark: Mark, colour: Colour, along: number): Mark {
   const towards = (from: Colour | undefined) =>
-    from === undefined ? colour : (lerpColour(from, colour, along) ?? colour);
+    from === undefined ? colour : lerpColour(from, colour, along);
   if (mark.kind === 'text') return { ...mark, fill: { ...mark.fill, colour: towards(mark.fill.colour) } };
   return {
     ...mark,
@@ -312,8 +311,8 @@ export interface IndicateOptions extends AboutOptions {
  *
  * Each of the mark's own colours is walked towards the colour named and back
  * again, so the swell and the colour reach their furthest at the same moment. A
- * colour `colourOf` cannot read is held at the far end rather than mixed towards
- * a guess.
+ * mark part of the way there carries no name, so it paints the mixed channels
+ * rather than following a page's theme for the span it is swelling.
  */
 export function indicate(target: string, options: IndicateOptions = {}): Animation {
   const peak = options.factor ?? 1.2;

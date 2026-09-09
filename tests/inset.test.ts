@@ -1,24 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import {
-  boundsOfMarks,
-  circle,
-  followView,
-  flatten,
-  group,
-  insetMarks,
-  insetMatrix,
-  interval,
-  line,
-  mat3,
-  marksAt,
-  moveView,
-  sameMarks,
-  shape,
-  text,
-  vec2,
-  type Figure,
-  type Mark,
-} from '@altpsyche/maths';
+import { boundsOfMarks, circle, colourFrom, flatten, followView, group, insetMarks, insetMatrix, interval, line, marksAt, mat3, moveView, sameMarks, shape, text, vec2, type Figure, type Mark } from '@altpsyche/maths';
 
 /**
  * The inset, which is a second view of the same figure drawn into a rectangle of
@@ -29,12 +10,12 @@ import {
  * different pictures of one time.
  */
 
-const ink = { colour: '#0f0' };
+const ink = { colour: colourFrom('#0f0') };
 
 /** A picture 20 by 10 with a disc near the origin and a rule across it. */
 const scene = group('fig', [
   shape('disc', circle(vec2(1, 0.5), 0.5), { fill: ink }),
-  shape('rule', line(vec2(-8, 0), vec2(8, 0)), { stroke: { colour: '#fff', width: 0.1 } }),
+  shape('rule', line(vec2(-8, 0), vec2(8, 0)), { stroke: { colour: colourFrom('#fff'), width: 0.1 } }),
   shape('far', circle(vec2(-7, -4), 0.5), { fill: ink }),
 ]);
 

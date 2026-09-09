@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { marksAt, coordsOf, flatten, interval, pointOf, scaleOf, vec2, vectorField } from '@altpsyche/maths';
+import { colourFrom, coordsOf, flatten, interval, marksAt, pointOf, scaleOf, vec2, vectorField } from '@altpsyche/maths';
 import type { Mark, PathMark, Vec2 } from '@altpsyche/maths';
 
 /**
@@ -15,7 +15,7 @@ const flow = (at: Vec2) => vec2(1 + at.y * at.y, at.x);
 
 const options = {
   lengthOf: (magnitude: number) => 0.1 + magnitude / 10,
-  colourFor: (magnitude: number) => (magnitude > 2 ? '#f00' : '#00f'),
+  colourFor: (magnitude: number) => colourFrom(magnitude > 2 ? '#f00' : '#00f'),
   width: 0.02,
   resolution: { x: 9, y: 5 },
 };
@@ -126,7 +126,7 @@ describe('vectorField', () => {
       const x = -4 + (8 * (column + 0.5)) / 9;
       const y = -2 + (4 * (row + 0.5)) / 5;
       const wanted = options.colourFor(Math.hypot(1 + y * y, x));
-      expect((mark as PathMark).stroke?.colour).toBe(wanted);
+      expect((mark as PathMark).stroke?.colour).toEqual(wanted);
     }
   });
 

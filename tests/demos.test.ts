@@ -7,6 +7,7 @@ import {
   boundsOf,
   boundsOfMarks,
   centreOf,
+  colourFrom,
   colourOf,
   containsPoint,
   durationOf,
@@ -438,9 +439,9 @@ describe('the flat demo', () => {
     // ink reads 17.22:1 on white and 15.87:1 on #0d1117 either side of the edge.
     const marks = marksAt(tangent, TIMES.entrance);
     const panel = marks.find((mark) => mark.id === 'tangent/window/ground');
-    expect(panel?.kind === 'path' && panel.fill?.colour).toBe(`var(--ground, ${GROUND.light})`);
+    expect(panel?.kind === 'path' && panel.fill?.colour).toEqual(colourFrom(GROUND.light, 'ground'));
     const readings = marks.filter((mark) => mark.id.startsWith('tangent/lens/') && mark.kind === 'text');
-    for (const reading of readings) expect(reading.kind === 'text' && reading.fill.colour).toBe(INK);
+    for (const reading of readings) expect(reading.kind === 'text' && reading.fill.colour).toEqual(INK);
     // The one whose anchor lands inside the panel at the entrance, which is the
     // label the x axis writes at the origin the dot starts on.
     const inside = readings.filter(
@@ -1355,9 +1356,9 @@ describe('the solid demo', () => {
     // on white and 15.87:1 on #0d1117 either side of the panel's edge.
     const marks = solidAt(SOLID_TIMES.half);
     const panel = marks.find((mark) => mark.id === 'solid/window/ground');
-    expect(panel?.kind === 'path' && panel.fill?.colour).toBe(`var(--ground, ${GROUND.light})`);
+    expect(panel?.kind === 'path' && panel.fill?.colour).toEqual(colourFrom(GROUND.light, 'ground'));
     const readings = marks.filter((mark) => mark.id.startsWith('solid/lens/') && mark.kind === 'text');
-    for (const reading of readings) expect(reading.kind === 'text' && reading.fill.colour).toBe(INK);
+    for (const reading of readings) expect(reading.kind === 'text' && reading.fill.colour).toEqual(INK);
     // The one whose anchor lands inside the panel, which is the label the x axis
     // writes at the origin the window is centred on.
     const inside = readings.filter(
@@ -1512,12 +1513,12 @@ describe("the demos' palette", () => {
     // its own normals cover. Eight of the twelve steps were reached without it.
     const painted = marksAt(solid, solid.still)
       .filter((mark) => mark.id.startsWith('solid/body/hill'))
-      .map((mark) => (mark.kind === 'path' ? mark.fill?.colour : undefined));
-    const reached = new Set(painted.map((colour) => /--(shade\d+)/.exec(colour ?? '')?.[1]));
+      .map((mark) => (mark.kind === 'path' ? mark.fill?.colour.name : undefined));
+    const reached = new Set(painted);
     expect(reached.size).toBe(Object.keys(SHADE_THEME).length);
   });
 
-  it('paints every colour as a variable falling back to its light value', () => {
+  it('carries every colour as the channels of its light value, under the name a sheet themes it by', () => {
     for (const [name, colour] of [
       ['ink', INK],
       ['mist', MIST],
@@ -1534,7 +1535,7 @@ describe("the demos' palette", () => {
       ['glaze', GLAZE],
       ['moss', MOSS],
     ] as const) {
-      expect(colour).toBe(`var(--${name}, ${THEME[name as keyof typeof THEME].light})`);
+      expect(colour).toEqual(colourFrom(THEME[name as keyof typeof THEME].light, name));
     }
   });
 });

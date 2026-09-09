@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { axes3, camera3, flatten, interval, orthographic, perspective, ticksOn, vec3 } from '@altpsyche/maths';
+import { axes3, camera3, colourFrom, flatten, interval, orthographic, perspective, ticksOn, vec3 } from '@altpsyche/maths';
 import type { GroupNode, Node } from '@altpsyche/maths';
 
 /**
@@ -13,8 +13,8 @@ const STYLE = {
   x: RANGE,
   y: RANGE,
   z: RANGE,
-  stroke: { colour: 'black', width: 0.01 },
-  fill: { colour: 'black' },
+  stroke: { colour: colourFrom('#000000'), width: 0.01 },
+  fill: { colour: colourFrom('#000000') },
   size: 0.2,
   tickLength: 0.1,
   ticks: 5,

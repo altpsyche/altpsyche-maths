@@ -10,7 +10,7 @@
  * Each colour has a value per ground, because no one value can serve both: to
  * clear 4.5:1 against white a colour needs a relative luminance of 0.183333 or
  * less, and to clear it against `#0d1117` it needs 0.199675 or more. Every
- * colour is painted as `var(--name, light)`, so a sheet carrying the theme takes
+ * colour is painted as `var(--name, light)` by the SVG painter, so a sheet carrying the theme takes
  * the half the reader's colour scheme asks for and a sheet whose style element
  * was stripped falls back to the light value it shipped with. Each sheet paints
  * the matching ground behind itself, since inside an `<img>` that scheme answers
@@ -21,6 +21,8 @@
  * grounds, and the rest are washes and fields that carry no reading of their
  * own. A test holds both halves against both grounds.
  */
+
+import { colourFrom, type Colour } from '../index.js';
 
 /** A colour per ground, keyed by the custom property it is written to. */
 export const THEME = {
@@ -47,10 +49,10 @@ export const THEME = {
  * sheet paints behind its own marks so the measurement holds where it is shown. */
 export const GROUND = THEME.ground;
 
-/** One colour as a mark takes it, with the light value written in as what it
- * falls back to. */
-function painted(name: keyof typeof THEME): string {
-  return `var(--${name}, ${THEME[name].light})`;
+/** One colour as a mark takes it: the light value's channels, carrying the name
+ * a sheet's theme block overrides them under. */
+function painted(name: keyof typeof THEME): Colour {
+  return colourFrom(THEME[name].light, name);
 }
 
 /** Every line a reader reads a number or a word off. */
@@ -138,7 +140,7 @@ export const SHADE_THEME: Record<string, { light: string; dark: string }> = Obje
  * nothing where it faces straight away, and this puts it on the nearest step of
  * the ramp.
  */
-export function shadeOf(amount: number): { colour: string } {
+export function shadeOf(amount: number): { colour: Colour } {
   const step = Math.max(0, Math.min(SHADES - 1, Math.round(amount * (SHADES - 1))));
-  return { colour: `var(--shade${step}, ${SHADE_THEME[`shade${step}`].light})` };
+  return { colour: colourFrom(SHADE_THEME[`shade${step}`].light, `shade${step}`) };
 }

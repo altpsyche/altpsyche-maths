@@ -1,24 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import * as door from '@altpsyche/maths';
-import {
-  boundsOf,
-  boundsOfMarks,
-  arrow3,
-  camera3,
-  centreOf,
-  interval,
-  dot3,
-  flatten,
-  orthographic,
-  perspective,
-  polyline3,
-  scene3,
-  surface3,
-  text3,
-  vec3,
-  vectorField3,
-  type Vec3,
-} from '@altpsyche/maths';
+import { arrow3, boundsOf, boundsOfMarks, camera3, centreOf, colourFrom, dot3, flatten, interval, orthographic, perspective, polyline3, scene3, surface3, text3, vec3, vectorField3, type Vec3 } from '@altpsyche/maths';
 
 /**
  * Marks placed in space, checked against the camera that placed them: every
@@ -38,7 +20,7 @@ const SQUARE = [vec3(-1, -1, 0), vec3(1, -1, 0), vec3(1, 1, 0), vec3(-1, 1, 0)];
 
 describe('polyline3', () => {
   it('draws a square in space at the camera projection of its corners', () => {
-    const node = polyline3('square', SQUARE, eye, { close: true, stroke: { colour: 'black', width: 0.02 } });
+    const node = polyline3('square', SQUARE, eye, { close: true, stroke: { colour: colourFrom('#000000'), width: 0.02 } });
     const marks = flatten(node);
     expect(marks).toHaveLength(1);
     const mark = marks[0];
@@ -57,7 +39,7 @@ describe('polyline3', () => {
 
   it('cuts a line where it crosses the near plane', () => {
     const points = [vec3(1, 1, 0), vec3(1, 1, 9)];
-    const node = polyline3('line', points, eye, { stroke: { colour: 'black', width: 0.02 } });
+    const node = polyline3('line', points, eye, { stroke: { colour: colourFrom('#000000'), width: 0.02 } });
     const marks = flatten(node);
     expect(marks).toHaveLength(1);
     const mark = marks[0];
@@ -80,7 +62,7 @@ describe('polyline3', () => {
   });
 
   it('draws nothing for a line wholly behind the eye', () => {
-    const node = polyline3('gone', [vec3(1, 1, 7), vec3(2, 2, 9)], eye, { stroke: { colour: 'black', width: 0.02 } });
+    const node = polyline3('gone', [vec3(1, 1, 7), vec3(2, 2, 9)], eye, { stroke: { colour: colourFrom('#000000'), width: 0.02 } });
     expect(node.children).toHaveLength(0);
     expect(flatten(node)).toHaveLength(0);
   });
@@ -88,7 +70,7 @@ describe('polyline3', () => {
   it('opens a closed run that the near plane cut', () => {
     const node = polyline3('square', [vec3(-1, -1, 0), vec3(1, -1, 0), vec3(1, 1, 9)], eye, {
       close: true,
-      stroke: { colour: 'black', width: 0.02 },
+      stroke: { colour: colourFrom('#000000'), width: 0.02 },
     });
     const marks = flatten(node);
     expect(marks).toHaveLength(1);
@@ -98,13 +80,13 @@ describe('polyline3', () => {
 
   it('draws every piece of a line that passes the eye and comes back', () => {
     const points = [vec3(1, 1, 0), vec3(1, 1, 9), vec3(2, 2, 0)];
-    const node = polyline3('there and back', points, eye, { stroke: { colour: 'black', width: 0.02 } });
+    const node = polyline3('there and back', points, eye, { stroke: { colour: colourFrom('#000000'), width: 0.02 } });
     expect(node.children).toHaveLength(2);
     expect(flatten(node)).toHaveLength(2);
   });
 
   it('cuts nothing under an eye that shrinks nothing', () => {
-    const node = polyline3('line', [vec3(1, 1, 0), vec3(1, 1, 9)], flat, { stroke: { colour: 'black', width: 0.02 } });
+    const node = polyline3('line', [vec3(1, 1, 0), vec3(1, 1, 9)], flat, { stroke: { colour: colourFrom('#000000'), width: 0.02 } });
     const marks = flatten(node);
     expect(marks).toHaveLength(1);
     if (marks[0].kind !== 'path') return;
@@ -114,7 +96,7 @@ describe('polyline3', () => {
 
 describe('dot3 and text3', () => {
   it('marks a point in space where the camera puts it', () => {
-    const node = dot3('point', vec3(1, 1, 0), 0.1, { colour: 'red' }, eye);
+    const node = dot3('point', vec3(1, 1, 0), 0.1, { colour: colourFrom('#ff0000') }, eye);
     const marks = flatten(node);
     expect(marks).toHaveLength(1);
     expect(marks[0].id).toBe('point/disc');
@@ -128,7 +110,7 @@ describe('dot3 and text3', () => {
   });
 
   it('writes a label at a point in space', () => {
-    const node = text3('name', vec3(1, 1, 0), 'P', 0.3, eye, { fill: { colour: 'black' } });
+    const node = text3('name', vec3(1, 1, 0), 'P', 0.3, eye, { fill: { colour: colourFrom('#000000') } });
     const marks = flatten(node);
     expect(marks).toHaveLength(1);
     expect(marks[0].kind).toBe('text');
@@ -139,15 +121,15 @@ describe('dot3 and text3', () => {
   });
 
   it('draws neither a dot nor a label behind the eye', () => {
-    expect(flatten(dot3('point', vec3(1, 1, 9), 0.1, { colour: 'red' }, eye))).toHaveLength(0);
-    expect(flatten(text3('name', vec3(1, 1, 9), 'P', 0.3, eye, { fill: { colour: 'black' } }))).toHaveLength(0);
+    expect(flatten(dot3('point', vec3(1, 1, 9), 0.1, { colour: colourFrom('#ff0000') }, eye))).toHaveLength(0);
+    expect(flatten(text3('name', vec3(1, 1, 9), 'P', 0.3, eye, { fill: { colour: colourFrom('#000000') } }))).toHaveLength(0);
   });
 });
 
 describe('space', () => {
   const quad = (name: string, z: number, camera = eye) => {
     const points = [vec3(-1, -1, z), vec3(1, -1, z), vec3(1, 1, z), vec3(-1, 1, z)];
-    return { points, node: polyline3(name, points, camera, { close: true, fill: { colour: 'grey' } }) };
+    return { points, node: polyline3(name, points, camera, { close: true, fill: { colour: colourFrom('#808080') } }) };
   };
 
   it('paints the far piece before the near one, whichever side the eye is on', () => {
@@ -168,10 +150,10 @@ describe('space', () => {
   it('orders a line against a face by the same rule', () => {
     const face = quad('face', 0);
     const points = [vec3(-2, 0, 2), vec3(2, 0, 2)];
-    const line = { points, node: polyline3('line', points, eye, { stroke: { colour: 'black', width: 0.02 } }) };
+    const line = { points, node: polyline3('line', points, eye, { stroke: { colour: colourFrom('#000000'), width: 0.02 } }) };
     expect(scene3('scene', [line, face], eye).children.map((child) => child.name)).toEqual(['face', 'line']);
     const away = [vec3(-2, 0, -2), vec3(2, 0, -2)];
-    const behind = { points: away, node: polyline3('line', away, eye, { stroke: { colour: 'black', width: 0.02 } }) };
+    const behind = { points: away, node: polyline3('line', away, eye, { stroke: { colour: colourFrom('#000000'), width: 0.02 } }) };
     expect(scene3('scene', [behind, face], eye).children.map((child) => child.name)).toEqual(['line', 'face']);
   });
 
@@ -201,7 +183,7 @@ describe('surface3', () => {
       cull,
       shade: (amount) => {
         shades.push(amount);
-        return { colour: 'rgb(0, 0, 0)' };
+        return { colour: colourFrom('rgb(0, 0, 0)') };
       },
     });
 
@@ -240,7 +222,7 @@ describe('surface3', () => {
   it('takes a different count each way', () => {
     const uneven = surface3('sheet', (u, v) => vec3(u, v, 0), looking, {
       resolution: { u: 5, v: 3 },
-      shade: () => ({ colour: 'grey' }),
+      shade: () => ({ colour: colourFrom('#808080') }),
     });
     expect(uneven.children).toHaveLength(15);
   });
@@ -256,7 +238,7 @@ describe('surface3', () => {
         return sphere(u, v);
       },
       looking,
-      { resolution: 28, shade: () => ({ colour: 'grey' }) }
+      { resolution: 28, shade: () => ({ colour: colourFrom('#808080') }) }
     );
     expect(asked).toBe(29 * 29);
   });
@@ -291,7 +273,7 @@ describe('the door', () => {
 });
 
 describe('arrow3', () => {
-  const pen = { colour: '#111', width: 0.02 };
+  const pen = { colour: colourFrom('#111'), width: 0.02 };
 
   it('puts its tip at the camera projection of its far point', () => {
     const to = vec3(1, 2, -1);
@@ -323,13 +305,13 @@ describe('arrow3', () => {
 });
 
 describe('vectorField3', () => {
-  const pen = { colour: '#111', width: 0.02 };
+  const pen = { colour: colourFrom('#111'), width: 0.02 };
   const swirl = (at: Vec3) => vec3(-at.y, at.x, 0.5);
   const options = {
     over: { x: interval(-1, 1), y: interval(-1, 1), z: interval(-1, 1) },
     resolution: { x: 4, y: 4, z: 3 },
     lengthOf: () => 0.2,
-    colourFor: (magnitude: number) => (magnitude > 1 ? '#f00' : '#00f'),
+    colourFor: (magnitude: number) => colourFrom(magnitude > 1 ? '#f00' : '#00f'),
     stroke: pen,
   };
 

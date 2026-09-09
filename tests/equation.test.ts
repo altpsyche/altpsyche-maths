@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { equationFromTex, equationOf, equationNode, flatten, matchGlyphs, vec2 } from '@altpsyche/maths';
+import { colourFrom, equationFromTex, equationNode, equationOf, flatten, hexOf, matchGlyphs, vec2 } from '@altpsyche/maths';
 import type { EquationElement, PathMark } from '@altpsyche/maths';
 
 /**
@@ -142,7 +142,7 @@ describe('an equation placed in a figure', () => {
         at: vec2(1, 2),
         width,
         height,
-        fill: { colour: '#1b1b1b' },
+        fill: { colour: colourFrom('#1b1b1b') },
       })
     );
     const points = marks.flatMap((mark) =>
@@ -185,15 +185,15 @@ describe('an equation placed in a figure', () => {
     expect(marks.length).toBeGreaterThan(0);
     expect(marks.every((mark) => mark.id.startsWith('label/'))).toBe(true);
     expect(new Set(marks.map((mark) => mark.id)).size).toBe(marks.length);
-    expect(marks.every((mark) => mark.kind === 'path' && mark.fill?.colour === '#1b1b1b')).toBe(true);
+    expect(marks.every((mark) => mark.kind === 'path' && hexOf(mark.fill!.colour) === '#1b1b1b')).toBe(true);
   });
 
   it('moves as one matrix rather than as moved geometry', async () => {
     // The glyphs keep the typesetter's own numbers, so the same equation placed
     // twice differs by the group's transform and by nothing else.
     const equation = await equationFromTex('x');
-    const here = equationNode('a', equation, { at: vec2(0, 0), width: 1, height: 1, fill: { colour: 'red' } });
-    const there = equationNode('a', equation, { at: vec2(5, 5), width: 1, height: 1, fill: { colour: 'red' } });
+    const here = equationNode('a', equation, { at: vec2(0, 0), width: 1, height: 1, fill: { colour: colourFrom('#ff0000') } });
+    const there = equationNode('a', equation, { at: vec2(5, 5), width: 1, height: 1, fill: { colour: colourFrom('#ff0000') } });
     expect(here.children).toEqual(there.children);
     expect(here.transform).not.toEqual(there.transform);
   });
@@ -207,7 +207,7 @@ describe('an equation placed by an edge', () => {
         width: 1.2,
         height: 0.6,
         align,
-        fill: { colour: '#1b1b1b' },
+        fill: { colour: colourFrom('#1b1b1b') },
       })
     );
     const points = marks.flatMap((mark) =>
@@ -248,12 +248,12 @@ describe('an equation placed by an edge', () => {
     const shifted = async (align?: 'start' | 'middle' | 'end') => {
       const from = flatten(
         equationNode('a', await equationFromTex('\\frac{dy}{dx} = 0'), {
-          at: vec2(0, 0), width: 1.2, height: 0.6, align, fill: { colour: 'red' },
+          at: vec2(0, 0), width: 1.2, height: 0.6, align, fill: { colour: colourFrom('#ff0000') },
         })
       );
       const to = flatten(
         equationNode('b', await equationFromTex('\\frac{dy}{dx} = 2x'), {
-          at: vec2(0, 0), width: 1.2, height: 0.6, align, fill: { colour: 'red' },
+          at: vec2(0, 0), width: 1.2, height: 0.6, align, fill: { colour: colourFrom('#ff0000') },
         })
       );
       const pairs = matchGlyphs(from, to).pairs;

@@ -21,7 +21,13 @@
                 "y": 0.2
               },
               "fill": {
-                "colour": "var(--ember, #c2410c)"
+                "colour": {
+                  "a": 1,
+                  "b": 12,
+                  "g": 65,
+                  "name": "ember",
+                  "r": 194
+                }
               },
               "kind": "dot",
               "name": "pivot",
@@ -63,10 +69,22 @@
                   },
                   "style": {
                     "fill": {
-                      "colour": "var(--peach, #fdba74)"
+                      "colour": {
+                        "a": 1,
+                        "b": 116,
+                        "g": 186,
+                        "name": "peach",
+                        "r": 253
+                      }
                     },
                     "stroke": {
-                      "colour": "var(--deep, #0369a1)",
+                      "colour": {
+                        "a": 1,
+                        "b": 161,
+                        "g": 105,
+                        "name": "deep",
+                        "r": 3
+                      },
                       "width": 0.04
                     }
                   }
@@ -82,7 +100,13 @@
                   "options": {
                     "align": "middle",
                     "fill": {
-                      "colour": "var(--ink, #1b1b1b)"
+                      "colour": {
+                        "a": 1,
+                        "b": 27,
+                        "g": 27,
+                        "name": "ink",
+                        "r": 27
+                      }
                     }
                   },
                   "size": 0.296
@@ -102,7 +126,13 @@
               "options": {
                 "align": "middle",
                 "fill": {
-                  "colour": "var(--ink, #1b1b1b)"
+                  "colour": {
+                    "a": 1,
+                    "b": 27,
+                    "g": 27,
+                    "name": "ink",
+                    "r": 27
+                  }
                 }
               },
               "size": 0.41860721446243615
@@ -119,7 +149,13 @@
                 "y": 0.2
               },
               "fill": {
-                "colour": "var(--ember, #c2410c)"
+                "colour": {
+                  "a": 1,
+                  "b": 12,
+                  "g": 65,
+                  "name": "ember",
+                  "r": 194
+                }
               },
               "kind": "dot",
               "name": "pivot",
@@ -161,10 +197,22 @@
                   },
                   "style": {
                     "fill": {
-                      "colour": "var(--peach, #fdba74)"
+                      "colour": {
+                        "a": 1,
+                        "b": 116,
+                        "g": 186,
+                        "name": "peach",
+                        "r": 253
+                      }
                     },
                     "stroke": {
-                      "colour": "var(--deep, #0369a1)",
+                      "colour": {
+                        "a": 1,
+                        "b": 161,
+                        "g": 105,
+                        "name": "deep",
+                        "r": 3
+                      },
                       "width": 0.04
                     }
                   }
@@ -180,7 +228,13 @@
                   "options": {
                     "align": "middle",
                     "fill": {
-                      "colour": "var(--ink, #1b1b1b)"
+                      "colour": {
+                        "a": 1,
+                        "b": 27,
+                        "g": 27,
+                        "name": "ink",
+                        "r": 27
+                      }
                     }
                   },
                   "size": 0.296
@@ -200,7 +254,13 @@
               "options": {
                 "align": "middle",
                 "fill": {
-                  "colour": "var(--ink, #1b1b1b)"
+                  "colour": {
+                    "a": 1,
+                    "b": 27,
+                    "g": 27,
+                    "name": "ink",
+                    "r": 27
+                  }
                 }
               },
               "size": 0.41860721446243615

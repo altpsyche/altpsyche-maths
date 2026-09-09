@@ -15,12 +15,12 @@ No part of that requires a browser. A figure at a time is an array, and an array
 test.
 
 ```ts
-import { circle, flatten, group, marksAt, shape, vec2 } from '@altpsyche/maths';
+import { circle, colourFrom, flatten, group, marksAt, shape, vec2 } from '@altpsyche/maths';
 
 const figure = {
   extent: { width: 16, height: 9 },
   still: 0,
-  scene: group('fig', [shape('ring', circle(vec2(0, 0), 3), { stroke: { colour: '#fff', width: 0.05 } })]),
+  scene: group('fig', [shape('ring', circle(vec2(0, 0), 3), { stroke: { colour: colourFrom('#fff'), width: 0.05 } })]),
 };
 
 marksAt(figure, 0);
@@ -34,16 +34,17 @@ therefore read one figure.
 
 The examples build on each other and share four styles, one path and one canvas context, defined
 here. A **style** is a fill, a stroke, or both. The colours belong to the author: the package holds
-no palette and reads none from the page.
+no palette and reads none from the page. `colourFrom` builds one from its text, and the second
+argument is the CSS custom property a page overrides it under.
 
 ```ts
-import { circle, vec2 } from '@altpsyche/maths';
+import { circle, colourFrom, vec2 } from '@altpsyche/maths';
 import type { CanvasLike, Fill, Path, Stroke } from '@altpsyche/maths';
 
-const ink: Fill = { colour: '#1b1b1b' };
-const pen: Stroke = { colour: '#1b1b1b', width: 0.04 };
-const faint: Stroke = { colour: '#b4b9c0', width: 0.02 };
-const drawn: Stroke = { colour: '#c2410c', width: 0.05 };
+const ink: Fill = { colour: colourFrom('#1b1b1b', 'ink') };
+const pen: Stroke = { colour: colourFrom('#1b1b1b', 'ink'), width: 0.04 };
+const faint: Stroke = { colour: colourFrom('#b4b9c0', 'mist'), width: 0.02 };
+const drawn: Stroke = { colour: colourFrom('#c2410c', 'ember'), width: 0.05 };
 const path: Path = circle(vec2(0, 0), 3);
 
 // The two-dimensional context of a canvas the caller holds, which a recorder paints into.
@@ -573,7 +574,7 @@ import { streamlineOf, vec2, vectorField } from '@altpsyche/maths';
 
 vectorField('slopes', coords, (at) => vec2(1, 2 * at.x), {
   lengthOf: (magnitude) => 0.3 / (1 + magnitude),
-  colourFor: () => '#0369a1',
+  colourFor: () => colourFrom('#0369a1', 'deep'),
   width: 0.012,
   resolution: 12,
 });
@@ -613,7 +614,7 @@ dot3('corner', vec3(1, 1, 1), 0.05, ink, camera);
 surface3('saddle', (u, v) => vec3(u, v, u * u - v * v), camera, {
   over: { u: interval(-1, 1), v: interval(-1, 1) },
   resolution: 12,
-  shade: (amount) => ({ colour: `rgb(${Math.round(150 + 90 * amount)}, 0, 0)` }),
+  shade: (amount) => ({ colour: { r: Math.round(150 + 90 * amount), g: 0, b: 0, a: 1 } }),
 });
 ```
 
@@ -699,8 +700,10 @@ gradient, SVG with an element carrying a document-unique identifier and a canvas
 from the context, so `Fill.gradient` sits beside `Fill.colour` rather than replacing it. The one
 colour stays because a contrast reading and anything else needing a single colour has to have one.
 
-**A figure never reads the page.** Colour enters as text. `colourOf` parses hex and `rgb()` for
-interpolation in sRGB and rejects every other form rather than guessing at it.
+**A figure never reads the page.** A colour is four channels and, where its author gave it one, the
+name a page themes it under, so the SVG painter writes `var(--name, #rrggbb)` and every other painter
+reads the numbers. `colourFrom` builds one from hex or `rgb()` and throws on every other form rather
+than guessing at it.
 
 **A stroke's width is one number or a taper between two, and nothing else.** A width per point,
 which is what a renderer of its own would offer, is not something a figure can name here.

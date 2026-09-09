@@ -1,23 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import {
-  circle,
-  flatten,
-  group,
-  interval,
-  line,
-  mat3,
-  paintCanvas,
-  paintSvg,
-  shape,
-  svgElements,
-  text,
-  vec2,
-  viewMatrix,
-  type CanvasLike,
-  type Mark,
-  type PaintNode,
-  type SvgElement,
-} from '@altpsyche/maths';
+import { circle, colourFrom, flatten, group, interval, line, mat3, paintCanvas, paintSvg, shape, svgElements, text, vec2, viewMatrix, type CanvasLike, type Mark, type PaintNode, type SvgElement } from '@altpsyche/maths';
 
 /**
  * The rectangular clip, in the tree that declares it and in the two painters
@@ -32,8 +14,8 @@ import {
  * over, so (x, y) lands at (100 + 10x, 50 - 10y). */
 const view = viewMatrix({ width: 20, height: 10 }, 'contain', 200, 100);
 
-const ink = { colour: '#0f0' };
-const pen = { colour: '#fff', width: 1 };
+const ink = { colour: colourFrom('#0f0') };
+const pen = { colour: colourFrom('#fff'), width: 1 };
 
 /** The box from (0, -2) to (4, 2), which is 100 to 140 across the surface and 30
  * to 70 down it. */
@@ -184,7 +166,7 @@ describe('a mark against its clip', () => {
 
   it('keeps its clip through being drawn as the outline of a tapered stroke', () => {
     const tapered = shape('rule', line(vec2(1, 0), vec2(3, 0)), {
-      stroke: { colour: '#fff', width: { from: 0.2, to: 0.6 } },
+      stroke: { colour: colourFrom('#fff'), width: { from: 0.2, to: 0.6 } },
       clip: box,
     });
     const [mark] = flatten(tapered);
@@ -313,8 +295,8 @@ describe('the id of a clip', () => {
 
   it('differs from the id of the same mark gradient', () => {
     const washed = {
-      colour: '#345',
-      gradient: { from: vec2(0, 0), to: vec2(2, 0), stops: [{ offset: 0, colour: '#012' }, { offset: 1, colour: '#678' }] },
+      colour: colourFrom('#345'),
+      gradient: { from: vec2(0, 0), to: vec2(2, 0), stops: [{ offset: 0, colour: colourFrom('#012') }, { offset: 1, colour: colourFrom('#678') }] },
     };
     const marks = flatten(shape('disc', circle(vec2(1, 0), 1), { fill: washed, clip: box }));
     const defs = defsOf(svgElements(marks, view));

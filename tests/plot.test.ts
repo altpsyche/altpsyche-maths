@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { areaUnder, coordsOf, flatten, interval, plot, pointCount, pointOf, riemannBars, scaleOf, slopeOf, tangentAt, type Path } from '../index.js';
+import { areaUnder, colourFrom, coordsOf, flatten, interval, plot, pointCount, pointOf, riemannBars, scaleOf, slopeOf, tangentAt, type Path } from '../index.js';
 
 // The demo's own coords, whose y axis stops at 9 while the parabola reaches 16.
 const square = coordsOf(scaleOf(interval(-1, 4), interval(-4.6, 4.6)), scaleOf(interval(-1, 9), interval(-2.4, 2.4)));
@@ -272,7 +272,7 @@ describe('the bars under a curve', () => {
   const perGraphUnit =
     (interval.span(tall.x.units) / interval.span(tall.x.graph)) *
     (interval.span(tall.y.units) / interval.span(tall.y.graph));
-  const wash = { colour: '#c2410c' };
+  const wash = { colour: colourFrom('#c2410c') };
   const summed = (bars: number, height: 'left' | 'right' | 'middle') =>
     enclosedArea(
       flatten(riemannBars('bars', tall, (x) => x * x, { fill: wash, bars, height, over: interval(0, 2) })).flatMap(

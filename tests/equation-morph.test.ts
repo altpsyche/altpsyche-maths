@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { equationFromTex, equationNode, flatten, group, matchGlyphs, morphEquation, vec2 } from '@altpsyche/maths';
+import { colourFrom, equationFromTex, equationNode, flatten, group, matchGlyphs, morphEquation, vec2 } from '@altpsyche/maths';
 import type { Mark, PathMark } from '@altpsyche/maths';
 
 /**
@@ -9,7 +9,7 @@ import type { Mark, PathMark } from '@altpsyche/maths';
  * picture the flat demo draws: six glyphs stay put, one leaves and two arrive.
  */
 
-const ink = { colour: '#1b1b1b' };
+const ink = { colour: colourFrom('#1b1b1b') };
 const box = { at: vec2(0, 0), width: 4, height: 1, fill: ink };
 
 async function scene(): Promise<readonly Mark[]> {

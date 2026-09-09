@@ -1,8 +1,8 @@
 import { describe, expect, it } from 'vitest';
-import { axes, coordsOf, flatten, interval, numberLine, numberPlane, scaleOf, widestWidth, type Mark } from '../index.js';
+import { axes, colourFrom, coordsOf, flatten, interval, numberLine, numberPlane, scaleOf, widestWidth, type Mark } from '../index.js';
 
-const pen = { colour: '#222', width: 0.02 };
-const ink = { colour: '#222' };
+const pen = { colour: colourFrom('#222'), width: 0.02 };
+const ink = { colour: colourFrom('#222') };
 const across = scaleOf(interval(-1, 4), interval(-4.6, 4.6));
 const up = scaleOf(interval(-1, 9), interval(-2.4, 2.4));
 
@@ -232,7 +232,7 @@ describe('a pair of axes', () => {
 
 describe('the grid behind a graph', () => {
   const coords = coordsOf(across, up);
-  const faint = { colour: '#ddd', width: 0.01 };
+  const faint = { colour: colourFrom('#ddd'), width: 0.01 };
 
   it('stands a line on every tick of both axes', () => {
     const marks = flatten(numberPlane('grid', coords, { stroke: faint }));

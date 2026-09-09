@@ -362,8 +362,9 @@ export interface FillRecord extends Omit<Fill, 'gradient'> {
  * reaches part of the ramp alone, and a band spreads the whole ramp over the part
  * the surface uses.
  *
- * A ramp rather than a function is what the format can carry: a fill is a colour
- * written as text and nothing here parses one, so two colours cannot be mixed.
+ * A ramp rather than a function is what the format can carry: the shading a cell
+ * takes is a number and the vocabulary of expressions has no colour, so the
+ * steps are written out and the amount picks one.
  */
 export interface ShadeRecord {
   readonly ramp: readonly FillRecord[];
@@ -583,7 +584,7 @@ const lengthFrom = (expression: Expression, bindings: Bindings) => (magnitude: n
  * has one answer.
  */
 function colourFrom(choice: ColourChoice, bindings: Bindings) {
-  if (typeof choice === 'string') return () => choice;
+  if (!('kind' in choice)) return () => choice;
   return (magnitude: number): Colour => {
     const inner = binding(bindings, { magnitude });
     let colour = choice.first;

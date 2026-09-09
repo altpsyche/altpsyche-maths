@@ -16,17 +16,16 @@
  *
  * A gradient is refused for a different reason, since both painters draw one.
  * SVG names a gradient with an element carrying an id and a canvas names it with
- * an object built from the context, and a colour here is text that both take as
- * it stands.
+ * an object built from the context, and a colour here is four channels each
+ * painter writes in its own text.
  */
+import type { Colour } from '../values/colour.js';
 import type { CurveName } from '../values/ease.js';
 import type { Vec2 } from '../values/vec2.js';
 import type { Bounds } from './bounds.js';
 import type { Path } from './path.js';
 
-/** A colour either painter accepts, which is any CSS colour written as text. A
- * figure is handed these in a palette rather than reading them from a page. */
-export type Colour = string;
+export type { Colour };
 
 /**
  * A width that changes along the length of a stroke.

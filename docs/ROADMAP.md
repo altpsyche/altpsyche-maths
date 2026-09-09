@@ -475,8 +475,14 @@ axes, its three runs of descent and its crossing curve all draw from records at 
 its strip draws. The door is 316 names and the suite is 894 tests over 58 files. Step 3.11 added
 `surface3`, `surfaceCells`, `fieldArrows3` and `vectorField3`, with `sectionOf` and `streamlineOf` as
 the point producers they are, so steps 1 through 7.5 are landed. The door is 373 names and the suite
-is 1,017 tests over 65 files. **Step 12 is what a session runs next**, which is the colour, and it
-runs before step 8 so a colour is not written into four demo files and changed afterwards.
+is 1,017 tests over 65 files.
+
+Step 12 made a colour four channels and an optional name, so no mark carries a CSS custom property
+and the SVG painter writes the `var()` from the channels it holds. All eight sheets are byte for byte
+what they were, demos/rotate.figure.json went from 6,624 bytes to 8,244 with no `var(` left in it,
+and the flat demo's 185 colour slots at its still time each carry four channels and a name over 9
+distinct colours. The door is 375 names and the suite is 1,024 tests over 65 files. **Step 8 is what
+a session runs next**, which is the three demos rewritten as files.
 
 **Two things fall due before the format freezes and both are Siva's**, which are
 whether a `Mark` may be a raster image, due by step 3 where the node vocabulary lands, and the
@@ -1146,6 +1152,12 @@ import. **It goes after 2.0.0 rather than before** because a recorder reads a fi
 format a recorder reads a file, which is also what lets one run without a page around it.
 
 ## Found while working, not yet queued
+
+- **The README's two counts have been stale since step 3 and step 9 is where they are fixed.** It
+  says a suite of 785 tests and 266 names at the door, against 1,024 tests over 65 files and 375
+  names as the tree reads now. The reference's own count is gated and is right, so what is wrong is
+  the README's prose alone. Step 9 rewrites the guide and the reference and is the commit that owns
+  a number in a document, so putting it there keeps one commit to one finding.
 
 - **A tapered stroke's outline is unstable in the last bits of its centreline, and the drawn width is
   what pays.** `outlinePath` splits a run until the width along it is straight enough, halving the

@@ -41,18 +41,25 @@ by the same four functions.
 
 ## Colours
 
-A colour in a figure is a string, which is what both painters accept. These three parse one back so
-that two can be interpolated.
+A colour in a figure is four channels and, where its author gave it one, the name a page themes it
+under. It is not text, because a renderer in another language cannot resolve a CSS custom property
+and a shader takes numbers. The text forms are still what a figure is written with, and these read
+one in and write one back out.
 
+- `colourFrom(colour, name)` — a colour built from its text, carrying `name` where one is given.
+  A form `colourOf` does not read throws, naming the text it was given.
 - `colourOf(colour)` — a colour read out of its text as `Rgba`, or nothing where the form is one
   this does not read. Hex takes three, four, six or eight digits. `rgb()` and `rgba()` take channels
   separated by commas or spaces, as numbers or percentages, and either name takes an alpha.
+- `hexOf(rgba)` — a colour written back out as hex, six digits where it is opaque and eight where it
+  is not. A hex read in and written back out is the hex that was read, which is what holds a figure's
+  sheets byte for byte.
 - `colourText(rgba)` — a colour written back out, as `rgb()` where it is opaque and `rgba()` where
   it is not. The channels are rounded, so the same colour reached two ways is the same string.
-- `lerpColour(from, to, along)` — a colour `along` of the way from one to another, or nothing where
-  either end is a form `colourOf` does not read. The walk is straight through each channel in sRGB,
-  which is what CSS mixes in when nothing names a space.
-- `Rgba` — a colour read out of its text.
+- `lerpColour(from, to, along)` — a colour `along` of the way from one to another. The walk is
+  straight through each channel in sRGB, which is what CSS mixes in when nothing names a space. The
+  mixed colour carries no name, since a page themes the two ends and has no value between them.
+- `Rgba` — the four channels of a colour.
   - `r`, `g`, `b` — each channel, nothing to 255.
   - `a` — the alpha, 0 to 1.
 
@@ -358,7 +365,10 @@ numbers and a pointwise map of a shape.
 A mark is what a painter draws. It may request only what both painters implement, so there are no
 filters and no blend modes, and a clip is a rectangle and no other shape.
 
-- `Colour` — a colour as text, which is any colour a CSS author can write.
+- `Colour` — `Rgba`, plus:
+  - `name` — the CSS custom property a page overrides the channels under. The SVG painter writes
+    `var(--name, #rrggbb)` where a colour has one and the hex alone where it does not, and every
+    other painter reads the channels and ignores the name.
 - `Fill` — how an inside is painted.
   - `colour` — the one colour this fill has, which is what anything needing a single colour reads, a
     contrast reading included.
@@ -1032,8 +1042,8 @@ a group of that name.
   of the mark's own colours is walked towards the colour named and back again.
 - `IndicateOptions` — `AboutOptions`, plus:
   - `factor` — how big it gets at the middle of the span.
-  - `colour` — the colour it is walked towards, reached at the middle of the span. A colour
-    `colourOf` cannot read is held at the far end rather than mixed towards a guess.
+  - `colour` — the colour it is walked towards, reached at the middle of the span. A mark part of
+    the way there carries no name, so it paints the mixed channels rather than following a theme.
 - `flash(target, options)` — rays out from a point and gone, for a moment a figure wants a reader to
   look at.
 - `FlashOptions` — what a flash takes.

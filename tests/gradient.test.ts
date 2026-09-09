@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { flatten, group, mat3, paintCanvas, rotate, scale, shape, svgMarkup, text, transformFill, vec2, circle, marksAt, Timeline, linear } from '@altpsyche/maths';
+import { circle, colourFrom, flatten, group, hexOf, linear, marksAt, mat3, paintCanvas, rotate, scale, shape, svgMarkup, text, Timeline, transformFill, vec2 } from '@altpsyche/maths';
 import type { Figure, Fill, Gradient, Mark } from '@altpsyche/maths';
 
 /**
@@ -15,13 +15,13 @@ const wash: Gradient = {
   from: vec2(0, 0),
   to: vec2(2, 0),
   stops: [
-    { offset: 0, colour: '#012' },
-    { offset: 0.5, colour: '#345' },
-    { offset: 1, colour: '#678' },
+    { offset: 0, colour: colourFrom('#012') },
+    { offset: 0.5, colour: colourFrom('#345') },
+    { offset: 1, colour: colourFrom('#678') },
   ],
 };
 
-const washed: Fill = { colour: '#345', gradient: wash };
+const washed: Fill = { colour: colourFrom('#345'), gradient: wash };
 
 const gradientOf = (mark: Mark | undefined): Gradient => {
   const fill = mark?.kind === 'path' || mark?.kind === 'text' ? mark.fill : undefined;
@@ -34,16 +34,16 @@ describe('a fill that is a gradient', () => {
     const marks = flatten(shape('disc', circle(vec2(0, 0), 1), { fill: washed }));
     const read = gradientOf(marks[0]);
     expect(read.stops.map((stop) => stop.offset)).toEqual([0, 0.5, 1]);
-    expect(read.stops.map((stop) => stop.colour)).toEqual(['#012', '#345', '#678']);
+    expect(read.stops.map((stop) => hexOf(stop.colour))).toEqual(['#001122', '#334455', '#667788']);
   });
 
   it('keeps the one colour beside the stops, which is what a contrast reading takes', () => {
     const marks = flatten(shape('disc', circle(vec2(0, 0), 1), { fill: washed }));
-    expect(marks[0].kind === 'path' && marks[0].fill?.colour).toBe('#345');
+    expect(marks[0].kind === 'path' && hexOf(marks[0].fill!.colour)).toBe('#334455');
   });
 
   it('hands back a fill of one colour untouched', () => {
-    const flat: Fill = { colour: '#111' };
+    const flat: Fill = { colour: colourFrom('#111') };
     expect(transformFill(flat, mat3.scaling(vec2(3, 3)))).toBe(flat);
   });
 });
@@ -59,7 +59,7 @@ describe('a gradient written as SVG', () => {
     expect(markup).toContain('<linearGradient id="disc" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="2" y2="0">');
     const stops = [...markup.matchAll(/<stop offset="([^"]*)" stop-color="([^"]*)"\/>/g)];
     expect(stops.map((stop) => stop[1])).toEqual(['0', '0.5', '1']);
-    expect(stops.map((stop) => stop[2])).toEqual(['#012', '#345', '#678']);
+    expect(stops.map((stop) => stop[2])).toEqual(['#001122', '#334455', '#667788']);
   });
 
   it('points the mark at that element rather than at a colour', () => {
@@ -72,9 +72,9 @@ describe('a gradient written as SVG', () => {
   });
 
   it('writes no defs at all for a sheet with no gradient in it', () => {
-    const flat = svgMarkup(flatten(shape('disc', circle(vec2(0, 0), 1), { fill: { colour: '#111' } })), mat3.IDENTITY, 10, 10);
+    const flat = svgMarkup(flatten(shape('disc', circle(vec2(0, 0), 1), { fill: { colour: colourFrom('#111') } })), mat3.IDENTITY, 10, 10);
     expect(flat).not.toContain('<defs>');
-    expect(flat).toContain('fill="#111"');
+    expect(flat).toContain('fill="#111111"');
   });
 
   it('gives two figures in one document no repeated id, once each names its own prefix', () => {
@@ -143,9 +143,9 @@ describe('a gradient painted onto a canvas', () => {
     const recorder = painted();
     expect(recorder.built).toHaveLength(1);
     expect(recorder.built[0].stops).toEqual([
-      [0, '#012'],
-      [0.5, '#345'],
-      [1, '#678'],
+      [0, '#001122'],
+      [0.5, '#334455'],
+      [1, '#667788'],
     ]);
   });
 
@@ -156,7 +156,7 @@ describe('a gradient painted onto a canvas', () => {
   it('fills with the gradient it built rather than with the colour beside it', () => {
     const recorder = painted();
     expect(recorder.filled).toHaveLength(1);
-    expect(recorder.filled[0]).not.toBe('#345');
+    expect(recorder.filled[0]).not.toBe('#334455');
   });
 
   it('paints the one colour where a context cannot build a gradient at all', () => {
@@ -167,7 +167,7 @@ describe('a gradient painted onto a canvas', () => {
     }
     const older = new Older();
     paintCanvas(older, flatten(shape('disc', circle(vec2(0, 0), 1), { fill: washed })), mat3.IDENTITY);
-    expect(older.filled).toEqual(['#345']);
+    expect(older.filled).toEqual(['#334455']);
     expect(older.built).toEqual([]);
   });
 });

@@ -1,30 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import {
-  Timeline,
-  areaOf,
-  draw,
-  flatten,
-  flattenPath,
-  group,
-  interval,
-  line,
-  linear,
-  marksAt,
-  mat3,
-  nearestEdge,
-  outlinePath,
-  outlinedMarks,
-  plot,
-  pointAlong,
-  shape,
-  svgMarkup,
-  tangentAt,
-  trimPath,
-  vec2,
-  widestWidth,
-  widthAt,
-} from '@altpsyche/maths';
-import type { Figure, Mark, Taper } from '@altpsyche/maths';
+import { areaOf, colourFrom, draw, flatten, flattenPath, group, hexOf, interval, line, linear, marksAt, mat3, nearestEdge, outlinedMarks, outlinePath, plot, pointAlong, shape, svgMarkup, tangentAt, Timeline, trimPath, vec2, widestWidth, widthAt } from '@altpsyche/maths';
+import type { Colour, Figure, Mark, Taper } from '@altpsyche/maths';
 import { coords, curve } from '../demos/tangent.js';
 
 /**
@@ -74,7 +50,7 @@ describe('the width a stroke has along its length', () => {
 
   it('goes through a group’s scale at both ends', () => {
     const tapered = shape('line', line(vec2(0, 0), vec2(1, 0)), {
-      stroke: { colour: '#000', width: { from: 0.4, to: 0.1 } },
+      stroke: { colour: colourFrom('#000'), width: { from: 0.4, to: 0.1 } },
     });
     const marks = flatten(group('all', [tapered], { transform: mat3.scaling(vec2(3, 3)) }));
     const stroke = marks[0].kind === 'path' ? marks[0].stroke : undefined;
@@ -123,11 +99,11 @@ describe('the outline of a tapered stroke', () => {
 });
 
 describe('a tapered stroke on its way to a painter', () => {
-  const tapered = (fill?: string): Mark => ({
+  const tapered = (fill?: Colour): Mark => ({
     kind: 'path',
     id: 'fig/line',
     path: line(vec2(0, 0), vec2(2, 0)),
-    stroke: { colour: '#e00', width: { from: 0.4, to: 0 } },
+    stroke: { colour: colourFrom('#e00'), width: { from: 0.4, to: 0 } },
     fill: fill ? { colour: fill } : undefined,
   });
 
@@ -138,19 +114,19 @@ describe('a tapered stroke on its way to a painter', () => {
     if (mark.kind !== 'path') throw new Error('an outline is a path');
     expect(mark.id).toBe('fig/line');
     expect(mark.stroke).toBeUndefined();
-    expect(mark.fill?.colour).toBe('#e00');
+    expect(hexOf(mark.fill!.colour)).toBe('#ee0000');
     expect(Math.abs(areaOf(mark.path))).toBeCloseTo(0.4, 12);
   });
 
   it('leaves the fill and the outline as two marks where a shape carries both', () => {
-    const drawn = outlinedMarks([tapered('#012')]);
+    const drawn = outlinedMarks([tapered(colourFrom('#012'))]);
     expect(drawn.map((mark) => mark.id)).toEqual(['fig/line', 'fig/line/stroke']);
     expect(drawn[0].kind === 'path' && drawn[0].stroke).toBeUndefined();
-    expect(drawn[1].kind === 'path' && drawn[1].fill?.colour).toBe('#e00');
+    expect(drawn[1].kind === 'path' && hexOf(drawn[1].fill!.colour)).toBe('#ee0000');
   });
 
   it('hands back a stroke of one width as it stands, and changes nothing on a second pass', () => {
-    const plain: Mark = { kind: 'path', id: 'fig/line', path: line(vec2(0, 0), vec2(2, 0)), stroke: { colour: '#000', width: 0.1 } };
+    const plain: Mark = { kind: 'path', id: 'fig/line', path: line(vec2(0, 0), vec2(2, 0)), stroke: { colour: colourFrom('#000'), width: 0.1 } };
     expect(outlinedMarks([plain])[0]).toBe(plain);
     const once = outlinedMarks([tapered()]);
     expect(outlinedMarks(once)).toEqual(once);
@@ -159,7 +135,7 @@ describe('a tapered stroke on its way to a painter', () => {
   it('reaches the SVG painter as a filled path rather than a stroked one', () => {
     const markup = svgMarkup([tapered()], mat3.IDENTITY, 10, 10);
     expect(markup).not.toContain('stroke-width');
-    expect(markup).toContain('fill="#e00"');
+    expect(markup).toContain('fill="#ee0000"');
   });
 });
 
@@ -169,7 +145,7 @@ describe('a tapered stroke drawn on', () => {
   const figure: Figure = {
     extent: { width: 4, height: 2 },
     still: 1,
-    scene: shape('line', path, { stroke: { colour: '#e00', width } }),
+    scene: shape('line', path, { stroke: { colour: colourFrom('#e00'), width } }),
     timeline: Timeline.empty().play(draw('line'), 1, { curve: linear }),
   };
 

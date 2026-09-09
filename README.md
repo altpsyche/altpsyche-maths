@@ -42,12 +42,12 @@ dynamic import inside `typesetElement`, so a figure containing no equations neve
 ## A complete figure
 
 ```ts
-import { Timeline, circle, draw, group, marksAt, shape, svgMarkup, vec2, viewAt } from '@altpsyche/maths';
+import { Timeline, circle, colourFrom, draw, group, marksAt, shape, svgMarkup, vec2, viewAt } from '@altpsyche/maths';
 
 const figure = {
   extent: { width: 16, height: 9 },
   still: 1,
-  scene: group('fig', [shape('ring', circle(vec2(0, 0), 3), { stroke: { colour: '#fff', width: 0.05 } })]),
+  scene: group('fig', [shape('ring', circle(vec2(0, 0), 3), { stroke: { colour: colourFrom('#fff'), width: 0.05 } })]),
   timeline: Timeline.empty().play(draw('fig/ring'), 1),
 };
 
@@ -160,9 +160,12 @@ stays because a contrast reading and anything else needing a single colour has t
 
 A stroke's width is one number or a taper between two numbers along a named curve, drawn as the
 filled outline of its own path, since neither painter strokes at two widths. A width per point is not
-something a figure can name. Colour enters as text, `'#1b1b1b'` or `'rgb(27, 27, 27)'`;
-`colourOf` parses hex and `rgb()` for interpolation in sRGB and rejects every other form rather than
-guessing. Nothing reads the page, and `getComputedStyle` appears nowhere in the tree.
+something a figure can name. A colour is four channels and, where its author gave it one, the name a
+page themes it under, so the SVG painter writes `var(--name, #rrggbb)` and every other painter reads
+the numbers: a renderer in another language cannot resolve a custom property and a shader takes
+numbers. `colourFrom` builds one from `'#1b1b1b'` or `'rgb(27, 27, 27)'` and throws on every other
+form rather than guessing. Nothing reads the page, and `getComputedStyle` appears nowhere in the
+tree.
 
 No screenshot gates this package. Every assertion reads a mark list or a number, so the suite of 785
 tests runs in Node without a browser. Comparisons are by tolerance rather than by hash, because

@@ -9,7 +9,7 @@
  */
 
 export { clamp, inverseLerp, lerp, remap } from './values/scalar.js';
-export { colourOf, colourText, lerpColour } from './values/colour.js';
+export { colourFrom, colourOf, colourText, hexOf, lerpColour } from './values/colour.js';
 export type { Rgba } from './values/colour.js';
 export { CURVE_NAMES, curveFor, curveNamed, easeIn, easeOut, linear, nameOfCurve, overshoot, smoothstep, thereAndBack } from './values/ease.js';
 export type { Curve, CurveName } from './values/ease.js';

@@ -1,22 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import {
-  byAspect,
-  easeIn,
-  fadeIn,
-  group,
-  linear,
-  mat3,
-  marksAt,
-  shape,
-  circle,
-  vec2,
-  viewAt,
-  viewMatrix,
-  followView,
-  frameView,
-  moveView,
-  Timeline,
-} from '@altpsyche/maths';
+import { byAspect, circle, colourFrom, easeIn, fadeIn, followView, frameView, group, linear, marksAt, mat3, moveView, shape, Timeline, vec2, viewAt, viewMatrix } from '@altpsyche/maths';
 import type { Extent, Figure, ViewChange } from '@altpsyche/maths';
 
 /**
@@ -43,7 +26,7 @@ const zoomBy = (factor: number): ViewChange => ({
   },
 });
 
-const disc = shape('disc', circle(vec2(0, 0), 1), { fill: { colour: '#000' } });
+const disc = shape('disc', circle(vec2(0, 0), 1), { fill: { colour: colourFrom('#000') } });
 
 const figureWith = (timeline: Timeline | undefined, extent: Extent = { width: 10, height: 10 }): Figure => ({
   extent,
@@ -202,7 +185,7 @@ describe('a move to an extent', () => {
  * the clock. */
 const walking = (timeline: Timeline): Figure => ({
   extent: { width: 10, height: 10 },
-  scene: (seconds) => group('all', [shape('dot', circle(vec2(seconds, 0), 0.1), { fill: { colour: '#000' } })]),
+  scene: (seconds) => group('all', [shape('dot', circle(vec2(seconds, 0), 0.1), { fill: { colour: colourFrom('#000') } })]),
   timeline,
   still: 0,
 });
@@ -268,9 +251,9 @@ describe('a view framing named marks', () => {
     ({
       extent: { width: 10, height: 5 },
       scene: group('all', [
-        shape('left', circle(vec2(-2, 0), 0.5), { fill: { colour: '#000' } }),
-        shape('right', circle(vec2(2, 1), 0.5), { fill: { colour: '#000' } }),
-        shape('far', circle(vec2(20, 0), 0.5), { fill: { colour: '#000' } }),
+        shape('left', circle(vec2(-2, 0), 0.5), { fill: { colour: colourFrom('#000') } }),
+        shape('right', circle(vec2(2, 1), 0.5), { fill: { colour: colourFrom('#000') } }),
+        shape('far', circle(vec2(20, 0), 0.5), { fill: { colour: colourFrom('#000') } }),
       ]),
       timeline: Timeline.empty().play(frameView(['all/left', 'all/right'], { padding }), 1, { curve: linear }),
       still: 0,
@@ -322,7 +305,7 @@ describe('the marks a view reads', () => {
       extent: { width: 10, height: 10 },
       scene: (seconds) => {
         built += 1;
-        return group('all', [shape('dot', circle(vec2(seconds, 0), 0.1), { fill: { colour: '#000' } })]);
+        return group('all', [shape('dot', circle(vec2(seconds, 0), 0.1), { fill: { colour: colourFrom('#000') } })]);
       },
       timeline,
       still: 0,

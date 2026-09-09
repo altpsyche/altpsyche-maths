@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { brace, bracePath, flatten, pointOn, vec2 } from '@altpsyche/maths';
+import { brace, bracePath, colourFrom, flatten, pointOn, vec2 } from '@altpsyche/maths';
 import type { Path, Vec2 } from '@altpsyche/maths';
 
 /**
@@ -105,7 +105,7 @@ describe('bracePath', () => {
 });
 
 describe('a brace with a word on it', () => {
-  const style = { stroke: { colour: '#111', width: 0.02 }, fill: { colour: '#111' }, size: 0.3 };
+  const style = { stroke: { colour: colourFrom('#111'), width: 0.02 }, fill: { colour: colourFrom('#111') }, size: 0.3 };
 
   it('puts the word beyond the tip, on the far side from the two points', () => {
     const marks = flatten(brace('rise', from, to, '4', { depth: DEPTH, padding: 0.25, ...style }));

@@ -16,6 +16,7 @@
 import { mat3, type Mat3 } from '../values/mat3.js';
 import { vec2 } from '../values/vec2.js';
 import type { Bounds } from '../figure/bounds.js';
+import { hexOf, type Colour } from '../values/colour.js';
 import type { Fill, Mark, PathMark, TextMark } from '../figure/mark.js';
 import type { Path } from '../figure/path.js';
 import { outlinedMarks } from '../figure/outline.js';
@@ -111,10 +112,23 @@ function elementId(prefix: string, mark: string): string {
   return prefix + mark.replace(/[^A-Za-z0-9_]/g, (letter) => `-${letter.codePointAt(0)!.toString(16)}-`);
 }
 
+/**
+ * One colour as this painter writes it: `var(--name, #rrggbb)` where the figure
+ * gave it a name, and the hex alone where it did not.
+ *
+ * The channels are written into the `var()` as its fallback rather than left to
+ * the page, so a sheet whose style element was stripped still draws the value
+ * the figure shipped, and a page carrying the property overrides it.
+ */
+function colourPaint(colour: Colour): string {
+  const hex = hexOf(colour);
+  return colour.name === undefined ? hex : `var(--${colour.name}, ${hex})`;
+}
+
 /** What a fill is painted with: the element naming its stops where it has them,
  * and its one colour otherwise. */
 function fillPaint(fill: Fill, mark: string, prefix: string): string {
-  return fill.gradient ? `url(#${elementId(prefix, mark)})` : fill.colour;
+  return fill.gradient ? `url(#${elementId(prefix, mark)})` : colourPaint(fill.colour);
 }
 
 /**
@@ -194,7 +208,7 @@ function defsElement(marks: readonly Mark[], view: Mat3, prefix: string): SvgEle
       },
       children: gradient.stops.map((stop) => ({
         tag: 'stop' as const,
-        attributes: { offset: short(stop.offset), 'stop-color': stop.colour },
+        attributes: { offset: short(stop.offset), 'stop-color': colourPaint(stop.colour) },
       })),
     });
   }
@@ -209,7 +223,7 @@ function pathElement(mark: PathMark, view: Mat3, scale: number, prefix: string):
   };
   if (mark.fill?.rule === 'evenodd') attributes['fill-rule'] = 'evenodd';
   if (mark.stroke) {
-    attributes.stroke = mark.stroke.colour;
+    attributes.stroke = colourPaint(mark.stroke.colour);
     attributes['stroke-width'] = short(widestWidth(mark.stroke.width) * scale);
     if (mark.stroke.cap) attributes['stroke-linecap'] = mark.stroke.cap;
     if (mark.stroke.join) attributes['stroke-linejoin'] = mark.stroke.join;

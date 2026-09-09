@@ -12,6 +12,7 @@
  */
 import { mat3, type Mat3 } from '../values/mat3.js';
 import { vec2 } from '../values/vec2.js';
+import { hexOf } from '../values/colour.js';
 import type { Fill, Mark, PathMark, TextMark } from '../figure/mark.js';
 import type { Path } from '../figure/path.js';
 import { outlinedMarks } from '../figure/outline.js';
@@ -85,16 +86,20 @@ function tracePath(context: CanvasLike, path: Path, view: Mat3): void {
  * What a fill is painted with: a gradient built from the context where it has
  * stops, and its one colour otherwise.
  *
+ * A colour reaches the context as hex and never as the `var()` the SVG painter
+ * writes, since a canvas resolves no custom property and paints one it is handed
+ * as nothing at all.
+ *
  * The axis is transformed by the view before the gradient is built, since the
  * geometry it belongs to is painted through the same view, and a canvas gradient
  * is placed in the units it is painted in.
  */
 function fillPaint(context: CanvasLike, fill: Fill, view: Mat3): unknown {
-  if (!fill.gradient || !context.createLinearGradient) return fill.colour;
+  if (!fill.gradient || !context.createLinearGradient) return hexOf(fill.colour);
   const from = mat3.transformPoint(view, fill.gradient.from);
   const to = mat3.transformPoint(view, fill.gradient.to);
   const made = context.createLinearGradient(from.x, from.y, to.x, to.y);
-  for (const stop of fill.gradient.stops) made.addColorStop(stop.offset, stop.colour);
+  for (const stop of fill.gradient.stops) made.addColorStop(stop.offset, hexOf(stop.colour));
   return made;
 }
 
@@ -126,7 +131,7 @@ function paintPath(context: CanvasLike, mark: PathMark, view: Mat3, scale: numbe
     context.fill(mark.fill.rule ?? 'nonzero');
   }
   if (mark.stroke) {
-    context.strokeStyle = mark.stroke.colour;
+    context.strokeStyle = hexOf(mark.stroke.colour);
     context.lineWidth = widestWidth(mark.stroke.width) * scale;
     context.lineCap = mark.stroke.cap ?? 'butt';
     context.lineJoin = mark.stroke.join ?? 'miter';

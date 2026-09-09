@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import {
+  colourFrom,
   marksAt,
   circle,
   group,
@@ -27,8 +28,8 @@ import type { CanvasLike, Figure, Mark, PaintNode } from '@altpsyche/maths';
  */
 
 const view = viewMatrix({ width: 20, height: 10 }, 'contain', 200, 100);
-const pen = { colour: '#fff', width: 2 };
-const ink = { colour: '#0f0' };
+const pen = { colour: colourFrom('#fff', 'ink'), width: 2 };
+const ink = { colour: colourFrom('#0f0') };
 
 const fixture: Figure = {
   extent: { width: 20, height: 10 },
@@ -41,6 +42,11 @@ const fixture: Figure = {
 };
 
 const marks = marksAt(fixture, 0);
+
+/** The colour inside what the SVG painter wrote, which is the hex a `var()` falls
+ * back to where it wrote one and the whole attribute where it did not. A canvas
+ * is handed that hex, so this is what makes the two comparable. */
+const stated = (paint: string) => /^var\(--[^,]+,\s*(.+)\)$/.exec(paint)?.[1] ?? paint;
 
 /** A context that writes down what it was told rather than drawing, which is the
  * only way to read a painter's output without a browser. */
@@ -105,7 +111,7 @@ describe('svg', () => {
   it('writes no fill as the word rather than as nothing', () => {
     const element = svgElements(marks, view)[0];
     expect(element.attributes.fill).toBe('none');
-    expect(element.attributes.stroke).toBe('#fff');
+    expect(element.attributes.stroke).toBe('var(--ink, #ffffff)');
   });
 
   it('carries every mark id into the document, so the picture can be found', () => {
@@ -182,8 +188,15 @@ describe('svg', () => {
       id: 'fig/disc',
       path: circle(vec2(0, 0), 1),
       fill: {
-        colour: '#345',
-        gradient: { from: vec2(0, 0), to: vec2(2, 0), stops: [{ offset: 0, colour: '#012' }, { offset: 1, colour: '#678' }] },
+        colour: colourFrom('#345'),
+        gradient: {
+          from: vec2(0, 0),
+          to: vec2(2, 0),
+          stops: [
+            { offset: 0, colour: colourFrom('#012') },
+            { offset: 1, colour: colourFrom('#678') },
+          ],
+        },
       },
     };
     paintSvg({ replaceChildren: () => {} }, [washed], view, maker);
@@ -260,11 +273,11 @@ describe('canvas', () => {
       kind: 'path',
       id: 'fig/line',
       path: line(vec2(0, 0), vec2(2, 0)),
-      stroke: { colour: '#e00', width: { from: 0.4, to: 0 } },
+      stroke: { colour: colourFrom('#e00'), width: { from: 0.4, to: 0 } },
     };
     paintCanvas(recorder, [tapered], mat3.IDENTITY);
     expect(recorder.calls.some((call) => call.name === 'stroke')).toBe(false);
-    expect(recorder.calls.find((call) => call.name === 'fill')?.args[1]).toBe('#e00');
+    expect(recorder.calls.find((call) => call.name === 'fill')?.args[1]).toBe('#ee0000');
   });
 
   it('wraps every mark so a dash or an opacity cannot leak into the next one', () => {
@@ -321,16 +334,25 @@ describe('the two painters agree', () => {
     const elements = svgElements(marks, view);
 
     const stroked = recorder.calls.find((call) => call.name === 'stroke');
-    expect(stroked?.args[0]).toBe(elements[0].attributes.stroke);
+    expect(stroked?.args[0]).toBe(stated(elements[0].attributes.stroke));
     expect(stroked?.args[1]).toBeCloseTo(Number(elements[0].attributes['stroke-width']), 6);
     expect(stroked?.args[2]).toBe(elements[0].attributes['stroke-linecap']);
 
     const filled = recorder.calls.find((call) => call.name === 'fill');
-    expect(filled?.args[1]).toBe(elements[1].attributes.fill);
+    expect(filled?.args[1]).toBe(stated(elements[1].attributes.fill));
     expect(filled?.args[2]).toBeCloseTo(Number(elements[1].attributes.opacity), 6);
 
     const written = recorder.calls.find((call) => call.name === 'fillText');
-    expect(written?.args[5]).toBe(elements[2].attributes.fill);
+    expect(written?.args[5]).toBe(stated(elements[2].attributes.fill));
     expect(written?.args[3]).toContain(elements[2].attributes['font-size']);
+  });
+
+  it('writes a themed colour as a variable in the document and as its hex on a canvas', () => {
+    // The two painters differ here on purpose: a canvas resolves no custom
+    // property and paints one it is handed as nothing at all.
+    const recorder = new Recorder();
+    paintCanvas(recorder, marks, view);
+    expect(svgElements(marks, view)[0].attributes.stroke).toBe('var(--ink, #ffffff)');
+    expect(recorder.calls.find((call) => call.name === 'stroke')?.args[0]).toBe('#ffffff');
   });
 });

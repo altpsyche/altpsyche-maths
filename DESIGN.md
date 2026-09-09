@@ -338,17 +338,23 @@ SVG is the page painter.
 
 **A figure never reads the page.** It is given a palette and draws with it.
 
-On the page the palette may be CSS custom properties, which SVG reads directly. In a recording it
-may not: the recorder draws into a canvas outside the document, which no theme reaches. A figure
-calling `getComputedStyle` would work on the page and fail in an export. The palette is resolved
-once and handed over when the export starts.
+**A colour is four channels and, where its author gave it one, a name.** The channels are what a
+renderer draws. The name is the CSS custom property a page overrides them under, so the SVG painter
+writes `var(--name, #rrggbb)` and every other painter reads the numbers and ignores the name. A
+colour cannot be text, because a renderer in another language cannot resolve a custom property and a
+shader takes numbers.
+
+The name is what lets a figure follow a theme without watching for one, and the channels are what
+lets it draw where no theme reaches. A recording draws into a canvas outside the document, so the
+value written inside the `var()` is the value that recording paints.
 
 The palette names roles rather than colours, and the names match the site's own tokens, so a figure
 matches the page around it.
 
-**A colour is parsed only out of the text it was handed.** `colourOf` reads hex and `rgb()`, which
-is what permits interpolation between two colours, and rejects every other form rather than guessing
-at one. A named colour parsed as black would be a wrong picture with nothing reporting the error.
+**A colour is read only out of the two text forms it is written in.** `colourOf` reads hex and
+`rgb()` and refuses every other form rather than guessing at one, and `colourFrom` throws on a form
+it cannot read, naming the text it was given. A named colour read as black would be a wrong picture
+with nothing reporting the error.
 
 ## Text and equations
 

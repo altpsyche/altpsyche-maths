@@ -1126,7 +1126,7 @@ release away and has a document of its own.
   all eight sheets identical after `npm run demos`; the door and the suite from 266 names and 785
   tests; the specification's own version, which is separate from this one.
 
-- [ ] **12. A colour is channels and a name, which is one commit and is worked after step 5.**
+- [x] **12. A colour is channels and a name, which is one commit and is worked after step 5.**
   Siva's call of 2026-09-09, and it is gap 8 of the GPU spike. A mark's colour is a CSS string today,
   the four demos paint every mark as `var(--name, #rrggbb)`, and a shader wants four numbers while a
   renderer in another language cannot read a custom property at all. **A colour becomes four channels
@@ -1179,6 +1179,14 @@ release away and has a document of its own.
   its place, in bytes; the vector field's two colours and the surface's shade ramp giving the same
   marks as their own calls within 1e-6; a colour that is neither a hex nor an `rgb()` refused with
   the text it was given.
+  **Measured:** all eight sheets byte for byte, docs/tangent.svg at 80,701 and docs/surface-strip.svg
+  at 522,337; the flat demo's 185 colour slots at its still time of 7.86 each four channels and a
+  name, over 9 distinct colours; the palette's contrast test green against both grounds; the SVG
+  painter writing `var(--ink, #ffffff)` where the canvas painter is given `#ffffff`;
+  demos/rotate.figure.json from 6,624 bytes to 8,244 with no `var(` left in it; the two record suites
+  green against their own calls; `colourFrom('rebeccapurple')` throwing `a colour is a hex or an
+  rgb() and this is neither: rebeccapurple`. The door is 375 names and the suite is 1,024 tests over
+  65 files.
 
 #### Done-criteria
 

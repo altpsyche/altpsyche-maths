@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { CURVE_NAMES, checkFigure, type FigureRecord } from '../index.js';
+import { checkFigure, colourFrom, CURVE_NAMES, type FigureRecord } from '../index.js';
 import { operations, turning } from './figures.js';
 
 /** The record with one field somewhere inside it replaced, so a refusal is
@@ -15,8 +15,8 @@ function withField(record: FigureRecord, path: readonly string[], value: unknown
 const CAMERA = { eye: { x: 3, y: 3, z: 3 }, target: { x: 0, y: 0, z: 0 } };
 const SCALE = { graph: { from: 0, to: 1 }, units: { from: 0, to: 1 } };
 const COORDS = { x: SCALE, y: SCALE };
-const FILL = { colour: '#101010' };
-const STROKE = { colour: '#101010', width: 0.02 };
+const FILL = { colour: colourFrom('#101010') };
+const STROKE = { colour: colourFrom('#101010'), width: 0.02 };
 const PLACE = { x: 0, y: 0 };
 const SPOT = { x: 0, y: 0, z: 0 };
 
@@ -60,7 +60,7 @@ const EVERY_KIND: readonly Record<string, unknown>[] = [
     name: 'field',
     coords: COORDS,
     of: { x: 1, y: 1 },
-    options: { lengthOf: 0.2, colourFor: '#101010', width: 0.02 },
+    options: { lengthOf: 0.2, colourFor: colourFrom('#101010'), width: 0.02 },
   },
   { kind: 'polyline3', name: 'run', points: [SPOT, { x: 1, y: 1, z: 1 }], camera: CAMERA },
   { kind: 'dot3', name: 'spot', at: SPOT, radius: 0.1, fill: FILL, camera: CAMERA },
@@ -80,7 +80,7 @@ const EVERY_KIND: readonly Record<string, unknown>[] = [
     name: 'flow',
     of: SPOT,
     camera: CAMERA,
-    options: { lengthOf: 0.2, colourFor: '#101010', stroke: STROKE },
+    options: { lengthOf: 0.2, colourFor: colourFrom('#101010'), stroke: STROKE },
   },
   {
     kind: 'section3',
@@ -128,7 +128,7 @@ const EVERY_ENTRY: readonly Record<string, unknown>[] = [
   { kind: 'growFrom', target: 'turns', from: PLACE },
   { kind: 'morph', target: 'turns', into: { kind: 'circle', centre: PLACE, radius: 1 } },
   { kind: 'morphEquation', from: 'first', to: 'second' },
-  { kind: 'indicate', target: 'turns', options: { factor: 1.2, colour: '#101010', pivot: PLACE } },
+  { kind: 'indicate', target: 'turns', options: { factor: 1.2, colour: colourFrom('#101010'), pivot: PLACE } },
   { kind: 'flash', target: 'turns', options: { stroke: STROKE, at: PLACE, rays: 8, reach: 1, inner: 0.4 } },
   { kind: 'circumscribe', target: 'turns', options: { stroke: STROKE, around: 'ellipse', padding: 0.1 } },
   { kind: 'countTo', target: 'turns', from: 0, to: 10, precision: 0.01 },
@@ -338,7 +338,7 @@ describe('a figure held to the vocabulary', () => {
         of: { x: 1, y: 1 },
         options: {
           lengthOf: { kind: 'variable', name: 'magnitude' },
-          colourFor: { kind: 'bands', first: '#101010', then: [{ above: 2, colour: '#202020' }] },
+          colourFor: { kind: 'bands', first: colourFrom('#101010'), then: [{ above: 2, colour: colourFrom('#202020') }] },
           width: 0.02,
           resolution: { x: 8, y: 6 },
           over: { x: { from: 0, to: 1 }, y: { from: 0, to: 1 } },
@@ -352,7 +352,7 @@ describe('a figure held to the vocabulary', () => {
         of: SPOT,
         camera: { ...CAMERA, up: { x: 0, y: 0, z: 1 }, projection: { kind: 'perspective', fov: 0.8, near: 0.1, far: 20 } },
         options: {
-          shade: { ramp: [FILL, { colour: '#202020', gradient: { from: PLACE, to: { x: 1, y: 1 }, stops: [{ offset: 0, colour: '#101010' }] } }], band: { from: 0.2, to: 0.9 } },
+          shade: { ramp: [FILL, { colour: colourFrom('#202020'), gradient: { from: PLACE, to: { x: 1, y: 1 }, stops: [{ offset: 0, colour: colourFrom('#101010') }] } }], band: { from: 0.2, to: 0.9 } },
           light: { x: 0, y: 0, z: 1 },
           over: { u: { from: 0, to: 1 }, v: { from: 0, to: 1 } },
           resolution: { u: 8, v: 8 },
@@ -390,7 +390,7 @@ describe('a figure held to the vocabulary', () => {
             kind: 'fieldArrows3',
             name: 'arrows',
             of: SPOT,
-            options: { lengthOf: 0.2, colourFor: '#101010', stroke: STROKE, resolution: 4, head: 0.1, spread: 0.6, fill: FILL },
+            options: { lengthOf: 0.2, colourFor: colourFrom('#101010'), stroke: STROKE, resolution: 4, head: 0.1, spread: 0.6, fill: FILL },
           },
         ],
       },
