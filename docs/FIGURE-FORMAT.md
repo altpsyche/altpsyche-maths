@@ -1457,13 +1457,18 @@ release away and has a document of its own.
   gate is step 10.5b's comparison pointed at a second page: a kind's `kind` string and each of its
   fields named in backticks inside that kind's own entry.
 
-  - [ ] **10.6a The value types and the expression form.** The eleven value types with their fields,
+  - [x] **10.6a The value types and the expression form.** The eleven value types with their fields,
     the expression form's cases, and the thirty-seven functions an expression may call, which the
     reference already lists with their arguments. It goes first because every other section is written
     in terms of it: a node's field is an expression or a value type, and neither can be named before
-    it is defined. **Measures:** the eleven types and the expression cases named, against the union
-    `figure/expression.ts` declares; the document's lines before and after; the gate holding every
-    value type and function name.
+    it is defined. **Measured:** the document goes from 112 lines to 277 with the eleven types each
+    given a section, the expression form's eleven kinds against the ten the union carries beside its
+    literals, and the thirty-seven names grouped by what each takes. `tests/specification.test.ts`
+    holds sixteen interfaces to the section that carries each, and the gate found drift on its first
+    run: an `Inset` carries `name` and `hides`, which neither the plan's list nor the document
+    mentioned, and both are now specified. A colour is under `Style` beside `Stroke` and `Fill`, since
+    the list of eleven predates step 12. The suite goes from 1,046 tests over 66 files to 1,051 over
+    67.
 
   - [ ] **10.6b The path vocabulary.** The thirteen forms of path in fifteen kinds, each with its
     fields, and the two point producers. **Measures:** each `kind` string of `PathRecord` and its

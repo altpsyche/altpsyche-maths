@@ -1,0 +1,127 @@
+import { readFileSync } from 'node:fs';
+import path from 'node:path';
+import { describe, expect, it } from 'vitest';
+import { CURVE_NAMES, EXPRESSION_FUNCTIONS } from '../index.js';
+
+/**
+ * The specification against the format it specifies.
+ *
+ * A renderer in another language is written from that document and never from
+ * this tree, so a field that changes shape here and not there is a renderer
+ * drawing a picture nothing says is wrong. This holds the value types, the
+ * expression form and the callable vocabulary to it, name by name.
+ */
+
+const root = path.resolve(import.meta.dirname, '..');
+const specification = readFileSync(path.join(root, 'docs/SPECIFICATION.md'), 'utf8');
+
+/** The document cut at its headings, each section holding the prose under one
+ * heading and above the next of the same depth or shallower. */
+function sections(text: string): Map<string, string> {
+  const found = new Map<string, string>();
+  let holding: string | undefined;
+  let body: string[] = [];
+  for (const line of text.split('\n')) {
+    const heading = /^#{2,4} `?([A-Za-z0-9_$]+)`?/.exec(line);
+    if (heading) {
+      if (holding !== undefined) found.set(holding, body.join('\n'));
+      holding = heading[1];
+      body = [];
+      continue;
+    }
+    body.push(line);
+  }
+  if (holding !== undefined) found.set(holding, body.join('\n'));
+  return found;
+}
+
+const written = sections(specification);
+const quoted = (text: string) => new Set([...text.matchAll(/`([^`]+)`/g)].map((match) => match[1]));
+const everywhere = quoted(specification);
+
+// One interface's body, from the brace after its name to the brace that closes
+// it, and the names declared at that body's own depth.
+function fieldsOf(file: string, name: string): string[] {
+  const text = readFileSync(path.join(root, file), 'utf8');
+  const opener = new RegExp(`^export (?:interface|type) ${name}\\b[^{]*\\{`, 'm');
+  const found = opener.exec(text);
+  if (!found) throw new Error(`${name} is not declared in ${file}`);
+  let depth = 1;
+  let at = (found.index ?? 0) + found[0].length;
+  const from = at;
+  while (at < text.length && depth > 0) {
+    if (text[at] === '{') depth += 1;
+    else if (text[at] === '}') depth -= 1;
+    at += 1;
+  }
+  const names: string[] = [];
+  let inside = 0;
+  for (const line of text.slice(from, at - 1).split('\n')) {
+    const field = /^\s*(?:readonly\s+)?([A-Za-z_$][A-Za-z0-9_$]*)\s*\??\s*:/.exec(line);
+    if (inside === 0 && field) names.push(field[1]);
+    for (const character of line) {
+      if (character === '{' || character === '(' || character === '[') inside += 1;
+      if (character === '}' || character === ')' || character === ']') inside -= 1;
+    }
+  }
+  return [...new Set(names)];
+}
+
+/** Which section of the document each value type's fields have to be named in.
+ * A colour, a stroke, a fill and a taper are all under `Style`, since a style is
+ * where a figure reaches them. */
+const VALUE_TYPES: { name: string; file: string; section: string }[] = [
+  { name: 'Interval', file: 'values/interval.ts', section: 'Interval' },
+  { name: 'Scale', file: 'figure/scale.ts', section: 'Scale' },
+  { name: 'Coords', file: 'figure/scale.ts', section: 'Coords' },
+  { name: 'Extent', file: 'figure/extent.ts', section: 'Extent' },
+  { name: 'Bounds', file: 'figure/bounds.ts', section: 'Bounds' },
+  { name: 'Style', file: 'figure/node.ts', section: 'Style' },
+  { name: 'Stroke', file: 'figure/mark.ts', section: 'Style' },
+  { name: 'Fill', file: 'figure/mark.ts', section: 'Style' },
+  { name: 'Stop', file: 'figure/mark.ts', section: 'Style' },
+  { name: 'Taper', file: 'figure/mark.ts', section: 'Style' },
+  { name: 'Colour', file: 'values/colour.ts', section: 'Style' },
+  { name: 'Rgba', file: 'values/colour.ts', section: 'Style' },
+  { name: 'Camera3Record', file: 'figure/camera-record.ts', section: 'Camera3Choice' },
+  { name: 'Equation', file: 'figure/equation.ts', section: 'Equation' },
+  { name: 'Key', file: 'timing/track.ts', section: 'Track' },
+  { name: 'Inset', file: 'figure/inset.ts', section: 'Inset' },
+];
+
+describe('the specification and the value types', () => {
+  it('gives each value type a section of its own', () => {
+    const missing = [...new Set(VALUE_TYPES.map(({ section }) => section))].filter((name) => !written.has(name));
+    expect(missing).toEqual([]);
+  });
+
+  it('names every field of every value type in the section that carries it', () => {
+    const absent = VALUE_TYPES.flatMap(({ name, file, section }) => {
+      const inside = quoted(written.get(section) ?? '');
+      const missing = fieldsOf(file, name).filter((field) => !inside.has(field));
+      return missing.length === 0 ? [] : [`${name} in ${section}: ${missing.join(', ')}`];
+    });
+    expect(absent).toEqual([]);
+  });
+});
+
+describe('the specification and the expression form', () => {
+  it('names every kind an expression may carry', () => {
+    const source = readFileSync(path.join(root, 'figure/expression.ts'), 'utf8');
+    const from = source.indexOf('export type Expression =');
+    // The declaration ends at the blank line after it, since its own members
+    // carry semicolons of their own.
+    const union = source.slice(from, source.indexOf('\n\n', from));
+    const kinds = [...new Set([...union.matchAll(/kind: '([a-z0-9]+)'/g)].map((match) => match[1]))];
+    expect(kinds.length).toBeGreaterThan(9);
+    expect(kinds.filter((kind) => !everywhere.has(kind))).toEqual([]);
+  });
+
+  it('names every function an expression may call', () => {
+    expect(EXPRESSION_FUNCTIONS.filter((name) => ![...everywhere].some((each) => each.startsWith(name)))).toEqual([]);
+  });
+
+  it('names every curve a figure may name', () => {
+    expect(CURVE_NAMES.filter((name) => !everywhere.has(name))).toEqual([]);
+  });
+});
