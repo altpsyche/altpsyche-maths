@@ -1170,6 +1170,18 @@ release away and has a document of its own.
     **It goes before the solid demo** because its extent follows the dot and it carries the panel, so
     the `ExtentRecord` and the `InsetRecord` are written once here and are the second time rather than
     the first when the solid demo reaches them.
+    **Its hard part is the followed frame and the expression set already carries it**, checked on
+    2026-09-09 before any of it was written. The reading and the two rules are placed with
+    `fractionOf` against the extent the view has moved to rather than against the figure's own, so
+    they hold their place on the page while the picture slides under them. `frameAt` computes that
+    centre as `clamp(x - clamp(x, -REACH, REACH), -ROOM, ROOM)` off the dot's own place, and
+    `clamp`, `subtract`, `min`, `max` and `pointAlong` are five of the set's thirty-seven names. So
+    the centre is an expression of the track and nothing here needs a new form.
+    **The scene is eleven children**, which is what makes this the widest of the three: the grid, the
+    axes, the shaded region under a gradient whose axis is the graph's whole vertical run, the field,
+    the parabola, the tangent, the dot, the reading, the two rules in a group, the panel and its
+    border, and the brace. The timeline is wider still, carrying a stagger over six axis labels, an
+    `indicate`, a `circumscribe`, a `morphEquation`, a `flash` and a `countTo` beside the fades.
     **Measures:** `docs/tangent.svg` at 80,701 bytes and `docs/tangent-strip.svg` at 324,852 byte for
     byte after `npm run demos`; the committed file read back drawing 181 marks at its still time of
     7.86 and 186, 185, 185, 182, 178, 178 and 178 at its seven named times, mark for mark within a
