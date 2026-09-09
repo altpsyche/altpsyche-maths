@@ -274,7 +274,7 @@ are left, since 2.1.0 is cut.
 
 | version | what lands | what it changes | steps | cut against | depends on | plan |
 | --- | --- | --- | --- | --- | --- | --- |
-| 2.2.0 | the curves and surfaces a figure can name: parametric, polar, implicit, and the solids | adds kinds | ten, and both design calls are answered | a phase portrait, which the flat demo's field cannot express, and a demo of the solids | nothing outside this package | planned |
+| 2.2.0 | the curves and surfaces a figure can name: parametric, polar, implicit, and the solids | adds kinds | eleven, and every design call is answered | a phase portrait, which the flat demo's field cannot express, and a demo of the solids | nothing outside this package | planned |
 | 2.3.0 | matrices and tables, and a matrix applied to a grid | adds kinds | to plan | a grid under a linear map, which nothing here can draw | nothing outside this package | to plan |
 | 2.4.0 | the indications that run along a path, and text written on rather than faded in | adds kinds, and outlines for plain text | to plan | the flat demo's reading, written on | a source of glyph outlines for plain text | to plan |
 | 2.5.0 | a group morphing into a group | adds a kind | to plan | the boolean demo's three panels, morphing into one another | nothing outside this package | to plan |
@@ -1286,37 +1286,40 @@ shaded correctly, and their count is a measurement rather than a silence.
   at most 6.6558e-6 figure units off the drawn spiral inside the cycle and 2.2323e-4 off the one
   outside it. `demos/portrait.figure.json` is 23,389 bytes and is the sixth fixture of the conformance
   suite, which is the figure carrying the three curve forms.
-- [ ] **9. The solids demo.** `demos/solids.ts` turns a sphere, a cube, a cylinder and a torus through
-  one turn on a track, with a helix drawn on the cylinder and a torus knot on the torus. **The
-  measurement**: the cell count of each solid, the marks at named times, and the still and the strip
-  regenerating byte for byte.
+- [ ] **9. A curve in space cut into pieces a scene sorts.** `figure/curve3.ts` gains `curvePieces3`,
+  which cuts the places `curveOf3` hands back into one `SpaceItem` per step, and `SceneItemRecord`
+  gains the kind for it. `SPECIFICATION.md` reads seven item producers rather than six.
 
-  **A session started this step and stopped it on a gap the plan did not foresee**, and nothing of it
-  landed. A curve a producer makes cannot be an entry of a scene. `SceneItemRecord` takes a
-  `SpaceItemRecord`, which is a `points` list written out beside the node drawn for it, or one of the
-  six producers, and `curve3` is a node rather than a producer. So a helix handed to a cylinder's own
-  scene is refused by name: `scene.children.2.children.0.items.1 is an entry of a scene in space and
-  has no kind called the text "curve3"`. **The precedent in this tree is that a curve on a surface is
-  drawn as a node over the scene rather than sorted into it**: `demos/surface.ts` draws the curve where
-  the plane cuts the saddle as a `section3` beside the scene, so it is painted whole in front. That
-  reads correctly for a curve lying on the near face of a saddle and does not for a helix, whose back
-  half would show through the cylinder.
+  **Why a seventh producer rather than a node over the panel.** `space.ts` already states the rule:
+  two pieces that pass through each other have no one order, and the answer is smaller pieces, which
+  is why a surface is cut into cells. A helix wrapping a cylinder is that case, and a curve sorted as
+  one piece takes the depth of its middle, which puts a whole turn of it in front of a cylinder half
+  of that turn is behind. The change is a kind rather than a value type, so it is a format minor an old
+  figure survives, the same class as the four solids of step 6, and it is not what 3.0.0 is about:
+  3.0.0 changes what a `Mark` may ask for, which is depth per pixel. It is also the missing half of a
+  pair a reader already knows, since `surface3` draws a surface whole and `surfaceCells` hands it to a
+  scene in pieces, where `curve3` had no counterpart.
 
-  **Three answers, and which one is taken is Siva's.** Draw the two curves as nodes over their panels
-  and accept the back half showing through, which is what the tree already does elsewhere and costs
-  nothing. Add a producer that cuts a curve into one sorted piece per segment, which is a seventh
-  producer, a format minor and a step of its own. Or leave the two curves out and draw the four solids
-  alone, which loses the picture that makes the demo mathematics rather than a catalogue. **The second
-  is what 3.0.0 on the ladder is about**, so the first is the answer that does not reach into a major.
-- [ ] **10. The reference, the guide, the reasoning, and 2.2.0 cut.** `docs/REFERENCE.md` names every new
+  **The measurement**: the piece count is the step count, one fewer than the places, so a helix at 96
+  is 96 pieces; a helix of three turns among a cylinder's 432 cells sorts into the run rather than
+  before or after all of it, and the count of cells painted over each half turn is a number; the joins
+  between consecutive pieces leave no gap under a round cap at the stroke widths the demo draws; the
+  producer gate reads seven rather than six and the specification's own sentence reads seven; and the
+  record draws the marks the call draws under the comparison the package publishes over marks.
+- [ ] **10. The solids demo.** `demos/solids.ts` turns a sphere, a cube, a cylinder and a torus through
+  one turn on a track, with a helix drawn on the cylinder and a torus knot on the torus, both as pieces
+  in their panel's own scene. **The measurement**: the cell count of each solid, the piece count of each
+  curve, the marks at named times, the count of a curve's pieces painted behind its solid at a named
+  time, and the still and the strip regenerating byte for byte.
+- [ ] **11. The reference, the guide, the reasoning, and 2.2.0 cut.** `docs/REFERENCE.md` names every new
   door name, `docs/GUIDE.md` gains the section that draws a curve no function of x describes,
   `docs/FIGURE-FORMAT.md` carries why an implicit curve's count is not fixed, and the version is bumped
   in that commit. **The measurement**: the reference gate over the door, the guide's blocks compiled, and
   the done-criteria below verified line by line.
 
-**Which step the demos gain from: 8 and 9.** Step 8 is the flat half of Siva's rule and the picture the
+**Which step the demos gain from: 8 and 10.** Step 8 is the flat half of Siva's rule and the picture the
 version is named against, since a closed orbit and a nullcline are both curves `plot` cannot write.
-Step 9 is the solid half, and it is a demo of its own because a sphere and a torus have no place in a
+Step 10 is the solid half, and it is a demo of its own because a sphere and a torus have no place in a
 saddle cut by a plane.
 
 **Done-criteria, checkable line by line.**
@@ -1333,6 +1336,8 @@ saddle cut by a plane.
   back cells facing away from the solid, and every one has a record kind `checkFigure` holds.
 - The specification writes sixteen path forms and the count gate reads sixteen, and it writes the bound
   variables `t`, `angle`, and `x` with `y`.
+- `curvePieces3` is at the door, a curve in space is an entry of a scene, and a helix on a cylinder is
+  painted with the pieces behind the solid hidden and the pieces in front drawn.
 - `demos/portrait.figure.json` and `demos/solids.figure.json` are committed, and their stills and their
   strips regenerate byte for byte. The specification's fixture table names the portrait as the figure
   that carries the three curve forms.
