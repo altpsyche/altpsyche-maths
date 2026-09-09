@@ -1251,11 +1251,15 @@ inset is the nearest thing and it is a rectangle of the frame rather than a mark
   `fractionOf` written as expressions reads -143, -84.3344 and -26 at aspects 3, 1.7778 and 0.5625, and
   the same figure asked for with no aspect refuses, since a `matchingAspect` extent has no frame without
   one. Insets needed nothing: they copy marks that are already placed. 1073 tests before, 1075 after.
-- [ ] **4. The consumer's `one-pixel` is a record here and hits their numbers.** A test writes their
+- [x] **4. The consumer's `one-pixel` is a record here and hits their numbers.** A test writes their
   four marks as a `FigureRecord`, with the plate, the marker, the leader and the word all placed by
   `fractionOf` written as expressions, and reads the plate's x at aspects 3, 1.7778 and 1. **The
   measurement**: -20.200, -12.867 and -8.200, which are the numbers their module gives, to the tolerance
-  the specification names.
+  the specification names. **Landed 2026-09-10**: `tests/one-pixel.test.ts` reads -20.2, -12.8668 and
+  -8.2 at aspects 3, 1.7778 and 1, to three decimal places, and draws the four marks
+  `figure/plate`, `figure/pixel/marker`, `figure/pixel/leader` and `figure/pixel/word` with every one
+  of them moving by more than one figure unit between aspect 3 and aspect 1. 1075 tests before, 1078
+  after.
 - [ ] **5. A flat demo whose marks answer to the frame.** `demos/frame.ts` declares `matchingAspect`,
   places its marks by the frame beside one shape in the figure's own units, and is written out as
   `demos/frame.figure.json` with a still and a strip whose three columns are that figure at 1.7778, 1.0
