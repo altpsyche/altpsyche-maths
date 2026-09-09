@@ -1263,7 +1263,7 @@ release away and has a document of its own.
     within a tolerance of 1e-6.
   - `tests/figures.ts` assembles no record of its own.
 
-- [ ] **9. The guide and the reference rewritten.** 713 and 1,315 lines describing an API that
+- [x] **9. The guide and the reference rewritten.** 713 and 1,315 lines describing an API that
   changed.
   **Measures:** the guide's code blocks compiling in order; the reference's entries against the door
   with the gate holding them equal.
@@ -1352,6 +1352,10 @@ release away and has a document of its own.
   #### Done-criteria for step 9
 
   - `npm test` fails when a block of the guide stops compiling, and the gate names the block.
+    **Met by a fifth commit**, since 9.1's gate reported a line of the module it assembles and a
+    reader given `guide.ts(214,7)` has to count blocks to find it. Each line of the body now carries
+    the block it came from and the line of the page it is written on, and the compiler's own output is
+    rewritten to name both.
   - The guide teaches a node record, an expression, a track through one, a timeline as spans and a
     figure written to a file, each defined where it first appears.
   - `tests/reference.test.ts` holds every name at the door to one entry, and no entry describes a

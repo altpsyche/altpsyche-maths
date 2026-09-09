@@ -522,8 +522,11 @@ lines to 816 and its examples from 23 blocks to 27. Step 9.3 read the 68 record 
 record's place. Step 9.4 read the README and the design against the format: the design says nothing false and the
 README carried three stale numbers, a suite of 785 tests now 1,042, 266 names at the door now 375,
 and 202 marks at the flat demo's still time now 181. Its model gains a paragraph on a figure as data.
-**What runs next is the last of step 9's done-criteria**, which asks the guide's gate to name the
-block a broken example is in rather than a line of the module it assembles, and then step 10.
+A fifth commit met the last of step 9's done-criteria, which asks the gate to name the block a broken
+example is in rather than a line of the module it assembles: each line of the body carries the block
+it came from and the line of the page, and the compiler's output is rewritten to name both. **Step 9
+is cut** and its four criteria are verified line by line. **Step 10 is what a session runs next**,
+which is the demos as the conformance suite.
 
 **Two things fall due before the format freezes and both are Siva's**, which are
 whether a `Mark` may be a raster image, due by step 3 where the node vocabulary lands, and the

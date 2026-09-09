@@ -25,21 +25,32 @@ import { describe, expect, it } from 'vitest';
 const root = path.resolve(import.meta.dirname, '..');
 const guide = readFileSync(path.join(root, 'docs/GUIDE.md'), 'utf8');
 
-const blocks = [...guide.matchAll(/```ts\n([\s\S]*?)```/g)].map((match) => match[1]);
+/** Every TypeScript block of the page, each with the line of the page it starts
+ * on, so a compiler reading the assembled module names a place in the guide. */
+const blocks = [...guide.matchAll(/```ts\n([\s\S]*?)```/g)].map((match) => ({
+  source: match[1],
+  at: guide.slice(0, match.index).split('\n').length,
+}));
 
 const IMPORT = /^import\s+(type\s+)?\{([^}]*)\}\s+from\s+'@altpsyche\/maths';$/;
 
 /** The blocks as one module: every import gathered into one pair of lists, and
  * everything else in the order the page writes it. */
-function assembled(): string {
+function assembled(): { source: string; where: readonly { line: number; block: number; at: number }[] } {
   const values = new Set<string>();
   const types = new Set<string>();
   const body: string[] = [];
-  for (const block of blocks) {
-    for (const line of block.split('\n')) {
+  const where: { line: number; block: number; at: number }[] = [];
+  for (const [index, block] of blocks.entries()) {
+    let offset = 0;
+    for (const line of block.source.split('\n')) {
+      offset += 1;
       const found = IMPORT.exec(line.trim());
       if (!found) {
         body.push(line);
+        // Two import lines stand in front of the body, so a line of the module is
+        // its place in the body and those two.
+        where.push({ line: body.length + 2, block: index + 1, at: block.at + offset });
         continue;
       }
       const names = found[2].split(',').map((name) => name.trim()).filter(Boolean);
@@ -47,11 +58,24 @@ function assembled(): string {
     }
   }
   const door = JSON.stringify(path.join(root, 'index.ts'));
-  return [
-    `import { ${[...values].sort().join(', ')} } from ${door};`,
-    `import type { ${[...types].sort().join(', ')} } from ${door};`,
-    ...body,
-  ].join('\n');
+  return {
+    source: [
+      `import { ${[...values].sort().join(', ')} } from ${door};`,
+      `import type { ${[...types].sort().join(', ')} } from ${door};`,
+      ...body,
+    ].join('\n'),
+    where,
+  };
+}
+
+/** What the compiler said, with each line of the assembled module read back as
+ * the block of the guide it came from and the line of the page it is written on.
+ * A reader given `guide.ts(214,7)` has to count blocks to find it. */
+function inTheGuide(said: string, where: readonly { line: number; block: number; at: number }[]): string {
+  return said.replace(/guide\.ts\((\d+),(\d+)\)/g, (whole, line: string) => {
+    const found = where.find((one) => one.line === Number(line));
+    return found ? `GUIDE.md block ${found.block}, line ${found.at}` : whole;
+  });
 }
 
 /** What the compiler says about the assembled module, as its own output with the
@@ -95,17 +119,25 @@ describe('the guide and the tree', () => {
   });
 
   it('imports names the door holds, which is what the merged list is read from', () => {
-    const source = assembled();
+    const { source } = assembled();
     expect(source).toContain('marksAt');
     expect(source.split('\n').filter((line) => line.startsWith('import'))).toHaveLength(2);
   });
 
   it('compiles every block in the order the page writes them', () => {
-    expect(compile(assembled())).toBe('');
+    const { source, where } = assembled();
+    expect(inTheGuide(compile(source), where)).toBe('');
   }, 60_000);
 
-  it('reports the block a broken example is in, rather than passing it', () => {
-    const broken = `${assembled()}\nconst wrong: number = vec2(0, 0);\n`;
-    expect(compile(broken)).toContain("Type 'Vec2' is not assignable to type 'number'");
+  it('names the block and the line of the page a broken example is on', () => {
+    const { source, where } = assembled();
+    // The last line of the last block, made wrong where the page writes it.
+    const lines = source.split('\n');
+    const last = where[where.length - 1] as { line: number; block: number; at: number };
+    lines[last.line - 1] = 'const wrong: number = vec2(0, 0);';
+    const said = inTheGuide(compile(lines.join('\n')), where);
+    expect(said).toContain(`GUIDE.md block ${last.block}, line ${last.at}`);
+    expect(said).toContain("Type 'Vec2' is not assignable to type 'number'");
+    expect(said).not.toContain('guide.ts(');
   }, 60_000);
 });
