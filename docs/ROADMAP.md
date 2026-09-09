@@ -1241,12 +1241,16 @@ inset is the nearest thing and it is a rectangle of the frame rather than a mark
   fixtures are unmodified in the tree and their `figure-file` gate reads them; a fifth measure refuses
   with `scene.children.0.path.radius.name is a measure of the frame, one of width, height, aspect,
   centre, and is the text "depth"`. 1073 tests pass, up from 1070.
-- [ ] **3. The seam takes an aspect and the frame reaches the scene.** `marksAt(figure, seconds,
+- [x] **3. The seam takes an aspect and the frame reaches the scene.** `marksAt(figure, seconds,
   aspect?)` resolves the declared extent at that aspect and hands it to the scene, to the insets and to
   `resolveFigure`, `Figure.scene` widens to `(seconds, values, frame?)`, and `viewAt`, `framesOf` and
   `isLoop` pass the aspect each already holds. **The measurement**: the four demos' marks at their named
   times against the same marks before the change, by tolerance, and one mark placed by the frame read at
-  three aspects.
+  three aspects. **Landed 2026-09-10**: `npm run demos` rewrote every committed sheet and strip and the
+  tree stayed clean, so all four demos draw the same picture byte for byte. A record placing a dot by
+  `fractionOf` written as expressions reads -143, -84.3344 and -26 at aspects 3, 1.7778 and 0.5625, and
+  the same figure asked for with no aspect refuses, since a `matchingAspect` extent has no frame without
+  one. Insets needed nothing: they copy marks that are already placed. 1073 tests before, 1075 after.
 - [ ] **4. The consumer's `one-pixel` is a record here and hits their numbers.** A test writes their
   four marks as a `FigureRecord`, with the plate, the marker, the leader and the word all placed by
   `fractionOf` written as expressions, and reads the plate's x at aspects 3, 1.7778 and 1. **The

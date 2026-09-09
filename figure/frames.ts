@@ -68,7 +68,7 @@ export function* framesOf(figure: Figure, options: FramesOptions): Generator<Fra
     yield {
       index,
       seconds,
-      marks: marksAt(figure, seconds),
+      marks: marksAt(figure, seconds, options.width / options.height),
       view: viewAt(figure, seconds, options.width, options.height),
     };
   }

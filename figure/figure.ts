@@ -28,8 +28,9 @@ export interface Figure {
   /** How much of the world the figure shows, in its own units. */
   extent: ExtentChoice;
   fit?: Fit;
-  /** The tree, either fixed or rebuilt from the clock and the sampled values. */
-  scene: Node | ((seconds: number, values: TrackValues) => Node);
+  /** The tree, either fixed or rebuilt from the clock, the sampled values and
+   * the frame it is drawn in. */
+  scene: Node | ((seconds: number, values: TrackValues, frame?: Extent) => Node);
   tracks?: Tracks;
   timeline?: Timeline;
   /** Overrides the timeline's own length, for a figure that should hold after
@@ -62,9 +63,10 @@ export function durationOf(figure: Figure): number {
  * one would be handed the box round the mark and its magnified copy together and
  * would follow neither.
  */
-function ownMarks(figure: Figure, seconds: number): readonly Mark[] {
+function ownMarks(figure: Figure, seconds: number, aspect?: number): readonly Mark[] {
   const values = figure.tracks ? sampleTracks(figure.tracks, seconds) : {};
-  const tree = typeof figure.scene === 'function' ? figure.scene(seconds, values) : figure.scene;
+  const frame = frameOf(figure, seconds, aspect);
+  const tree = typeof figure.scene === 'function' ? figure.scene(seconds, values, frame) : figure.scene;
   const marks = flatten(tree);
   const played = figure.timeline ? figure.timeline.at(marks, seconds) : marks;
   // The outline is taken after the timeline has run, so an animation that trims a
@@ -73,10 +75,31 @@ function ownMarks(figure: Figure, seconds: number): readonly Mark[] {
   return outlinedMarks(played);
 }
 
-/** The marks a figure shows at a time, its insets behind its own marks so an
- * inset is drawn over the picture it magnifies. */
-export function marksAt(figure: Figure, seconds: number): readonly Mark[] {
-  const drawn = ownMarks(figure, seconds);
+/**
+ * The frame a scene is built against: the extent the figure declares, resolved
+ * at the aspect being drawn.
+ *
+ * A declared extent that is a function has no shape until an aspect is given, so
+ * a figure drawn without one has no frame and an expression reading it refuses
+ * rather than reading a shape nobody asked for. A declared extent that is
+ * already an extent is its own answer at every aspect.
+ */
+function frameOf(figure: Figure, seconds: number, aspect: number | undefined): Extent | undefined {
+  if (aspect !== undefined) return resolveExtent(figure.extent, aspect, seconds);
+  return typeof figure.extent === 'function' ? undefined : figure.extent;
+}
+
+/**
+ * The marks a figure shows at a time, its insets behind its own marks so an
+ * inset is drawn over the picture it magnifies.
+ *
+ * The aspect is the shape of the surface the marks are headed for, and it is
+ * what a scene placing a mark against the frame is answered from. A caller with
+ * no surface in hand leaves it out, and every figure whose marks are in its own
+ * units draws the same picture either way.
+ */
+export function marksAt(figure: Figure, seconds: number, aspect?: number): readonly Mark[] {
+  const drawn = ownMarks(figure, seconds, aspect);
   if (!figure.insets) return drawn;
   // Every inset reads the figure's own marks and none of them reads another's, so
   // an inset placed over an inset magnifies the picture rather than the first
@@ -93,10 +116,10 @@ export function marksAt(figure: Figure, seconds: number): readonly Mark[] {
  * is placed in the figure's own units, so this is the call that answers for where
  * the frame is.
  *
- * A scene that places a mark against the frame cannot read the frame from here,
- * because a view that follows something reads the marks and the scene would be
- * asking for what is being built. Such a scene computes the frame the way the
- * view entry does.
+ * A scene that places a mark against the frame is not answered from here. It
+ * reads the extent the figure declares, resolved at the aspect being drawn,
+ * because a view that follows something reads the marks and a scene reading this
+ * answer would be asking for what is being built.
  */
 export function extentAt(figure: Figure, seconds: number, aspect: number): Extent {
   const declared = resolveExtent(figure.extent, aspect, seconds);
@@ -104,7 +127,7 @@ export function extentAt(figure: Figure, seconds: number, aspect: number): Exten
   // The marks are built at most once and only if a view entry asks for them, so
   // a figure whose view follows nothing pays nothing for one that does.
   let built: readonly Mark[] | undefined;
-  return figure.timeline.extentAt(declared, seconds, () => (built ??= ownMarks(figure, seconds)));
+  return figure.timeline.extentAt(declared, seconds, () => (built ??= ownMarks(figure, seconds, aspect)));
 }
 
 /**
@@ -123,9 +146,9 @@ export function viewAt(figure: Figure, seconds: number, width: number, height: n
  * behind that flag. The comparison is by tolerance rather than exactly, because
  * the sine and cosine a figure is built from are not specified to the last bit
  * and differ between engines. */
-export function isLoop(figure: Figure, tolerance = 1e-6): boolean {
-  const start = marksAt(figure, 0);
-  const end = marksAt(figure, durationOf(figure));
+export function isLoop(figure: Figure, tolerance = 1e-6, aspect?: number): boolean {
+  const start = marksAt(figure, 0, aspect);
+  const end = marksAt(figure, durationOf(figure), aspect);
   return sameMarks(start, end, tolerance);
 }
 

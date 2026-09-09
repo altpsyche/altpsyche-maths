@@ -67,7 +67,7 @@ function writtenFloor(width: number, shownAt: number): number {
 }
 
 export function stillMarkup(figure: Figure, seconds: number, width = WIDTH, height = HEIGHT): string {
-  return svgMarkup(marksAt(figure, seconds), viewAt(figure, seconds, width, height), width, height, {
+  return svgMarkup(marksAt(figure, seconds, width / height), viewAt(figure, seconds, width, height), width, height, {
     theme: SHEET_THEME,
     ground: GROUND,
     minTextSize: writtenFloor(width, SHOWN_AT),
@@ -103,7 +103,10 @@ function stillDrawn(figure: Figure): Drawn {
   const width = Math.round(extent.width * PER_UNIT);
   const height = Math.round(extent.height * PER_UNIT);
   return {
-    marks: marksAt(figure, figure.still),
+    // The marks read the aspect the extent above was resolved at rather than the
+    // shape that extent gives, so the frame a mark is placed against is the frame
+    // the still's own extent was chosen for.
+    marks: marksAt(figure, figure.still, WIDTH / HEIGHT),
     matrix: viewAt(figure, figure.still, width, height),
     width,
     height,

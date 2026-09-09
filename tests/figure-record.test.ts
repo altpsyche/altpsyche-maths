@@ -1,5 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import {
+  checkFigure,
+  colourFrom,
   durationOf,
   extentAt,
   interval,
@@ -9,6 +11,7 @@ import {
   sameMarks,
   vec2,
   type Extent,
+  type FigureRecord,
 } from '../index.js';
 import { FRAMES, OWN, turns } from '../demos/rotate.js';
 import { TIMES as BOOLEAN_TIMES, booleans } from '../demos/boolean.js';
@@ -83,5 +86,59 @@ describe('a figure built from one record', () => {
       expect(mark.id.startsWith('panel/')).toBe(true);
       expect(mark.clip).toEqual(rectangle);
     }
+  });
+});
+
+describe('a record whose mark is placed against the frame', () => {
+  /** `fractionOf(frame, 0.02, 0.5)` written as an expression, which is the call
+   * the consumer places every mark of a figure over a shader with. */
+  const across = (fraction: number) => ({
+    kind: 'arithmetic' as const,
+    operator: '+' as const,
+    left: { kind: 'member' as const, of: { kind: 'frame' as const, name: 'centre' as const }, name: 'x' as const },
+    right: {
+      kind: 'arithmetic' as const,
+      operator: '*' as const,
+      left: fraction - 0.5,
+      right: { kind: 'frame' as const, name: 'width' as const },
+    },
+  });
+
+  const pinned: FigureRecord = {
+    extent: { kind: 'matchingAspect', height: 100 },
+    scene: {
+      kind: 'group',
+      name: 'all',
+      children: [
+        {
+          kind: 'dot',
+          name: 'plate',
+          at: { kind: 'point', x: across(0.02), y: 0 },
+          radius: 1,
+          fill: { colour: colourFrom('#101010') },
+        },
+      ],
+    },
+    still: 0,
+  };
+
+  it('moves the mark with the frame and stays where it is put in figure units', () => {
+    const built = resolveFigure(checkFigure(JSON.parse(JSON.stringify(pinned))));
+    const placeAt = (aspect: number) => {
+      const mark = marksAt(built, 0, aspect).find((each) => each.id === 'all/plate/disc');
+      if (!mark || mark.kind !== 'path') throw new Error('the plate is a path');
+      return mark.path[0].start.x;
+    };
+    // -0.48 of the width, and the width is a hundred times the aspect.
+    expect(placeAt(3)).toBeCloseTo(-144 + 1, 6);
+    expect(placeAt(1.7778)).toBeCloseTo(-85.3344 + 1, 4);
+    expect(placeAt(0.5625)).toBeCloseTo(-27 + 1, 6);
+  });
+
+  it('refuses the figure drawn with no aspect, since a matchingAspect extent has no frame without one', () => {
+    const built = resolveFigure(checkFigure(JSON.parse(JSON.stringify(pinned))));
+    expect(() => marksAt(built, 0)).toThrow(
+      "an expression reads the frame's centre, which is not among the values it was given"
+    );
   });
 });

@@ -44,7 +44,7 @@ export function resolveFigure(record: FigureRecord): Figure {
   return {
     extent: resolveExtentChoice(record.extent),
     fit: record.fit,
-    scene: (_seconds, values) => resolveNode(record.scene, { tracks: values }),
+    scene: (_seconds, values, frame) => resolveNode(record.scene, { tracks: values, frame }),
     tracks: record.tracks,
     timeline: record.timeline ? resolveTimeline(record.timeline) : undefined,
     duration: record.duration,
