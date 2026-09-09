@@ -273,7 +273,6 @@ three more are written past those because a session should not rediscover them.
 
 | version | what lands | what it changes | steps | cut against | depends on | plan |
 | --- | --- | --- | --- | --- | --- | --- |
-| 2.0.0 | the figure format | every builder's shape, and the door | 41 | all four demos read from files, and the eight sheets | MathJax, which is already a dependency | written, in [`FIGURE-FORMAT.md`](FIGURE-FORMAT.md) |
 | 2.1.0 | the curves and surfaces a figure can name: parametric, polar, implicit, and the solids | adds kinds | to plan | a phase portrait, which the flat demo's field cannot express | nothing outside this package | to plan |
 | 2.2.0 | matrices and tables, and a matrix applied to a grid | adds kinds | to plan | a grid under a linear map, which nothing here can draw | nothing outside this package | to plan |
 | 2.3.0 | the indications that run along a path, and text written on rather than faded in | adds kinds, and outlines for plain text | to plan | the flat demo's reading, written on | a source of glyph outlines for plain text | to plan |
@@ -418,7 +417,16 @@ README that plays a video on load is a README nobody can read.
 
 ## Now
 
-**1.6.0 is published, the GPU spike is done, and 2.0.0 is what runs next.** Siva's call of 2026-09-09
+**2.0.0 is cut and publishing it is Siva's.** The version is bumped in this tree with its lock beside
+it, the nine done-criteria are verified line by line in the cut's own commit, the README's migration
+section moves a caller from the published 1.6.0, and `npm publish` waits for Siva rather than being
+assumed. What a consumer gets is the figure format: a figure is a JSON document,
+[`SPECIFICATION.md`](SPECIFICATION.md) states the whole of it in 605 lines for a renderer written in
+another language, and the four committed figure files are its fixtures. **The next thing after the
+release is the consumer's migration**, which is one commit in that tree bumping the dependency to
+`^2.0.0`, and step 10.5a's reading below names every site it touches.
+
+**1.6.0 is published, the GPU spike is done, and 2.0.0 was what ran next.** Siva's call of 2026-09-09
 put the spike in front of the format work, on the argument that a gap found in the engine costs an
 item, a commit and a release there before a painter here can use it, and that the slack for that lead
 time was 2.0.0's twenty-nine commits. The spike spent one session and found eight gaps, so the
@@ -538,10 +546,10 @@ meant, which is that no figure passes one. `plot`, `vectorField`, `surface3`, `s
 `sectionOf` take one at the door and always will, since a function making fixed geometry never had to
 serialise.
 
-**Step 10.6 is what a session runs next**, and step 11 is the cut behind it. The cut is Siva's: the
-version bumped to 2.0.0 in that commit with `npm install --package-lock-only` beside it, the README's
-migration section rewritten from 1.0.0 to 2.0.0, this ladder's 2.0.0 row and its item deleted, and
-publishing asked for rather than assumed.
+**Step 11 is the cut and it is landed.** The version is 2.0.0 with `npm install --package-lock-only`
+beside it, the README's migration section moves a caller from 1.6.0, the ladder's 2.0.0 row and its
+item are deleted, [`FIGURE-FORMAT.md`](FIGURE-FORMAT.md) keeps its name and loses its plan, and
+publishing is Siva's.
 
 **Two calls inside the cut are answered.** Siva's, on 2026-09-09. A `Mark` may not be a raster image,
 which closes the fifth decision above: no painter is what blocks one, since `<image>`, `drawImage` and
@@ -553,7 +561,7 @@ whenever a picture wants one, which is the number that exists so a kind can be a
 [`FIGURE-FORMAT.md`](FIGURE-FORMAT.md) keeps its name and loses its plan at the cut, since a document
 of that name sits in each of the three repositories the change crosses.
 
-**Step 10.6 is landed and it was five commits.** [`SPECIFICATION.md`](SPECIFICATION.md) said of
+**Step 10.6 was landed in five commits.** [`SPECIFICATION.md`](SPECIFICATION.md) said of
 itself that three sections were written and the vocabulary was not, with its "What has to be
 specified" pointing at the plan for the inventory, so dropping the plan first would have taken the
 only written vocabulary with it. The document goes from 112 lines to 605: the eleven value types, the
@@ -1094,152 +1102,8 @@ no box test in front of it and the quadratic over piece pairs is not worth remov
 
 ## The items
 
-Each is a version above. What follows is what each one covers. None of the eight of the 2.x band
-carries a step list, because writing one is a session of its own and the band is behind 2.0.0.
-
-### 2.0.0 The figure format
-
-**[`FIGURE-FORMAT.md`](FIGURE-FORMAT.md) is the shape this is built to**, and it is one of three
-documents of that name, one in each repository the change crosses.
-
-**Three more decisions, Siva's, taken on 2026-09-08 after he said the name undersold the work.** It
-is a format with a specification, and it evaluates a bounded expression form rather than being a
-language: no loops, no recursion, no user-defined functions, no assignment, not Turing-complete.
-Those four are standing refusals in the specification's first section, because a name cannot hold a
-boundary and a rule can. Calling it a language was tried and dropped, since Lottie and glTF are both
-called formats and both have implementers on several platforms. The specification's version is its
-own, so a figure declares which version of the format it is written in and a renderer declares which
-it reads, and neither number is this package's.
-
-**Two planning sessions ran and neither touched code.** What they produced is the format written
-down, the six questions below answered, and a step list Siva reads before anything lands. The audit
-of the 1.x band added a step to it for the insets 1.6.0 gave a figure and the review of 2026-09-09
-added one for the boolean operations, and step 3.2 added one for the three calls that take geometry,
-step 3.9 split its look off as a step of its own, and step 3.11 found the pane's wash. Step 5 was
-planned on 2026-09-09 and is eight commits, the rotation demo moved into it out of step 8, and gap 8
-became step 12 on the same day. Step 12's own split into two commits was tried and does not hold,
-since the records share the mark's colour type, so it is forty commits.
-
-A figure format is a description of a picture over time that a program reads rather than runs. It
-carries nodes, tracks and animations, each a named thing with parameters, and no function anywhere.
-Two things follow: a figure can be written by something other than a person typing TypeScript, and a
-figure can be drawn by something other than this package.
-
-**Why it comes before the renderer.** Four renderer versions were queued and every one would have
-been written against an API the format reshapes. The format is also the only part that cannot be
-retrofitted: an authoring API can be added over a format, and a format cannot be extracted from
-closures without redesigning every builder.
-
-#### What the planning session has to answer
-
-- **The scene shapes, named and parameterised.** Every builder this package publishes becomes a node
-  of the format or is refused a place in it. The count is the size of the work and nobody has counted
-  it yet. `plot`, `axes`, `tangentAt`, `areaUnder`, `brace`, `vectorField`, `surface3` and the rest.
-- **How a track value binds to a parameter.** The flat demo drives a fraction of a curve's length and
-  recovers the graph x from the point it lands on. That is computation, and the format admits none,
-  so either a node takes a length fraction directly or the demo is expressed differently. **This one
-  case decides whether the format is workable**, so it is answered first and on paper.
-- **Where text's geometry is settled.** A label's place depends on font metrics, which differ between
-  platforms, so two renderers disagree unless the format pins metrics or a figure carries text
-  already resolved. This is the failure Lottie never fully closed.
-- **What conformance means and what checks it.** Two renderers agree if they draw the same marks at
-  the same times, compared by tolerance, which is a gate this repository already runs. That oracle
-  covers a flat figure and covers nothing a depth buffer does, so the second half needs an answer of
-  its own.
-- **What the version promise covers.** Which parts are frozen, what a renderer may leave unimplemented
-  and how it says so, and what a major would be for.
-- **Whether the authoring API changes at all.** The builders that exist can stay as the way a figure
-  is written, producing the format rather than closures, in which case a consumer sees little change.
-  That is the goal and it needs checking rather than assuming.
-
-#### That was done, and the six questions are answered
-
-**`demos/tangent.ts` was written out as data by hand on 2026-09-08**, before anything was designed,
-and it answered the questions above. "A function" turned out to be three problems wearing one word,
-and only the smallest needs the format to grow anything: geometry-making functions do not survive
-serialisation and do not need to, geometry-reading functions should take geometry instead, and what
-is left is a handful of operations over a track value. The three hard problems, the inventory, and a
-step list with its done-criteria are all in [`FIGURE-FORMAT.md`](FIGURE-FORMAT.md).
-
-**The vocabulary is twenty-one node kinds, two item producers, eleven path producers, two point
-producers and fifteen animation kinds**, read from the door by return type, and **nineteen names at
-the door carry a function** in twelve shapes, with three more carrying one in a field of a type. Everything else is already a record of values wearing a
-function call's clothing.
-
-**The measurement runs through every step and it is what makes this checkable: a figure as data draws
-mark for mark what the TypeScript figure draws, compared by tolerance.** The demos are already the
-conformance suite.
-
-**The size was written down honestly on a second pass**, after Siva said the document was underselling
-it. Sixty-one things rather than thirty-nine once the timeline structure and the nine value types are
-counted, two of the steps larger than a commit and needing to be split, four prose and demo surfaces
-to rewrite that were never counted, and at least twenty-eight commits rather than six. **It is almost
-certainly 2.0.0 rather than a minor, since `plot` returns a `Path` today and would return a record**,
-and that is Siva's call.
-
-**Three more decisions, Siva's, on 2026-09-08.**
-
-**This is 2.0.0 and it is a clean break.** `areaUnder`, `plot`, `riemannBars`, `slopeOf` and
-`tangentAt` are all at the door and all change shape, so every step of the plan touches a door frozen
-five commits ago. Old calls stop working rather than standing beside new ones, since two APIs is two
-resolvers, two sets of tests and a reference twice the size, carried until a major removes them
-anyway. 1.0.0 has one consumer and it is this tree's own author.
-
-**The specification lives here, as [`SPECIFICATION.md`](SPECIFICATION.md).** A fourth repository was
-made and folded back on the same day. glTF and Lottie split their specifications because several
-implementers with different owners read them, and there is one implementation and one author here, so
-a fourth repository would have been a fourth roadmap and a fourth set of gates against a document
-sitting nearly empty for months. **The discipline the split would have bought is a rule instead: the
-specification changes before the code does.** It moves out when a second implementation exists, or
-when a tool wants the types and a validator without the whole library, which is also when
-`@altpsyche/figure-format` becomes a package. Nothing needs that today.
-
-**Steps 3 and 4 are split and the plan is complete.** Step 3 is thirteen commits and step 4 is five,
-each naming the demo whose marks measure it, and the plan was twenty-eight commits rather than the
-twelve to sixteen it claimed. The audit of the 1.x band added a step for the insets, the review of
-2026-09-09 added one for the boolean operations, and step 3.2 added one for the three calls that take
-geometry, and step 3.9 split the held beat off as a look of its own, so it is thirty-two. Step 5's own
-plan of 2026-09-09 is eight commits and takes the rotation demo out of step 8, and gap 8 is step 12
-and one commit, which makes it forty.
-
-**Splitting them corrected the inventory in four places**, because the tables had been read from the
-names at the door rather than from each builder's return type. `riemannBars` returns a node and was
-counted as a path producer. `vectorField3` is a node kind that was missed, and `surfaceCells` and
-`fieldArrows3` return `SpaceItem[]`, which is a third thing a figure is made of. Six path producers
-in `figure/path.ts` and the two point producers were never counted. And nineteen names at the door
-carry a function in twelve shapes rather than nine in three: a `Camera3` carries `project`, a
-`Projection` carries `place`, and `lengthOf`, `colourFor` and `shade` are function-valued options.
-
-**Two of those findings shrink the work and one grows it.** The five option functions the two demos
-pass are four named forms between them, a constant, a threshold, a saturating length and a ramp
-through a band, so they need no expression at all. Eleven names at the door are drawn by no demo, so
-each gets a test against its own call rather than a picture. What grows is the camera: the solid
-demo's eye sits at `4.6·cos(2πt)`, `4.6·sin(2πt)`, `2.6`, which is the second place a demo asks the
-expression form for arithmetic, so the camera has a step of its own.
-
-**A boolean operation had no written form and the demo that measures step 3.1 is built from three.**
-The review of 2026-09-09 read the plan against the tree. Ten operations take a path and hand one back
-and no inventory table held any of them, because the tables were read from return types and an
-operation's type is the same as a producer's. Three of the ten are named by a figure: `demos/boolean.ts`
-computes `unionOf`, `intersectionOf` and `differenceOf` inside a scene rebuilt from a track, so the
-answer's cubics change every frame and cubics written out at authoring time are one frame of it. Step
-3.3 carries the three, the other seven stay unwritten because each runs inside an animation or inside
-the resolver, and step 3.1 measures against the rotation demo, whose scene is a fixed tree of the
-three kinds it lands.
-
-**A timeline as data is the compiled spans and not the calls that built them.** The plan described a
-timeline entry as carrying an `after` offset and a stagger's `gap`, which are arguments to `play`,
-`together` and `stagger` rather than fields of anything: `figure/timeline.ts` folds each into the next
-span's `from` when the call is made. Step 6 writes the spans, since that is what `marksAt` reads and
-it leaves no compiler for a second renderer to get wrong, and it says what that costs.
-
-**A drawn string had no written form, and one demo draws one.** The expression vocabulary names a
-literal, a track reference, a bound variable, arithmetic, a comparison with a choice, a member and a
-call, and no join of text. The flat demo's reading is a fixed word beside a formatted number, so a
-text record carries a template with numbered holes and one expression per hole, which leaves
-substitution in a renderer rather than a string algebra.
-
-**Nothing is signed off.** Siva reads the plan before a line is written.
+Each is a version above. What follows is what each one covers. None of the 2.x band carries a step
+list, because writing one is a session of its own.
 
 ### The 2.x band, which is what Manim has and this does not
 

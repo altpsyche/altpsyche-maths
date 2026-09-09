@@ -176,36 +176,55 @@ form rather than guessing. Nothing reads the page, and `getComputedStyle` appear
 tree.
 
 No screenshot gates this package. Every assertion reads a mark list or a number, so the suite of
-1,046 tests over 66 files runs in Node without a browser. Comparisons are by tolerance rather than by hash, because
+1,065 tests over 67 files runs in Node without a browser. Comparisons are by tolerance rather than by hash, because
 `Math.sin`, `Math.cos` and `Math.pow` are not specified to the last bit and differ between engines.
 
-## Moving from 1.0.0
+## Moving from 1.6.0
 
-1.0.0 was the version before this one on npm, and 1.6.0 arrives with the whole 1.x band behind it:
-the typography, the pacing, the variable-width stroke, the gradient, the view as a timeline entry,
-and the rectangular clip with the inset it makes possible.
+1.6.0 was the version before this one on npm, and 2.0.0 is the figure format: a figure is a JSON
+document a program reads, `readFigure` and `writeFigure` are the two calls that carry it either way,
+and [docs/SPECIFICATION.md](docs/SPECIFICATION.md) states the whole of it for a renderer written in
+another language.
 
-**The door is additive.** It went from 230 names to 266 and no name was removed or renamed.
+**The door is additive.** It went from 266 names to 375 and no name was removed or renamed.
 
-**Four types a caller may read or implement changed shape**, so this is a minor version carrying
-changes a major usually announces.
+**A colour changes shape, and it is the change that reaches every caller.** A `Colour` was any CSS
+colour written as text and is now four channels with an optional name, so every `Fill`, `Stroke` and
+`Stop` a caller builds moves with it.
 
-| type | at 1.0.0 | at 1.6.0 |
+```ts
+// at 1.6.0
+shape('disc', circle(vec2(0, 0), 1), { fill: { colour: 'var(--accent, #fb923c)' } });
+// at 2.0.0
+shape('disc', circle(vec2(0, 0), 1), { fill: { colour: colourFrom('#fb923c', 'accent') } });
+```
+
+`colourFrom` reads a hex or an `rgb()` and takes the name a page themes the colour under, `colourOf`
+reads the channels alone, and `hexOf` and `colourText` write one back out. A form neither reads is
+refused rather than painted as nothing: a named colour or an `hsl()` read as black is a wrong picture
+with nothing to say it went wrong. The SVG painter still writes `var(--name, #rrggbb)`, from the
+channels the colour holds, so a page themes a figure exactly as it did.
+
+**Three readers take the drawn path rather than the function behind it.**
+
+| call | at 1.6.0 | at 2.0.0 |
 | --- | --- | --- |
-| `Span` | `animation: Animation` | `entry: Entry`, which is an `Animation` or a `ViewChange` |
-| `CanvasLike` | neither `rect` nor `clip` | both, required |
-| `PaintNode` | no `append` | required |
-| `Stroke.width` | `number` | `number \| Taper` |
+| `slopeOf` | `(of, x, step?)` | `(coords, curve, x)` |
+| `areaUnder` | `(coords, of, over, options?)` | `(coords, curve, options?)` |
+| `tangentAt` | `(coords, of, x, options?)` | `(coords, curve, x, options?)` |
 
-`rect`, `clip` and `append` are required rather than optional because a context that skipped a clip
-would paint the marks a figure asked to have cut away, and a `<clipPath>` holding no `<rect>` clips
-away everything that references it. A real `CanvasRenderingContext2D` and a real element in a
-document each satisfy them, so what this reaches is a hand-written stand-in.
+**What that buys is a tangent that touches the curve a reader can see.** A slope read by a central
+difference on the function differs from the slope of the cubic the curve is drawn as, and the two
+parted by 1.06e-11 at a parabola's stationary point. Reading the drawn path makes the tangent exact
+there. `AreaOptions` no longer extends `PlotOptions`, since the sampling belongs to the `plot` that
+made the curve, and `TangentOptions` loses `step`, since nothing is differenced any more.
 
-**Two new optional fields change what a painter has to honour.** `Fill.gradient` and `Mark.clip` are
-each read by the two painters here. A caller painting marks with a painter of its own draws the wrong
-picture rather than an error where it ignores them: a washed fill comes out flat, and a clipped mark
-comes out whole.
+**`plot`, `riemannBars`, `vectorField`, `surface3`, `sectionOf` and `streamlineOf` still take a
+function** and always will. A function making fixed geometry never had to serialise, and a figure
+that stores geometry stores what the function produced.
+
+**Nothing else a caller reads or implements changed shape.** `CanvasLike`, `PaintNode`, `Mark`,
+`Span` and `Stroke` are what 1.6.0 published.
 
 ## Further reading
 
