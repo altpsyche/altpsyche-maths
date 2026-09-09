@@ -25,7 +25,7 @@ A **painter** consumes marks. `viewMatrix` builds the single affine transform ta
 a surface of a given size. It inverts the y axis, since a figure counts upward and both painters
 count downward from the top. No conversion to device units occurs anywhere else.
 
-<img src="docs/tangent.svg" width="720" alt="A parabola on a labelled grid over a field of small blue arrows, the region under it shaded to a point on the curve, the tangent at that point drawn, and the slope written as a number under the typeset rule it comes from.">
+<img src="https://raw.githubusercontent.com/altpsyche/altpsyche-maths/master/docs/tangent.svg" width="720" alt="A parabola on a labelled grid over a field of small blue arrows, the region under it shaded to a point on the curve, the tangent at that point drawn, and the slope written as a number under the typeset rule it comes from.">
 
 The figure above is evaluated at t = 7.86 s of a 10.25 s duration. Its extent is 10.8 by 6 units and
 its marks number 181 there, counting the inset it draws.
@@ -78,7 +78,7 @@ the suite holds the drawn edge between 2.6 × 10⁻⁴ and 2.8 × 10⁻⁴. `spl
 Casteljau's construction and `pathFromData` reads the elliptical arc form of an SVG `d` attribute by
 the conversion the specification itself gives.
 
-<img src="docs/boolean.svg" width="720" alt="Two discs drawn three times side by side: everything either one covers, only what both cover, and the first with the second taken out of it.">
+<img src="https://raw.githubusercontent.com/altpsyche/altpsyche-maths/master/docs/boolean.svg" width="720" alt="Two discs drawn three times side by side: everything either one covers, only what both cover, and the first with the second taken out of it.">
 
 `unionOf`, `intersectionOf` and `differenceOf` operate on closed loops of cubics. Crossings are
 located per segment pair and refined by Newton's method, the surviving pieces are stitched, and the
@@ -110,7 +110,7 @@ in time, which keeps the points evenly spaced. Halving the step divides the erro
 
 ## Space
 
-<img src="docs/surface.svg" width="720" alt="A saddle-shaped surface drawn as a grid of shaded cells, with a flat pane cutting through it at one height and the two branches of the curve where they meet drawn in orange along the surface. Blue arrows across the pane show the way the saddle falls and three green runs of steepest descent are drawn on it.">
+<img src="https://raw.githubusercontent.com/altpsyche/altpsyche-maths/master/docs/surface.svg" width="720" alt="A saddle-shaped surface drawn as a grid of shaded cells, with a flat pane cutting through it at one height and the two branches of the curve where they meet drawn in orange along the surface. Blue arrows across the pane show the way the saddle falls and three green runs of steepest descent are drawn on it.">
 
 `camera3` holds an eye, a target, an up vector, a view matrix and a projection. `perspective` and
 `orthographic` supply the projection; the orthographic case is a scale rather than a divide and
@@ -126,7 +126,7 @@ points where a plane cuts a parametric surface, closing a run whose ends meet.
 
 ## Time and motion
 
-<img src="docs/rotate.svg" width="720" alt="Two panels side by side, each an L-shaped block turned part way round with a dot marking the point it turns about. In the left panel the dot sits at the middle of the block's own box. In the right it sits off to one side, so the block swings round it.">
+<img src="https://raw.githubusercontent.com/altpsyche/altpsyche-maths/master/docs/rotate.svg" width="720" alt="Two panels side by side, each an L-shaped block turned part way round with a dot marking the point it turns about. In the left panel the dot sits at the middle of the block's own box. In the right it sits off to one side, so the block swings round it.">
 
 An **animation** maps marks and a fraction of a span to marks. Fifteen of them are supplied, among
 them `draw`, `fadeIn`, `moveAlong`, `rotate`, `morph` and `morphEquation`, which pairs the glyphs of

@@ -1375,11 +1375,12 @@ release away and has a document of its own.
   from a file; the suite from 1,042 tests to 1,043 over 66 files, the new one holding each still's
   marks against the marks of the figure its file describes.
 
-- [ ] **10.5. The polish pass before the cut**, which is Siva's call of 2026-09-09 on the argument
+- [x] **10.5. The polish pass before the cut**, which is Siva's call of 2026-09-09 on the argument
   that 2.x is a major release. The 1.x band was cut the same way and its audit found nine things. The
   reading of 2026-09-09 found seven, four of them closed in the commits behind this entry, and the
-  three below are what is left. **They run in this order because it is the damage each does if it
-  ships**, and the first is the only one that can find a defect rather than a stale sentence.
+  three below closed after it. **They ran in this order because it is the damage each does if it
+  ships**, and the first was the only one that could find a defect rather than a stale sentence. It
+  found none, so the pass cost one commit for each of the three and no fix to the code.
 
   - [x] **10.5a The consumer draws a 2.x figure.** `altpsyche.dev` holds 0.6.0 and had drawn nothing
     of the 1.x band or the format. `npm pack` here, `npm install --no-save` the tarball there, build
@@ -1419,15 +1420,22 @@ release away and has a document of its own.
     1,043 tests over 66 files to 1,045, the two new ones holding the record count above sixty and
     every field to its entry.
 
-  - [ ] **10.5c What the npm page shows.** The tarball is `dist`, `LICENSE` and `README.md`, which is
-    133 files and 162.5 kB, and the README shows four pictures by relative path into `docs/`, a
-    directory the tarball does not carry. npm rewrites a relative image against the repository a
-    manifest names, and this manifest names one, so the page may render them from the default branch
-    or may show four broken images.
-    **Measures:** what the four `<img>` paths resolve to on the published page; whether the answer is
-    the repository's raw content or nothing; the change if the answer is nothing, which is an absolute
-    URL per picture rather than a directory added to `files`, since a package shipping its own
-    documentation ships four SVGs a consumer never reads.
+  - [x] **10.5c What the npm page shows.** The tarball is `dist`, `LICENSE` and `README.md`, which is
+    133 files and 162.5 kB, and the README showed four pictures by relative path into `docs/`, a
+    directory the tarball does not carry.
+    **Measured:** the answer is nothing, and the pipeline says so rather than the page. npm's own
+    documentation renders a README as GitHub Flavored Markdown through GitHub's markdown API, and that
+    API given `altpsyche/altpsyche-maths` as its context returns `<img src="docs/tangent.svg">`
+    unchanged, for a markdown image and a raw `<img>` alike, so the src resolves against the
+    registry's own host and no picture is fetched. The published page itself is unreadable from this
+    environment, which answers 403 to `curl` and to a fetch alike. The change is an absolute URL per
+    picture rather than `docs/` added to `files`, since a package shipping its own documentation ships
+    four SVGs a consumer never reads. Each of the four is now
+    `https://raw.githubusercontent.com/altpsyche/altpsyche-maths/master/docs/`, which answers 200 with
+    `image/svg+xml`, and the four remote sheets are 80,702, 4,112, 126,906 and 3,296 bytes against the
+    same four numbers in this tree, so the page shows the picture the code draws. A gate holds each
+    `<img>` in the README to that host and to a sheet the tree carries, and putting `docs/rotate.svg`
+    back fails it. The suite goes from 1,045 tests over 66 files to 1,046.
 
 - [ ] **11. Cut 2.0.0.** The version bumped in this commit, `npm install --package-lock-only` in the
   same one, the done-criteria verified line by line with the number that satisfies each, and

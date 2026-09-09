@@ -541,23 +541,23 @@ with `npm install --package-lock-only` beside it, the README's migration section
 1.0.0 to 2.0.0, this ladder's 2.0.0 row and its item deleted, and publishing asked for rather than
 assumed.
 
-**The polish pass runs before the cut**, which is Siva's call of 2026-09-09 on the argument that 2.x
+**The polish pass ran before the cut**, which is Siva's call of 2026-09-09 on the argument that 2.x
 is a major release. The 1.x band was cut the same way: an audit read the whole band against the tree
 and seven commits closed what it found. The reading of 2026-09-09 found seven things, ordered by the
-damage each does if it ships, and four of them are closed.
+damage each does if it ships, and all seven are closed.
 
 | found | state |
 | --- | --- |
 | the consumer has drawn no 2.x figure and holds 0.6.0 | closed here, and the migration is a session in that tree after the release |
 | the reference is held to the door by name and to the records by nothing | closed, and 66 record interfaces have every field held to its entry |
-| the npm tarball is `dist`, `LICENSE` and `README.md` while the README shows four pictures out of `docs/` | **open**, and what settles it is how that page renders |
+| the npm tarball is `dist`, `LICENSE` and `README.md` while the README shows four pictures out of `docs/` | closed, and the four are absolute URLs into the repository's raw content |
 | `DESIGN.md` quoted 3.9 and 4.2 milliseconds a frame | closed, and it reads 5.13 and 5.14 measured on 2026-09-09 |
 | `stripMarks` was written four times | closed, and `demos/strip.ts` holds `stripOf` |
 | the thirty-seven expression functions were named nowhere a reader could look them up | closed, and the reference lists them with their arguments |
 | `tests/figures.ts` described two demos as records when four are | closed |
 
-**The open one is step 10.5 of the plan**, written there as 10.5c with the
-measurement it will quote, so a session resumes at it rather than at the cut.
+**The polish pass is closed**, and its seven findings are recorded in the three paragraphs below and
+in `git log`.
 
 Step 10.5a drew the consumer's figures against this tree and found no defect. `npm pack` here is
 162,542 bytes over 133 files, and installed there with the manifest untouched it left 26 type errors
@@ -576,6 +576,13 @@ body's own depth is held to a backticked name in that record's entry. One entry 
 and it is `TimelineRecord`, whose `duration` read as "how long it runs". A `settle` added to that
 record and not to the page fails the gate with `TimelineRecord: settle`, which is the defect it exists
 for.
+
+Step 10.5c pointed the README's four pictures at the repository's raw content. npm renders a README as
+GitHub Flavored Markdown through GitHub's markdown API, and that API leaves a relative `src` as
+written, so four pictures written as `docs/tangent.svg` resolved against the registry's own host and
+drew nothing. Each is now an absolute URL answering 200 with `image/svg+xml`, the four remote sheets
+match this tree's at 80,702, 4,112, 126,906 and 3,296 bytes, and a gate holds every `<img>` in the
+README to that host and to a sheet the tree carries.
 
 **One call inside the cut is still Siva's**, which is what
 becomes of [`FIGURE-FORMAT.md`](FIGURE-FORMAT.md), a document `CLAUDE.md` calls the change in flight

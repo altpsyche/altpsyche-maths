@@ -393,6 +393,20 @@ describe('the committed pictures', () => {
     for (const sheet of sheets) expect(sheet.markup()).not.toMatch(/>label</);
   });
 
+  it('are shown in the README by a URL a page away from this tree can fetch', () => {
+    // The npm page renders the README through GitHub's markdown API, which
+    // leaves a relative src as written, so a relative path there is four
+    // pictures resolved against the registry's own host and nothing drawn.
+    const readme = readFileSync(path.join(root, 'README.md'), 'utf8');
+    const shown = [...readme.matchAll(/<img src="([^"]+)"/g)].map((match) => match[1]);
+    expect(shown.length).toBeGreaterThan(0);
+    const raw = 'https://raw.githubusercontent.com/altpsyche/altpsyche-maths/master/';
+    for (const source of shown) {
+      expect(source.startsWith(raw), source).toBe(true);
+      expect(sheets.map((sheet) => sheet.file)).toContain(source.slice(raw.length));
+    }
+  });
+
   it('are all eight there', () => {
     expect(sheets.map((sheet) => sheet.file)).toEqual([
       'docs/tangent.svg',
