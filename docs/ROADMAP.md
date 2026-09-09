@@ -518,8 +518,9 @@ tree with two errors, both of them one identifier declared twice. Step 9.1 lande
 blocks are assembled into one module with their imports merged and type-checked by a spawned
 compiler, the duplicate `timeline` of the view section is now `viewed`, and the suite is 1,042 tests
 over 66 files. Step 9.2 gave the guide the two sections it had none of, a record and a file, taking it from 713
-lines to 816 and its examples from 23 blocks to 27. **Step 9.3 is what a session runs next**, which
-is the reference's prose against the record kinds.
+lines to 816 and its examples from 23 blocks to 27. Step 9.3 read the 68 record interfaces against their entries and found one wrong, which is a text
+record's place. **Step 9.4 is what a session runs next**, which is the README and the design read
+against the format, and it carries the README's two stale counts from the found list below.
 
 **Two things fall due before the format freezes and both are Siva's**, which are
 whether a `Mark` may be a raster image, due by step 3 where the node vocabulary lands, and the
@@ -1189,6 +1190,16 @@ import. **It goes after 2.0.0 rather than before** because a recorder reads a fi
 format a recorder reads a file, which is also what lets one run without a page around it.
 
 ## Found while working, not yet queued
+
+- **The reference is held to the door by name and to the records by nothing.** `tests/reference.test.ts`
+  says every name at the door has one entry and no entry names a name the door lacks, which is what
+  keeps a rename from leaving a description of nothing. What it does not read is the fields inside an
+  entry: `TextRecord` described its place as a plain `at` for as long as it took step 8.2 to widen the
+  field, and nothing failed. A comparison run by hand over the 68 record interfaces against their
+  entries found that one and no other, so the gate would be cheap and would have caught it. What
+  stops it being written already is that an entry may name a field in words rather than in backticks,
+  as `TimelineRecord` names its duration, so the gate needs the entries to name every field the way
+  most of them already do.
 
 - **The README's two counts have been stale since step 3 and step 9 is where they are fixed.** It
   says a suite of 785 tests and 266 names at the door, against 1,024 tests over 65 files and 375

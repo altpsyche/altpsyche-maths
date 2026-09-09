@@ -1313,13 +1313,22 @@ release away and has a document of its own.
     under 9.1's gate, which caught the two names the new blocks took from the door, `dot` and `text`,
     now `walker` and `file`; the suite unchanged at 1,042 tests over 66 files.
 
-  - [ ] **9.3 The reference's prose against the record kinds.** Its entry list is already held equal
+  - [x] **9.3 The reference's prose against the record kinds.** Its entry list is already held equal
     to the door by `tests/reference.test.ts`, so every name has an entry and no entry names nothing.
     What is unread is the sentences: the record sections were written as each kind landed, and three
     of them describe a field this session widened or corrected, which are a text record's place, a
     follow's axis and the two projections.
     **Measures:** the entries the gate counts, unchanged at the door's own number; the sections
     rewritten; the fields whose description was wrong before.
+    **The plan named three fields and two of them were right on the page already.** A follow's `axis`
+    has its own line under `followView` and both projections name what their own builders take, so
+    what was wrong in those two was the validator alone, which is the two commits of this session that
+    fixed it. The reference was written from the calls and the validator was written beside them.
+    **Measured:** the 68 record interfaces of `figure/` compared field by field against their entries,
+    which found one wrong, `TextRecord`, whose place is an expression as of step 8.2 and read as a
+    plain `at`; `FillRecord` now names its `gradient`, `from`, `to` and `stops` the way its neighbours
+    name theirs; `tests/reference.test.ts` unchanged and still equal at the door's own count; the
+    suite unchanged at 1,042 tests over 66 files.
 
   - [ ] **9.4 The README and the design against the format.** Neither is named by this step and both
     are read by anyone the release reaches. The README states what the package is and shows the four

@@ -537,8 +537,9 @@ tree itself has, so a resolved record is the `Node` that `flatten` already walks
 functions, which is what lets the same tree survive being written to a file and read back.
 
 - `ShapeRecord` — a `kind` of `shape`, a `name`, a `path` as a `PathRecord`, and a `style`.
-- `TextRecord` — a `kind` of `text`, a `name`, an `at`, a `content`, a `size` and the `options` a text
-  node takes.
+- `TextRecord` — a `kind` of `text`, a `name`, an `at` as an expression, a `content`, a `size` and the
+  `options` a text node takes. The place is an expression because a reading hung off a frame that
+  follows a mark moves as the view does.
 - `GroupRecord` — a `kind` of `group`, a `name`, its `children` as records, and an optional
   `transform` and `style`.
 - `DotRecord` — a `kind` of `dot`, a `name`, an `at`, a `radius` and a `fill`.
@@ -590,8 +591,8 @@ functions, which is what lets the same tree survive being written to a file and 
   `node` drawn for it. A scene sorts its pieces by the mean of their own depths, so the points are
   what order a piece rather than anything the node carries.
 - `Axes3Record` — a `kind` of `axes3`, a `name`, its `camera` and its `options`.
-- `FillRecord` — a fill whose gradient runs between two places an expression gives. Every `Fill` is
-  one already, since a fixed place is a literal expression. What it adds is a wash whose axis moves,
+- `FillRecord` — a fill whose `gradient` runs between two places an expression gives: a `from`, a `to`
+  and its `stops`. Every `Fill` is one already, since a fixed place is a literal expression. What it adds is a wash whose axis moves,
   which is what the solid demo's pane runs along the recession from the eye. A record carrying a fill
   of its own takes one where a figure moves it, and the rest stay plain fills until a demo asks.
 - `ShadeRecord` — what colour a cell of a surface is filled with: a `ramp` of fills read as even steps
