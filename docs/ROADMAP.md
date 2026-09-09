@@ -273,14 +273,15 @@ three more are written past those because a session should not rediscover them.
 
 | version | what lands | what it changes | steps | cut against | depends on | plan |
 | --- | --- | --- | --- | --- | --- | --- |
-| 2.1.0 | the curves and surfaces a figure can name: parametric, polar, implicit, and the solids | adds kinds | to plan | a phase portrait, which the flat demo's field cannot express | nothing outside this package | to plan |
-| 2.2.0 | matrices and tables, and a matrix applied to a grid | adds kinds | to plan | a grid under a linear map, which nothing here can draw | nothing outside this package | to plan |
-| 2.3.0 | the indications that run along a path, and text written on rather than faded in | adds kinds, and outlines for plain text | to plan | the flat demo's reading, written on | a source of glyph outlines for plain text | to plan |
-| 2.4.0 | a group morphing into a group | adds a kind | to plan | the boolean demo's three panels, morphing into one another | nothing outside this package | to plan |
-| 2.5.0 | the recorder: a figure out as a video file | nothing in the format, and a name at the door | to plan | every demo as a file on disk rather than a strip of frames | `mediabunny`, which the consumer already records with | to plan |
-| 2.6.0 | the GPU painter | nothing in the format, and a name at the door | to plan | both demos through a third painter, mark for mark against the SVG painter | `@altpsyche/engine`, with its item 2 landed, declared as a peer | to plan |
-| 2.7.0 | dashes and quadratics drawn on a GPU | nothing; `Stroke.dash` is already in the mark and no painter draws it | to plan | a dashed figure, and the strip that shows it moving | `@altpsyche/engine` | to plan |
-| 2.8.0 | text on a GPU, and the recorder running without a page | nothing in the format | to plan | every demo recorded off a card | `@altpsyche/engine`, 2.3.0's outlines, and 2.5.0 | to plan |
+| 2.1.0 | a figure's marks may be read against the frame they are drawn in | adds an expression kind and a parameter at the seam | to plan | the consumer's two figures written as files and read back at every aspect each is drawn at | nothing outside this package | to plan |
+| 2.2.0 | the curves and surfaces a figure can name: parametric, polar, implicit, and the solids | adds kinds | to plan | a phase portrait, which the flat demo's field cannot express | nothing outside this package | to plan |
+| 2.3.0 | matrices and tables, and a matrix applied to a grid | adds kinds | to plan | a grid under a linear map, which nothing here can draw | nothing outside this package | to plan |
+| 2.4.0 | the indications that run along a path, and text written on rather than faded in | adds kinds, and outlines for plain text | to plan | the flat demo's reading, written on | a source of glyph outlines for plain text | to plan |
+| 2.5.0 | a group morphing into a group | adds a kind | to plan | the boolean demo's three panels, morphing into one another | nothing outside this package | to plan |
+| 2.6.0 | the recorder: a figure out as a video file | nothing in the format, and a name at the door | to plan | every demo as a file on disk rather than a strip of frames | `mediabunny`, which the consumer already records with | to plan |
+| 2.7.0 | the GPU painter | nothing in the format, and a name at the door | to plan | both demos through a third painter, mark for mark against the SVG painter | `@altpsyche/engine`, with its item 2 landed, declared as a peer | to plan |
+| 2.8.0 | dashes and quadratics drawn on a GPU | nothing; `Stroke.dash` is already in the mark and no painter draws it | to plan | a dashed figure, and the strip that shows it moving | `@altpsyche/engine` | to plan |
+| 2.9.0 | text on a GPU, and the recorder running without a page | nothing in the format | to plan | every demo recorded off a card | `@altpsyche/engine`, 2.4.0's outlines, and 2.6.0 | to plan |
 | 3.0.0 | depth, so a figure in space keeps it | what a `Mark` may ask for, which breaks the format's own version | to plan | the solid demo, whose crossing curve is drawn in the right order rather than the tree's | `@altpsyche/engine`, and the fourth decision above | blocked on a decision |
 | 3.1.0 | a clip that is a path rather than a rectangle | what a `Mark` may ask for | to plan | nothing yet, which is why it is last of the marks | `@altpsyche/engine`'s counting stencil, its item 2 | to plan |
 | 4.0.0 | a figure a reader can act on | the shape of `Figure`, which gains input | to plan | nothing yet | nothing outside this package | to plan |
@@ -417,14 +418,36 @@ README that plays a video on load is a README nobody can read.
 
 ## Now
 
-**2.0.0 is cut and publishing it is Siva's.** The version is bumped in this tree with its lock beside
-it, the nine done-criteria are verified line by line in the cut's own commit, the README's migration
-section moves a caller from the published 1.6.0, and `npm publish` waits for Siva rather than being
-assumed. What a consumer gets is the figure format: a figure is a JSON document,
-[`SPECIFICATION.md`](SPECIFICATION.md) states the whole of it in 605 lines for a renderer written in
-another language, and the four committed figure files are its fixtures. **The next thing after the
-release is the consumer's migration**, which is one commit in that tree bumping the dependency to
-`^2.0.0`, and step 10.5a's reading below names every site it touches.
+**2.0.0 is published, and `npm view @altpsyche/maths version` answers it.** The nine done-criteria are
+verified line by line in the cut's own commit. What a consumer gets is the figure format: a figure is
+a JSON document, [`SPECIFICATION.md`](SPECIFICATION.md) states the whole of it in 605 lines for a
+renderer written in another language, and the four committed figure files are its fixtures.
+
+**The consumer crossed on 2026-09-09 and the crossing is landed there**, in six commits on its
+`maths-package` branch: the dependency and the colour form in one, then the two silent defects step
+10.5a's reading had named, then the reading that stopped its format step, then its two maths documents
+at twelve claims corrected. Its gates are green at 804 tests over 55 files with both figure routes
+prerendering, the 26 type errors the reading predicted came out as 26 over 9 files with the edit
+landing in eight of them, and the one number that moved on screen is the still group on
+`/figures/circle-distance`, 18,619 bytes to 18,718: eleven fills each gaining the nine bytes of
+`, #f9fafb` now that the painter writes the channels inside the `var()`.
+
+**Both defects were real and neither was visible.** A figure's view was read once rather than at each
+painted time, which their fixture zooming from 200 by 100 units to 40 by 20 shows as three distinct
+recorded frames where there was one. And two figures on one page wrote the same `figure-2f-plate` id,
+so the second figure's wash resolved to the first figure's element.
+
+**What their session found that this package has to answer is 2.1.0 below.** A figure whose marks are
+placed against the frame cannot be a document, so the format's claim does not yet reach the only
+consumer there is.
+
+**How much of this package that consumer reaches, which they read off the door on 2026-09-09: 50
+runtime names of 180.** The door is 180 values and 195 types. Every name the format is made of is
+among the unreached: `readFigure`, `writeFigure`, `checkFigure`, `resolveFigure` and `evaluate` are
+called nowhere there, because no figure of theirs is a file. **So the crossing being complete and the
+format being adopted are different questions**, and 2.1.0 is what stands between the two. Of the
+colour readers the crossing reached `colourFrom`, `colourOf` and `colourText`, leaving `hexOf` and
+`lerpColour`.
 
 **1.6.0 is published, the GPU spike is done, and 2.0.0 was what ran next.** Siva's call of 2026-09-09
 put the spike in front of the format work, on the argument that a gap found in the engine costs an
@@ -1110,6 +1133,49 @@ no box test in front of it and the quadratic over piece pairs is not worth remov
 
 Each is a version above. What follows is what each one covers. None of the 2.x band carries a step
 list, because writing one is a session of its own.
+
+### 2.1.0 A figure's marks may be read against the frame they are drawn in
+
+**The consumer found this on 2026-09-09, one commit into writing its figures as files, and it is why
+that step stopped.** Both figures `altpsyche.dev` draws place every mark against the frame, and no
+figure this package can describe does that. So the site's two figures stay TypeScript modules, and
+2.0.0's claim that a figure is a document holds for every figure in this tree and for neither of
+theirs.
+
+**The reading, in their numbers.** `circle-distance` lays its glyphs inside a box of
+`extent.width * 0.84` by `extent.height * 0.46` and scales them to fit it, so the glyph scale is a
+function of the aspect and every glyph's place moves with it. Its first glyph sits at x = -114.029 on
+its own route, -67.573 at 1080p, -38.010 at square and -21.380 at a reel, a factor of 5.3333 across a
+picture 100 units tall. `one-pixel` is the same finding by another route: all four of its marks move,
+its plate starting at -20.200, -12.867 and -8.200 at aspects 3, 1.7778 and 1, and it reads its aspect
+off a shader embed's box at run time rather than declaring one.
+
+**Why no record can hold that.** `marksAt(figure, seconds)` takes one number, `scene` as a function
+takes `(seconds, values)`, and a record's scene is a static `NodeRecord`. The frame reaches nothing.
+What responds to the frame today is the extent alone, through `byAspect` and `matchingAspect`, which
+changes what a figure shows and not where its marks sit inside it. The site gets what it needs by
+calling `build(palette, aspect)` outside this package, which is the one thing a file cannot do.
+
+**Three answers, and choosing between them is Siva's.**
+
+| answer | what it costs |
+| --- | --- |
+| **the frame becomes a binding**: `marksAt` takes an optional aspect and an expression may name the frame's `width`, `height` or `aspect`, resolved from `extentAt` at that time | one expression kind and one optional parameter at the seam. Every node field is already an expression, so scale and placement are both answered at once and no kind changes shape. The specification's own version rule keeps the format at 0, since a reader that does not carry the kind refuses the file and names it |
+| **placement in frame units**: a kind may give a place as a fraction of the frame rather than in figure units | a new field on every kind that places something, and it answers half the case: `circle-distance`'s glyph *scale* moves with the aspect and not only its places |
+| **refuse it**: a figure's geometry is in figure units, and fitting a frame is the view's business | the format's claim narrows from a figure being a document to a frame-independent figure being one, the consumer's two figures never become files, and the strongest argument for the format loses its only consumer |
+
+**The recommendation is the first**, and what would change it is a reader in another language for which
+a second argument at the seam is harder to carry than a new kind.
+
+**What it is cut against, which the consumer has already written down.** Their register asks for a
+published version whose expression form answers where the frame is, then each of their two figures
+written as a file and read back, its marks compared against the module's at every aspect that figure
+is drawn at, by the tolerance the specification names. `circle-distance` is drawn at four: 3 on its own
+route and 1.7778, 1.0 and 0.5625 through the export's three shapes.
+
+**A demo here has to move with it.** Nothing in this tree draws a figure whose marks answer to the
+frame, so a version that shipped only the kind would be a version nothing checks. The flat demo's
+inset is the nearest thing and it is a rectangle of the frame rather than a mark placed against one.
 
 ### The 2.x band, which is what Manim has and this does not
 
