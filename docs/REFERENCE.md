@@ -1016,6 +1016,26 @@ animations reach a picture in space and a picture on a graph.
   - `cull` — whether a cell facing away from the eye is left out. Off by default, because a count
     that changes as the camera turns is a count no gate can hold.
   - `stroke` — how the edge of each cell is drawn.
+- `sphere3(name, centre, radius, camera, options)` — a sphere as one scene of its own cells. The
+  first parameter runs once round the axis and the second from the pole below the centre to the pole
+  above it, which is the order that leaves every cell facing away from the centre.
+- `sphereCells(name, centre, radius, camera, options)` — the same cells before they are put in an
+  order. The row of cells at each pole has an edge collapsed to one point, and those cells face the
+  way the surface does there rather than nowhere.
+- `cube3(name, centre, size, camera, options)` — a cube as one scene of its own cells, six patches of
+  one cell per step each way, each face named by the axis it faces and which way along it.
+- `cubeCells(name, centre, size, camera, options)` — the same cells before they are put in an order.
+- `cylinder3(name, centre, radius, height, camera, options)` — a cylinder standing on the axis through
+  its centre, as one scene of a side and two caps. The ring at the middle of each cap is one point.
+- `cylinderCells(name, centre, radius, height, camera, options)` — the same cells before they are put
+  in an order, the side first and then the cap above and the cap below.
+- `torus3(name, centre, ring, tube, camera, options)` — a torus lying about the axis through its
+  centre, as one scene of its own cells. The first parameter runs once round the ring and the second
+  once round the tube.
+- `torusCells(name, centre, ring, tube, camera, options)` — the same cells before they are put in an
+  order.
+- `Solid3Options` — what a solid takes, which is what a surface takes without the runs of its two
+  parameters. A solid fixes those itself, since a sphere over half of one is not a sphere.
 - `axes3(name, camera, options)` — the three axes as a group, one child per axis, each holding its
   line under `line`, its ticks under `ticks`, its labels under `labels` and, where it is named, its
   name under `name`.

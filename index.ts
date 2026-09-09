@@ -147,6 +147,8 @@ export { fieldArrows3, vectorField3 } from './figure/field3.js';
 export type { VectorField3Options } from './figure/field3.js';
 export { surface3, surfaceCells } from './figure/surface3.js';
 export type { Surface3Options } from './figure/surface3.js';
+export { cube3, cubeCells, cylinder3, cylinderCells, sphere3, sphereCells, torus3, torusCells } from './figure/solid3.js';
+export type { Solid3Options } from './figure/solid3.js';
 export { axes3 } from './figure/axis3.js';
 export type { Axes3Options } from './figure/axis3.js';
 export { sectionOf } from './figure/section.js';

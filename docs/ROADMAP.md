@@ -274,7 +274,7 @@ are left, since 2.1.0 is cut.
 
 | version | what lands | what it changes | steps | cut against | depends on | plan |
 | --- | --- | --- | --- | --- | --- | --- |
-| 2.2.0 | the curves and surfaces a figure can name: parametric, polar, implicit, and the solids | adds kinds | nine, and both design calls are answered | a phase portrait, which the flat demo's field cannot express, and a demo of the solids | nothing outside this package | planned |
+| 2.2.0 | the curves and surfaces a figure can name: parametric, polar, implicit, and the solids | adds kinds | ten, and both design calls are answered | a phase portrait, which the flat demo's field cannot express, and a demo of the solids | nothing outside this package | planned |
 | 2.3.0 | matrices and tables, and a matrix applied to a grid | adds kinds | to plan | a grid under a linear map, which nothing here can draw | nothing outside this package | to plan |
 | 2.4.0 | the indications that run along a path, and text written on rather than faded in | adds kinds, and outlines for plain text | to plan | the flat demo's reading, written on | a source of glyph outlines for plain text | to plan |
 | 2.5.0 | a group morphing into a group | adds a kind | to plan | the boolean demo's three panels, morphing into one another | nothing outside this package | to plan |
@@ -1191,9 +1191,12 @@ has one.
 **The solids are four builders over `surfaceCells`.** A sphere and a torus are each one patch, a
 cylinder is a side and two caps, and a cube is six flat patches. Each hands back cells rather than one
 shape for the reason `surface3` already does: a scene sorts cells, and a solid sorted as one piece is
-painted whole in front of or behind whatever it passes through. **A patch with a degenerate edge drops
-its collapsed cells**, which is the ring at each pole of a sphere and the middle ring of each cap of a
-cylinder, and the count of what is dropped is a measurement rather than a silence.
+painted whole in front of or behind whatever it passes through. **A patch with a collapsed edge keeps
+those cells rather than dropping them**, which the plan first had the other way round: `surfaceCells`
+read a cell's direction by crossing two of its edges, which gives nothing where those two are the same
+edge, and the fix that landed in front of step 5 reads the direction from every edge instead. So the
+row at each pole of a sphere and the ring at the middle of each cap of a cylinder are drawn and are
+shaded correctly, and their count is a measurement rather than a silence.
 
 **Two calls fell to Siva and both are answered.**
 
@@ -1242,36 +1245,48 @@ cylinder, and the count of what is dropped is a measurement rather than a silenc
   and refuses a bad field naming its path from the figure down, as
   `scene.children.0.path.closed is a true or false and is the text "yes"`; and an implicit level driven
   by a track draws radii of 0.5 and 1.5 at levels 0.25 and 2.25. **The committed fixture carrying the
-  three is step 7's demo**, since a figure file no demo draws is a fixture nothing checks.
-- [ ] **5. The four solids.** `figure/solid3.ts` holds `sphere3`, `cube3`, `cylinder3` and `torus3`, each
-  over `surfaceCells`, and `NodeRecord` gains the four kinds. **The measurement**: the cell count of each
-  at resolution 24, the count of degenerate cells dropped at a sphere's two poles and a cylinder's two
-  caps, the drawn radius of a sphere against the true one at resolutions 12, 24 and 48, and the eight
-  corners of a cube against their exact places.
-- [ ] **6. A parametric curve in space.** `figure/curve3.ts` hands back places in space from a function
+  three is step 8's demo**, since a figure file no demo draws is a fixture nothing checks.
+- [x] **5. The four solids as calls.** `figure/solid3.ts` holds `sphere3`, `cube3`, `cylinder3` and
+  `torus3` with the cells of each, over `surfaceCells`. **The measurement**: at 12 steps a sphere and a
+  torus are 144 cells, a cube is 864 over six faces and a cylinder is 432 over three patches, and every
+  cell of every one of them faces away from the solid. A sphere's two pole rows are 24 cells with an
+  edge collapsed, 12 of them exactly and 12 to the 1.2e-16 that the sine of a half turn is, and a
+  cylinder's two caps are 24 more. Every corner of a sphere is on the true sphere to twelve places and
+  every corner of a torus is one tube radius from the ring, and the flat cell falls 417.523, 106.412 and
+  26.730 parts in ten thousand inside the true radius at 12, 24 and 48 steps, which is the second order
+  a flat cell has. A cube's eight corners are at their exact places.
+  **The step was split**: the format half of it is step 6 below, since a fix to `surfaceCells` had to
+  land in front of the builders and one commit was already carrying two findings.
+- [ ] **6. The solids in the format.** `NodeRecord` gains the eight kinds, four that draw a solid and
+  four that hand a scene its cells, the way `surface3` and `surfaceCells` are two kinds already.
+  `checkFigure` holds each to its fields and `SPECIFICATION.md` reads thirty-one node kinds rather than
+  twenty-three. **The measurement**: each record's marks against the same solid written as a call; the
+  node count gate reading thirty-one; and the refusal a bad field gives, naming its path from the figure
+  down.
+- [ ] **7. A parametric curve in space.** `figure/curve3.ts` hands back places in space from a function
   of one number, which is a point producer beside `sectionOf` and `streamlineOf`, and `SPECIFICATION.md`
   reads three producers rather than two. **The measurement**: the point count at a named resolution, and
   the greatest distance from a helix's drawn places to the cylinder it lies on.
-- [ ] **7. The phase portrait demo.** `demos/portrait.ts` draws the field of `ẋ = x − y − x(x² + y²)`
+- [ ] **8. The phase portrait demo.** `demos/portrait.ts` draws the field of `ẋ = x − y − x(x² + y²)`
   and `ẏ = x + y − y(x² + y²)`, whose polar form is `ṙ = r(1 − r²)` and `θ̇ = 1`: the limit cycle at
   `r = 1` as a parametric, two spirals as polar curves at the closed form
   `r(θ) = 1 / √(1 + (1/r₀² − 1)e^(−2θ))`, and the two nullclines as implicit curves, one of which is a
   cubic that is a function of neither coordinate. **The measurement**: the marks at named times; the
   greatest distance from the points of a `streamlineOf` run to the drawn polar spiral through the same
   seed; and the drawn radius of the limit cycle.
-- [ ] **8. The solids demo.** `demos/solids.ts` turns a sphere, a cube, a cylinder and a torus through
+- [ ] **9. The solids demo.** `demos/solids.ts` turns a sphere, a cube, a cylinder and a torus through
   one turn on a track, with a helix drawn on the cylinder and a torus knot on the torus. **The
   measurement**: the cell count of each solid, the marks at named times, and the still and the strip
   regenerating byte for byte.
-- [ ] **9. The reference, the guide, the reasoning, and 2.2.0 cut.** `docs/REFERENCE.md` names every new
+- [ ] **10. The reference, the guide, the reasoning, and 2.2.0 cut.** `docs/REFERENCE.md` names every new
   door name, `docs/GUIDE.md` gains the section that draws a curve no function of x describes,
   `docs/FIGURE-FORMAT.md` carries why an implicit curve's count is not fixed, and the version is bumped
   in that commit. **The measurement**: the reference gate over the door, the guide's blocks compiled, and
   the done-criteria below verified line by line.
 
-**Which step the demos gain from: 7 and 8.** Step 7 is the flat half of Siva's rule and the picture the
+**Which step the demos gain from: 8 and 9.** Step 8 is the flat half of Siva's rule and the picture the
 version is named against, since a closed orbit and a nullcline are both curves `plot` cannot write.
-Step 8 is the solid half, and it is a demo of its own because a sphere and a torus have no place in a
+Step 9 is the solid half, and it is a demo of its own because a sphere and a torus have no place in a
 saddle cut by a plane.
 
 **Done-criteria, checkable line by line.**
@@ -1284,8 +1299,8 @@ saddle cut by a plane.
 - A parametric curve leaving the graph is cut at the edge on both axes, and the cut end sits on the
   edge rather than past it.
 - `x² − y² = 1` draws as two subpaths and the ambiguous cell draws as two runs.
-- `sphere3`, `cube3`, `cylinder3` and `torus3` are at the door, each hands back a `GroupNode`, and each
-  has a record kind `checkFigure` holds.
+- `sphere3`, `cube3`, `cylinder3` and `torus3` are at the door with the cells of each, every one hands
+  back cells facing away from the solid, and every one has a record kind `checkFigure` holds.
 - The specification writes sixteen path forms and the count gate reads sixteen, and it writes the bound
   variables `t`, `angle`, and `x` with `y`.
 - `demos/portrait.figure.json` and `demos/solids.figure.json` are committed, and their stills and their
