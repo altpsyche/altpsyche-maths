@@ -1330,13 +1330,24 @@ release away and has a document of its own.
     name theirs; `tests/reference.test.ts` unchanged and still equal at the door's own count; the
     suite unchanged at 1,042 tests over 66 files.
 
-  - [ ] **9.4 The README and the design against the format.** Neither is named by this step and both
+  - [x] **9.4 The README and the design against the format.** Neither is named by this step and both
     are read by anyone the release reaches. The README states what the package is and shows the four
     demos, and `DESIGN.md` states the seam. A figure as a file is a change to both, and the audit of
     2026-09-08 found three documents contradicting the tree at once, which is what this commit exists
     to stop repeating.
     **Measures:** the lines each changes; the four figure files named where the four sheets already
     are.
+    **The design says nothing false and changes nothing.** It states the seam, and the seam is marks
+    at a time, which a figure written as data reaches the same way a figure built by calls does. Its
+    own two counts are this session's, since it already reads 181 marks for the flat demo at its still
+    time and 321 for the solid one.
+    **Measured:** three numbers in the README were stale and are the counts the found list named plus
+    one it did not: a suite of 785 tests now 1,042 over 66 files, 266 names at the door now 375, and
+    the flat demo's 202 marks at its still time now 181, which was wrong by 21 and wrong again in
+    saying the count holds at every time, since the run reaches 186 and falls to 178. The model gains
+    a paragraph on a figure as data naming `writeFigure`, `readFigure` and the four committed files.
+    **What is left for step 11** is the README's migration section, which reads from 1.0.0 to 1.6.0
+    and is the version's own note to write when the version is cut.
 
   #### Done-criteria for step 9
 

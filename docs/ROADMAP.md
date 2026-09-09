@@ -519,8 +519,11 @@ blocks are assembled into one module with their imports merged and type-checked 
 compiler, the duplicate `timeline` of the view section is now `viewed`, and the suite is 1,042 tests
 over 66 files. Step 9.2 gave the guide the two sections it had none of, a record and a file, taking it from 713
 lines to 816 and its examples from 23 blocks to 27. Step 9.3 read the 68 record interfaces against their entries and found one wrong, which is a text
-record's place. **Step 9.4 is what a session runs next**, which is the README and the design read
-against the format, and it carries the README's two stale counts from the found list below.
+record's place. Step 9.4 read the README and the design against the format: the design says nothing false and the
+README carried three stale numbers, a suite of 785 tests now 1,042, 266 names at the door now 375,
+and 202 marks at the flat demo's still time now 181. Its model gains a paragraph on a figure as data.
+**What runs next is the last of step 9's done-criteria**, which asks the guide's gate to name the
+block a broken example is in rather than a line of the module it assembles, and then step 10.
 
 **Two things fall due before the format freezes and both are Siva's**, which are
 whether a `Mark` may be a raster image, due by step 3 where the node vocabulary lands, and the
@@ -1200,12 +1203,6 @@ format a recorder reads a file, which is also what lets one run without a page a
   stops it being written already is that an entry may name a field in words rather than in backticks,
   as `TimelineRecord` names its duration, so the gate needs the entries to name every field the way
   most of them already do.
-
-- **The README's two counts have been stale since step 3 and step 9 is where they are fixed.** It
-  says a suite of 785 tests and 266 names at the door, against 1,024 tests over 65 files and 375
-  names as the tree reads now. The reference's own count is gated and is right, so what is wrong is
-  the README's prose alone. Step 9 rewrites the guide and the reference and is the commit that owns
-  a number in a document, so putting it there keeps one commit to one finding.
 
 - **A tapered stroke's outline is unstable in the last bits of its centreline, and the drawn width is
   what pays.** `outlinePath` splits a run until the width along it is straight enough, halving the

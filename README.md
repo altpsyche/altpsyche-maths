@@ -28,7 +28,15 @@ count downward from the top. No conversion to device units occurs anywhere else.
 <img src="docs/tangent.svg" width="720" alt="A parabola on a labelled grid over a field of small blue arrows, the region under it shaded to a point on the curve, the tangent at that point drawn, and the slope written as a number under the typeset rule it comes from.">
 
 The figure above is evaluated at t = 7.86 s of a 10.25 s duration. Its extent is 10.8 by 6 units and
-its marks number 202 at every time in the run.
+its marks number 181 there, counting the inset it draws.
+
+A figure is also data. Every part of one has a written form: a node is a record of a kind and its
+parameters, a parameter a track drives is an expression, and a timeline is its spans. `writeFigure`
+hands the whole of it back as the text of a file and `readFigure` reads that text into a figure, so a
+picture crosses a machine rather than a process. The four figures on this page are committed as
+files beside their pictures, in `demos/tangent.figure.json`, `demos/boolean.figure.json`,
+`demos/rotate.figure.json` and `demos/surface.figure.json`, and a gate reads each one back and holds
+its marks against what the demo draws.
 
 ## Install
 
@@ -167,8 +175,8 @@ numbers. `colourFrom` builds one from `'#1b1b1b'` or `'rgb(27, 27, 27)'` and thr
 form rather than guessing. Nothing reads the page, and `getComputedStyle` appears nowhere in the
 tree.
 
-No screenshot gates this package. Every assertion reads a mark list or a number, so the suite of 785
-tests runs in Node without a browser. Comparisons are by tolerance rather than by hash, because
+No screenshot gates this package. Every assertion reads a mark list or a number, so the suite of
+1,042 tests over 66 files runs in Node without a browser. Comparisons are by tolerance rather than by hash, because
 `Math.sin`, `Math.cos` and `Math.pow` are not specified to the last bit and differ between engines.
 
 ## Moving from 1.0.0
@@ -202,7 +210,7 @@ comes out whole.
 ## Further reading
 
 [docs/GUIDE.md](docs/GUIDE.md) teaches the package in order. [docs/REFERENCE.md](docs/REFERENCE.md)
-carries one entry for each of the 266 names at the door. [DESIGN.md](DESIGN.md) states why the
+carries one entry for each of the 375 names at the door. [DESIGN.md](DESIGN.md) states why the
 design is what it is and what it will not become.
 
 `index.ts` is the entire public surface, and nothing outside the package reaches a file inside it by
