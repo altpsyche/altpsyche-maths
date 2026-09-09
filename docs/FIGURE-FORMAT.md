@@ -1447,15 +1447,16 @@ release away and has a document of its own.
 #### Done-criteria
 
 **Verified on 2026-09-09, with the number that satisfies each line.** Two of them were written before
-the work and their numbers moved while it ran, which is said under the lines they belong to rather
-than corrected in silence.
+the work and moved while it ran, and Siva's call is that both read as the tree reads: the vocabulary
+line says twenty-three node kinds, and the line about functions says what it always meant, which is
+that no figure passes one.
 
 - Every demo is a file, and reading it draws marks identical within tolerance to the module it
   replaced, at every named time, the flat demo's inset included.
-- None of the nineteen names at the door that take a function takes one, the three fields of a type
-  that carry one carry a named form instead, no figure holds a closure, and a figure stores a
-  `Camera3Choice` rather than a built `Camera3`.
-- The vocabulary is twenty-one node kinds, two item producers, eleven path producers, two point
+- No figure passes a function to any of the nineteen names at the door that take one, the three
+  fields of a type that carry one carry a named form instead, no figure holds a closure, and a figure
+  stores a `Camera3Choice` rather than a built `Camera3`.
+- The vocabulary is twenty-three node kinds, two item producers, eleven path producers, two point
   producers and fifteen animation kinds, and the reference names each with its parameters.
 - Every one of the eleven names no demo draws has a test comparing its record's marks against its
   call's.
@@ -1479,15 +1480,15 @@ than corrected in silence.
 2. **No figure holds a closure.** The three fields that carried one each have a written form:
    `PlayOptions.curve` is a `SpanRecord.curve` by name, `Figure.scene` is what `resolveFigure` builds
    from a `NodeRecord`, and `ExtentChoice` is an `ExtentRecord`. A figure stores a camera as a
-   `Camera3Record` of expressions. **The first clause of this line reads stricter than the design
-   holds it.** `plot`, `vectorField`, `surface3`, `streamlineOf` and `sectionOf` still take a function
-   at the door, and the section above says why: a function that makes fixed geometry does not have to
-   serialise, an author writes it in TypeScript, and the format carries the cubics or the form. What
-   the line means and what is true is that no figure in this tree passes one.
+   `Camera3Record` of expressions. `plot`, `vectorField`, `surface3`, `streamlineOf` and
+   `sectionOf` still take a function at the door and always will: a function that makes fixed geometry
+   does not have to serialise, an author writes it in TypeScript, and the format carries the cubics or
+   the form it produced. What the line asks, and what holds, is that no figure in this tree passes
+   one.
 3. **The vocabulary.** Twenty-three node kinds in `NodeRecord`, two item producers, eleven path
-   producers, two point producers and fifteen animation kinds. **Twenty-three rather than the
-   twenty-one this line was written with**, since step 3.11 made `section3` and `streamline3` node
-   kinds of their own, which step 3's own note records.
+   producers, two point producers and fifteen animation kinds. The line was written with twenty-one
+   and step 3.11 made `section3` and `streamline3` kinds of their own, which step 3's own note
+   records.
 4. **The eleven names no demo draws.** `numberLine`, `callout`, `riemannBars`, `dot3`, `text3`,
    `arrow3`, `surface3`, `vectorField3`, `morph`, `moveAlong` and `scale` each have a record test in
    `tests/frame-record.ts`, `tests/annotate-record.ts`, `tests/space-record.ts`,

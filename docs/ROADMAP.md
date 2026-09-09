@@ -529,20 +529,21 @@ is cut** and its four criteria are verified line by line. Step 10 made the demos
 its committed file describes rather than from the module that wrote it, the files are written before
 the sheets in one run, and all eight stayed byte for byte. 2.0.0's nine done-criteria are verified line by line in
 [`FIGURE-FORMAT.md`](FIGURE-FORMAT.md), each with the number that satisfies it, and every one holds.
-Two of them were written before the work and their numbers moved while it ran: the vocabulary is
-twenty-three node kinds rather than twenty-one, since step 3.11 made `section3` and `streamline3`
-kinds of their own, and the line asking that no name at the door take a function reads stricter than
-the design holds it, since `plot`, `vectorField`, `surface3`, `streamlineOf` and `sectionOf` still
-take one and the design says a function making fixed geometry never had to serialise. No figure in
-this tree passes one, which is what the line means.
+Two of them moved while the work ran and Siva's call of 2026-09-09 is that both read as the tree
+reads: the vocabulary line says twenty-three node kinds rather than twenty-one, since step 3.11 made
+`section3` and `streamline3` kinds of their own, and the line about functions asks what it always
+meant, which is that no figure passes one. `plot`, `vectorField`, `surface3`, `streamlineOf` and
+`sectionOf` take one at the door and always will, since a function making fixed geometry never had to
+serialise.
 
 **Step 11 is what a session runs next and it is Siva's**: the version bumped to 2.0.0 in that commit
 with `npm install --package-lock-only` beside it, the README's migration section rewritten from
 1.0.0 to 2.0.0, this ladder's 2.0.0 row and its item deleted, and publishing asked for rather than
-assumed. **Two calls in it are Siva's rather than a session's**: whether the two drifted criteria are
-corrected in place or left as the record of what was asked, and what becomes of
-[`FIGURE-FORMAT.md`](FIGURE-FORMAT.md), which `CLAUDE.md` calls the change in flight and which a cut
-version leaves as a specification rather than a plan.
+assumed. **A polish pass runs before the cut**, which is Siva's call of 2026-09-09 on the argument that 2.x is
+a major release, and the 1.x band was cut the same way: an audit read the whole band against the tree
+and seven commits closed what it found. **One call inside the cut is still Siva's**, which is what
+becomes of [`FIGURE-FORMAT.md`](FIGURE-FORMAT.md), a document `CLAUDE.md` calls the change in flight
+and which a cut version leaves as a specification rather than a plan.
 
 **Two things fall due before the format freezes and both are Siva's**, which are
 whether a `Mark` may be a raster image, due by step 3 where the node vocabulary lands, and the
