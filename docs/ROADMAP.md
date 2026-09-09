@@ -539,15 +539,25 @@ serialise.
 **Step 11 is what a session runs next and it is Siva's**: the version bumped to 2.0.0 in that commit
 with `npm install --package-lock-only` beside it, the README's migration section rewritten from
 1.0.0 to 2.0.0, this ladder's 2.0.0 row and its item deleted, and publishing asked for rather than
-assumed. **The polish pass runs before the cut**, which is Siva's call of 2026-09-09 on the argument that 2.x is
-a major release, and the 1.x band was cut the same way: an audit read the whole band against the tree
-and seven commits closed what it found. The reading on 2026-09-09 found seven things and their order
-is the damage each does if it ships: the consumer has drawn no 2.x figure at all and holds 0.6.0;
-`DESIGN.md` quoted 3.9 and 4.2 milliseconds a frame where this machine reads 5.13 and 5.14;
-`stripMarks` was written four times; the reference is held to the records by nothing; the
-thirty-seven expression functions were named nowhere a reader could look them up; the npm tarball is
-`dist`, `LICENSE` and `README.md` while the README shows four pictures out of `docs/`; and
-`tests/figures.ts` described two demos as records when four are. The last, the third, the second and the fifth are closed. **One call inside the cut is still Siva's**, which is what
+assumed.
+
+**The polish pass runs before the cut**, which is Siva's call of 2026-09-09 on the argument that 2.x
+is a major release. The 1.x band was cut the same way: an audit read the whole band against the tree
+and seven commits closed what it found. The reading of 2026-09-09 found seven things, ordered by the
+damage each does if it ships, and four of them are closed.
+
+| found | state |
+| --- | --- |
+| the consumer has drawn no 2.x figure and holds 0.6.0 | **open**, and it is a session in that tree |
+| the reference is held to the door by name and to the records by nothing | **open**, and it needs every entry to name its fields in backticks first |
+| the npm tarball is `dist`, `LICENSE` and `README.md` while the README shows four pictures out of `docs/` | **open**, and what settles it is how that page renders |
+| `DESIGN.md` quoted 3.9 and 4.2 milliseconds a frame | closed, and it reads 5.13 and 5.14 measured on 2026-09-09 |
+| `stripMarks` was written four times | closed, and `demos/strip.ts` holds `stripOf` |
+| the thirty-seven expression functions were named nowhere a reader could look them up | closed, and the reference lists them with their arguments |
+| `tests/figures.ts` described two demos as records when four are | closed |
+
+**The open three are what a session runs before step 11**, and the first of them is the one that can
+find a defect rather than a stale sentence. **One call inside the cut is still Siva's**, which is what
 becomes of [`FIGURE-FORMAT.md`](FIGURE-FORMAT.md), a document `CLAUDE.md` calls the change in flight
 and which a cut version leaves as a specification rather than a plan.
 
