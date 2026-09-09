@@ -968,15 +968,26 @@ release away and has a document of its own.
     `insets.0.into.x.to`, at its fit and at what it hides; the door from 371 names to 373 and the
     suite from 981 to 994.
 
-  - [ ] **5.6 The validator over the nodes, the paths, the points and the items.** Twenty-three node
-    kinds, thirteen path forms, two point producers and two item producers, which is what turns the
-    `node` and `path` entries of the table from an object carrying a kind into the kinds themselves.
-    **This is what brings a style, a fill, a stroke, a typeset expression, a written-out path and the
-    expression form into reach**, since every one of them sits inside a node.
-    **Measures:** every kind accepted where its own step's test already builds it; one refusal per
-    kind naming the path of the field; a group whose children hold a kind that does not exist refused
-    with the index of the child in the path; an expression's operator, a call into a function the
-    vocabulary does not carry, and a bare number, a true or false and a place as expressions.
+  - [x] **5.6 The validator over the nodes, the paths, the points and the items.** Twenty-three node
+    kinds, thirteen path forms, two item producers and the written-out piece beside them, which is
+    what turns the `node` and `path` entries of the table from an object carrying a kind into the
+    kinds themselves. **This is what brings a style, a fill, a stroke, a typeset expression, a
+    written-out path and the expression form into reach**, since every one of them sits inside a
+    node.
+    **Passing every optional field is what holds the transcription to the records**, because a field
+    the table names wrongly is refused as one the kind does not carry, so a table read from the wrong
+    interface refuses a figure that is right.
+    **Measured:** one node of each of the twenty-three kinds accepted with the fields it requires and
+    nothing more, and each of the twenty-three refused at `scene.children.<index>.name` when its name
+    is dropped; a path of each of the thirteen forms accepted and `squiggle` refused by path; fifteen
+    nodes dressed in every optional field the table describes accepted, the camera's two projections,
+    the bands of a colour choice, a shade of two fills over a band, three resolutions and a template
+    with a hole among them; a kind that does not exist refused at
+    `scene.children.1.children.0`; a path parameter refused at `scene.children.0.path.radius`; an
+    operator refused at `scene.children.0.children.0.path.second.centre.x.operator`; `cos` accepted
+    and `wobble` refused as a function of the vocabulary; a bare number, a true or false and a place
+    accepted as expressions and text refused; a width refused where a taper is short of its second
+    number; the table from 358 lines to 767 and the suite from 994 to 1,005.
 
   - [ ] **5.7 The validator over the animations and the view, and the reader routed through it.**
     Fifteen animation kinds and the three view moves, which are the last two entries of the table
