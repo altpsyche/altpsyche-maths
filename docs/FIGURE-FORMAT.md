@@ -861,7 +861,7 @@ release away and has a document of its own.
     span and as the label of the rise at its end; the door from 348 names to 349 and the suite from
     937 to 939.
 
-- [ ] **5. The file: a serialiser, a reader, a validator and a version, which is eight commits.**
+- [x] **5. The file: a serialiser, a reader, a validator and a version, which is eight commits.**
   **This is worked after 7.5 rather than in its written place**, because a figure written out is a
   scene, a timeline and a view, and two of the three are still functions until steps 6 and 7 land: a
   `Span` carries an `Animation` and a `Curve`, and an `Entry` may be a `ViewChange` holding a
@@ -1024,25 +1024,37 @@ release away and has a document of its own.
     since a record names its fields where a call passes them in order; the suite from 1,013 tests to
     1,017.
 
-  #### Done-criteria for step 5
+  #### Done-criteria for step 5, verified on 2026-09-09
 
   - `FigureRecord`, `resolveFigure`, `writeFigure`, `readFigure`, `checkFigure` and
     `FIGURE_FORMAT_VERSION` are at the door, each has an entry in [`REFERENCE.md`](REFERENCE.md), and
-    the reference gate holds the door and the reference equal.
+    the reference gate holds the door and the reference equal. **Eight names rather than six**, since
+    `FigureFile` names what an envelope holds and `CURVE_NAMES` is the closed set a validator reads.
+    The door is 373 names.
   - The rotation demo and the boolean demo each written out and read back draw the same marks as
-    their own figures at every named time, within a tolerance of 1e-6.
-  - Two records of one figure whose fields were built in different orders write the same bytes.
+    their own figures at every named time, within a tolerance of 1e-6. **Eight marks at five times
+    for the rotation demo and twelve at seven for the boolean one.**
+  - Two records of one figure whose fields were built in different orders write the same bytes. **Six
+    fields named the other way round, 6,624 bytes either way.**
   - A file declaring a format version above the reader's is refused with both numbers in the
-    sentence, and a file declaring the reader's own version is read.
+    sentence, and a file declaring the reader's own version is read. **Version 1 refused, version 0
+    read, and the committed file declares 0.**
   - A malformed figure is refused with the path of the field named, held at one place in each of a
-    value, an expression, a node, a path, an animation, a span, a view move and an inset.
+    value, an expression, a node, a path, an animation, a span, a view move and an inset. **All eight:
+    `extent.width`, `scene.children.0.children.0.path.second.centre.x.operator`,
+    `scene.children.1.children.0`, `scene.children.0.path.radius`,
+    `timeline.spans.0.entry.options.pivot`, `timeline.spans.0.to`, `insets.0.view` and
+    `insets.0.into.x.to`.**
   - An expression naming a track the figure does not carry is refused when the file is read rather
-    than when the figure is drawn.
+    than when the figure is drawn. **The boolean demo short of its tracks refused at
+    `scene.children.0.children.0.path.second.centre.x.right`.**
   - [`SPECIFICATION.md`](SPECIFICATION.md) carries the file section, and its counts are the
-    inventory's.
-  - `demos/rotate.figure.json` is committed, `demos/rotate.ts` reads it, and both of that demo's
-    sheets are byte for byte what is committed today.
-  - `npm test`, `npm run type-check` and `npm run build` all pass.
+    inventory's. **67 lines to 112, with five stale facts corrected.**
+  - `demos/rotate.figure.json` is committed and both of that demo's sheets are byte for byte what was
+    committed before the rewrite. **3,295 and 10,701 bytes, unchanged.** **The demo holds the record
+    and the file is written from it**, rather than reading the file it produces, which the criterion
+    was written the other way round and would have been one transcription measured against itself.
+  - `npm test`, `npm run type-check` and `npm run build` all pass. **1,017 tests.**
 
   **Gap 8 is answered and it is step 12, worked after this step.** Siva's call of 2026-09-09: a
   colour is four channels and may carry the name of a custom property a page overrides, so every
