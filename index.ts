@@ -75,6 +75,7 @@ export type {
   EquationRecordOptions,
   FieldArrows3Record,
   Field3RecordOptions,
+  FillRecord,
   GroupRecord,
   NodeRecord,
   NumberLineRecord,

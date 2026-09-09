@@ -16,11 +16,12 @@ import {
   type Mark,
   type NodeRecord,
   type Point3Record,
+  type FillRecord,
   type SectionRecord,
   type ShadeRecord,
   type StreamlineRecord,
 } from '../index.js';
-import { DEEP, EMBER, MOSS, SHADE_THEME, SKY, shadeOf } from '../demos/palette.js';
+import { DEEP, EMBER, FROST, GLAZE, MOSS, SHADE_THEME, SKY, shadeOf } from '../demos/palette.js';
 import {
   CELLS,
   FACING,
@@ -104,13 +105,51 @@ const mine = (record: NodeRecord, seconds: number): readonly Mark[] =>
   flatten(resolveNode(record, { tracks: { turn: alongAt(seconds) } }));
 
 /**
- * The solid demo's body as a record.
+ * The wash over the pane, as the record the demo's own function computes.
  *
- * The wash over the pane is built here per time rather than carried by the
- * record: its two ends are places in space projected through the camera, and the
- * expression form has no call that projects one.
+ * The axis is the pane's recession, which is the horizontal direction from the
+ * eye to the middle of the pane, and it reaches from one edge of the square to
+ * the other along that direction. Both its ends are places in space put on the
+ * page by the camera, so the record carries `project` and the wash turns with the
+ * orbit rather than being built per time.
  */
-const bodyAt = (seconds: number): NodeRecord => ({
+const half = (OVER.to - OVER.from) / 2;
+const middle = (OVER.from + OVER.to) / 2;
+const away: Expression = {
+  kind: 'call',
+  name: 'normalize',
+  arguments: [{ kind: 'point', x: over('-', middle, around('cos')), y: over('-', middle, around('sin')) }],
+};
+const awayAt = (name: 'x' | 'y'): Expression => ({ kind: 'member', of: away, name });
+const abs = (of: Expression): Expression => ({ kind: 'call', name: 'abs', arguments: [of] });
+// A square of half-width h reaches h/max(|x|, |y|) along a unit direction, so the
+// axis spans the pane whichever way the recession points.
+const reach: Expression = over('/', half, { kind: 'call', name: 'max', arguments: [abs(awayAt('x')), abs(awayAt('y'))] });
+const edgeAt = (side: number): Expression => ({
+  kind: 'call',
+  name: 'project',
+  arguments: [
+    { kind: 'camera', of: camera },
+    over('+', middle, over('*', over('*', side, reach), awayAt('x'))),
+    over('+', middle, over('*', over('*', side, reach), awayAt('y'))),
+    HEIGHT,
+  ],
+});
+const wash: FillRecord = {
+  colour: FROST,
+  gradient: {
+    from: edgeAt(-1),
+    to: edgeAt(1),
+    stops: [
+      { offset: 0, colour: GLAZE },
+      { offset: 1, colour: FROST },
+    ],
+  },
+};
+
+/** The solid demo's body as one record, which is what says nothing in it is
+ * computed outside the format. */
+const body: NodeRecord = {
   kind: 'scene3',
   name: 'body',
   camera,
@@ -125,7 +164,7 @@ const bodyAt = (seconds: number): NodeRecord => ({
       kind: 'surfaceCells',
       name: 'pane',
       of: plane,
-      options: { ...spread, resolution: PANES, shade: { ramp: [paneWash(eyeAt(alongAt(seconds)))] }, stroke: glass },
+      options: { ...spread, resolution: PANES, shade: { ramp: [wash] }, stroke: glass },
     },
     {
       kind: 'fieldArrows3',
@@ -141,7 +180,7 @@ const bodyAt = (seconds: number): NodeRecord => ({
       },
     },
   ],
-});
+};
 
 describe('the surfaces and the fields in space as records', () => {
   it('draws the solid demo saddle, its plane and its field at each of the four times its strip draws', () => {
@@ -153,8 +192,29 @@ describe('the surfaces and the fields in space as records', () => {
       // Twenty-five samples, each an arrow of a shaft and a head, less the one at
       // the middle of the plane where the field is nothing.
       expect(drawn.filter((mark) => mark.id.startsWith('body/flow/'))).toHaveLength(48);
-      expect(sameMarks(mine(bodyAt(seconds), seconds), drawn)).toBe(true);
+      expect(sameMarks(mine(body, seconds), drawn)).toBe(true);
     }
+  });
+
+  it('runs the pane wash between the two places the camera puts the edges of the pane', () => {
+    for (const seconds of FRAMES) {
+      const theirs = paneWash(eyeAt(alongAt(seconds))).gradient;
+      const mark = mine(body, seconds).find((one) => one.id.startsWith('body/pane/'));
+      const ours = mark?.kind === 'path' ? mark.fill?.gradient : undefined;
+      expect(ours).toBeDefined();
+      expect(ours?.from.x).toBeCloseTo(theirs!.from.x, 12);
+      expect(ours?.from.y).toBeCloseTo(theirs!.from.y, 12);
+      expect(ours?.to.x).toBeCloseTo(theirs!.to.x, 12);
+      expect(ours?.to.y).toBeCloseTo(theirs!.to.y, 12);
+    }
+  });
+
+  it('turns the wash as the orbit turns', () => {
+    const endsAt = (seconds: number) => {
+      const mark = mine(body, seconds).find((one) => one.id.startsWith('body/pane/'));
+      return mark?.kind === 'path' ? mark.fill?.gradient?.from : undefined;
+    };
+    expect(endsAt(FRAMES[0])).not.toEqual(endsAt(FRAMES[2]));
   });
 
   it('draws the curve where the plane cuts the saddle', () => {

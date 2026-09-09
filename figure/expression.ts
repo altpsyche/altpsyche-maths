@@ -14,9 +14,9 @@
  * map of a shape. A form written for a scalar and widened afterwards costs a
  * major version to widen.
  *
- * The three calls that read geometry take a path, and a path carries expressions
- * of its own, so this module and the path records name each other. Neither reads
- * the other while it is loading, which is what makes that safe.
+ * The calls that read geometry take a path or a camera, and both carry
+ * expressions of their own, so this module and those records name each other.
+ * Neither reads the other while it is loading, which is what makes that safe.
  *
  * What it refuses is a map this vocabulary cannot spell. A complex square, a
  * complex exponential and a Möbius map are all here, since each is arithmetic
@@ -25,12 +25,15 @@
  */
 import { clamp, inverseLerp, lerp, remap } from '../values/scalar.js';
 import { vec2, type Vec2 } from '../values/vec2.js';
+import { vec3 } from '../values/vec3.js';
 import type { TrackValue } from '../timing/track.js';
 import type { Path } from './path.js';
 import type { Coords } from './scale.js';
 import { lengthOf, pointAlong } from './length.js';
 import { slopeOf } from './plot.js';
 import { resolvePath, type PathRecord } from './path-record.js';
+import { resolveCamera, type Camera3Record } from './camera-record.js';
+import type { Camera3 } from './camera.js';
 
 /**
  * What an expression evaluates to. A list-valued track has no place here, since
@@ -40,7 +43,7 @@ import { resolvePath, type PathRecord } from './path-record.js';
  * geometry take them. Neither is arithmetic and neither is compared, so what
  * they widen is the argument of a call rather than the vocabulary at large.
  */
-export type ExpressionValue = number | boolean | Vec2 | Path | Coords;
+export type ExpressionValue = number | boolean | Vec2 | Path | Coords | Camera3;
 
 /** A number or a place the expression is evaluated for: the x of a curve, the
  * place a field is read at, the two numbers of a surface. */
@@ -93,7 +96,8 @@ export type Expression =
     }
   | { readonly kind: 'call'; readonly name: string; readonly arguments: readonly Expression[] }
   | { readonly kind: 'path'; readonly of: PathRecord }
-  | { readonly kind: 'coords'; readonly of: Coords };
+  | { readonly kind: 'coords'; readonly of: Coords }
+  | { readonly kind: 'camera'; readonly of: Camera3Record };
 
 /** A place rather than a number, a path or a pair of scales, told apart by
  * carrying a number in both members. */
@@ -104,6 +108,9 @@ function isPoint(value: ExpressionValue): value is Vec2 {
 /** A path is the one value that is a list, which is what tells it from a pair of
  * scales. */
 const isPath = (value: ExpressionValue): value is Path => Array.isArray(value);
+
+/** A camera carries the place its eye stands, which nothing else here does. */
+const isCamera = (value: ExpressionValue): value is Camera3 => typeof value === 'object' && 'eye' in value;
 
 export function asNumber(value: ExpressionValue, what: string): number {
   if (typeof value !== 'number') throw new Error(`${what} is a number and was given ${nameOfKind(value)}`);
@@ -121,8 +128,15 @@ function asPath(value: ExpressionValue, what: string): Path {
 }
 
 function asCoords(value: ExpressionValue, what: string): Coords {
-  if (typeof value !== 'object' || isPath(value) || isPoint(value)) {
+  if (typeof value !== 'object' || isPath(value) || isPoint(value) || isCamera(value)) {
     throw new Error(`${what} is a pair of scales and was given ${nameOfKind(value)}`);
+  }
+  return value;
+}
+
+function asCamera(value: ExpressionValue, what: string): Camera3 {
+  if (typeof value !== 'object' || isPath(value) || isPoint(value) || !isCamera(value)) {
+    throw new Error(`${what} is a camera and was given ${nameOfKind(value)}`);
   }
   return value;
 }
@@ -133,6 +147,7 @@ export function nameOfKind(value: ExpressionValue): string {
   if (typeof value === 'boolean') return 'a true or false';
   if (isPath(value)) return 'a path';
   if (isPoint(value)) return 'a point';
+  if (isCamera(value)) return 'a camera';
   return 'a pair of scales';
 }
 
@@ -223,6 +238,17 @@ const FUNCTIONS: Record<string, Callable> = {
       if (!place) throw new Error(`${name} is given a path with no points in it, which has no place to read`);
       return place;
     },
+  },
+  project: {
+    takes: 4,
+    of: (values, name) =>
+      asCamera(values[0], `the first argument of ${name}`).project(
+        vec3(
+          asNumber(values[1], `the second argument of ${name}`),
+          asNumber(values[2], `the third argument of ${name}`),
+          asNumber(values[3], `the fourth argument of ${name}`)
+        )
+      ).at,
   },
   slopeOf: {
     takes: 3,
@@ -357,6 +383,8 @@ export function evaluate(expression: Expression, bindings: Bindings = {}): Expre
       return resolvePath(expression.of, bindings);
     case 'coords':
       return expression.of;
+    case 'camera':
+      return resolveCamera(expression.of, bindings);
     case 'call': {
       const callable = FUNCTIONS[expression.name];
       if (!callable) {

@@ -10,10 +10,13 @@ import {
   lerp,
   pointAlong,
   remap,
+  resolveCamera,
   resolvePath,
   scaleOf,
   slopeOf,
   vec2,
+  vec3,
+  type Camera3Record,
   type Expression,
   type PathRecord,
   type Vec2,
@@ -40,7 +43,7 @@ const PLACES: readonly Vec2[] = [
 
 /** The three calls that read geometry, which take a path and are measured
  * against their own calls rather than over the ten numbers. */
-const GEOMETRY = ['lengthOf', 'pointAlong', 'slopeOf'];
+const GEOMETRY = ['lengthOf', 'pointAlong', 'project', 'slopeOf'];
 
 const literal = (value: number): Expression => value;
 const of = (name: string, ...args: Expression[]): Expression => ({ kind: 'call', name, arguments: args });
@@ -192,7 +195,7 @@ describe('the functions an expression may name', () => {
 
   it('are the published set and nothing besides', () => {
     expect(EXPRESSION_FUNCTIONS).toEqual([...Object.keys(wanted), ...GEOMETRY].sort());
-    expect(EXPRESSION_FUNCTIONS).toHaveLength(36);
+    expect(EXPRESSION_FUNCTIONS).toHaveLength(37);
   });
 
   it('names a function it does not carry', () => {
@@ -361,6 +364,43 @@ describe('the calls that read geometry', () => {
   it('refuses a path with no points in it', () => {
     expect(() => evaluate(of('pointAlong', { kind: 'path', of: { kind: 'cubics', subpaths: [] } }, 0.5))).toThrow(
       'pointAlong is given a path with no points in it, which has no place to read'
+    );
+  });
+});
+
+describe('the call that puts a place in space on the page', () => {
+  const record: Camera3Record = {
+    eye: { x: { kind: 'track', name: 'out' }, y: 0, z: 2 },
+    target: vec3(0, 0, 0),
+    up: vec3(0, 0, 1),
+    projection: { kind: 'perspective', fov: Math.PI / 4, height: 4, near: 0.2 },
+  };
+  const written: Expression = { kind: 'camera', of: record };
+  const bindings = { tracks: { out: 5 } };
+  const built = resolveCamera(record, bindings);
+
+  it('places ten points where the camera itself places them', () => {
+    for (const place of PLACES) {
+      const projected = evaluate(of('project', written, place.x, place.y, 0.5), bindings);
+      expect(projected, `project at ${place.x}, ${place.y}`).toEqual(built.project(vec3(place.x, place.y, 0.5)).at);
+    }
+  });
+
+  it('builds the camera at the time the expression is read', () => {
+    const near = evaluate(of('project', written, 1, 0, 0), { tracks: { out: 3 } });
+    const far = evaluate(of('project', written, 1, 0, 0), { tracks: { out: 9 } });
+    expect(near).not.toEqual(far);
+  });
+
+  it('refuses a number where a camera belongs', () => {
+    expect(() => evaluate(of('project', 1, 0, 0, 0))).toThrow(
+      'the first argument of project is a camera and was given a number'
+    );
+  });
+
+  it('refuses a camera where a number belongs', () => {
+    expect(() => evaluate(of('sqrt', written), bindings)).toThrow(
+      'the argument of sqrt is a number and was given a camera'
     );
   });
 });

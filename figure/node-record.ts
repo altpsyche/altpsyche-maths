@@ -48,7 +48,7 @@ import type { Camera3 } from './camera.js';
 import { resolveCamera, resolvePoint3, type Camera3Record, type Point3Record } from './camera-record.js';
 import type { Colour } from './mark.js';
 import type { Coords, Scale } from './scale.js';
-import type { Fill, Stroke } from './mark.js';
+import type { Fill, Stop, Stroke } from './mark.js';
 import { asNumber, asPoint, evaluate, type Bindings, type Expression } from './expression.js';
 import { labelFor } from './ticks.js';
 
@@ -334,6 +334,25 @@ export interface Axes3Record {
 }
 
 /**
+ * A fill whose gradient runs between two places an expression gives.
+ *
+ * Every `Fill` is one of these already, since a fixed place is a literal
+ * expression. What it adds is a wash whose axis moves: the solid demo's pane runs
+ * its wash along the recession from the eye, and both ends of that axis are
+ * places in space projected through the camera as it turns.
+ *
+ * A record carrying a fill of its own takes one of these where a figure moves it.
+ * The rest stay plain fills until a demo asks.
+ */
+export interface FillRecord extends Omit<Fill, 'gradient'> {
+  readonly gradient?: {
+    readonly from: Expression;
+    readonly to: Expression;
+    readonly stops: readonly Stop[];
+  };
+}
+
+/**
  * What colour a cell of a surface is filled with, read off how squarely the cell
  * faces the light.
  *
@@ -347,7 +366,7 @@ export interface Axes3Record {
  * written as text and nothing here parses one, so two colours cannot be mixed.
  */
 export interface ShadeRecord {
-  readonly ramp: readonly Fill[];
+  readonly ramp: readonly FillRecord[];
   /** The stretch of the amount the ramp covers, nothing to one unless named. */
   readonly band?: Interval;
 }
@@ -595,19 +614,35 @@ const field3Of = (record: Point3Record, bindings: Bindings) => (at: Vec3) =>
  *
  * A ramp with no colours in it is refused, since every cell is filled with one.
  */
-function shadeFrom(record: ShadeRecord): (amount: number) => Fill {
+function shadeFrom(record: ShadeRecord, bindings: Bindings): (amount: number) => Fill {
   const last = record.ramp.length - 1;
   if (last < 0) throw new Error('a shade is a ramp of at least one colour');
+  const ramp = record.ramp.map((fill) => fillOf(fill, bindings));
   return (amount) => {
     const spread = record.band ? interval.remap(amount, record.band, WHOLE) : amount;
-    return record.ramp[Math.max(0, Math.min(last, Math.round(spread * last)))];
+    return ramp[Math.max(0, Math.min(last, Math.round(spread * last)))];
+  };
+}
+
+/** A fill with the ends of its gradient read, which is the fill itself where it
+ * has none. */
+function fillOf(record: FillRecord, bindings: Bindings): Fill {
+  const { gradient, ...rest } = record;
+  if (!gradient) return rest;
+  return {
+    ...rest,
+    gradient: {
+      ...gradient,
+      from: pointOf(gradient.from, bindings, "the start of a gradient"),
+      to: pointOf(gradient.to, bindings, "the end of a gradient"),
+    },
   };
 }
 
 /** What a surface's own call takes, from what its record carries. */
 const surfaceOptions = (options: Surface3RecordOptions, bindings: Bindings): Surface3Options => ({
   ...options,
-  shade: shadeFrom(options.shade),
+  shade: shadeFrom(options.shade, bindings),
   light: options.light ? resolvePoint3(options.light, bindings, "a surface's light") : undefined,
 });
 

@@ -762,17 +762,21 @@ release away and has a document of its own.
     number belongs and a path with no points in it each refused with the sentence naming it; the set
     from 33 names to 36 and the suite from 903 to 913.
 
-  - [ ] **3.13 The wash over a pane, which is a fill a record cannot carry.** The solid demo's pane is
-    filled with a gradient whose two ends are places in space projected through the camera, so the
-    fill changes as the orbit turns and step 3.11 had to build it per time outside the record. Two
-    answers are open and neither is picked here: a call in the expression set that projects a place in
-    space, which is the same widening past a number, a true or false and a point that step 3.12 makes
-    for a path; or a fill written as a record whose gradient ends are expressions, which reaches every
-    record that carries a `Fill`. **This lands before step 8**, since the solid demo as a file carries
-    the pane.
-    **Measures:** the solid demo's pane at each of the four times its strip draws, from one record
-    rather than one per time; the gradient's two ends against the camera's own projection at those
-    times.
+  - [x] **3.13 The wash over a pane, which is a fill whose axis moves.** The solid demo's pane is
+    filled with a gradient whose two ends are places in space put on the page by the camera, so the
+    fill turns with the orbit and step 3.11 had to build it per time outside the record. Both answers
+    it left open are taken, because each needs the other: `project(camera, x, y, z)` joins the
+    expression set and `camera` is the form that writes one, so `ExpressionValue` carries a camera;
+    and `FillRecord` is a fill whose gradient ends are expressions, which every `Fill` already is,
+    since a fixed place is a literal. A `ShadeRecord`'s ramp takes those fills, and the rest of the
+    fills a record carries stay plain until a demo asks.
+    **Measured:** the solid demo's body, all 208 of its marks, from one record at each of the four
+    times its strip draws rather than one record per time; the wash's two ends against the demo's own
+    projection to twelve places at those times, and reading as different a half-orbit apart; ten
+    places put on the page where the camera itself puts them, and a camera built from a track placing
+    one point differently at two of its values; a number where a camera belongs and a camera where a
+    number belongs each refused with the sentence naming it; the set from 36 names to 37, the door
+    from 331 to 332 and the suite from 913 to 919.
 
 - [ ] **4. The animation vocabulary, which is five commits.** Fifteen kinds as records with
   parameters, and a resolver each from a record to the `Animation` the timeline already plays. **The

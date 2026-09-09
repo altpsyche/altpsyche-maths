@@ -209,8 +209,10 @@ numbers and a pointwise map of a shape.
     expressions of its own, so the parameters of the path are read at the same time as the expression
     around it.
   - `coords` — a pair of scales, which is what `slopeOf` reads a graph x against.
-- `ExpressionValue` — what an expression evaluates to: a number, a true or false, a place, a path or a
-  pair of scales. A list-valued track has no form here and is named rather than read as its first
+  - `camera` — the camera a `Camera3Record` names, built at the time the expression is read, which is
+    what `project` places a point through.
+- `ExpressionValue` — what an expression evaluates to: a number, a true or false, a place, a path, a
+  pair of scales or a camera. A list-valued track has no form here and is named rather than read as its first
   number. A path and a pair of scales are values because the three calls that read geometry take them,
   and neither is arithmetic and neither is compared.
 - `Variables` — the bound values by name.
@@ -218,9 +220,12 @@ numbers and a pointwise map of a shape.
   `variables` bound for the place being evaluated.
 - `Arithmetic` — the four operators.
 - `Comparison` — the six comparisons.
-- `EXPRESSION_FUNCTIONS` — every function an expression may name, sorted, which is thirty-six names.
+- `EXPRESSION_FUNCTIONS` — every function an expression may name, sorted, which is thirty-seven names.
   The set is versioned the way the node set is. `lengthOf`, `pointAlong` and `slopeOf` are the three
   that read geometry, and `pointAlong` given a path with no points in it is refused rather than read.
+  `project(camera, x, y, z)` is the place in space put on the page, which is what a wash whose axis
+  follows the eye is written with. It gives the place whether or not the eye can see it, the way the
+  camera's own `project` hands back a point beside the depth it was at.
 - `evaluate(expression, bindings)` — the value an expression has for a set of tracks and variables.
   Division by nothing is left as the infinity the arithmetic gives, so a field sampled at a pole reads
   as a pole.
@@ -573,6 +578,10 @@ functions, which is what lets the same tree survive being written to a file and 
   `node` drawn for it. A scene sorts its pieces by the mean of their own depths, so the points are
   what order a piece rather than anything the node carries.
 - `Axes3Record` — a `kind` of `axes3`, a `name`, its `camera` and its `options`.
+- `FillRecord` — a fill whose gradient runs between two places an expression gives. Every `Fill` is
+  one already, since a fixed place is a literal expression. What it adds is a wash whose axis moves,
+  which is what the solid demo's pane runs along the recession from the eye. A record carrying a fill
+  of its own takes one where a figure moves it, and the rest stay plain fills until a demo asks.
 - `ShadeRecord` — what colour a cell of a surface is filled with: a `ramp` of fills read as even steps
   from nothing to one, and the `band` of the amount that ramp is spread over. Every normal of a
   surface drawn over a plane has a positive z, so a light with a positive z reaches part of a ramp
