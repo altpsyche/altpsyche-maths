@@ -465,10 +465,13 @@ vocabulary has no form for. Step 3.9 added `Camera3Record`, `ProjectionChoice` a
 so the solid demo's orbit is a cosine and a sine of one track and its camera places every point where
 the built one does. The door is 309 names and the suite is 884 tests over 57 files.
 
-**Step 3.9b is a look and it is Siva's**, which is the held beat the solid demo's orbit gains at the
-face of the saddle: it changes a published demo's pacing and the sheets it draws, where every other
-step of this plan holds them byte for byte. What is wanted is the seconds the beat holds and where in
-the orbit it sits.
+Step 3.9b was the held beat the solid demo's orbit gains at the face of the saddle, and Siva answered
+it on 2026-09-09: a quarter round, a second and a half, and the figure lengthens by the beat rather
+than the turn going faster either side of it. The rate is the same either side and neither half eases,
+so what a reader sees is the stop rather than a change of speed. The figure went from 11.8 seconds to
+13.3 and its walk from 354 painted frames to 399, and all eight sheets stayed byte for byte, since the
+still is drawn before the beat and the strip is drawn from fractions of the turn rather than from
+times.
 
 Step 3.10 added `polyline3`, `dot3`, `text3`, `arrow3`, `scene3` and `axes3`, so the solid demo's
 axes, its three runs of descent and its crossing curve all draw from records at each of the four times
