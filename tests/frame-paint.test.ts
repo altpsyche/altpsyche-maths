@@ -107,8 +107,8 @@ describe('a walk of the flat demo', () => {
 describe('a walk of the solid demo', () => {
   const frames = Array.from(framesOf(solid, { fps: 30, width: WIDTH, height: HEIGHT }));
 
-  it('walks 354 frames and paints every one of them', () => {
-    expect(frames).toHaveLength(354);
+  it('walks 399 frames and paints every one of them', () => {
+    expect(frames).toHaveLength(399);
     for (const frame of frames) {
       // The figure's own marks are the fixed part. What its inset draws is a
       // window on a saddle that turns, so the count there changes frame to frame.

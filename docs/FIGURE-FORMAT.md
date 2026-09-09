@@ -530,7 +530,7 @@ release away and has a document of its own.
   drawn. That refusal is the price of the format being closed and it is the one place the price
   shows.
 
-- [ ] **3. The node vocabulary, which is fourteen commits.** Twenty-three node kinds, two item producers,
+- [x] **3. The node vocabulary, which is fourteen commits.** Twenty-three node kinds, two item producers,
   eleven path producers and two point producers as records with parameters, and a resolver from a record to the nodes that exist now. The
   authoring calls keep their names and their arguments and return records. **The measurement every
   one of the fourteen quotes is the same:** the demo that draws the kinds of that commit gives the same
@@ -702,12 +702,23 @@ release away and has a document of its own.
     place in space whose x reads as a point each refused with the sentence naming it; the suite from
     877 to 884 and the door from 303 names to 309.
 
-  - [ ] **3.9b Composition and camera, which is a look rather than a vocabulary.** The solid demo's
-    orbit gains a held beat at the face of the saddle, and the commit quotes the seconds it holds.
-    **This is Siva's call and not a session's**, because it changes the pacing of a published demo and
-    the sheets it draws, where every other step of this plan holds them byte for byte. What is wanted
-    is the seconds the beat holds and where in the orbit it sits. **Step 7 carries the other half**,
-    which is the extent as data.
+  - [x] **3.9b Composition and camera, which is a look rather than a vocabulary.** The solid demo's
+    orbit stops once, at the face of the saddle, for a second and a half. **Siva's call on 2026-09-09:**
+    a quarter round, which is the bearing the saddle faces along the axis it falls away on; a second
+    and a half; and the figure lengthens by the beat rather than the turn going faster either side of
+    it.
+    **The push moves with the beat**, since it starts after the last frame the strip shows and that
+    frame is past the quarter, so `PUSH_FROM` carries the beat and keeps the 0.04 seconds of slack it
+    had.
+    **The rate is the same either side and neither half eases**, so what a reader sees is the stop
+    rather than a change of speed.
+    **Measured:** the eye at a quarter at both ends of the beat and the whole picture, marks and all,
+    identical across it, where a fifth of a second either side of it is not; a rate of an eighth of
+    the turn a second before the beat and the same after it, to twelve places; the figure from 11.8
+    seconds to 13.3 and its walk from 354 painted frames to 399; all eight sheets byte for byte after
+    `npm run demos`, since the still is drawn before the beat and the strip is drawn from fractions of
+    the turn rather than from times; the suite from 957 to 959.
+    **Step 7 carried the other half**, which is the extent as data.
 
   - [x] **3.10 The space nodes.** `polyline3`, `dot3`, `text3`, `arrow3`, `scene3` and `axes3` are
     forms of `NodeRecord`, each carrying its places as `Point3Record`s and its own `Camera3Record`,

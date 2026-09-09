@@ -375,13 +375,34 @@ const entrance = Timeline.empty()
 
 const ORBIT_FROM = entrance.duration;
 
-/** The eye goes round at one pace rather than easing at both ends, because a turn
- * that slowed to a stop and started again would read as a stutter. */
+/** Where in the turn the eye stops, and for how long, in seconds. A quarter round
+ * is the bearing the saddle faces along the axis it falls away on. */
+export const BEAT_AT = 0.25;
+export const BEAT = 1.5;
+
+const BEAT_FROM = ORBIT_FROM + ORBIT * BEAT_AT;
+
+/**
+ * The eye goes round at one pace and stops once, at the face of the saddle.
+ *
+ * Neither half eases: a turn that slowed to a stop and started again at every end
+ * would read as a stutter, and the one stop here is the beat rather than the
+ * pacing. The rate is the same either side of it, a quarter of the turn every two
+ * seconds, so the stop is what a reader sees rather than a change of speed.
+ */
 export const orbit: Track = [
   { time: 0, value: 0 },
   { time: ORBIT_FROM, value: 0 },
-  { time: ORBIT_FROM + ORBIT, value: 1 },
+  { time: BEAT_FROM, value: BEAT_AT },
+  { time: BEAT_FROM + BEAT, value: BEAT_AT },
+  { time: ORBIT_FROM + ORBIT + BEAT, value: 1 },
 ];
+
+/** When the eye is a fraction of the way round, which is that fraction of the
+ * orbit, and the beat as well once the beat has passed. */
+export function timeAt(along: number): number {
+  return ORBIT_FROM + ORBIT * along + (along > BEAT_AT ? BEAT : 0);
+}
 
 /**
  * How far in the camera pushes on the crossing, in figure units across.
@@ -405,7 +426,7 @@ const pushed: Extent = { width: PUSH, height: (PUSH * extent.height) / extent.wi
  * shown one frame gets the whole saddle with its equation rather than a crop of
  * the middle of it, and the strip is four frames of one composition.
  */
-const PUSH_FROM = 2.2;
+const PUSH_FROM = 2.2 + BEAT;
 const PUSH_IN = 1;
 const PULL_OUT = 1.2;
 const LABELS = 0.4;
@@ -429,7 +450,7 @@ const line = entrance
   .wait(PUSH_FROM)
   .together([fadeTo('solid/rule', 0), fadeTo('solid/title', 0)], LABELS)
   .play(moveView(pushed), PUSH_IN)
-  .wait(ORBIT - PUSH_FROM - 2 * LABELS - PUSH_IN - PULL_OUT)
+  .wait(ORBIT + BEAT - PUSH_FROM - 2 * LABELS - PUSH_IN - PULL_OUT)
   .play(moveView({ width: extent.width, height: extent.height }), PULL_OUT)
   .together([fadeTo('solid/rule', 1), fadeTo('solid/title', 1)], LABELS);
 
@@ -488,9 +509,9 @@ export function stripMarks(
  * part ends and the next begins. */
 export const TIMES = {
   entrance: ORBIT_FROM,
-  quarter: ORBIT_FROM + ORBIT * 0.25,
-  half: ORBIT_FROM + ORBIT * 0.5,
-  round: ORBIT_FROM + ORBIT,
+  quarter: timeAt(0.25),
+  half: timeAt(0.5),
+  round: timeAt(1),
 };
 
 /**
@@ -503,4 +524,4 @@ export const TIMES = {
  * such pairs, and the two of them read as one picture drawn twice.
  */
 export const STRIP_ALONG = [0.03, 0.11, 0.19, 0.27];
-export const FRAMES = STRIP_ALONG.map((along) => ORBIT_FROM + ORBIT * along);
+export const FRAMES = STRIP_ALONG.map(timeAt);

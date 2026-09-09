@@ -54,6 +54,7 @@ import {
   FRAMES as SOLID_FRAMES,
   HEIGHT,
   STRIP_ALONG,
+  BEAT as SOLID_BEAT,
   TIMES as SOLID_TIMES,
   alongAt,
   descents,
@@ -159,7 +160,10 @@ describe("every demo's view", () => {
     // the two labels it does crop are at nothing by the time the camera moves.
     let margin = Number.POSITIVE_INFINITY;
     for (let step = 0; step <= 120; step += 1) {
-      const seconds = SOLID_TIMES.entrance + 3.6 + (2.8 * step) / 120;
+      // The beat at the face of the saddle sits before the push, so the window
+      // the camera is held in starts a beat later than the orbit alone would put
+      // it.
+      const seconds = SOLID_TIMES.entrance + 3.6 + SOLID_BEAT + (2.8 * step) / 120;
       const extent = extentAt(solid, seconds, 1.8);
       const cut = boundsOfMarks(marksAt(solid, seconds).filter((mark) => mark.id.startsWith('solid/cut/')))!;
       margin = Math.min(
@@ -1134,6 +1138,26 @@ describe('the solid demo', () => {
   /** The figure's own marks, without its inset's magnified copies of them. */
   const solidOwn = (seconds: number) => solidAt(seconds).filter((mark) => !mark.id.startsWith('solid/lens/'));
   const named = [SOLID_TIMES.entrance, SOLID_TIMES.quarter, SOLID_TIMES.half, SOLID_TIMES.round];
+
+  it('holds the eye still at the face of the saddle for a beat and a half', () => {
+    const from = alongAt(SOLID_TIMES.quarter);
+    expect(from).toBeCloseTo(0.25, 12);
+    expect(alongAt(SOLID_TIMES.quarter + SOLID_BEAT)).toBeCloseTo(0.25, 12);
+    // Nothing else is playing over the beat, so the whole picture is the picture
+    // it was, rather than the camera alone standing still.
+    expect(sameMarks(solidAt(SOLID_TIMES.quarter), solidAt(SOLID_TIMES.quarter + SOLID_BEAT))).toBe(true);
+    expect(sameMarks(solidAt(SOLID_TIMES.quarter), solidAt(SOLID_TIMES.quarter + SOLID_BEAT + 0.2))).toBe(false);
+    expect(sameMarks(solidAt(SOLID_TIMES.quarter), solidAt(SOLID_TIMES.quarter - 0.2))).toBe(false);
+  });
+
+  it('turns at one pace either side of the beat', () => {
+    const rate = (from: number, to: number) => (alongAt(to) - alongAt(from)) / (to - from);
+    const before = rate(SOLID_TIMES.entrance + 0.4, SOLID_TIMES.quarter - 0.4);
+    const after = rate(SOLID_TIMES.quarter + SOLID_BEAT + 0.4, SOLID_TIMES.round - 0.4);
+    // A quarter of the turn every two seconds, which is one eighth a second.
+    expect(before).toBeCloseTo(0.125, 12);
+    expect(after).toBeCloseTo(before, 12);
+  });
 
   it('holds its three runs of descent apart, so none reads as a tangle', () => {
     // The field is nothing at the middle and every run bends hardest near it, so
