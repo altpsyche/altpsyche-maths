@@ -24,6 +24,7 @@ import {
   FRAMES as BOOLEAN_FRAMES,
   booleans,
   stripMarks as booleanStripMarks,
+  written as booleansWritten,
 } from './boolean.js';
 import { FRAMES as TURN_FRAMES, stripMarks as turnStripMarks, turns, written as turnsWritten } from './rotate.js';
 import { FRAMES as SOLID_FRAMES, solid, stripMarks as solidStripMarks } from './surface.js';
@@ -149,5 +150,6 @@ export const sheets: readonly Sheet[] = [
  * script writes both and the same gate reads both.
  */
 export const figures: readonly { file: string; text: () => string }[] = [
+  { file: 'demos/boolean.figure.json', text: () => writeFigure(booleansWritten) },
   { file: 'demos/rotate.figure.json', text: () => writeFigure(turnsWritten) },
 ];

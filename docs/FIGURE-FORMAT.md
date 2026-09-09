@@ -1134,7 +1134,7 @@ release away and has a document of its own.
   **What measures each rewrite is that demo's committed sheets**, since those were drawn by the calls
   the records replace, so a record resolving to anything else moves a byte of them.
 
-  - [ ] **8.1 The boolean demo is a file.** 221 lines. Its record is written already, in
+  - [x] **8.1 The boolean demo is a file.** 221 lines. Its record is written already, in
     `tests/figures.ts` as `operations`, but only half: the extent, the tracks, the timeline and the
     duration are read off the module's own figure rather than written down. So this commit writes
     those four and `tests/figures.ts` reads the demo's record instead of assembling one, which takes a
@@ -1145,6 +1145,23 @@ release away and has a document of its own.
     byte after `npm run demos`; the committed file read back drawing the demo's twelve marks at each
     of its seven named times and at its still time of 2.7608, within a tolerance of 1e-6; the file's
     own bytes and lines; the nine spans of its entrance surviving as records.
+    **The record was written in three places rather than the one the plan found**, since
+    `tests/boolean-record.test.ts` assembled its own scene beside the half in `tests/figures.ts`, and
+    the first two of that file's cases became comparisons of one record against itself once the demo
+    was the record. What is left there is the operations as forms of a path record, which stand on
+    their own.
+    **The entrance's spans are written as three waves rather than three per panel.** Either order
+    draws the same picture, since nine fades on nine targets are independent, and the waves are what
+    the timeline was built as and what the curve reads by: the three outlines ease out and the six
+    behind them take the default of `smoothstep`.
+    **Measured:** `docs/boolean.svg` at 4,111 bytes and `docs/boolean-strip.svg` at 15,903 byte for
+    byte after `npm run demos`, and the other six sheets unmoved; `demos/boolean.figure.json` at
+    13,914 bytes over 519 lines; the committed file read back drawing twelve marks at each of the
+    seven named times and at the still time of 2.7608333333333337, within a tolerance of 1e-6; the
+    nine spans in the file; the seven named times, the duration of 7.74 and the still time each what
+    they were before the rewrite; the module from 221 lines to 276, since a record names its fields
+    where a call passes them in order, against 108 lines out of `tests/figures.ts` and 103 out of
+    `tests/boolean-record.test.ts`; the suite from 1,024 tests to 1,026 over 65 files.
 
   - [ ] **8.2 The flat demo is a file.** 550 lines, and the widest scene of the three: the grid, both
     axes, the shaded region, the field of tangents, the plotted parabola, the tangent at the dot, the

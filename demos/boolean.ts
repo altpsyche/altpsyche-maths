@@ -19,24 +19,18 @@
  * another.
  */
 import {
-  circle,
-  differenceOf,
-  easeOut,
-  fadeIn,
-  group,
-  intersectionOf,
-  shape,
-  text,
+  resolveFigure,
   TEXT_RATIO,
   textScale,
-  unionOf,
   vec2,
-  Timeline,
+  type Expression,
   type Extent,
   type Figure,
+  type FigureRecord,
   type Mark,
-  type Node,
-  type Path,
+  type NodeRecord,
+  type PathRecord,
+  type SpanRecord,
   type Track,
   marksAt,
   moveBy,
@@ -84,65 +78,124 @@ export const TOUCH_OUTSIDE = BIG + SMALL;
 export const TOUCH_INSIDE = BIG - SMALL;
 
 interface Panel {
-  /** The standard name of the operation, which is both the caption under the
-   * panel and the name its marks are grouped under. */
-  readonly name: string;
-  readonly combine: (first: Path, second: Path) => Path;
+  /** The standard name of the operation, which is the caption under the panel,
+   * the name its marks are grouped under, and the kind of path record the
+   * answer is. */
+  readonly name: 'union' | 'intersection' | 'difference';
 }
 
-export const PANELS: readonly Panel[] = [
-  { name: 'union', combine: unionOf },
-  { name: 'intersection', combine: intersectionOf },
-  { name: 'difference', combine: differenceOf },
-];
+export const PANELS: readonly Panel[] = [{ name: 'union' }, { name: 'intersection' }, { name: 'difference' }];
 
-/** The whole picture with the walking disc's centre this far from the still
- * one's, which is the one number the three panels are all drawn from. */
-export function sceneAt(apart: number): Node {
-  return group(
-    'booleans',
-    PANELS.map((panel, at) => {
-      const middle = (at - 1) * PANEL;
-      const first = circle(vec2(middle, DISC_Y), BIG);
-      const second = circle(vec2(middle + apart, DISC_Y), SMALL);
+/**
+ * One panel: the answer shaded, the two discs outlined over it, and the caption.
+ *
+ * The walking disc's centre is the track this figure drives its picture from, so
+ * it is an expression rather than a place, and the answer is a form over the two
+ * discs rather than geometry written down. That is the whole reason a boolean
+ * operation is a form: the answer's cubics are none of the operands' and this
+ * disc changes the answer every frame.
+ */
+function panel({ name }: Panel, at: number): NodeRecord {
+  const middle = (at - 1) * PANEL;
+  const first: PathRecord = { kind: 'circle', centre: vec2(middle, DISC_Y), radius: BIG };
+  const walking: Expression = {
+    kind: 'point',
+    x: { kind: 'arithmetic', operator: '+', left: middle, right: { kind: 'track', name: 'apart' } },
+    y: DISC_Y,
+  };
+  const second: PathRecord = { kind: 'circle', centre: walking, radius: SMALL };
+  return {
+    kind: 'group',
+    name,
+    children: [
       // The answer is shaded and the two discs are outlined over it. Stroking the
       // answer as well hid both outlines, leaving a shape with no discs behind it.
-      return group(panel.name, [
-        shape('result', panel.combine(first, second), { fill: wash }),
-        group('discs', [shape('first', first, { stroke: still }), shape('second', second, { stroke: walker })]),
-        text('label', vec2(middle, LABEL_Y), panel.name, TEXT.label, { fill: ink, align: 'middle' }),
-      ]);
-    }),
-    { style: TYPE }
-  );
+      { kind: 'shape', name: 'result', path: { kind: name, first, second }, style: { fill: wash } },
+      {
+        kind: 'group',
+        name: 'discs',
+        children: [
+          { kind: 'shape', name: 'first', path: first, style: { stroke: still } },
+          { kind: 'shape', name: 'second', path: second, style: { stroke: walker } },
+        ],
+      },
+      {
+        kind: 'text',
+        name: 'label',
+        at: vec2(middle, LABEL_Y),
+        content: name,
+        size: TEXT.label,
+        options: { fill: ink, align: 'middle' },
+      },
+    ],
+  };
 }
 
-/** The picture arriving: the outlines one panel after another, then the words,
- * then the results. */
-const entrance = Timeline.empty()
-  // The gap is what paces a row, so each panel's own fade leaves at speed rather
-  // than from rest and the three arrive 0.12 apart as the gap says.
-  .stagger(
-    PANELS.map((panel) => fadeIn(`booleans/${panel.name}/discs`)),
-    0.4,
-    { gap: 0.12, curve: easeOut }
-  )
-  .together(
-    PANELS.map((panel) => fadeIn(`booleans/${panel.name}/label`)),
-    0.4,
-    { after: -0.1 }
-  )
-  .together(
-    PANELS.map((panel) => fadeIn(`booleans/${panel.name}/result`)),
-    0.5,
-    { after: -0.1 }
-  );
+export const scene: NodeRecord = {
+  kind: 'group',
+  name: 'booleans',
+  children: PANELS.map(panel),
+  style: TYPE,
+};
+
+/** How long one fade of the entrance takes, and how long the results take,
+ * which is slower because a filled shape covers more of the picture than an
+ * outline and arriving at the same rate reads as a flash. */
+const FADE = 0.4;
+const RESULT_FADE = 0.5;
+
+/** Seconds between one panel's outlines starting and the next panel's. The gap
+ * is what paces a row, so each panel's own fade leaves at speed rather than from
+ * rest and the three arrive this far apart. */
+const GAP = 0.12;
+
+/** How far each wave of the entrance overlaps the wave before it, so the
+ * picture arrives as one movement rather than as three that each stop. */
+const OVERLAP = 0.1;
+
+const DISCS_TO = GAP * (PANELS.length - 1) + FADE;
+const LABELS_FROM = DISCS_TO - OVERLAP;
+const LABELS_TO = LABELS_FROM + FADE;
+const RESULTS_FROM = LABELS_TO - OVERLAP;
+const RESULTS_TO = RESULTS_FROM + RESULT_FADE;
+
+/** How long the whole entrance takes, which is where its last fade ends. */
+const ENTRANCE = RESULTS_TO;
+
+/**
+ * The picture arriving: the outlines one panel after another, then the words,
+ * then the results.
+ *
+ * The outlines ease out alone. A wave that eases at both ends and overlaps the
+ * next one has two changes slowing into each other at the seam, which reads as a
+ * hesitation rather than as one arrival.
+ */
+const entrance: readonly SpanRecord[] = [
+  ...PANELS.map((one, at): SpanRecord => ({
+    entry: { kind: 'fadeIn', target: `booleans/${one.name}/discs` },
+    from: GAP * at,
+    to: GAP * at + FADE,
+    curve: 'easeOut',
+  })),
+  ...PANELS.map((one): SpanRecord => ({
+    entry: { kind: 'fadeIn', target: `booleans/${one.name}/label` },
+    from: LABELS_FROM,
+    to: LABELS_TO,
+  })),
+  ...PANELS.map((one): SpanRecord => ({
+    entry: { kind: 'fadeIn', target: `booleans/${one.name}/result` },
+    from: RESULTS_FROM,
+    to: RESULTS_TO,
+  })),
+];
 
 const WALK = 6;
-const WALK_FROM = entrance.duration + 0.4;
+const WALK_FROM = ENTRANCE + 0.4;
 const WALK_TO = WALK_FROM + WALK;
 
-const line = entrance.wait(WALK + 0.4);
+/** How long the figure runs, which is past its last span: the walk is a track
+ * rather than a span, so nothing on the timeline says when it ends. */
+const DURATION = WALK_TO;
 
 /**
  * The walker's centre against the still one's, straight across at one pace.
@@ -163,14 +216,16 @@ export function timeApart(apart: number): number {
   return WALK_FROM + ((apart + REACH) / (2 * REACH)) * WALK;
 }
 
-export const booleans: Figure = {
+export const written: FigureRecord = {
   extent,
-  duration: line.duration,
-  still: timeApart(-0.95),
+  scene,
   tracks: { apart: walk },
-  timeline: line,
-  scene: (_seconds, values) => sceneAt(values.apart as number),
+  timeline: { spans: entrance, duration: DURATION },
+  duration: DURATION,
+  still: timeApart(-0.95),
 };
+
+export const booleans: Figure = resolveFigure(written);
 
 /** How much wider and taller each frame's slot is than the figure, so a sheet of
  * them has white between the frames rather than one panel running into the
@@ -207,7 +262,7 @@ export function stripMarks(
  * three panels at: clear of each other, touching at one point, crossing at two,
  * and one wholly inside the other. */
 export const TIMES = {
-  entrance: entrance.duration,
+  entrance: ENTRANCE,
   clear: timeApart(-REACH),
   touching: timeApart(-TOUCH_OUTSIDE),
   crossing: timeApart(-0.9),

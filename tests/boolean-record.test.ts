@@ -1,117 +1,15 @@
 import { describe, expect, it } from 'vitest';
-import {
-  marksAt,
-  resolveNode,
-  resolvePath,
-  sameMarks,
-  vec2,
-  type Expression,
-  type Figure,
-  type NodeRecord,
-  type PathRecord,
-} from '../index.js';
-import { DEEP, INK, PEACH, SLATE } from '../demos/palette.js';
-import { TYPE } from '../demos/typeface.js';
-import {
-  BIG,
-  DISC_Y,
-  LABEL_Y,
-  PANEL,
-  PANELS,
-  SMALL,
-  TEXT,
-  TIMES,
-  booleans,
-} from '../demos/boolean.js';
-
-const ink = { colour: INK };
-const still = { colour: SLATE, width: 0.018 };
-const walker = { colour: DEEP, width: 0.018 };
-const wash = { colour: PEACH };
+import { resolvePath, sameMarks, vec2, type PathRecord } from '../index.js';
+import { BIG, SMALL } from '../demos/boolean.js';
 
 /**
- * The boolean demo's scene as records, written the way the demo writes it as
- * calls.
+ * The boolean operations as forms of a path record.
  *
- * The walking disc's centre is the track the demo drives its scene from, so it
- * is an expression rather than a place. That is the whole reason a boolean
- * operation is a form rather than geometry the figure carries: the answer's
- * cubics are none of the operands' and this disc changes the answer every frame.
+ * The demo itself is a record and its committed file is what the sheets are
+ * drawn from, so what is left to hold here is the forms on their own: the demo's
+ * marks are gated against its file rather than against a second transcription.
  */
-function panel(name: string, at: number): NodeRecord {
-  const middle = (at - 1) * PANEL;
-  const first: PathRecord = { kind: 'circle', centre: vec2(middle, DISC_Y), radius: BIG };
-  const walking: Expression = {
-    kind: 'point',
-    x: { kind: 'arithmetic', operator: '+', left: middle, right: { kind: 'track', name: 'apart' } },
-    y: DISC_Y,
-  };
-  const second: PathRecord = { kind: 'circle', centre: walking, radius: SMALL };
-  return {
-    kind: 'group',
-    name,
-    children: [
-      {
-        kind: 'shape',
-        name: 'result',
-        path: { kind: name as 'union' | 'intersection' | 'difference', first, second },
-        style: { fill: wash },
-      },
-      {
-        kind: 'group',
-        name: 'discs',
-        children: [
-          { kind: 'shape', name: 'first', path: first, style: { stroke: still } },
-          { kind: 'shape', name: 'second', path: second, style: { stroke: walker } },
-        ],
-      },
-      {
-        kind: 'text',
-        name: 'label',
-        at: vec2(middle, LABEL_Y),
-        content: name,
-        size: TEXT.label,
-        options: { fill: ink, align: 'middle' },
-      },
-    ],
-  };
-}
-
-const written: NodeRecord = {
-  kind: 'group',
-  name: 'booleans',
-  children: PANELS.map((one, at) => panel(one.name, at)),
-  style: TYPE,
-};
-
-const fromRecords: Figure = {
-  ...booleans,
-  scene: (_seconds, values) => resolveNode(written, { tracks: values }),
-};
-
 describe('the boolean operations as records', () => {
-  it('draws the boolean demo mark for mark at each of its named times', () => {
-    const times = Object.values(TIMES);
-    expect(times).toHaveLength(7);
-    for (const seconds of times) {
-      const drawn = marksAt(booleans, seconds);
-      expect(drawn).toHaveLength(12);
-      expect(sameMarks(marksAt(fromRecords, seconds), drawn)).toBe(true);
-    }
-  });
-
-  it('takes the operation through all four cases of the walk', () => {
-    // Clear of each other, touching at one point, crossing at two, and one wholly
-    // inside the other, which is what says the records answer where the calls do
-    // rather than only where the geometry is easy.
-    for (const seconds of [TIMES.clear, TIMES.touching, TIMES.crossing, TIMES.inside]) {
-      const drawn = marksAt(booleans, seconds).filter((mark) => mark.id.endsWith('/result'));
-      expect(drawn).toHaveLength(3);
-      const through = marksAt(fromRecords, seconds).filter((mark) => mark.id.endsWith('/result'));
-      expect(sameMarks(through, drawn)).toBe(true);
-    }
-  });
-
   it('reads the union clear of a crossing as two loops and inside as one', () => {
     const apart = (value: number) => ({ tracks: { apart: value } });
     const record: PathRecord = {

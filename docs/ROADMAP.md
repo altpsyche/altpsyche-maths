@@ -489,8 +489,11 @@ distinct colours. The door is 375 names and the suite is 1,024 tests over 65 fil
 **Step 8 is planned and is three commits, one per demo**, in the order boolean, flat, solid. Nothing
 in it needs a new form: every difficulty the three carry was closed by a step already ticked, so a
 commit that cannot express something has found a gap in the vocabulary rather than a hard demo.
-**Step 8.1 is what a session runs next**, which is the boolean demo, 221 lines, whose record is
-already half written in `tests/figures.ts`.
+Step 8.1 made the boolean demo a record: `demos/boolean.figure.json` is 13,914 bytes over 519 lines,
+its two sheets are byte for byte what they were, and the committed file read back draws twelve marks
+at each of the demo's seven named times. The record had been written in three places rather than the
+one the plan found, and collapsing them took 211 lines out of the tests. **Step 8.2 is what a session
+runs next**, which is the flat demo, 550 lines and the widest scene of the three.
 
 **Two things fall due before the format freezes and both are Siva's**, which are
 whether a `Mark` may be a raster image, due by step 3 where the node vocabulary lands, and the

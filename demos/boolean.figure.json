@@ -1,0 +1,519 @@
+{
+  "format": 0,
+  "figure": {
+    "duration": 7.74,
+    "extent": {
+      "height": 3,
+      "width": 10.8
+    },
+    "scene": {
+      "children": [
+        {
+          "children": [
+            {
+              "kind": "shape",
+              "name": "result",
+              "path": {
+                "first": {
+                  "centre": {
+                    "x": -3.6,
+                    "y": 0.5
+                  },
+                  "kind": "circle",
+                  "radius": 0.9
+                },
+                "kind": "union",
+                "second": {
+                  "centre": {
+                    "kind": "point",
+                    "x": {
+                      "kind": "arithmetic",
+                      "left": -3.6,
+                      "operator": "+",
+                      "right": {
+                        "kind": "track",
+                        "name": "apart"
+                      }
+                    },
+                    "y": 0.5
+                  },
+                  "kind": "circle",
+                  "radius": 0.36
+                }
+              },
+              "style": {
+                "fill": {
+                  "colour": {
+                    "a": 1,
+                    "b": 116,
+                    "g": 186,
+                    "name": "peach",
+                    "r": 253
+                  }
+                }
+              }
+            },
+            {
+              "children": [
+                {
+                  "kind": "shape",
+                  "name": "first",
+                  "path": {
+                    "centre": {
+                      "x": -3.6,
+                      "y": 0.5
+                    },
+                    "kind": "circle",
+                    "radius": 0.9
+                  },
+                  "style": {
+                    "stroke": {
+                      "colour": {
+                        "a": 1,
+                        "b": 128,
+                        "g": 114,
+                        "name": "slate",
+                        "r": 107
+                      },
+                      "width": 0.018
+                    }
+                  }
+                },
+                {
+                  "kind": "shape",
+                  "name": "second",
+                  "path": {
+                    "centre": {
+                      "kind": "point",
+                      "x": {
+                        "kind": "arithmetic",
+                        "left": -3.6,
+                        "operator": "+",
+                        "right": {
+                          "kind": "track",
+                          "name": "apart"
+                        }
+                      },
+                      "y": 0.5
+                    },
+                    "kind": "circle",
+                    "radius": 0.36
+                  },
+                  "style": {
+                    "stroke": {
+                      "colour": {
+                        "a": 1,
+                        "b": 161,
+                        "g": 105,
+                        "name": "deep",
+                        "r": 3
+                      },
+                      "width": 0.018
+                    }
+                  }
+                }
+              ],
+              "kind": "group",
+              "name": "discs"
+            },
+            {
+              "at": {
+                "x": -3.6,
+                "y": -1.35
+              },
+              "content": "union",
+              "kind": "text",
+              "name": "label",
+              "options": {
+                "align": "middle",
+                "fill": {
+                  "colour": {
+                    "a": 1,
+                    "b": 27,
+                    "g": 27,
+                    "name": "ink",
+                    "r": 27
+                  }
+                }
+              },
+              "size": 0.3
+            }
+          ],
+          "kind": "group",
+          "name": "union"
+        },
+        {
+          "children": [
+            {
+              "kind": "shape",
+              "name": "result",
+              "path": {
+                "first": {
+                  "centre": {
+                    "x": 0,
+                    "y": 0.5
+                  },
+                  "kind": "circle",
+                  "radius": 0.9
+                },
+                "kind": "intersection",
+                "second": {
+                  "centre": {
+                    "kind": "point",
+                    "x": {
+                      "kind": "arithmetic",
+                      "left": 0,
+                      "operator": "+",
+                      "right": {
+                        "kind": "track",
+                        "name": "apart"
+                      }
+                    },
+                    "y": 0.5
+                  },
+                  "kind": "circle",
+                  "radius": 0.36
+                }
+              },
+              "style": {
+                "fill": {
+                  "colour": {
+                    "a": 1,
+                    "b": 116,
+                    "g": 186,
+                    "name": "peach",
+                    "r": 253
+                  }
+                }
+              }
+            },
+            {
+              "children": [
+                {
+                  "kind": "shape",
+                  "name": "first",
+                  "path": {
+                    "centre": {
+                      "x": 0,
+                      "y": 0.5
+                    },
+                    "kind": "circle",
+                    "radius": 0.9
+                  },
+                  "style": {
+                    "stroke": {
+                      "colour": {
+                        "a": 1,
+                        "b": 128,
+                        "g": 114,
+                        "name": "slate",
+                        "r": 107
+                      },
+                      "width": 0.018
+                    }
+                  }
+                },
+                {
+                  "kind": "shape",
+                  "name": "second",
+                  "path": {
+                    "centre": {
+                      "kind": "point",
+                      "x": {
+                        "kind": "arithmetic",
+                        "left": 0,
+                        "operator": "+",
+                        "right": {
+                          "kind": "track",
+                          "name": "apart"
+                        }
+                      },
+                      "y": 0.5
+                    },
+                    "kind": "circle",
+                    "radius": 0.36
+                  },
+                  "style": {
+                    "stroke": {
+                      "colour": {
+                        "a": 1,
+                        "b": 161,
+                        "g": 105,
+                        "name": "deep",
+                        "r": 3
+                      },
+                      "width": 0.018
+                    }
+                  }
+                }
+              ],
+              "kind": "group",
+              "name": "discs"
+            },
+            {
+              "at": {
+                "x": 0,
+                "y": -1.35
+              },
+              "content": "intersection",
+              "kind": "text",
+              "name": "label",
+              "options": {
+                "align": "middle",
+                "fill": {
+                  "colour": {
+                    "a": 1,
+                    "b": 27,
+                    "g": 27,
+                    "name": "ink",
+                    "r": 27
+                  }
+                }
+              },
+              "size": 0.3
+            }
+          ],
+          "kind": "group",
+          "name": "intersection"
+        },
+        {
+          "children": [
+            {
+              "kind": "shape",
+              "name": "result",
+              "path": {
+                "first": {
+                  "centre": {
+                    "x": 3.6,
+                    "y": 0.5
+                  },
+                  "kind": "circle",
+                  "radius": 0.9
+                },
+                "kind": "difference",
+                "second": {
+                  "centre": {
+                    "kind": "point",
+                    "x": {
+                      "kind": "arithmetic",
+                      "left": 3.6,
+                      "operator": "+",
+                      "right": {
+                        "kind": "track",
+                        "name": "apart"
+                      }
+                    },
+                    "y": 0.5
+                  },
+                  "kind": "circle",
+                  "radius": 0.36
+                }
+              },
+              "style": {
+                "fill": {
+                  "colour": {
+                    "a": 1,
+                    "b": 116,
+                    "g": 186,
+                    "name": "peach",
+                    "r": 253
+                  }
+                }
+              }
+            },
+            {
+              "children": [
+                {
+                  "kind": "shape",
+                  "name": "first",
+                  "path": {
+                    "centre": {
+                      "x": 3.6,
+                      "y": 0.5
+                    },
+                    "kind": "circle",
+                    "radius": 0.9
+                  },
+                  "style": {
+                    "stroke": {
+                      "colour": {
+                        "a": 1,
+                        "b": 128,
+                        "g": 114,
+                        "name": "slate",
+                        "r": 107
+                      },
+                      "width": 0.018
+                    }
+                  }
+                },
+                {
+                  "kind": "shape",
+                  "name": "second",
+                  "path": {
+                    "centre": {
+                      "kind": "point",
+                      "x": {
+                        "kind": "arithmetic",
+                        "left": 3.6,
+                        "operator": "+",
+                        "right": {
+                          "kind": "track",
+                          "name": "apart"
+                        }
+                      },
+                      "y": 0.5
+                    },
+                    "kind": "circle",
+                    "radius": 0.36
+                  },
+                  "style": {
+                    "stroke": {
+                      "colour": {
+                        "a": 1,
+                        "b": 161,
+                        "g": 105,
+                        "name": "deep",
+                        "r": 3
+                      },
+                      "width": 0.018
+                    }
+                  }
+                }
+              ],
+              "kind": "group",
+              "name": "discs"
+            },
+            {
+              "at": {
+                "x": 3.6,
+                "y": -1.35
+              },
+              "content": "difference",
+              "kind": "text",
+              "name": "label",
+              "options": {
+                "align": "middle",
+                "fill": {
+                  "colour": {
+                    "a": 1,
+                    "b": 27,
+                    "g": 27,
+                    "name": "ink",
+                    "r": 27
+                  }
+                }
+              },
+              "size": 0.3
+            }
+          ],
+          "kind": "group",
+          "name": "difference"
+        }
+      ],
+      "kind": "group",
+      "name": "booleans",
+      "style": {
+        "family": "system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif",
+        "weight": 400
+      }
+    },
+    "still": 2.7608333333333337,
+    "timeline": {
+      "duration": 7.74,
+      "spans": [
+        {
+          "curve": "easeOut",
+          "entry": {
+            "kind": "fadeIn",
+            "target": "booleans/union/discs"
+          },
+          "from": 0,
+          "to": 0.4
+        },
+        {
+          "curve": "easeOut",
+          "entry": {
+            "kind": "fadeIn",
+            "target": "booleans/intersection/discs"
+          },
+          "from": 0.12,
+          "to": 0.52
+        },
+        {
+          "curve": "easeOut",
+          "entry": {
+            "kind": "fadeIn",
+            "target": "booleans/difference/discs"
+          },
+          "from": 0.24,
+          "to": 0.64
+        },
+        {
+          "entry": {
+            "kind": "fadeIn",
+            "target": "booleans/union/label"
+          },
+          "from": 0.54,
+          "to": 0.9400000000000001
+        },
+        {
+          "entry": {
+            "kind": "fadeIn",
+            "target": "booleans/intersection/label"
+          },
+          "from": 0.54,
+          "to": 0.9400000000000001
+        },
+        {
+          "entry": {
+            "kind": "fadeIn",
+            "target": "booleans/difference/label"
+          },
+          "from": 0.54,
+          "to": 0.9400000000000001
+        },
+        {
+          "entry": {
+            "kind": "fadeIn",
+            "target": "booleans/union/result"
+          },
+          "from": 0.8400000000000001,
+          "to": 1.34
+        },
+        {
+          "entry": {
+            "kind": "fadeIn",
+            "target": "booleans/intersection/result"
+          },
+          "from": 0.8400000000000001,
+          "to": 1.34
+        },
+        {
+          "entry": {
+            "kind": "fadeIn",
+            "target": "booleans/difference/result"
+          },
+          "from": 0.8400000000000001,
+          "to": 1.34
+        }
+      ]
+    },
+    "tracks": {
+      "apart": [
+        {
+          "time": 0,
+          "value": -1.44
+        },
+        {
+          "time": 1.7400000000000002,
+          "value": -1.44
+        },
+        {
+          "time": 7.74,
+          "value": 1.44
+        }
+      ]
+    }
+  }
+}

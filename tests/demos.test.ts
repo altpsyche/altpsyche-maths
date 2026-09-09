@@ -3,7 +3,6 @@ import path from 'node:path';
 import { describe, expect, it } from 'vitest';
 import {
   areaOf,
-  marksAt,
   boundsOf,
   boundsOfMarks,
   centreOf,
@@ -13,20 +12,22 @@ import {
   durationOf,
   easeOut,
   extentAt,
-  resolveExtent,
-  flattenPath,
-  nearestEdge,
   flatten,
+  flattenPath,
   frameTimesOf,
   interval,
-  overlapOf,
   isLoop,
+  marksAt,
+  nearestEdge,
+  overlapOf,
   plot,
-  slopeOf,
   pointAlong,
   pointOf,
+  resolveExtent,
+  resolveNode,
   sameMarks,
   sampleTrack,
+  slopeOf,
   smoothstep,
   streamlineOf,
   tangentAt,
@@ -104,7 +105,7 @@ import {
   SMALL,
   TIMES as BOOLEAN_TIMES,
   booleans,
-  sceneAt as booleanSceneAt,
+  scene as booleanScene,
   stripMarks as booleanStripMarks,
 } from '../demos/boolean.js';
 
@@ -869,7 +870,7 @@ const shared = (apart: number): number => {
 const EDGE_ERROR = 2 * Math.PI * 2.8e-4 * (BIG * BIG + SMALL * SMALL);
 
 const panelAreas = (apart: number): number[] =>
-  flatten(booleanSceneAt(apart))
+  flatten(resolveNode(booleanScene, { tracks: { apart } }))
     .filter((mark) => mark.id.endsWith('/result'))
     .map((mark) => (mark.kind === 'path' ? areaOf(mark.path) : Number.NaN));
 

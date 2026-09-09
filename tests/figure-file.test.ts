@@ -98,6 +98,33 @@ describe('a figure written as a file', () => {
   });
 });
 
+describe('the boolean demo as a committed file', () => {
+  const committed = readFileSync('demos/boolean.figure.json', 'utf8');
+
+  it('is what the demo writes now', () => {
+    expect(committed).toBe(writeFigure(operations));
+  });
+
+  it('draws the demo mark for mark at each of its named times and at its still time', () => {
+    const read = readFigure(committed);
+    const times = Object.values(BOOLEAN_TIMES);
+    expect(times).toHaveLength(7);
+    for (const seconds of [...times, booleans.still]) {
+      const drawn = marksAt(booleans, seconds);
+      expect(drawn).toHaveLength(12);
+      expect(sameMarks(marksAt(read, seconds), drawn)).toBe(true);
+    }
+  });
+
+  it('carries the nine fades of its entrance', () => {
+    expect(JSON.parse(committed).figure.timeline.spans).toHaveLength(9);
+  });
+
+  it('is read as the version this package writes', () => {
+    expect(JSON.parse(committed).format).toBe(FIGURE_FORMAT_VERSION);
+  });
+});
+
 describe('the rotation demo as a committed file', () => {
   const committed = readFileSync('demos/rotate.figure.json', 'utf8');
 
