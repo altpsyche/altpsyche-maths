@@ -176,7 +176,7 @@ form rather than guessing. Nothing reads the page, and `getComputedStyle` appear
 tree.
 
 No screenshot gates this package. Every assertion reads a mark list or a number, so the suite of
-1,042 tests over 66 files runs in Node without a browser. Comparisons are by tolerance rather than by hash, because
+1,046 tests over 66 files runs in Node without a browser. Comparisons are by tolerance rather than by hash, because
 `Math.sin`, `Math.cos` and `Math.pow` are not specified to the last bit and differ between engines.
 
 ## Moving from 1.0.0
