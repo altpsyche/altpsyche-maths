@@ -162,10 +162,10 @@ work is the eight gaps below**, each with the reading that found it.
 **Four of the eight went to the engine's roadmap as one batch**, argued on that package's own merits,
 which is the only argument it takes: gaps 1, 2, 3 and 7. **Gap 5 is documented behaviour there rather
 than a defect**, and is recorded under the batch there so the next session does not file it. **Gap 6
-is 2.3.0 on the ladder below and gap 8 is 2.0.0.** The counted stencil is that package's item 2
+is 2.4.0 on the ladder below and gap 8 is 2.0.0.** The counted stencil is that package's item 2
 already and was re-measured rather than re-found.
 
-**What the spike settles about 2.6.0.** 117 of the flat demo's 181 marks at its still time drew, as
+**What the spike settles about 2.7.0.** 117 of the flat demo's 181 marks at its still time drew, as
 2,915 triangles in one pass and one draw, and the picture is recognisably the demo: the grid, both
 axes with their arrow tips, the vector field, the area, the curve, the tangent, the point and the
 typeset equation. 53 were refused and 11 more have no area at all. **So the painter's shape is settled
@@ -224,7 +224,7 @@ vocabulary of its own, so a painter would build that atlas by rasterising with a
 sampling it. That is the shape this step refuses to build. What the reading says instead is where the
 line falls today: 46 text marks across the two demos name a CSS font stack and carry no outline, and
 an equation arrives from `typesetElement` as 8 filled paths that read as 333 curves. **So the GPU
-painter's text is two problems and not one.** A label waits on 2.3.0's outlines for plain text, and an
+painter's text is two problems and not one.** A label waits on 2.4.0's outlines for plain text, and an
 equation waits on the same counted winding an annulus waits on, since 4 of the 8 glyphs of
 `a^2 + b^2 = e^0` carry a hole.
 
@@ -273,7 +273,7 @@ three more are written past those because a session should not rediscover them.
 
 | version | what lands | what it changes | steps | cut against | depends on | plan |
 | --- | --- | --- | --- | --- | --- | --- |
-| 2.1.0 | a figure's marks may be read against the frame they are drawn in | adds an expression kind and a parameter at the seam | to plan, and both design calls are answered | the consumer's two figures written as files and read back at every aspect each is drawn at | nothing outside this package | to plan |
+| 2.1.0 | a figure's marks may be read against the frame they are drawn in | adds an expression kind and a parameter at the seam | seven, and every design call is answered | the consumer's two figures written as files and read back at every aspect each is drawn at, and a demo of its own | nothing outside this package | planned |
 | 2.2.0 | the curves and surfaces a figure can name: parametric, polar, implicit, and the solids | adds kinds | to plan | a phase portrait, which the flat demo's field cannot express | nothing outside this package | to plan |
 | 2.3.0 | matrices and tables, and a matrix applied to a grid | adds kinds | to plan | a grid under a linear map, which nothing here can draw | nothing outside this package | to plan |
 | 2.4.0 | the indications that run along a path, and text written on rather than faded in | adds kinds, and outlines for plain text | to plan | the flat demo's reading, written on | a source of glyph outlines for plain text | to plan |
@@ -298,11 +298,11 @@ at all. What is missing is an event reaching a figure, and that is the part that
 **The recorder's encoder is chosen by precedent and it is `mediabunny`.** The consumer already
 records with it: `lib/video/VideoRecorder.ts` there pulls `Output`, `Mp4OutputFormat`,
 `WebMOutputFormat`, `BufferTarget` and `CanvasSource` out of a dynamic import, which is the same
-shape this package loads MathJax with. So 2.5.0 moves that dependency here rather than picking a new
+shape this package loads MathJax with. So 2.6.0 moves that dependency here rather than picking a new
 one, and the consumer drops it in the same release. **What would change the answer** is a recording
 that has to run with no browser, since a canvas source needs one.
 
-**2.3.0's outlines for plain text are the other dependency and are not chosen.** The typesetter
+**2.4.0's outlines for plain text are the other dependency and are not chosen.** The typesetter
 already hands back outlines for an equation, so the question is whether the same path serves a plain
 label.
 
@@ -332,7 +332,7 @@ Now section and `git log` are what keep it.
 | quadratics and dashes | the GPU painter, since a demo drawing quadratics as SVG checks the arithmetic and only a painter says whether the output is the shape a shader wants |
 | the GPU painter | the format, and the engine's stencil, which cannot count a winding number and is filed in that repository as its item 2 |
 | a figure in space keeping its depth | the fourth decision above, which is whether a figure may be undrawable in SVG |
-| text on a GPU with a recorder | the GPU painter, and 2.5.0 |
+| text on a GPU with a recorder | the GPU painter, and 2.6.0 |
 
 **The reading behind each of the four is below and in `git log`**, so none of them is rediscovered
 from nothing when it returns.
@@ -413,7 +413,7 @@ boolean one as of 0.9.0 and the rotation one as of 0.9.5. Each image is SVG writ
 which needs no browser, so `npm run demos` regenerates the eight of them and a gate compares the
 regenerated bytes against the committed files. A picture in a README that nothing regenerates goes stale in silence. **A moving image in a README needs a GIF and this package has no
 encoder**, so what the README carries beside the still is a strip of frames in one SVG, which shows
-the motion in a still. 2.5.0 is the version that ends that, and the strips stay either way, since a
+the motion in a still. 2.6.0 is the version that ends that, and the strips stay either way, since a
 README that plays a video on load is a README nobody can read.
 
 ## Now
@@ -466,8 +466,8 @@ is the question the spike existed to settle.
 **What the spike found.** Eight gaps, in the section in front of the ladder with the reading that
 found each. Four went to the engine's roadmap as one batch. One is documented behaviour there. **Two
 are this package's own and are on the ladder already**: a plain `TextMark` cannot be drawn at all,
-which is 2.3.0, and a mark's colour is a CSS colour string rather than four numbers, which is 2.0.0.
-**And one gap decides how much of 2.6.0 can be built at all**, which is the counted winding number: an
+which is 2.4.0, and a mark's colour is a CSS colour string rather than four numbers, which is 2.0.0.
+**And one gap decides how much of 2.7.0 can be built at all**, which is the counted winding number: an
 annulus, a letter with a counter and every glyph of an equation all want it, and it is the engine's
 item 2.
 
@@ -1184,11 +1184,27 @@ has laid the page out. What a file cannot hold is not the arithmetic but the arg
 expression kinds are `track`, `variable`, `point`, `member`, `arithmetic`, `compare`, `choice`,
 `call`, `path`, `coords` and `camera`, and the thirty-seven functions are arithmetic and geometry.
 
-**What a planning session has to settle**, now that what the kind reads is answered: whether the
-optional argument at the seam is an aspect or a width and a height, since a figure reading the frame's
-pixels wants both and one number cannot give them; what `marksAt` does when nothing passes one, which
-has to be the extent's own ratio or every existing caller changes; and whether the strips and sheets
-in this tree pass it, since each draws at a shape of its own.
+**The three calls the planning session was left are answered, on 2026-09-10, and each is answered by
+what a mark is.** The optional argument at the seam is **an aspect**, one number, because a mark is in
+the figure's own units and the declared extent already gives the width and the height in those units.
+A frame's pixels reach a painter through `viewAt` and reach no mark, so a width and a height in pixels
+would be a second unit inside a figure that has one. **`marksAt` given no aspect resolves the frame
+from a declared extent that is already an extent**, since `resolveExtent` reads no aspect there, and a
+declared extent that is a function has no frame without one: a `frame` expression under such a figure
+refuses with a sentence naming what it read, the way an expression naming a track the figure does not
+carry already does. No existing caller changes, because no figure in this tree reads the frame.
+**The strips and the sheets pass it**, and `stillDrawn` is where the two shapes can differ: it
+resolves the extent at 1080 by 600 and then writes the still into a frame the resolved extent itself
+shapes, which is the same shape for a `matchingAspect` extent and need not be for a `byAspect` one.
+
+**The fourth name is `centre` and it is Siva's call of 2026-09-10.** The answer above named `width`,
+`height` and `aspect`, and `fractionOf` also reads the extent's `centre`, so a figure whose declared
+extent is off the origin could not write `fractionOf` as an expression from those three. The fourth
+name answers a place rather than a number, the way `member` reads a place, and it costs one row in the
+specification's table and nothing at the seam. **What it buys** is that the kind describes the whole of
+the declared extent, so a `byAspect` extent carrying a different centre per shape has a written form.
+Neither of the consumer's two figures needs it, since both declare `matchingAspect` and neither moves
+its centre.
 
 **The measurement, when it is taken.** Each of the consumer's figures written as a file and read back,
 its marks against the module's at every aspect that figure is drawn at, by tolerance: `one-pixel`'s
@@ -1204,20 +1220,81 @@ route and 1.7778, 1.0 and 0.5625 through the export's three shapes.
 frame, so a version that shipped only the kind would be a version nothing checks. The flat demo's
 inset is the nearest thing and it is a rectangle of the frame rather than a mark placed against one.
 
+**The steps, seven of them, and each one is a commit.**
+
+- [ ] **1. The frame is a binding and the twelfth expression kind.** `Bindings` gains a `frame`
+  holding the extent the figure declares, `Expression` gains `{ kind: 'frame', name }`, and `evaluate`
+  answers `width`, `height`, `aspect` and `centre` off it and refuses with a sentence when the bindings
+  carry no frame. The specification's expression table gains the row, its count goes from eleven to
+  twelve, and the count gate in `tests/specification.test.ts` learns the word. **The measurement**: the
+  kinds the union carries, eleven before and twelve after, read by the gate out of the source and out
+  of the sentence, and the sentence a frame expression refuses with when nothing bound one.
+- [ ] **2. A file carrying the frame kind is read, or refused by name.** `figure/figure-check.ts` gains
+  the kind under `SHAPES.expression`, with its `name` held to the four measures. **The measurement**:
+  the four committed fixtures read unchanged, byte for byte, and a file naming a fifth measure refused
+  with the path of the field and the four names in the sentence.
+- [ ] **3. The seam takes an aspect and the frame reaches the scene.** `marksAt(figure, seconds,
+  aspect?)` resolves the declared extent at that aspect and hands it to the scene, to the insets and to
+  `resolveFigure`, `Figure.scene` widens to `(seconds, values, frame?)`, and `viewAt`, `framesOf` and
+  `isLoop` pass the aspect each already holds. **The measurement**: the four demos' marks at their named
+  times against the same marks before the change, by tolerance, and one mark placed by the frame read at
+  three aspects.
+- [ ] **4. The consumer's `one-pixel` is a record here and hits their numbers.** A test writes their
+  four marks as a `FigureRecord`, with the plate, the marker, the leader and the word all placed by
+  `fractionOf` written as expressions, and reads the plate's x at aspects 3, 1.7778 and 1. **The
+  measurement**: -20.200, -12.867 and -8.200, which are the numbers their module gives, to the tolerance
+  the specification names.
+- [ ] **5. A flat demo whose marks answer to the frame.** `demos/frame.ts` declares `matchingAspect`,
+  places its marks by the frame beside one shape in the figure's own units, and is written out as
+  `demos/frame.figure.json` with a still and a strip whose three columns are that figure at 1.7778, 1.0
+  and 0.5625. It is the exception the boolean demo and the rotation demo already are, since a mark
+  placed against the frame has no picture in a graph of a function. **The measurement**: the pinned
+  mark's place at each of the three shapes, and the place of the mark in figure units at all three,
+  which is one place.
+- [ ] **6. The solid demo's title and its equation are placed by the frame.** `demos/surface.ts` writes
+  its two `fractionOf` calls as frame expressions, so the kind is carried by a fixture whose subject is
+  something else. **The measurement**: `demos/surface.figure.json` before and after, and the demo's
+  marks at its named times, which are the marks it drew before.
+- [ ] **7. The reference, the guide, the reasoning, and 2.1.0 cut.** `docs/REFERENCE.md` names the
+  widened seam and the kind, `docs/GUIDE.md` gains the section that places a mark against the frame,
+  `docs/FIGURE-FORMAT.md` carries why the frame is the declared extent rather than the moved one, and
+  the version is bumped in that commit. **The measurement**: the reference gate over the door, the
+  guide's blocks compiled, and the done-criteria below verified line by line.
+
+**Which step the demos gain from: 5 and 6.** Step 5 is the picture the version is cut against, since it
+is the only figure in this tree whose marks move when the frame changes shape. Step 6 is the solid half
+of Siva's rule, and it moves no mark on purpose: the surface's extent is fixed, so writing its title's
+place as an expression proves the path through the file without changing the picture.
+
+**Done-criteria, checkable line by line.**
+
+- `evaluate` answers a `frame` expression for `width`, `height`, `aspect` and `centre`, and refuses one
+  with no frame bound, naming the measure it was asked for.
+- The specification writes twelve expression kinds, and the count gate reads twelve out of
+  `figure/expression.ts`.
+- `checkFigure` accepts the kind and refuses a measure outside the four, naming the field's path.
+- `marksAt` takes an optional aspect, and the four committed fixtures draw at every named time the
+  marks they drew before the seam widened.
+- A record built from the consumer's `one-pixel` places its plate at -20.200, -12.867 and -8.200 at
+  aspects 3, 1.7778 and 1.
+- `demos/frame.figure.json` is committed, and its still and its strip regenerate byte for byte.
+- `demos/surface.figure.json` carries frame expressions and draws the marks it drew before.
+- `npm test`, `npm run type-check` and `npm run build` pass, and `package.json` reads 2.1.0.
+
 ### The 2.x band, which is what Manim has and this does not
 
 **Every one of these five adds a kind rather than changing a value type**, so each is a format minor
 an old figure survives, and each waits behind 2.0.0 for that reason. **None of them has a step list
 yet**, and writing one is a session of its own, which is the rule this file holds every item to.
 
-**2.1.0 The curves and surfaces a figure can name.** `plot` takes `(x: number) => number` and nothing
+**2.2.0 The curves and surfaces a figure can name.** `plot` takes `(x: number) => number` and nothing
 else, so nothing that is not a function of x can be drawn on a graph: no circle on axes, no Lissajous
 figure, no phase portrait, no implicit curve. `surface3` already draws any parametrisation, so a
 sphere, a cube, a cylinder and a torus are builders over what exists rather than new machinery. **The
 picture waiting** is a phase portrait, which is the flat demo's field with a closed orbit through it
 that its slope field cannot express.
 
-**2.2.0 Matrices and tables, and a matrix applied to a grid.** A static matrix is already drawable,
+**2.3.0 Matrices and tables, and a matrix applied to a grid.** A static matrix is already drawable,
 since `equationFromTex` goes through MathJax and `matchGlyphs` gives glyph-level access to what comes
 back. What is missing is a matrix whose entries are separately targetable, a table with rules, and
 the animation that carries the picture: a matrix applied to a number plane, deforming the grid.
@@ -1227,19 +1304,19 @@ quarter turn, so a rotation interpolates its angle and a general matrix interpol
 which is what Manim does and what the picture expects. **The picture waiting** is the one this makes
 possible at all, a grid under a linear map.
 
-**2.3.0 The indications that run along a path, and text written on.** A light running along a path, a
+**2.4.0 The indications that run along a path, and text written on.** A light running along a path, a
 wave, and a wiggle are each a moving window over `trimPath`, which exists and is what `draw` already
 uses. Text is the other half: `draw` fades a text mark rather than drawing it, because a text mark is
 a string a painter lays out, so a typeset equation draws on and a plain label cannot. Closing that
 means outlines for plain text, the way MathJax already hands back outlines for an equation. **The
 picture waiting** is the flat demo's reading written on rather than faded in.
 
-**2.4.0 A group morphing into a group.** `morph` takes one target and one path. Matching many shapes
+**2.5.0 A group morphing into a group.** `morph` takes one target and one path. Matching many shapes
 to many is `TransformMatchingShapes`, and the matching machinery is already here: `morphEquation`
 matches glyphs and `alignPaths` matches subpaths. **The picture waiting** is the boolean demo's three
 panels morphing into one another, which no animation there can express today.
 
-**2.5.0 The recorder.** `framesOf` hands back a frame at a time and there is no encoder anywhere in
+**2.6.0 The recorder.** `framesOf` hands back a frame at a time and there is no encoder anywhere in
 this tree, so what a consumer gets is frames and what the goal at the top of this file asks for is an
 animation. This is the largest single distance between this package and Manim, which writes an MP4
 from a command. The third decision above already says the recorder lives here behind a dynamic
@@ -1288,7 +1365,7 @@ format a recorder reads a file, which is also what lets one run without a page a
   that repository as its item 2**, argued on its own merits, and the painter waits on it whenever it
   returns.
 
-- **A decision falls due at 2.6.0 and it is Siva's.** Pin an exact version of `@altpsyche/engine` and
+- **A decision falls due at 2.7.0 and it is Siva's.** Pin an exact version of `@altpsyche/engine` and
   take the churn by hand, or wait for that package to reach 1.0.0 before the painter starts. A 2.0.0
   with a frozen door cannot promise stability through a dependency below 1.0.0, where a minor may
   break anything, which is the same argument that produced the clean break.
@@ -1297,7 +1374,7 @@ format a recorder reads a file, which is also what lets one run without a page a
   peer dependency.** That site depends on `@altpsyche/engine` directly in nineteen files and not one
   of them draws a figure: a shader playground, a shader background, a shader embed, a browser
   compiler for Slang, a video export and a thumbnail script. So it keeps that package after the
-  painter lands here, and from 2.6.0 it depends on it twice, once directly and once through this
+  painter lands here, and from 2.7.0 it depends on it twice, once directly and once through this
   one. Both name `^0.3.0` today and a caret on a `0.x` tracks the last number alone, so the ranges
   are identical now and split the moment either side moves a minor, at which point npm nests a
   second copy under this package rather than hoisting one.
