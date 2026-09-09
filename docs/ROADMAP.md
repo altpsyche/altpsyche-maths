@@ -274,7 +274,7 @@ are left, since 2.1.0 is cut.
 
 | version | what lands | what it changes | steps | cut against | depends on | plan |
 | --- | --- | --- | --- | --- | --- | --- |
-| 2.2.0 | the curves and surfaces a figure can name: parametric, polar, implicit, and the solids | adds kinds | to plan | a phase portrait, which the flat demo's field cannot express | nothing outside this package | to plan |
+| 2.2.0 | the curves and surfaces a figure can name: parametric, polar, implicit, and the solids | adds kinds | nine, and both design calls are answered | a phase portrait, which the flat demo's field cannot express, and a demo of the solids | nothing outside this package | planned |
 | 2.3.0 | matrices and tables, and a matrix applied to a grid | adds kinds | to plan | a grid under a linear map, which nothing here can draw | nothing outside this package | to plan |
 | 2.4.0 | the indications that run along a path, and text written on rather than faded in | adds kinds, and outlines for plain text | to plan | the flat demo's reading, written on | a source of glyph outlines for plain text | to plan |
 | 2.5.0 | a group morphing into a group | adds a kind | to plan | the boolean demo's three panels, morphing into one another | nothing outside this package | to plan |
@@ -1145,8 +1145,9 @@ list, because writing one is a session of its own.
 ### The 2.x band, which is what Manim has and this does not
 
 **Every one of these five adds a kind rather than changing a value type**, so each is a format minor
-an old figure survives, and each waits behind 2.0.0 for that reason. **None of them has a step list
-yet**, and writing one is a session of its own, which is the rule this file holds every item to.
+an old figure survives, and each waits behind 2.0.0 for that reason. **2.2.0 carries a step list and
+the other four do not**, and writing one is a session of its own, which is the rule this file holds
+every item to.
 
 **2.2.0 The curves and surfaces a figure can name.** `plot` takes `(x: number) => number` and nothing
 else, so nothing that is not a function of x can be drawn on a graph: no circle on axes, no Lissajous
@@ -1154,6 +1155,121 @@ figure, no phase portrait, no implicit curve. `surface3` already draws any param
 sphere, a cube, a cylinder and a torus are builders over what exists rather than new machinery. **The
 picture waiting** is a phase portrait, which is the flat demo's field with a closed orbit through it
 that its slope field cannot express.
+
+**What each of the three flat curves is.** `parametric` is a curve from a function of one number to a
+place on the graph, sampled at a fixed count and joined by Hermite cubics carrying the function's own
+derivative, which is the construction `plot` already uses with x as the parameter. `polar` is
+`parametric` composed with the map from a radius and an angle to a place, so a curve given as a radius
+at each angle is written as one. `implicit` is the set of places where a function of two numbers
+reaches a level, found by marching squares over a fixed grid.
+
+**Marching squares is the named technique and its crossing is bisected rather than interpolated.** A
+cell edge whose ends straddle the level is halved twenty-four times, which is what `plot` already does
+where a curve leaves the graph, and it holds the crossing to a millionth of one cell's width where
+linear interpolation along the edge holds it to the square of the cell's width. **An ambiguous cell is
+resolved by the value at its centre**, which is the standard disambiguation and the only one that
+keeps two branches of a hyperbola apart where they pass through one cell.
+
+**An implicit curve cannot be a morph source and that is a property of the form.** `plot` fixes its
+sample count so that a curve resampling itself between frames cannot happen, since one path is walked
+into another by pairing their points. An implicit curve's point count is the count of cells its zero
+set crosses, which the function decides, so the specification says the count is not fixed and a morph
+over it pairs points that need not correspond.
+
+**A run of points from marching squares is joined by centripetal Catmull-Rom.** The points are not
+evenly spaced, and the uniform form of the spline overshoots where two of them come close, which draws
+a loop the curve does not have. Centripetal spacing is the published fix and it is what the joining
+uses.
+
+**The solids are four builders over `surfaceCells`.** A sphere and a torus are each one patch, a
+cylinder is a side and two caps, and a cube is six flat patches. Each hands back cells rather than one
+shape for the reason `surface3` already does: a scene sorts cells, and a solid sorted as one piece is
+painted whole in front of or behind whatever it passes through. **A patch with a degenerate edge drops
+its collapsed cells**, which is the ring at each pole of a sphere and the middle ring of each cap of a
+cylinder, and the count of what is dropped is a measurement rather than a silence.
+
+**Two calls fell to Siva and both are answered.**
+
+- **A parametric curve in space is in this version**, as step 6. `sectionOf` and `streamlineOf` are the
+  two point producers and a curve in space is the third, at the cost of one producer kind in the format.
+  What it buys is a helix drawn on the cylinder and a torus knot drawn on the torus, which is what makes
+  the solids a picture rather than a catalogue of four shapes.
+- **The two pictures are demos of their own**, `demos/portrait.ts` and `demos/solids.ts`. A phase
+  portrait has no picture in a graph of a function and four solids have none in a saddle cut by a plane,
+  which is the exception the boolean demo and the rotation demo already are. The count in the README goes
+  from eight images to twelve.
+
+**The steps.**
+
+- [ ] **1. `parametric` is a path.** `figure/parametric.ts` holds the curve from a function of one
+  number to a place on the graph, cut where it leaves either axis by the bisection `plot` uses, closed
+  where the caller says the curve closes. **The measurement**: the drawn radius of a unit circle
+  written as a parametric at resolutions 16, 48 and 96, in parts in ten thousand of the true radius,
+  against the 2.6 to 2.8 that `circle` sits in; the subpath count of a Lissajous figure that leaves the
+  graph twice; and the gap between the first and the last point of a closed curve.
+- [ ] **2. `polar` is a path.** `figure/parametric.ts` gains the curve from a radius at each angle,
+  built on step 1 rather than sampling of its own. **The measurement**: the drawn radius of `r = 1` over
+  a whole turn at resolution 96, in parts in ten thousand; the place of a cardioid's cusp against the
+  origin; and the subpath count of a rose with five petals.
+- [ ] **3. `implicit` is a path.** `figure/implicit.ts` holds marching squares with bisected crossings,
+  centre disambiguation and centripetal Catmull-Rom joining. **The measurement**: the drawn radius of
+  `x² + y² = 1` on grids of 16, 32 and 64 cells, in parts in ten thousand; the subpath count of
+  `x² − y² = 1`, which is two branches; and the subpath count at a saddle where the ambiguous cell falls,
+  which is two runs rather than one crossing pair.
+- [ ] **4. The three forms are in the format.** `PathRecord` gains `parametric`, `polar` and `implicit`,
+  `resolvePath` resolves each, `checkFigure` holds each to its fields, `SPECIFICATION.md` reads sixteen
+  forms rather than thirteen and states the bound variables, and a fixture carries all three.
+  **The measurement**: each record's path against the same curve written as a call, agreeing to 0; the
+  count gate reading sixteen; and the refusal a bad field gives, naming its path from the figure down.
+- [ ] **5. The four solids.** `figure/solid3.ts` holds `sphere3`, `cube3`, `cylinder3` and `torus3`, each
+  over `surfaceCells`, and `NodeRecord` gains the four kinds. **The measurement**: the cell count of each
+  at resolution 24, the count of degenerate cells dropped at a sphere's two poles and a cylinder's two
+  caps, the drawn radius of a sphere against the true one at resolutions 12, 24 and 48, and the eight
+  corners of a cube against their exact places.
+- [ ] **6. A parametric curve in space.** `figure/curve3.ts` hands back places in space from a function
+  of one number, which is a point producer beside `sectionOf` and `streamlineOf`, and `SPECIFICATION.md`
+  reads three producers rather than two. **The measurement**: the point count at a named resolution, and
+  the greatest distance from a helix's drawn places to the cylinder it lies on.
+- [ ] **7. The phase portrait demo.** `demos/portrait.ts` draws the field of `ẋ = x − y − x(x² + y²)`
+  and `ẏ = x + y − y(x² + y²)`, whose polar form is `ṙ = r(1 − r²)` and `θ̇ = 1`: the limit cycle at
+  `r = 1` as a parametric, two spirals as polar curves at the closed form
+  `r(θ) = 1 / √(1 + (1/r₀² − 1)e^(−2θ))`, and the two nullclines as implicit curves, one of which is a
+  cubic that is a function of neither coordinate. **The measurement**: the marks at named times; the
+  greatest distance from the points of a `streamlineOf` run to the drawn polar spiral through the same
+  seed; and the drawn radius of the limit cycle.
+- [ ] **8. The solids demo.** `demos/solids.ts` turns a sphere, a cube, a cylinder and a torus through
+  one turn on a track, with a helix drawn on the cylinder and a torus knot on the torus. **The
+  measurement**: the cell count of each solid, the marks at named times, and the still and the strip
+  regenerating byte for byte.
+- [ ] **9. The reference, the guide, the reasoning, and 2.2.0 cut.** `docs/REFERENCE.md` names every new
+  door name, `docs/GUIDE.md` gains the section that draws a curve no function of x describes,
+  `docs/FIGURE-FORMAT.md` carries why an implicit curve's count is not fixed, and the version is bumped
+  in that commit. **The measurement**: the reference gate over the door, the guide's blocks compiled, and
+  the done-criteria below verified line by line.
+
+**Which step the demos gain from: 7 and 8.** Step 7 is the flat half of Siva's rule and the picture the
+version is named against, since a closed orbit and a nullcline are both curves `plot` cannot write.
+Step 8 is the solid half, and it is a demo of its own because a sphere and a torus have no place in a
+saddle cut by a plane.
+
+**Done-criteria, checkable line by line.**
+
+- `parametric`, `polar` and `implicit` are at the door with their options types, and each hands back a
+  `Path`.
+- A unit circle written as a parametric at resolution 96 reads inside the 2.6 to 2.8 parts in ten
+  thousand band, and the same circle written as `implicit` on a grid of 64 reads a bound the suite
+  states as a number.
+- A parametric curve leaving the graph is cut at the edge on both axes, and the cut end sits on the
+  edge rather than past it.
+- `x² − y² = 1` draws as two subpaths and the ambiguous cell draws as two runs.
+- `sphere3`, `cube3`, `cylinder3` and `torus3` are at the door, each hands back a `GroupNode`, and each
+  has a record kind `checkFigure` holds.
+- The specification writes sixteen path forms and the count gate reads sixteen, and it writes the bound
+  variables `t`, `angle`, and `x` with `y`.
+- `demos/portrait.figure.json` and `demos/solids.figure.json` are committed, and their stills and their
+  strips regenerate byte for byte.
+- The README carries twelve images and the demo gate regenerates all of them.
+- `npm test`, `npm run type-check` and `npm run build` pass, and `package.json` reads 2.2.0.
 
 **2.3.0 Matrices and tables, and a matrix applied to a grid.** A static matrix is already drawable,
 since `equationFromTex` goes through MathJax and `matchGlyphs` gives glyph-level access to what comes
