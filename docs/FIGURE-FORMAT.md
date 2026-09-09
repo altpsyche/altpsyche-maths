@@ -872,15 +872,23 @@ release away and has a document of its own.
   from spans rather than built, giving the same marks at the same times; the six negative offsets of
   its eight entrance calls showing as spans that start before the one before them ends.
 
-- [ ] **7. The extent as data.** A view that follows something becomes a named form with parameters
-  rather than a function of the clock, and the forms are the ones a figure needs rather than one per
-  demo: a fixed extent, an aspect choice, a follow with a margin, and a framing of named marks.
-  **This is the other half of composition and camera.** The forms landed at 1.5.0 as `moveView`,
-  `followView` and `frameView`, so this step carries them as parameters rather than writing them.
-  **Measures:** the flat demo's dot held within 2.14 figure units of the middle of the frame, which
-  is what its reach of 1.2 and its room of 0.62 come to together, since the room binds at both ends
-  of the walk; a framing of the flat demo's brace and its reading holding both inside the frame at
-  every named time.
+- [x] **7. The extent as data.** An `ExtentRecord` is a fixed extent, a `byAspect` choice or a
+  `matchingAspect` one, and `resolveExtentChoice` builds the function a figure is handed, which
+  `resolveExtent` then reads at an aspect. A `ViewChangeRecord` is `moveView`, `followView` or
+  `frameView` with the parameters those calls already take, since 1.5.0 landed them as parameters
+  rather than as closures over the clock.
+  **The 2.14 of this plan is the dot's own travel less the frame's, not the reach plus the room.**
+  The dot reaches 2.76 from the middle of the picture and the room caps the frame's travel at 0.62,
+  which leaves 2.14; the reach of 1.2 is the margin the view holds still inside, and the room binds
+  before it does.
+  **Measured:** the flat demo's follow from a record giving the extent its own call gives at each of
+  the demo's seven named times; the dot held within 2.14 figure units of the middle of the frame over
+  201 steps of the whole figure, where it travels 2.76 from the middle of the picture; a framing of
+  the demo's brace and its reading holding both inside the frame at every named time it draws them,
+  and equal to its own call there; `moveView` at three fractions of a span against its call; the two
+  extent choices against theirs at five aspects; a view move and an extent the set has no form for
+  each refused with the sentence naming it; the door from 349 names to 358 and the suite from 939 to
+  948.
 
 - [ ] **7.5. The insets as data.** `Figure.insets` is a list, each entry an extent it shows, a
   rectangle of the frame it draws into, a fit, one view form applied in full, a name and the marks it

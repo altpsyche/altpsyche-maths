@@ -107,7 +107,7 @@ const lit = AMBER;
 const gentle = HAZE;
 const steep = STEEL;
 
-const size = { width: 10.8, height: 6 };
+export const size = { width: 10.8, height: 6 };
 
 /**
  * How far the dot may sit from the middle of the frame, across, before the view
@@ -118,7 +118,7 @@ const size = { width: 10.8, height: 6 };
  * where a reader is already looking. Following the dot exactly would leave the
  * picture with nothing that stands still.
  */
-const REACH = 1.2;
+export const REACH = 1.2;
 
 /**
  * Nine graph units up against five across, so the parabola is cut where it meets
@@ -140,7 +140,7 @@ export const TIP = 0.18;
 /** How far the middle of the frame may travel before the graph's own edge would
  * leave it: the frame's half-width, less the graph's, less the arrow head the
  * axis ends in. */
-const ROOM = size.width / 2 - coords.x.units.to - TIP;
+export const ROOM = size.width / 2 - coords.x.units.to - TIP;
 
 /**
  * The panel the inset is drawn into, in the figure's own units, and how much of

@@ -644,6 +644,23 @@ functions, which is what lets the same tree survive being written to a file and 
 - `writeTemplate(content, bindings)` — the template with its holes filled, each hole written to its
   own precision. A hole naming an index the list has no entry for is refused, and so is a hole whose
   expression is a place or a true or false.
+- `ExtentRecord` — what a figure declares its extent as: a fixed `Extent`, a `ByAspectRecord` or a
+  `MatchingAspectRecord`. A fixed extent carries no kind, the way a fixed place in an expression
+  carries none.
+- `ByAspectRecord` — a `kind` of `byAspect` and the `wide`, `square` and `tall` extents it picks
+  between.
+- `MatchingAspectRecord` — a `kind` of `matchingAspect` and the `height` it holds.
+- `ViewChangeRecord` — one view move written as data: a `MoveViewRecord`, a `FollowViewRecord` or a
+  `FrameViewRecord`.
+- `MoveViewRecord` — a `kind` of `moveView` and the extent `to` move to, whose fields are each
+  optional.
+- `FollowViewRecord` — a `kind` of `followView`, the `target` it follows and its `options`.
+- `FrameViewRecord` — a `kind` of `frameView`, the `targets` it frames and its `options`.
+- `resolveExtentChoice(record)` — the choice a record describes, as the fixed extent itself or the
+  function that picks one from the shape of the surface. `resolveExtent` is what then reads a choice
+  at an aspect.
+- `resolveViewChange(record)` — the view move a record describes, as the timeline entry it is played
+  as. A kind outside the set is refused with a sentence naming it.
 - `AnimationRecord` — one animation written as data: a `FadeInRecord`, a `FadeOutRecord`, a
   `FadeToRecord`, a `DrawRecord`, a `MoveByRecord`, a `MoveAlongRecord`, a `RotateRecord`, a
   `ScaleRecord`, a `GrowFromRecord`, a `MorphRecord`, a `MorphEquationRecord`, an `IndicateRecord`, a

@@ -48,6 +48,16 @@ export { byAspect, fractionOf, matchingAspect, resolveExtent, viewMatrix } from 
 export type { Extent, ExtentChoice, Fit, ViewAnimation, ViewChange } from './figure/extent.js';
 export { followView, frameView, moveView } from './figure/view.js';
 export type { FollowOptions, FrameOptions } from './figure/view.js';
+export { resolveExtentChoice, resolveViewChange } from './figure/view-record.js';
+export type {
+  ByAspectRecord,
+  ExtentRecord,
+  FollowViewRecord,
+  FrameViewRecord,
+  MatchingAspectRecord,
+  MoveViewRecord,
+  ViewChangeRecord,
+} from './figure/view-record.js';
 export { boundsOf, boundsOfMarks, centreOf, grownBy, overlapOf } from './figure/bounds.js';
 export type { Bounds } from './figure/bounds.js';
 export { insetMarks, insetMatrix } from './figure/inset.js';
