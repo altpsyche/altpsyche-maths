@@ -20,6 +20,7 @@
 import type { Vec2 } from '../values/vec2.js';
 import {
   circumscribe,
+  countTo,
   draw,
   fadeIn,
   fadeOut,
@@ -41,6 +42,7 @@ import {
   type ScaleOptions,
 } from './animation.js';
 import { resolvePath, type PathRecord } from './path-record.js';
+import { labelFor } from './ticks.js';
 import type { Bindings } from './expression.js';
 
 export interface FadeInRecord {
@@ -158,6 +160,23 @@ export interface CircumscribeRecord {
   readonly options: CircumscribeOptions;
 }
 
+/**
+ * A number ticking from one value to another, written into a text mark.
+ *
+ * How the number is written is a precision rather than a writer, which is the
+ * step it is rounded and padded to, the way a tick's label takes one. The call
+ * keeps its writer, since a count of a population wants a form no precision
+ * spells, and a figure that needs one writes the count as a text hole that
+ * follows a track instead.
+ */
+export interface CountToRecord {
+  readonly kind: 'countTo';
+  readonly target: string;
+  readonly from: number;
+  readonly to: number;
+  readonly precision: number;
+}
+
 export type AnimationRecord =
   | FadeInRecord
   | FadeOutRecord
@@ -172,7 +191,8 @@ export type AnimationRecord =
   | MorphEquationRecord
   | IndicateRecord
   | FlashRecord
-  | CircumscribeRecord;
+  | CircumscribeRecord
+  | CountToRecord;
 
 /**
  * The animation a record describes.
@@ -212,6 +232,8 @@ export function resolveAnimation(record: AnimationRecord, bindings: Bindings = {
       return flash(record.target, record.options);
     case 'circumscribe':
       return circumscribe(record.target, record.options);
+    case 'countTo':
+      return countTo(record.target, record.from, record.to, (value) => labelFor(value, record.precision));
   }
   throw new Error(`an animation has no kind called ${String((record as { kind?: unknown }).kind)}`);
 }

@@ -148,6 +148,7 @@ export { resolveAnimation } from './figure/animation-record.js';
 export type {
   AnimationRecord,
   CircumscribeRecord,
+  CountToRecord,
   DrawRecord,
   FadeInRecord,
   FadeOutRecord,

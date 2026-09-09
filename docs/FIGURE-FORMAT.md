@@ -778,7 +778,7 @@ release away and has a document of its own.
     number belongs each refused with the sentence naming it; the set from 36 names to 37, the door
     from 331 to 332 and the suite from 913 to 919.
 
-- [ ] **4. The animation vocabulary, which is five commits.** Fifteen kinds as records with
+- [x] **4. The animation vocabulary, which is five commits.** Fifteen kinds as records with
   parameters, and a resolver each from a record to the `Animation` the timeline already plays. **The
   measurement every one of the five quotes is the same:** the demo that plays the kinds of that
   commit gives the same marks at the same times, and a kind no demo plays is measured against its own
@@ -838,10 +838,15 @@ release away and has a document of its own.
     one shape it adds named `tangent/reading/circumscribed`, counted past the ones the demo's own
     timeline already drew; the door from 345 names to 348 and the suite from 934 to 937.
 
-  - [ ] **4.5 `countTo`, whose writer becomes a precision.** The writer is
-    `(value) => labelFor(value, 0.01)` in the one demo that plays it and one of three precisions in
-    the suite, so the parameter is a precision and the last function in an animation is gone. **Measures:** the flat demo's counting number reading the
-    same string at each of its named times.
+  - [x] **4.5 `countTo`, whose writer becomes a precision.** The record carries the step the number is
+    rounded and padded to rather than the function that writes it, so no animation record carries a
+    function and the vocabulary is closed.
+    **The call keeps its writer**, since a count of a population wants a form no precision spells, and
+    a figure that needs one writes the count as a text hole following a track instead.
+    **Measured:** the flat demo's counting number at each of its seven named times and five fractions
+    of the span, mark for mark against its own call; the number written as `0.00` at the start of the
+    span and as the label of the rise at its end; the door from 348 names to 349 and the suite from
+    937 to 939.
 
 - [ ] **5. The file: a serialiser, a reader, a validator and a version.** **Measures:** each demo
   written out, read back, and drawing marks identical within tolerance; a figure of a later version

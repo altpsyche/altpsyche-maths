@@ -647,7 +647,7 @@ functions, which is what lets the same tree survive being written to a file and 
 - `AnimationRecord` — one animation written as data: a `FadeInRecord`, a `FadeOutRecord`, a
   `FadeToRecord`, a `DrawRecord`, a `MoveByRecord`, a `MoveAlongRecord`, a `RotateRecord`, a
   `ScaleRecord`, a `GrowFromRecord`, a `MorphRecord`, a `MorphEquationRecord`, an `IndicateRecord`, a
-  `FlashRecord` or a `CircumscribeRecord`. A parameter is a plain value rather than an expression, since
+  `FlashRecord`, a `CircumscribeRecord` or a `CountToRecord`. A parameter is a plain value rather than an expression, since
   an animation is built once and then asked what the marks are at a fraction of its own span. A path
   is the exception, since a path record is the only form a path has and its own parameters are
   expressions.
@@ -668,6 +668,10 @@ functions, which is what lets the same tree survive being written to a file and 
   `PathRecord`.
 - `MorphEquationRecord` — a `kind` of `morphEquation` and the two targets `from` and `to`. It names no
   geometry, since both expressions are already in the scene and the glyphs are paired at play time.
+- `CountToRecord` — a `kind` of `countTo`, the `target`, the `from` and `to` values and the
+  `precision` the number is written to. The call keeps its writer, since a count of a population wants
+  a form no precision spells, and a figure that needs one writes the count as a text hole following a
+  track instead.
 - `IndicateRecord` — a `kind` of `indicate`, the `target` and its `options`.
 - `FlashRecord` — a `kind` of `flash`, the `target` and its `options`.
 - `CircumscribeRecord` — a `kind` of `circumscribe`, the `target` and its `options`. It names its

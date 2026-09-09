@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import {
   circumscribe,
+  countTo,
   draw,
   fadeIn,
   fadeOut,
@@ -8,6 +9,7 @@ import {
   flash,
   growFrom,
   indicate,
+  labelFor,
   marksAt,
   morph,
   morphEquation,
@@ -27,7 +29,7 @@ import {
 import { AMBER, DEEP } from '../demos/palette.js';
 import { PANELS, TIMES as BOOLEAN_TIMES, booleans } from '../demos/boolean.js';
 import { TIMES as SOLID_TIMES, solid } from '../demos/surface.js';
-import { TIMES as FLAT_TIMES, tangent } from '../demos/tangent.js';
+import { RISE, TIMES as FLAT_TIMES, tangent } from '../demos/tangent.js';
 import { CENTRE, FRAMES as TURN_FRAMES, GIVEN, TIMES as TURN_TIMES, turns } from '../demos/rotate.js';
 
 /** Five fractions of a span, both ends of it and the three quarters between, so
@@ -244,5 +246,32 @@ describe('the animations that make marks rather than change them', () => {
       const drawn = (list: readonly Mark[]) => list.filter((mark) => mark.id === 'tangent/reading/circumscribed');
       expect(drawn(resolved(marks, 0.5))).toHaveLength(drawn(marks).length + 1);
     }
+  });
+});
+
+describe('the animation that counts', () => {
+  const target = 'tangent/rise/word';
+  const precision = 0.01;
+  const record: AnimationRecord = { kind: 'countTo', target, from: 0, to: RISE, precision };
+
+  it('counts the flat demo rise where its own call counts it', () => {
+    for (const seconds of Object.values(FLAT_TIMES)) {
+      const marks = marksAt(tangent, seconds);
+      expect(
+        agrees(record, countTo(target, 0, RISE, (value) => labelFor(value, precision)), marks),
+        `the rise at ${seconds}`
+      ).toBe(true);
+    }
+  });
+
+  it('writes the number to its own precision, which is what the writer wrote', () => {
+    const marks = marksAt(tangent, FLAT_TIMES.braceTo);
+    const written = (along: number) => {
+      const mark = resolveAnimation(record)(marks, along).find((one) => one.id === target);
+      return mark?.kind === 'text' ? mark.text : '';
+    };
+    expect(written(0)).toBe('0.00');
+    expect(written(0.5)).toBe(labelFor(RISE / 2, precision));
+    expect(written(1)).toBe(labelFor(RISE, precision));
   });
 });
