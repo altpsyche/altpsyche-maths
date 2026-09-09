@@ -23,8 +23,6 @@
 import {
   TEXT_RATIO,
   frameTimesOf,
-  marksAt,
-  moveBy,
   resolveFigure,
   textScale,
   vec2,
@@ -36,6 +34,7 @@ import {
   type Vec2,
 } from '../index.js';
 import { DEEP, EMBER, INK, PEACH } from './palette.js';
+import { stripOf } from './strip.js';
 import { TYPE } from './typeface.js';
 
 const ink = { colour: INK };
@@ -203,16 +202,9 @@ export function stripMarks(
   columns = times.length,
   figure: Figure = turns
 ): { marks: readonly Mark[]; extent: Extent } {
-  const rows = Math.ceil(times.length / columns);
-  const marks = times.flatMap((seconds, frame) => {
-    const across = ((frame % columns) - (columns - 1) / 2) * SLOT;
-    const up = ((rows - 1) / 2 - Math.floor(frame / columns)) * DOWN;
-    return moveBy('turns', vec2(across - CENTRE.x, up - CENTRE.y))(marksAt(figure, seconds), 1).map((mark) => ({
-      ...mark,
-      id: `at${frame}/${mark.id}`,
-    }));
-  });
-  return { marks, extent: { width: SLOT * columns, height: DOWN * rows } };
+  // Both panels are drawn about a middle of their own, so each frame is carried
+  // off that middle before it is carried into its slot.
+  return stripOf(figure, 'turns', times, columns, { across: SLOT, down: DOWN }, () => CENTRE);
 }
 
 /** The quarters of the turn, which is what the gate reads. */

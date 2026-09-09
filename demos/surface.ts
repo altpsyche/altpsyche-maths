@@ -31,9 +31,6 @@
 import {
   fractionOf,
   interval,
-  marksAt,
-  moveBy,
-  rect,
   resolveFigure,
   resolveNode,
   sampleTrack,
@@ -57,6 +54,7 @@ import {
   type Track,
 } from '../index.js';
 import { DEEP, EMBER, FROST, GLAZE, INK, MOSS, PANEL, SHADE_THEME, SKY, shadeOf } from './palette.js';
+import { stripOf } from './strip.js';
 import { TYPE } from './typeface.js';
 
 const ink = { colour: INK };
@@ -563,27 +561,7 @@ export function stripMarks(
   columns = times.length,
   figure: Figure = solid
 ): { marks: readonly Mark[]; extent: Extent } {
-  const rows = Math.ceil(times.length / columns);
-  const marks = times.flatMap((seconds, frame) => {
-    const across = ((frame % columns) - (columns - 1) / 2) * SLOT;
-    const up = ((rows - 1) / 2 - Math.floor(frame / columns)) * DOWN;
-    const by = vec2(across, up);
-    // A clip stays where the figure declared it while a mark moves through it,
-    // which is the rule an animation wants and the wrong one here: a slot is a
-    // second frame rather than a place inside one, so the inset's window travels
-    // with the marks it holds or it would cut every frame but the middle away.
-    return moveBy('solid', by)(marksAt(figure, seconds), 1).map((mark) => ({
-      ...mark,
-      id: `at${frame}/${mark.id}`,
-      clip: mark.clip
-        ? {
-            x: interval(mark.clip.x.from + by.x, mark.clip.x.to + by.x),
-            y: interval(mark.clip.y.from + by.y, mark.clip.y.to + by.y),
-          }
-        : undefined,
-    }));
-  });
-  return { marks, extent: { width: SLOT * columns, height: DOWN * rows } };
+  return stripOf(figure, 'solid', times, columns, { across: SLOT, down: DOWN });
 }
 
 /** What the timeline is made of, for a gate that would otherwise guess where one

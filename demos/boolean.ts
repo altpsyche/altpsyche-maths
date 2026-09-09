@@ -32,10 +32,9 @@ import {
   type PathRecord,
   type SpanRecord,
   type Track,
-  marksAt,
-  moveBy,
 } from '../index.js';
 import { DEEP, INK, PEACH, SLATE } from './palette.js';
+import { stripOf } from './strip.js';
 import { TYPE } from './typeface.js';
 
 const ink = { colour: INK };
@@ -247,16 +246,7 @@ export function stripMarks(
   columns = times.length,
   figure: Figure = booleans
 ): { marks: readonly Mark[]; extent: Extent } {
-  const rows = Math.ceil(times.length / columns);
-  const marks = times.flatMap((seconds, frame) => {
-    const across = ((frame % columns) - (columns - 1) / 2) * SLOT;
-    const up = ((rows - 1) / 2 - Math.floor(frame / columns)) * DOWN;
-    return moveBy('booleans', vec2(across, up))(marksAt(figure, seconds), 1).map((mark) => ({
-      ...mark,
-      id: `at${frame}/${mark.id}`,
-    }));
-  });
-  return { marks, extent: { width: SLOT * columns, height: DOWN * rows } };
+  return stripOf(figure, 'booleans', times, columns, { across: SLOT, down: DOWN });
 }
 
 /** What the timeline is made of, and the four distances the gate reads the

@@ -38,8 +38,6 @@ import {
   equationFromTex,
   interval,
   labelFor,
-  marksAt,
-  moveBy,
   pointAlong,
   pointOf,
   resolveFigure,
@@ -65,6 +63,7 @@ import {
   type Vec2,
 } from '../index.js';
 import { AMBER, CREAM, DEEP, EMBER, HAZE, INK, MIST, PANEL, PEACH, STEEL } from './palette.js';
+import { stripOf } from './strip.js';
 import { TYPE } from './typeface.js';
 
 const ink = { colour: INK };
@@ -638,30 +637,11 @@ export function stripMarks(
   columns = times.length,
   figure: Figure = tangent
 ): { marks: readonly Mark[]; extent: Extent } {
-  const rows = Math.ceil(times.length / columns);
-  const marks = times.flatMap((seconds, frame) => {
-    const across = ((frame % columns) - (columns - 1) / 2) * SLOT;
-    const up = ((rows - 1) / 2 - Math.floor(frame / columns)) * DOWN;
-    // Each frame is carried by its own view as well as into its slot, or a frame
-    // whose view had followed the dot would sit off its own slot by that much.
-    const seen = frameAt(pointAt(seconds)).centre ?? vec2(0, 0);
-    const by = vec2(across - seen.x, up - seen.y);
-    // A clip stays where the figure declared it while a mark moves through it,
-    // which is the rule an animation wants and the wrong one here: a slot is a
-    // second frame rather than a place inside one, so the inset's window travels
-    // with the marks it holds or it would cut every frame but the middle away.
-    return moveBy('tangent', by)(marksAt(figure, seconds), 1).map((mark) => ({
-      ...mark,
-      id: `at${frame}/${mark.id}`,
-      clip: mark.clip
-        ? {
-            x: interval(mark.clip.x.from + by.x, mark.clip.x.to + by.x),
-            y: interval(mark.clip.y.from + by.y, mark.clip.y.to + by.y),
-          }
-        : undefined,
-    }));
-  });
-  return { marks, extent: { width: SLOT * columns, height: DOWN * rows } };
+  // Each frame is carried by its own view as well as into its slot, or a frame
+  // whose view had followed the dot would sit off its own slot by that much.
+  return stripOf(figure, 'tangent', times, columns, { across: SLOT, down: DOWN }, (seconds) =>
+    frameAt(pointAt(seconds)).centre ?? vec2(0, 0)
+  );
 }
 
 /**

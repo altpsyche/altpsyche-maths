@@ -21,17 +21,15 @@ import {
 } from '../index.js';
 import { readFileSync } from 'node:fs';
 import { GROUND, SHADE_THEME, THEME } from './palette.js';
-import { FRAMES, stripMarks, tangent, written as tangentWritten } from './tangent.js';
+import { FRAMES, stripMarks, written as tangentWritten } from './tangent.js';
 import {
   FRAMES as BOOLEAN_FRAMES,
-  booleans,
   stripMarks as booleanStripMarks,
   written as booleansWritten,
 } from './boolean.js';
-import { FRAMES as TURN_FRAMES, stripMarks as turnStripMarks, turns, written as turnsWritten } from './rotate.js';
+import { FRAMES as TURN_FRAMES, stripMarks as turnStripMarks, written as turnsWritten } from './rotate.js';
 import {
   FRAMES as SOLID_FRAMES,
-  solid,
   stripMarks as solidStripMarks,
   written as solidWritten,
 } from './surface.js';
