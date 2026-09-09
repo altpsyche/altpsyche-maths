@@ -8,7 +8,7 @@ the value types and the expression form every kind is written in terms of, then 
 the animations, the timeline and the extent, and conformance last. A renderer is written from this
 page and needs nothing else.
 
-**Two counts say how large the format is.** Twenty-three node kinds, fifteen animation kinds,
+**Five counts say how large the format is.** Twenty-three node kinds, fifteen animation kinds,
 thirteen forms of path in fifteen kinds, eleven value types, and thirty-seven functions an expression
 may call.
 
@@ -210,7 +210,7 @@ recursion, no assignment and no user-defined functions, which the refusals above
 told from the record forms by carrying no `kind`, so a fixed place is written the way every other
 fixed place in a figure is.
 
-**Every other form carries a `kind`**, and there are ten:
+**Every other form carries a `kind`**, and there are eleven:
 
 | kind | fields | what it is |
 | --- | --- | --- |

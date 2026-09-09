@@ -283,6 +283,56 @@ describe('the specification and the timeline', () => {
   });
 });
 
+/** The numbers a reader takes at their word, since no code reads a sentence. */
+const WRITTEN = new Map([
+  ['ten', 10],
+  ['eleven', 11],
+  ['thirteen', 13],
+  ['fifteen', 15],
+  ['twenty-three', 23],
+  ['thirty-seven', 37],
+]);
+
+/** The number a sentence writes for one vocabulary, taken from the first phrase
+ * whose word is a number rather than from the first phrase that matches, since
+ * "the value types" reads before "eleven value types" does. */
+const counted = (text: string, what: RegExp): number | undefined => {
+  for (const found of text.matchAll(what)) {
+    const written = WRITTEN.get(found[1].toLowerCase());
+    if (written !== undefined) return written;
+  }
+  return undefined;
+};
+
+describe('the specification and the counts it writes in words', () => {
+  it('counts each vocabulary as the source counts it', () => {
+    const kinds = (file: string, name: string) => membersOf(file, name).length;
+    const expressionKinds = (() => {
+      const source = readFileSync(path.join(root, 'figure/expression.ts'), 'utf8');
+      const from = source.indexOf('export type Expression =');
+      const union = source.slice(from, source.indexOf('\n\n', from));
+      return new Set([...union.matchAll(/kind: '([a-z0-9]+)'/g)].map((match) => match[1])).size;
+    })();
+    const wrong = [
+      ['node kinds', counted(specification, /([a-z-]+) node kinds/gi), kinds('figure/node-record.ts', 'NodeRecord')],
+      [
+        'animation kinds',
+        counted(specification, /([a-z-]+) animation kinds/gi),
+        kinds('figure/animation-record.ts', 'AnimationRecord'),
+      ],
+      ['value types', counted(specification, /([a-z-]+) value types/gi), 11],
+      [
+        'functions',
+        counted(specification, /([a-z-]+) functions an expression/gi),
+        EXPRESSION_FUNCTIONS.length,
+      ],
+      ['path forms', counted(specification, /([a-z-]+) forms of path/gi), 13],
+      ['expression kinds', counted(specification, /there are ([a-z-]+)/gi), expressionKinds],
+    ].filter(([, written, real]) => written !== real);
+    expect(wrong).toEqual([]);
+  });
+});
+
 describe('the specification as one document', () => {
   it('names nothing as still to be specified', () => {
     expect(specification).not.toMatch(/has to be specified|is not written|still a list/);
