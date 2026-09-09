@@ -1176,10 +1176,17 @@ into another by pairing their points. An implicit curve's point count is the cou
 set crosses, which the function decides, so the specification says the count is not fixed and a morph
 over it pairs points that need not correspond.
 
-**A run of points from marching squares is joined by centripetal Catmull-Rom.** The points are not
-evenly spaced, and the uniform form of the spline overshoots where two of them come close, which draws
-a loop the curve does not have. Centripetal spacing is the published fix and it is what the joining
-uses.
+**A run of places from marching squares is joined along the gradient, and the centripetal Catmull-Rom
+this plan first named is not what landed.** Step 3 measured both. The places are not evenly spaced, and
+a direction taken from the neighbouring places is the direction of the chord between them wherever the
+curve runs near a grid line, which centripetal spacing softens without fixing: a unit circle joined that
+way reads 2.3506e-3 of the radius out at 32 cells and 5.1351e-4 at 64, and the error does not fall
+cleanly with the count. An implicit curve's direction is known exactly at every place, since the curve
+crosses the gradient at a right angle, and joining along it reads 4.1135e-6 and 2.3071e-7 at the same
+two counts, which is 571 and 2,226 times closer and falls with the fourth power of the count. So the
+joining is a Hermite cubic reaching a third of the chord along the gradient turned a quarter turn, and
+a place where the gradient vanishes takes the chord's direction, which draws a corner where the curve
+has one.
 
 **The solids are four builders over `surfaceCells`.** A sphere and a torus are each one patch, a
 cylinder is a side and two caps, and a cube is six flat patches. Each hands back cells rather than one
@@ -1218,11 +1225,14 @@ cylinder, and the count of what is dropped is a measurement rather than a silenc
   sits on the origin to 0 and the drawn curve comes to 0 of it. A rose with five petals over half a turn
   is one closed run of 200 pieces, and the same rose in a graph reaching 0.8 is five runs, one per
   petal.
-- [ ] **3. `implicit` is a path.** `figure/implicit.ts` holds marching squares with bisected crossings,
-  centre disambiguation and centripetal Catmull-Rom joining. **The measurement**: the drawn radius of
-  `x² + y² = 1` on grids of 16, 32 and 64 cells, in parts in ten thousand; the subpath count of
-  `x² − y² = 1`, which is two branches; and the subpath count at a saddle where the ambiguous cell falls,
-  which is two runs rather than one crossing pair.
+- [x] **3. `implicit` is a path.** `figure/implicit.ts` holds marching squares with bisected crossings,
+  centre disambiguation and joining along the gradient. **The measurement**: `x² + y² = 1` reads
+  4.1953e-5, 4.1135e-6 and 2.3071e-7 of the true radius on grids of 16, 32 and 64 cells, falling with the
+  fourth power of the count, where the centripetal Catmull-Rom the plan named read 1.9660e-3, 2.3506e-3
+  and 5.1351e-4 and did not fall cleanly at all. `x² − y² = 1` draws as two open branches and two levels
+  of one function as two closed runs. `x·y = 0` on nine cells puts the ambiguous pattern at the middle
+  cell, and its two runs stay 0.203159 figure units apart where a cell is 0.222222 wide, which is the
+  pairing the value at the middle of the cell chooses.
 - [ ] **4. The three forms are in the format.** `PathRecord` gains `parametric`, `polar` and `implicit`,
   `resolvePath` resolves each, `checkFigure` holds each to its fields, `SPECIFICATION.md` reads sixteen
   forms rather than thirteen and states the bound variables, and a fixture carries all three.

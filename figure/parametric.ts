@@ -89,10 +89,16 @@ function crossing(of: (t: number) => Vec2, coords: Coords, inside: number, outsi
   return { t: near, point: of(near) };
 }
 
-/** One Hermite piece written as a Bézier: the controls sit a third of the
- * parameter gap away along each end's own direction, which is the placement that
- * makes the cubic pass through both places at both directions. */
-function piece(coords: Coords, gap: number, at: Vec2, moving: Vec2, next: Vec2, moves: Vec2): Cubic {
+/**
+ * One Hermite piece written as a Bézier: the controls sit a third of the gap away
+ * along each end's own direction, which is the placement that makes the cubic
+ * pass through both places at both directions.
+ *
+ * The gap is the run of the parameter between the two places where a curve has a
+ * parameter, and the straight distance between them where the direction is a unit
+ * vector and the curve has no parameter of its own.
+ */
+export function hermiteCubic(coords: Coords, gap: number, at: Vec2, moving: Vec2, next: Vec2, moves: Vec2): Cubic {
   const reach = gap / 3;
   return {
     control1: pointOf(coords, at.x + reach * moving.x, at.y + reach * moving.y),
@@ -102,14 +108,17 @@ function piece(coords: Coords, gap: number, at: Vec2, moving: Vec2, next: Vec2, 
 }
 
 /** A run of places joined into one open subpath, with the direction at each
- * place taken from the same central difference a plot takes its slope from. */
-function openSubpath(coords: Coords, ts: readonly number[], places: readonly Vec2[]): Subpath {
+ * place taken from the same central difference a plot takes its slope from.
+ *
+ * The knots need not be evenly spaced, which is what lets a run of places with no
+ * parameter of its own be joined by the same call under knots of its own. */
+export function openSubpath(coords: Coords, ts: readonly number[], places: readonly Vec2[]): Subpath {
   const across = slopes(ts, places.map((place) => place.x));
   const up = slopes(ts, places.map((place) => place.y));
   const curves: Cubic[] = [];
   for (let at = 0; at + 1 < places.length; at++) {
     curves.push(
-      piece(
+      hermiteCubic(
         coords,
         ts[at + 1] - ts[at],
         places[at],
@@ -123,24 +132,35 @@ function openSubpath(coords: Coords, ts: readonly number[], places: readonly Vec
 }
 
 /**
- * A whole closed curve as one subpath, with the direction at the seam read from
- * the sample before it and the sample after it.
+ * A whole closed curve as one subpath, with the direction at every place read
+ * from the one before it and the one after it, the seam included.
  *
- * The places are the samples without the repeat of the first at the end, and the
- * last piece returns to the first place, which is the shape a circle written as
- * four cubic quarters already has.
+ * The places are the run without the repeat of the first at the end, and the last
+ * piece returns to the first place, which is the shape a circle written as four
+ * cubic quarters already has.
+ *
+ * The knot before the first place and the knot after the last are carried round
+ * by the period, so the difference across the seam is read over the gap the two
+ * places are actually apart rather than over a gap that runs backwards.
  */
-function closedSubpath(coords: Coords, places: readonly Vec2[], step: number): Subpath {
+export function closedSubpath(
+  coords: Coords,
+  ts: readonly number[],
+  places: readonly Vec2[],
+  period: number
+): Subpath {
   const count = places.length;
+  const knot = (at: number) => ts[(at + count) % count] + Math.floor(at / count) * period;
   const moving = places.map((_, at) => {
     const before = places[(at - 1 + count) % count];
     const after = places[(at + 1) % count];
-    return vec2((after.x - before.x) / (2 * step), (after.y - before.y) / (2 * step));
+    const gap = knot(at + 1) - knot(at - 1);
+    return vec2((after.x - before.x) / gap, (after.y - before.y) / gap);
   });
   const curves: Cubic[] = [];
   for (let at = 0; at < count; at++) {
     const next = (at + 1) % count;
-    curves.push(piece(coords, step, places[at], moving[at], places[next], moving[next]));
+    curves.push(hermiteCubic(coords, knot(at + 1) - knot(at), places[at], moving[at], places[next], moving[next]));
   }
   return { start: pointOf(coords, places[0].x, places[0].y), curves, closed: true };
 }
@@ -182,7 +202,9 @@ export function parametric(coords: Coords, of: (t: number) => Vec2, options: Par
 
   // The sample at the end of the run is the first place again, so a closed curve
   // drawn whole takes its places from the samples before it.
-  if (closed && on.every(Boolean)) return [closedSubpath(coords, places.slice(0, samples), step)];
+  if (closed && on.every(Boolean)) {
+    return [closedSubpath(coords, ts.slice(0, samples), places.slice(0, samples), to - from)];
+  }
 
   const runs: Run[] = [];
   let at = 0;

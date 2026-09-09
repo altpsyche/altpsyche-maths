@@ -819,6 +819,15 @@ functions, which is what lets the same tree survive being written to a file and 
 - `PolarOptions` — what a polar curve takes, which is what a parametric curve takes. The one difference
   is the default of `over`: the natural run of an angle is a whole turn where the natural run of a
   parameter is nothing to one.
+- `implicit(coords, of, options)` — the curve where a function of two numbers reaches a level, by
+  marching squares over a fixed grid, as one subpath per run of it. A crossing is found by halving a
+  cell edge and the direction at it comes from the gradient, so the default of 64 cells draws a unit
+  circle within 2.3e-7 of the true radius. The count of places is the count of crossings the function's
+  own level set makes, which is why this is the one curve here that cannot be a morph's source.
+- `ImplicitOptions` — what an implicit curve takes.
+  - `level` — the value the curve is drawn at, nothing where it is left out.
+  - `resolution` — how many cells across and up. One number is both.
+  - `over` — the runs sampled, each the whole of the graph that way where it is left out.
 - `areaUnder(coords, curve, options)` — the region between a plotted curve and a level line, closed,
   one subpath per subpath of the curve. The top is the path the caller drew rather than a second plot
   of the function behind it.

@@ -121,6 +121,8 @@ export { areaUnder, plot, riemannBars, slopeOf, tangentAt } from './figure/plot.
 export type { AreaOptions, BarsOptions, PlotOptions, TangentOptions } from './figure/plot.js';
 export { parametric, polar } from './figure/parametric.js';
 export type { ParametricOptions, PolarOptions } from './figure/parametric.js';
+export { implicit } from './figure/implicit.js';
+export type { ImplicitOptions } from './figure/implicit.js';
 export { vectorField } from './figure/field.js';
 export { streamlineOf } from './figure/streamline.js';
 export type { StreamlineOptions } from './figure/streamline.js';
