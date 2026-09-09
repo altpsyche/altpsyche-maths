@@ -56,7 +56,7 @@ export { EXPRESSION_FUNCTIONS, evaluate } from './figure/expression.js';
 export type { Arithmetic, Bindings, Comparison, Expression, ExpressionValue, Variables } from './figure/expression.js';
 export { resolvePath } from './figure/path-record.js';
 export type { IntervalRecord, PathRecord } from './figure/path-record.js';
-export { resolveNode, writeTemplate } from './figure/node-record.js';
+export { resolveNode, resolveSection, resolveStreamline, writeTemplate } from './figure/node-record.js';
 export type {
   Arrow3Record,
   ArrowRecord,
@@ -73,21 +73,34 @@ export type {
   DotRecord,
   EquationRecord,
   EquationRecordOptions,
+  FieldArrows3Record,
+  Field3RecordOptions,
   GroupRecord,
   NodeRecord,
   NumberLineRecord,
   NumberPlaneRecord,
+  PlaneRecord,
   Polyline3Record,
   RiemannBarsRecord,
+  SceneItemRecord,
   Scene3Record,
+  Section3Record,
+  SectionRecord,
+  ShadeRecord,
   SpaceItemRecord,
   FieldRecordOptions,
   ShapeRecord,
+  Streamline3Record,
+  StreamlineRecord,
+  Surface3Record,
+  Surface3RecordOptions,
+  SurfaceCellsRecord,
   TextContent,
   TextHole,
   Text3Record,
   TextRecord,
   TextTemplate,
+  VectorField3Record,
   VectorFieldRecord,
 } from './figure/node-record.js';
 export { areaUnder, plot, riemannBars, slopeOf, tangentAt } from './figure/plot.js';

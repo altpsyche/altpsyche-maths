@@ -150,7 +150,7 @@ const planeAt = (u: number, v: number) => vec3(u, v, HEIGHT);
  * them. Its ends are projected points rather than points in space, because the
  * cells are flat shapes by the time they carry a fill.
  */
-function paneWash(camera: Camera3): Fill {
+export function paneWash(camera: Camera3): Fill {
   const half = (OVER.to - OVER.from) / 2;
   const middle = (OVER.from + OVER.to) / 2;
   const away = vec2.normalize(vec2(middle - camera.eye.x, middle - camera.eye.y));
@@ -198,12 +198,12 @@ const descent = (at: Vec2) => vec2(-at.x, at.y);
  * runs that close read as one tangle rather than as three descents. Three
  * tenths off, the closest two hold 0.528 apart.
  */
-const SEEDS = [vec2(1.3, 0.3), vec2(-1.3, 0.3), vec2(0.6, -0.3)];
+export const SEEDS = [vec2(1.3, 0.3), vec2(-1.3, 0.3), vec2(0.6, -0.3)];
 
 /** How far each step of a run moves, in the units the surface is drawn in, and
  * how many steps one may take before the region's own edge stops it. */
-const STEP = 0.05;
-const STEPS = 300;
+export const STEP = 0.05;
+export const STEPS = 300;
 
 /**
  * The three runs of steepest descent, walked once rather than at every frame,
@@ -219,14 +219,14 @@ export const descents = SEEDS.map((seed) =>
  * in the units the surface is drawn in. An arrow settles towards a third of a
  * unit rather than growing with the gradient, since the gradient at the corner
  * of the saddle is thirty times the gradient near the middle. */
-const FLOW = { x: 5, y: 5, z: 1 };
+export const FLOW = { x: 5, y: 5, z: 1 };
 const arrowLength = (magnitude: number) => (0.34 * magnitude) / (0.9 + magnitude);
 
 /** How many cells each grid is cut into. Enough that the saddle reads as a
  * curved sheet and few enough that the committed pictures stay small: every cell
  * is a path in the file, and the strip holds four frames of them. */
-const CELLS = 12;
-const PANES = 4;
+export const CELLS = 12;
+export const PANES = 4;
 
 /**
  * How tall the projection's own frame is, in figure units.
@@ -245,7 +245,7 @@ export const FRAME = 5;
  * 0.32 against white and the sheet read as one flat sheet of card. Off to one
  * side the same ramp covers 2.93.
  */
-const LIGHT = vec3(-0.4, -0.6, 0.7);
+export const LIGHT = vec3(-0.4, -0.6, 0.7);
 
 /**
  * The narrowest and widest this saddle faces the light, from its own normals
@@ -257,7 +257,7 @@ const LIGHT = vec3(-0.4, -0.6, 0.7);
  * steps of it are twelve steps of this saddle rather than the eight the raw
  * amount reached.
  */
-const FACING = interval(0.346, 1);
+export const FACING = interval(0.346, 1);
 
 /** The shading of a cell, its amount read against the band this saddle uses
  * rather than against the whole of nothing to one. */

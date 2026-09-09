@@ -530,10 +530,10 @@ release away and has a document of its own.
   drawn. That refusal is the price of the format being closed and it is the one place the price
   shows.
 
-- [ ] **3. The node vocabulary, which is thirteen commits.** Twenty-one node kinds, two item producers,
+- [ ] **3. The node vocabulary, which is fourteen commits.** Twenty-three node kinds, two item producers,
   eleven path producers and two point producers as records with parameters, and a resolver from a record to the nodes that exist now. The
   authoring calls keep their names and their arguments and return records. **The measurement every
-  one of the thirteen quotes is the same:** the demo that draws the kinds of that commit gives the same
+  one of the fourteen quotes is the same:** the demo that draws the kinds of that commit gives the same
   marks at its own named times, within tolerance, built through records rather than calls, and the
   suite grows. A kind no demo draws is measured against its own call at one time instead.
 
@@ -729,11 +729,21 @@ release away and has a document of its own.
     whose z reads as a point refused with the sentence naming it; the suite from 884 to 894 and the
     door from 309 names to 316.
 
-  - [ ] **3.11 The surfaces and the space fields.** `surface3`, `surfaceCells`, `fieldArrows3` and
-    `vectorField3`, with `shade` as a ramp through a band, and `sectionOf` and `streamlineOf` as the
-    point producers they are. **Measures:** the solid demo's saddle, its plane, the curve of the
-    crossing and its three runs of descent at its named times; the streamline's own bound, which the
-    suite holds at 4.689e-10 of a figure unit.
+  - [x] **3.11 The surfaces and the space fields.** `surface3` and `vectorField3` are forms of
+    `NodeRecord`, `surfaceCells` and `fieldArrows3` are forms a scene's item list widened to hold, and
+    `section3` and `streamline3` are the nodes that draw what the two point producers hand back.
+    `shade` is a ramp of fills spread over a band rather than a function, since a fill is a colour
+    written as text and nothing here parses one. A producer inside a scene takes the scene's camera,
+    so a surface and a field sorted together are seen from one place.
+    **Measured:** the solid demo's saddle at 144 cells, its plane at 16 and its field at 48 marks, all
+    208 of the body's marks at each of the four times its strip draws, mark for mark within a
+    tolerance of 1e-6; the two branches of the crossing and the three runs of descent at those same
+    times; `surface3` and `vectorField3` against their own calls, since no demo names one directly;
+    the ramp spread over the band reaching all twelve of its washes where the raw amount reaches
+    eight; an empty ramp and a piece the scene has no producer for each refused with the sentence
+    naming it; the flat demo's field walked from a record, giving the same 561 points as its call and
+    never leaving the drawn curve by more than 4.688e-10 of a figure unit; the suite from 894 to 903
+    and the door from 316 names to 331.
 
   - [ ] **3.12 The three calls that take geometry join the expression set.** `pointAlong`, `lengthOf`
     and `slopeOf` each take a path, and step 2 said they would arrive with the written form for one.
@@ -745,6 +755,18 @@ release away and has a document of its own.
     hole whose expression is `slopeOf` over a path record, at each of the flat demo's seven named
     times, giving the same seven strings step 3.1 measured; the set from thirty-four names to
     thirty-seven.
+
+  - [ ] **3.13 The wash over a pane, which is a fill a record cannot carry.** The solid demo's pane is
+    filled with a gradient whose two ends are places in space projected through the camera, so the
+    fill changes as the orbit turns and step 3.11 had to build it per time outside the record. Two
+    answers are open and neither is picked here: a call in the expression set that projects a place in
+    space, which is the same widening past a number, a true or false and a point that step 3.12 makes
+    for a path; or a fill written as a record whose gradient ends are expressions, which reaches every
+    record that carries a `Fill`. **This lands before step 8**, since the solid demo as a file carries
+    the pane.
+    **Measures:** the solid demo's pane at each of the four times its strip draws, from one record
+    rather than one per time; the gradient's two ends against the camera's own projection at those
+    times.
 
 - [ ] **4. The animation vocabulary, which is five commits.** Fifteen kinds as records with
   parameters, and a resolver each from a record to the `Animation` the timeline already plays. **The

@@ -560,15 +560,59 @@ functions, which is what lets the same tree survive being written to a file and 
   `options`.
 - `Arrow3Record` — a `kind` of `arrow3`, a `name`, a `from`, a `to`, its `camera` and its `options`,
   which are an arrow's.
-- `Scene3Record` — a `kind` of `scene3`, a `name`, its `items` and its `camera`.
+- `Scene3Record` — a `kind` of `scene3`, a `name`, its `items` as `SceneItemRecord`s and its
+  `camera`.
 - `SpaceItemRecord` — one piece of a scene in space: the `points` its depth is measured from, and the
   `node` drawn for it. A scene sorts its pieces by the mean of their own depths, so the points are
   what order a piece rather than anything the node carries.
 - `Axes3Record` — a `kind` of `axes3`, a `name`, its `camera` and its `options`.
+- `ShadeRecord` — what colour a cell of a surface is filled with: a `ramp` of fills read as even steps
+  from nothing to one, and the `band` of the amount that ramp is spread over. Every normal of a
+  surface drawn over a plane has a positive z, so a light with a positive z reaches part of a ramp
+  alone and a band spreads the whole of it over the part the surface uses. A ramp rather than a
+  function is what a file can carry, since a fill is a colour written as text and nothing here parses
+  one.
+- `Surface3RecordOptions` — what a surface takes beyond its own places: its `shade` as a
+  `ShadeRecord`, its `light` as a `Point3Record`, and the `over`, `resolution`, `cull` and `stroke`
+  its own call takes.
+- `Surface3Record` — a `kind` of `surface3`, a `name`, its `of` as a `Point3Record` read from the
+  bound variables `u` and `v`, its `camera` and its `options`.
+- `SurfaceCellsRecord` — a `kind` of `surfaceCells`, a `name`, its `of` and its `options`. It carries
+  no camera and takes the scene's, so a surface sharing a depth sort with a second surface is written
+  as a piece of that scene.
+- `Field3RecordOptions` — what a field in space takes beyond its own vectors: its `lengthOf` as an
+  expression of the bound variable `magnitude`, in the world's own units, and its `colourFor` as a
+  `ColourChoice`.
+- `FieldArrows3Record` — a `kind` of `fieldArrows3`, a `name`, its `of` as a `Point3Record` read from
+  the bound variables `x`, `y` and `z`, and its `options`. It takes the scene's camera, the way a
+  surface's cells take it.
+- `VectorField3Record` — a `kind` of `vectorField3`, a `name`, its `of`, its `camera` and its
+  `options`.
+- `PlaneRecord` — a flat plane in space: a `point` it passes through and the `normal` it faces along.
+- `SectionRecord` — the curve where a plane cuts a surface, as the `of` surface, the `plane` and the
+  `options` `sectionOf` takes. What it describes is runs of places in space rather than a node.
+- `Section3Record` — a `kind` of `section3`, a `name`, its `curve` as a `SectionRecord`, its `camera`,
+  the `options` each run is drawn with and its `style`. It resolves to a group whose children are
+  `run0` upwards, one per run of the curve.
+- `StreamlineRecord` — a run through a flat field: its `of` field as an expression of the bound
+  variable `at`, its `from` seed, and the `options` `streamlineOf` takes. The step and the cap are
+  plain numbers, since a step that followed a track would hand back a different number of points at
+  every time and a morph pairs two runs up by their points.
+- `Streamline3Record` — a `kind` of `streamline3`, a `name`, its `runs`, the surface they stand `on`
+  read from `u` and `v`, its `camera`, the `options` each run is drawn with and its `style`. A run
+  drawn in a plane is that plane written as a surface, so there is no second form for one.
+- `SceneItemRecord` — one entry of a scene: a `SpaceItemRecord` written out, a `SurfaceCellsRecord` or
+  a `FieldArrows3Record`. A producer carries a kind and a written-out piece carries none, so a scene
+  written before the producers existed still reads.
+- `resolveSection(record, bindings)` — the runs of points where a plane cuts a surface, from the
+  record naming both. A run whose two ends meet comes back with its first point repeated at the end.
+- `resolveStreamline(record, bindings)` — the points a run through a flat field passes, from the
+  record naming the field and the seed.
 - `NodeRecord` — a `ShapeRecord`, a `TextRecord`, a `GroupRecord`, a `DotRecord`, an `ArrowRecord`, a
   `BraceRecord`, a `CalloutRecord`, a `NumberLineRecord`, an `AxesRecord`, a `NumberPlaneRecord`, a
   `RiemannBarsRecord`, an `EquationRecord`, a `VectorFieldRecord`, a `Polyline3Record`, a
-  `Dot3Record`, a `Text3Record`, an `Arrow3Record`, a `Scene3Record` or an `Axes3Record`. Each space
+  `Dot3Record`, a `Text3Record`, an `Arrow3Record`, a `Scene3Record`, an `Axes3Record`, a
+  `Surface3Record`, a `VectorField3Record`, a `Section3Record` or a `Streamline3Record`. Each space
   kind carries its own camera, the way its call takes one. Every kind resolves through its own call, so a brace's curls, an arrow's head
   and an axis's tick list are each one piece of arithmetic with one set of gates over it. A graph
   frame's options are the values those calls already take rather than expressions: a frame is the

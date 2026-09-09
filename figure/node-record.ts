@@ -29,6 +29,8 @@
  */
 import type { Mat3 } from '../values/mat3.js';
 import type { Vec2 } from '../values/vec2.js';
+import type { Vec3 } from '../values/vec3.js';
+import { interval, type Interval } from '../values/interval.js';
 import { curveOf, resolvePath, spanOf, type IntervalRecord, type PathRecord } from './path-record.js';
 import { group, shape, text, type Node, type Style, type TextOptions } from './node.js';
 import { arrow, brace, callout, dot } from './annotate.js';
@@ -38,6 +40,11 @@ import { equationNode, type Equation, type EquationOptions } from './equation.js
 import { vectorField, type VectorFieldOptions } from './field.js';
 import { arrow3, dot3, polyline3, scene3, text3, type Arrow3Options, type Polyline3Options, type SpaceItem, type Text3Options } from './space.js';
 import { axes3, type Axes3Options } from './axis3.js';
+import { surface3, surfaceCells, type Surface3Options } from './surface3.js';
+import { fieldArrows3, vectorField3, type VectorField3Options } from './field3.js';
+import { sectionOf, type SectionOptions } from './section.js';
+import { streamlineOf, type StreamlineOptions } from './streamline.js';
+import type { Camera3 } from './camera.js';
 import { resolveCamera, resolvePoint3, type Camera3Record, type Point3Record } from './camera-record.js';
 import type { Colour } from './mark.js';
 import type { Coords, Scale } from './scale.js';
@@ -315,7 +322,7 @@ export interface Arrow3Record {
 export interface Scene3Record {
   readonly kind: 'scene3';
   readonly name: string;
-  readonly items: readonly SpaceItemRecord[];
+  readonly items: readonly SceneItemRecord[];
   readonly camera: Camera3Record;
 }
 
@@ -325,6 +332,158 @@ export interface Axes3Record {
   readonly camera: Camera3Record;
   readonly options: Axes3Options;
 }
+
+/**
+ * What colour a cell of a surface is filled with, read off how squarely the cell
+ * faces the light.
+ *
+ * A ramp is a list of fills read as even steps from nothing to one, and the band
+ * is the stretch of that amount the ramp is spread over. Every normal of a
+ * surface drawn over a plane has a positive z, so a light with a positive z
+ * reaches part of the ramp alone, and a band spreads the whole ramp over the part
+ * the surface uses.
+ *
+ * A ramp rather than a function is what the format can carry: a fill is a colour
+ * written as text and nothing here parses one, so two colours cannot be mixed.
+ */
+export interface ShadeRecord {
+  readonly ramp: readonly Fill[];
+  /** The stretch of the amount the ramp covers, nothing to one unless named. */
+  readonly band?: Interval;
+}
+
+/** What a surface takes beyond its own places and its camera. The light is a
+ * place in space, so a figure that moves the light writes it as three
+ * expressions. */
+export interface Surface3RecordOptions extends Omit<Surface3Options, 'shade' | 'light'> {
+  readonly shade: ShadeRecord;
+  readonly light?: Point3Record;
+}
+
+export interface Surface3Record {
+  readonly kind: 'surface3';
+  readonly name: string;
+  /** The surface, as a place in space read from the bound variables `u` and `v`. */
+  readonly of: Point3Record;
+  readonly camera: Camera3Record;
+  readonly options: Surface3RecordOptions;
+}
+
+/**
+ * The cells of a surface, for a scene that sorts them among pieces of its own.
+ *
+ * This carries no camera and takes the scene's, since pieces sorted together are
+ * seen from one place, and a producer inside a scene is where a surface that
+ * shares a sort with a second surface is written.
+ */
+export interface SurfaceCellsRecord {
+  readonly kind: 'surfaceCells';
+  readonly name: string;
+  readonly of: Point3Record;
+  readonly options: Surface3RecordOptions;
+}
+
+/**
+ * What a field in space takes beyond its own vectors and its camera.
+ *
+ * An arrow's length is an expression of the bound variable `magnitude`, the way a
+ * flat field's is, and it is in the world's own units rather than the page's.
+ */
+export interface Field3RecordOptions extends Omit<VectorField3Options, 'lengthOf' | 'colourFor'> {
+  readonly lengthOf: Expression;
+  readonly colourFor: ColourChoice;
+}
+
+/** The arrows of a field in space, for a scene that sorts them among pieces of
+ * its own. The camera is the scene's, the way a surface's cells take it. */
+export interface FieldArrows3Record {
+  readonly kind: 'fieldArrows3';
+  readonly name: string;
+  /** The field, as a vector read from the bound variables `x`, `y` and `z`, which
+   * are the place being sampled. */
+  readonly of: Point3Record;
+  readonly options: Field3RecordOptions;
+}
+
+export interface VectorField3Record {
+  readonly kind: 'vectorField3';
+  readonly name: string;
+  readonly of: Point3Record;
+  readonly camera: Camera3Record;
+  readonly options: Field3RecordOptions;
+}
+
+/** A flat plane in space: a place it passes through, and which way it faces. */
+export interface PlaneRecord {
+  readonly point: Point3Record;
+  readonly normal: Point3Record;
+}
+
+/**
+ * The curve where a plane cuts a surface, as the parameters it is found from.
+ *
+ * What this describes is runs of places in space rather than a node, so
+ * `resolveSection` hands back points and `Section3Record` is the node that draws
+ * them.
+ */
+export interface SectionRecord {
+  /** The surface, read from the bound variables `u` and `v`. */
+  readonly of: Point3Record;
+  readonly plane: PlaneRecord;
+  readonly options?: SectionOptions;
+}
+
+export interface Section3Record {
+  readonly kind: 'section3';
+  readonly name: string;
+  readonly curve: SectionRecord;
+  readonly camera: Camera3Record;
+  /** How each run of the curve is drawn. */
+  readonly options?: Polyline3Options;
+  readonly style?: Style;
+}
+
+/**
+ * A run walked through a flat field from a seed, as the parameters it is walked
+ * from.
+ *
+ * The step and the cap are plain numbers rather than expressions. A step that
+ * followed a track would hand back a different number of points at every time,
+ * and a morph pairs two runs up by their points.
+ */
+export interface StreamlineRecord {
+  /** The field, as a vector read from the bound variable `at`. */
+  readonly of: Expression;
+  readonly from: Expression;
+  readonly options: StreamlineOptions;
+}
+
+/**
+ * Runs walked through a flat field and lifted onto a surface.
+ *
+ * Each run is walked in the two parameters of the surface, so the surface reads
+ * the point a run lands on as its own `u` and `v`. A run drawn in a plane is that
+ * plane written as a surface, so there is no second form for one.
+ */
+export interface Streamline3Record {
+  readonly kind: 'streamline3';
+  readonly name: string;
+  readonly runs: readonly StreamlineRecord[];
+  /** The surface the runs stand on, read from `u` and `v`. */
+  readonly on: Point3Record;
+  readonly camera: Camera3Record;
+  /** How each run is drawn. */
+  readonly options?: Polyline3Options;
+  readonly style?: Style;
+}
+
+/**
+ * One entry of a scene: a piece written out, or a producer of many pieces.
+ *
+ * A producer carries a kind and a written-out piece carries none, so a scene
+ * written before the producers existed still reads.
+ */
+export type SceneItemRecord = SpaceItemRecord | SurfaceCellsRecord | FieldArrows3Record;
 
 export type NodeRecord =
   | ShapeRecord
@@ -345,7 +504,11 @@ export type NodeRecord =
   | Text3Record
   | Arrow3Record
   | Scene3Record
-  | Axes3Record;
+  | Axes3Record
+  | Surface3Record
+  | VectorField3Record
+  | Section3Record
+  | Streamline3Record;
 
 function nameOfValue(value: number | boolean | Vec2): string {
   if (typeof value === 'number') return 'a number';
@@ -389,22 +552,23 @@ function pointOf(expression: Expression, bindings: Bindings, what: string): Vec2
   return value;
 }
 
-/** One value bound under a name for the reading of an inner expression, so a
- * field sampled at a place and an arrow sized off a magnitude each read their
- * own variable without the outer bindings being rebuilt per name. */
-const binding = (bindings: Bindings, name: string, value: number | Vec2): Bindings => ({
+/** Values bound under their names for the reading of an inner expression, so a
+ * field sampled at a place, an arrow sized off a magnitude and a surface read
+ * from its two parameters each see their own variables over the outer
+ * bindings. */
+const binding = (bindings: Bindings, values: Record<string, number | Vec2>): Bindings => ({
   ...bindings,
-  variables: { ...bindings.variables, [name]: value },
+  variables: { ...bindings.variables, ...values },
 });
 
 /** The field as the function `vectorField` samples, from an expression of the
  * bound variable `at`. */
 const fieldOf = (expression: Expression, bindings: Bindings) => (at: Vec2): Vec2 =>
-  pointOf(expression, binding(bindings, 'at', at), 'a field');
+  pointOf(expression, binding(bindings, { at }), 'a field');
 
 /** An arrow's length from an expression of the bound variable `magnitude`. */
 const lengthFrom = (expression: Expression, bindings: Bindings) => (magnitude: number): number =>
-  numberOf(expression, binding(bindings, 'magnitude', magnitude), "an arrow's length");
+  numberOf(expression, binding(bindings, { magnitude }), "an arrow's length");
 
 /**
  * An arrow's colour from a choice.
@@ -416,13 +580,104 @@ const lengthFrom = (expression: Expression, bindings: Bindings) => (magnitude: n
 function colourFrom(choice: ColourChoice, bindings: Bindings) {
   if (typeof choice === 'string') return () => choice;
   return (magnitude: number): Colour => {
-    const inner = binding(bindings, 'magnitude', magnitude);
+    const inner = binding(bindings, { magnitude });
     let colour = choice.first;
     for (const band of choice.then) {
       if (magnitude > numberOf(band.above, inner, "a colour band's threshold")) colour = band.colour;
     }
     return colour;
   };
+}
+
+/** The stretch of an amount a shade's ramp covers when its record names no
+ * band. */
+const WHOLE = interval(0, 1);
+
+/** A surface as `surfaceCells` samples it, from a place in space read from the
+ * bound variables `u` and `v`. */
+const surfaceOf = (record: Point3Record, bindings: Bindings) => (u: number, v: number): Vec3 =>
+  resolvePoint3(record, binding(bindings, { u, v }), 'a place on a surface');
+
+/** A field in space as `fieldArrows3` samples it, from a vector read from the
+ * bound variables `x`, `y` and `z`. */
+const field3Of = (record: Point3Record, bindings: Bindings) => (at: Vec3) =>
+  resolvePoint3(record, binding(bindings, { x: at.x, y: at.y, z: at.z }), 'a field in space');
+
+/**
+ * The shading as `surfaceCells` calls it: the amount spread from the band over
+ * the whole ramp, then rounded to the nearest step of it.
+ *
+ * A ramp with no colours in it is refused, since every cell is filled with one.
+ */
+function shadeFrom(record: ShadeRecord): (amount: number) => Fill {
+  const last = record.ramp.length - 1;
+  if (last < 0) throw new Error('a shade is a ramp of at least one colour');
+  return (amount) => {
+    const spread = record.band ? interval.remap(amount, record.band, WHOLE) : amount;
+    return record.ramp[Math.max(0, Math.min(last, Math.round(spread * last)))];
+  };
+}
+
+/** What a surface's own call takes, from what its record carries. */
+const surfaceOptions = (options: Surface3RecordOptions, bindings: Bindings): Surface3Options => ({
+  ...options,
+  shade: shadeFrom(options.shade),
+  light: options.light ? resolvePoint3(options.light, bindings, "a surface's light") : undefined,
+});
+
+/** What a field in space takes, from what its record carries. */
+const field3Options = (options: Field3RecordOptions, bindings: Bindings): VectorField3Options => ({
+  ...options,
+  lengthOf: lengthFrom(options.lengthOf, bindings),
+  colourFor: colourFrom(options.colourFor, bindings),
+});
+
+/**
+ * The runs of points where a plane cuts a surface, from the record naming both.
+ *
+ * A run whose two ends meet comes back with its first point repeated at the end,
+ * the way the call it stands for hands one back.
+ */
+export function resolveSection(record: SectionRecord, bindings: Bindings = {}): Vec3[][] {
+  return sectionOf(
+    surfaceOf(record.of, bindings),
+    {
+      point: resolvePoint3(record.plane.point, bindings, "a place the plane passes through"),
+      normal: resolvePoint3(record.plane.normal, bindings, 'which way a plane faces'),
+    },
+    record.options
+  );
+}
+
+/** The points a run through a flat field passes, from the record naming the field
+ * and the seed. */
+export function resolveStreamline(record: StreamlineRecord, bindings: Bindings = {}): Vec2[] {
+  return streamlineOf(fieldOf(record.of, bindings), pointOf(record.from, bindings, "a run's seed"), record.options);
+}
+
+/**
+ * The pieces one entry of a scene stands for: one for a piece written out, and
+ * as many as the grid holds for a producer.
+ *
+ * A producer takes the scene's own camera, so a surface and a field sorted
+ * together are seen from one place and neither carries a pose of its own.
+ */
+function resolveItems(item: SceneItemRecord, camera: Camera3, bindings: Bindings): SpaceItem[] {
+  if (!('kind' in item)) {
+    return [
+      {
+        points: item.points.map((point) => resolvePoint3(point, bindings, 'a point of a piece in space')),
+        node: resolveNode(item.node, bindings),
+      },
+    ];
+  }
+  if (item.kind === 'surfaceCells') {
+    return surfaceCells(item.name, surfaceOf(item.of, bindings), camera, surfaceOptions(item.options, bindings));
+  }
+  if (item.kind === 'fieldArrows3') {
+    return fieldArrows3(item.name, field3Of(item.of, bindings), camera, field3Options(item.options, bindings));
+  }
+  throw new Error(`a scene has no piece called ${String((item as { kind?: unknown }).kind)}`);
 }
 
 /** An optional parameter read where it is given and left out where it is not, so
@@ -535,17 +790,52 @@ export function resolveNode(record: NodeRecord, bindings: Bindings = {}): Node {
           spread: maybe(record.options.spread, bindings, "an arrow's spread"),
         }
       );
-    case 'scene3':
+    case 'scene3': {
+      const camera = resolveCamera(record.camera, bindings);
       return scene3(
         record.name,
-        record.items.map(
-          (item): SpaceItem => ({
-            points: item.points.map((point) => resolvePoint3(point, bindings, 'a point of a piece in space')),
-            node: resolveNode(item.node, bindings),
-          })
-        ),
-        resolveCamera(record.camera, bindings)
+        record.items.flatMap((item) => resolveItems(item, camera, bindings)),
+        camera
       );
+    }
+    case 'surface3':
+      return surface3(
+        record.name,
+        surfaceOf(record.of, bindings),
+        resolveCamera(record.camera, bindings),
+        surfaceOptions(record.options, bindings)
+      );
+    case 'vectorField3':
+      return vectorField3(
+        record.name,
+        field3Of(record.of, bindings),
+        resolveCamera(record.camera, bindings),
+        field3Options(record.options, bindings)
+      );
+    case 'section3': {
+      const camera = resolveCamera(record.camera, bindings);
+      return group(
+        record.name,
+        resolveSection(record.curve, bindings).map((run, at) => polyline3(`run${at}`, run, camera, record.options)),
+        { style: record.style }
+      );
+    }
+    case 'streamline3': {
+      const camera = resolveCamera(record.camera, bindings);
+      const on = surfaceOf(record.on, bindings);
+      return group(
+        record.name,
+        record.runs.map((run, at) =>
+          polyline3(
+            `run${at}`,
+            resolveStreamline(run, bindings).map((point) => on(point.x, point.y)),
+            camera,
+            record.options
+          )
+        ),
+        { style: record.style }
+      );
+    }
     case 'axes3':
       return axes3(record.name, resolveCamera(record.camera, bindings), record.options);
     case 'vectorField':

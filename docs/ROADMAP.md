@@ -268,7 +268,7 @@ three more are written past those because a session should not rediscover them.
 
 | version | what lands | what it changes | steps | cut against | depends on | plan |
 | --- | --- | --- | --- | --- | --- | --- |
-| 2.0.0 | the figure format | every builder's shape, and the door | 32 | all four demos read from files, and the eight sheets | MathJax, which is already a dependency | written, in [`FIGURE-FORMAT.md`](FIGURE-FORMAT.md) |
+| 2.0.0 | the figure format | every builder's shape, and the door | 33 | all four demos read from files, and the eight sheets | MathJax, which is already a dependency | written, in [`FIGURE-FORMAT.md`](FIGURE-FORMAT.md) |
 | 2.1.0 | the curves and surfaces a figure can name: parametric, polar, implicit, and the solids | adds kinds | to plan | a phase portrait, which the flat demo's field cannot express | nothing outside this package | to plan |
 | 2.2.0 | matrices and tables, and a matrix applied to a grid | adds kinds | to plan | a grid under a linear map, which nothing here can draw | nothing outside this package | to plan |
 | 2.3.0 | the indications that run along a path, and text written on rather than faded in | adds kinds, and outlines for plain text | to plan | the flat demo's reading, written on | a source of glyph outlines for plain text | to plan |
@@ -972,7 +972,8 @@ it reads, and neither number is this package's.
 down, the six questions below answered, and a step list Siva reads before anything lands. The audit
 of the 1.x band added a step to it for the insets 1.6.0 gave a figure and the review of 2026-09-09
 added one for the boolean operations, and step 3.2 added one for the three calls that take geometry,
-and step 3.9 split its look off as a step of its own, so it is thirty-two commits.
+step 3.9 split its look off as a step of its own, and step 3.11 found the pane's wash, so it is
+thirty-three commits.
 
 A figure format is a description of a picture over time that a program reads rather than runs. It
 carries nodes, tracks and animations, each a named thing with parameters, and no function anywhere.
