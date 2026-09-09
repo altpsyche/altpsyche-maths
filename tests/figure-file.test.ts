@@ -12,6 +12,7 @@ import {
 } from '../index.js';
 import { FRAMES, turns } from '../demos/rotate.js';
 import { TIMES as BOOLEAN_TIMES, booleans } from '../demos/boolean.js';
+import { TIMES as FLAT_TIMES, tangent, written as flat } from '../demos/tangent.js';
 import { operations, turning } from './figures.js';
 
 /** The names of every object of a written file, in the order they are written,
@@ -118,6 +119,60 @@ describe('the boolean demo as a committed file', () => {
 
   it('carries the nine fades of its entrance', () => {
     expect(JSON.parse(committed).figure.timeline.spans).toHaveLength(9);
+  });
+
+  it('is read as the version this package writes', () => {
+    expect(JSON.parse(committed).format).toBe(FIGURE_FORMAT_VERSION);
+  });
+});
+
+describe('the flat demo as a committed file', () => {
+  const committed = readFileSync('demos/tangent.figure.json', 'utf8');
+  const times = Object.values(FLAT_TIMES);
+
+  it('is what the demo writes now', () => {
+    expect(committed).toBe(writeFigure(flat));
+  });
+
+  it('draws the demo mark for mark at each of its named times and at its still time', () => {
+    const read = readFigure(committed);
+    expect(times).toHaveLength(7);
+    for (const seconds of [...times, tangent.still]) {
+      expect(sameMarks(marksAt(read, seconds), marksAt(tangent, seconds))).toBe(true);
+    }
+  });
+
+  it('draws the counts its still time and its named times each have', () => {
+    expect(marksAt(readFigure(committed), tangent.still)).toHaveLength(181);
+    expect(times.map((seconds) => marksAt(readFigure(committed), seconds).length)).toEqual([
+      186, 185, 185, 182, 178, 178, 178,
+    ]);
+  });
+
+  it('cuts every mark of its panel to the rectangle the inset draws into', () => {
+    const read = readFigure(committed);
+    for (const seconds of times) {
+      const inside = marksAt(read, seconds).filter((mark) => mark.id.startsWith('tangent/lens/'));
+      expect(inside.length).toBeGreaterThan(0);
+      expect(inside.every((mark) => mark.clip !== undefined)).toBe(true);
+    }
+  });
+
+  it('reads the seven slopes its walk passes through', () => {
+    const read = readFigure(committed);
+    const reading = (seconds: number) => {
+      const mark = marksAt(read, seconds).find((one) => one.id === 'tangent/reading');
+      return mark && mark.kind === 'text' ? mark.text : '';
+    };
+    expect(times.map(reading)).toEqual([
+      'slope 0.00',
+      'slope 0.00',
+      'slope 0.00',
+      'slope 1.16',
+      'slope 6.00',
+      'slope 6.00',
+      'slope 6.00',
+    ]);
   });
 
   it('is read as the version this package writes', () => {

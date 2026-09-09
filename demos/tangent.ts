@@ -27,59 +27,42 @@
  * along the tangent the curve has at that x, so the tangent the dot carries is
  * the one arrow of the field that is being pointed at, and the curve itself is
  * the streamline of the field through the origin.
+ *
+ * At 2.0.0 the whole of it is a record. The picture is one `FigureRecord` and
+ * `demos/tangent.figure.json` is written from it, so what the strip draws is
+ * what a file carries and neither is a transcription of the other.
  */
 import {
-  areaUnder,
-  axes,
-  circumscribe,
   clamp,
   coordsOf,
-  dot,
-  brace,
-  countTo,
-  draw,
-  easeOut,
   equationFromTex,
-  equationNode,
-  fadeIn,
-  followView,
-  morphEquation,
-  flash,
-  fractionOf,
-  growFrom,
-  group,
-  indicate,
   interval,
   labelFor,
-  linear,
+  marksAt,
   moveBy,
-  numberPlane,
-  overshoot,
-  plot,
   pointAlong,
   pointOf,
-  rect,
+  resolveFigure,
+  resolveNode,
+  resolvePath,
   sampleTrack,
   scaleOf,
-  shape,
-  slopeOf,
-  tangentAt,
-  text,
   textScale,
-  toGraph,
   vec2,
-  vectorField,
-  Timeline,
-  marksAt,
   type Equation,
-  type Fill,
+  type Expression,
   type Extent,
   type Figure,
+  type FigureRecord,
+  type Fill,
   type Mark,
   type Node,
+  type NodeRecord,
+  type PathRecord,
+  type SpanRecord,
   type Stroke,
-  type Vec2,
   type Track,
+  type Vec2,
 } from '../index.js';
 import { AMBER, CREAM, DEEP, EMBER, HAZE, INK, MIST, PANEL, PEACH, STEEL } from './palette.js';
 import { TYPE } from './typeface.js';
@@ -188,6 +171,15 @@ export function frameAt(point: Vec2): Extent {
 
 export const curve = (x: number) => x * x;
 
+/** The curve as the record draws it, which is the same square of the bound
+ * variable the function above takes. */
+const squared: Expression = {
+  kind: 'arithmetic',
+  operator: '*',
+  left: { kind: 'variable', name: 'x' },
+  right: { kind: 'variable', name: 'x' },
+};
+
 /**
  * The wash under the curve, deepest at the top of the graph and palest at the x
  * axis.
@@ -220,6 +212,19 @@ const wash: Fill = {
  */
 export const slopeField = (at: Vec2) => vec2(1, 2 * at.x);
 
+/** The same direction as the record draws it, over the place a field arrow is
+ * sampled at. */
+const fieldOf: Expression = {
+  kind: 'point',
+  x: 1,
+  y: {
+    kind: 'arithmetic',
+    operator: '*',
+    left: 2,
+    right: { kind: 'member', of: { kind: 'variable', name: 'at' }, name: 'x' },
+  },
+};
+
 /**
  * How many arrows across and up, chosen so a cell comes out nearly square in
  * figure units rather than tall and thin.
@@ -242,14 +247,76 @@ export const FIELD_HEAD = 0.16;
  * there. It settles towards a third of a figure unit as the curve steepens
  * rather than growing with the slope, since a slope of eight drawn at eight
  * times the length of a slope of one would cover the curve it belongs to. */
-const arrowLength = (magnitude: number) => (0.34 * magnitude) / (0.6 + magnitude);
+const arrowLength: Expression = {
+  kind: 'arithmetic',
+  operator: '/',
+  left: { kind: 'arithmetic', operator: '*', left: 0.34, right: { kind: 'variable', name: 'magnitude' } },
+  right: { kind: 'arithmetic', operator: '+', left: 0.6, right: { kind: 'variable', name: 'magnitude' } },
+};
+
+/** The slope a field arrow is drawn dark from, which is where the curve has
+ * begun to climb. */
+const STEEPENS = 3;
 
 /** The stretch the dot walks, from the stationary point to where the curve meets
  * the top of its axis. The walk is measured along this rather than across x, so
  * the dot keeps one speed instead of gathering pace as the curve steepens. */
-export const walkPath = plot(coords, curve, { over: interval(0, 3) });
+const walked: PathRecord = { kind: 'plot', coords, of: squared, over: { from: 0, to: 3 } };
 
-const START = pointAlong(walkPath, 0) ?? vec2(0, 0);
+export const walkPath = resolvePath(walked);
+
+/** How far along that stretch the dot stands, as a fraction of its length, which
+ * is the one number this figure's picture is driven by. */
+const along: Expression = { kind: 'track', name: 's' };
+
+/** Where the dot stands, which the tangent, the reading and the followed frame
+ * are all read off. */
+const point: Expression = {
+  kind: 'call',
+  name: 'pointAlong',
+  arguments: [{ kind: 'path', of: walked }, along],
+};
+
+/** The graph x the dot stands at, which is its place across mapped back through
+ * the scale it was drawn with. */
+const graphX: Expression = {
+  kind: 'call',
+  name: 'remap',
+  arguments: [
+    { kind: 'member', of: point, name: 'x' },
+    coords.x.units.from,
+    coords.x.units.to,
+    coords.x.graph.from,
+    coords.x.graph.to,
+  ],
+};
+
+/** Where the middle of the frame sits, as the expression `frameAt` computes: the
+ * dot's place across, less the reach the view holds still over, held inside the
+ * room the graph's own edge leaves. */
+const centred: Expression = {
+  kind: 'call',
+  name: 'clamp',
+  arguments: [
+    {
+      kind: 'arithmetic',
+      operator: '-',
+      left: { kind: 'member', of: point, name: 'x' },
+      right: { kind: 'call', name: 'clamp', arguments: [{ kind: 'member', of: point, name: 'x' }, -REACH, REACH] },
+    },
+    -ROOM,
+    ROOM,
+  ],
+};
+
+/** A place in the frame the view has moved to, as a fraction of its width and
+ * its height, so a word hung there holds its place on the page while the picture
+ * slides under it. */
+const placeIn = (across: number, up: number): Expression => ({
+  kind: 'point',
+  x: { kind: 'arithmetic', operator: '+', left: centred, right: (across - 0.5) * size.width },
+  y: (up - 0.5) * size.height,
+});
 
 /** The rule at the stationary point and the rule everywhere else, typeset when
  * this module loads rather than at every frame, since the geometry of each is
@@ -264,14 +331,12 @@ const moving = await equationFromTex('\\frac{dy}{dx} = 2x');
  * rather than over it. */
 const RULE_WIDTH = 1.2;
 const RULE_HEIGHT = 0.6;
-const rule = (name: string, equation: Equation, frame: Extent) =>
-  equationNode(name, equation, {
-    at: fractionOf(frame, 0.02, 0.825),
-    align: 'start',
-    width: RULE_WIDTH,
-    height: RULE_HEIGHT,
-    fill: ink,
-  });
+const rule = (name: string, equation: Equation): NodeRecord => ({
+  kind: 'equationNode',
+  name,
+  equation,
+  options: { at: placeIn(0.02, 0.825), align: 'start', width: RULE_WIDTH, height: RULE_HEIGHT, fill: ink },
+});
 
 /** How far the curve climbs over the stretch the dot walks, which is what the
  * brace at the end measures and what its number counts to. */
@@ -285,162 +350,228 @@ export const RISE_DEPTH = 0.3;
  * the smallest text it draws. */
 export const TEXT = textScale(0.32);
 
+/** The step every number this figure writes is rounded and padded to, which is
+ * what keeps the reading the same width as it moves. */
+const PRECISION = 0.01;
+
 /** Every label along the x axis, named after the number it shows, which is what
  * lets them arrive one after another. */
 const acrossLabels = ['-1', '0', '1', '2', '3', '4'].map((label) => `tangent/axes/x/labels/${label}`);
 
 /**
- * The whole picture at one place along the walk, given as a fraction of the
- * walk's own length.
+ * The whole picture, as one record over the fraction of the walk's length the
+ * dot stands at.
  *
  * The graph x is recovered from that place rather than driven beside it, so the
  * dot, the tangent and the reading are one number. Driving the dot with a span
  * and the tangent with a track would be two clocks free to disagree.
  */
-export function sceneAt(along: number): Node {
-  const point = pointAlong(walkPath, along) ?? START;
-  const frame = frameAt(point);
-  const x = toGraph(coords.x, point.x);
-  return group(
-    'tangent',
-    [
-    numberPlane('grid', coords, { stroke: faint, minors: 4, minorOpacity: 0.45 }),
-    axes('axes', coords, { stroke: pen, fill: ink, size: TEXT.tick, tip: TIP }),
-    shape('area', areaUnder(coords, plot(coords, curve, { over: interval(0, x) })), { fill: wash }),
-    vectorField('field', coords, slopeField, {
-      resolution: FIELD,
-      lengthOf: arrowLength,
-      colourFor: (magnitude) => (magnitude > 3 ? steep : gentle),
-      width: FIELD_WIDTH,
-      head: FIELD_HEAD,
-    }),
-    shape('curve', plot(coords, curve), { stroke: drawn }),
-    shape('tangent', tangentAt(coords, walkPath, x, { reach: 1.2 }), { stroke: slope }),
-    dot('point', point, 0.08, ink),
-    text('reading', fractionOf(frame, 0.02, 0.91), `slope ${labelFor(slopeOf(coords, walkPath, x), 0.01)}`, TEXT.note, {
-      fill: ink,
-    }),
-    group('equation', [rule('at-rest', atRest, frame), rule('moving', moving, frame)]),
-    group('window', [
-      shape('ground', rect(vec2(LENS.x.from, LENS.y.from), LENS_ACROSS, LENS_UP), { fill: { colour: PANEL } }),
-      shape(
-        'edge',
-        rect(
-          vec2(LENS.x.from - LENS_EDGE / 2, LENS.y.from - LENS_EDGE / 2),
-          LENS_ACROSS + LENS_EDGE,
-          LENS_UP + LENS_EDGE
-        ),
-        { stroke: { colour: INK, width: LENS_EDGE } }
-      ),
-    ]),
-    brace('rise', pointOf(coords, 3, RISE), pointOf(coords, 3, 0), labelFor(RISE, 0.01), {
-      depth: RISE_DEPTH,
-      padding: 0.28,
-      stroke: pen,
-      fill: ink,
-      size: TEXT.tick,
-    }),
-    ],
-    { style: TYPE }
-  );
-}
+export const scene: NodeRecord = {
+  kind: 'group',
+  name: 'tangent',
+  children: [
+    {
+      kind: 'numberPlane',
+      name: 'grid',
+      coords,
+      options: { stroke: faint, minors: 4, minorOpacity: 0.45 },
+    },
+    { kind: 'axes', name: 'axes', coords, options: { stroke: pen, fill: ink, size: TEXT.tick, tip: TIP } },
+    {
+      kind: 'shape',
+      name: 'area',
+      path: {
+        kind: 'areaUnder',
+        coords,
+        curve: { kind: 'plot', coords, of: squared, over: { from: 0, to: graphX } },
+      },
+      style: { fill: wash },
+    },
+    {
+      kind: 'vectorField',
+      name: 'field',
+      coords,
+      of: fieldOf,
+      options: {
+        resolution: FIELD,
+        lengthOf: arrowLength,
+        colourFor: { kind: 'bands', first: gentle, then: [{ above: STEEPENS, colour: steep }] },
+        width: FIELD_WIDTH,
+        head: FIELD_HEAD,
+      },
+    },
+    { kind: 'shape', name: 'curve', path: { kind: 'plot', coords, of: squared }, style: { stroke: drawn } },
+    {
+      kind: 'shape',
+      name: 'tangent',
+      path: { kind: 'tangentAt', coords, curve: walked, x: graphX, reach: 1.2 },
+      style: { stroke: slope },
+    },
+    { kind: 'dot', name: 'point', at: point, radius: 0.08, fill: ink },
+    {
+      kind: 'text',
+      name: 'reading',
+      at: placeIn(0.02, 0.91),
+      content: {
+        template: 'slope {0}',
+        holes: [
+          {
+            value: { kind: 'call', name: 'slopeOf', arguments: [{ kind: 'coords', of: coords }, { kind: 'path', of: walked }, graphX] },
+            precision: PRECISION,
+          },
+        ],
+      },
+      size: TEXT.note,
+      options: { fill: ink },
+    },
+    { kind: 'group', name: 'equation', children: [rule('at-rest', atRest), rule('moving', moving)] },
+    {
+      kind: 'group',
+      name: 'window',
+      children: [
+        {
+          kind: 'shape',
+          name: 'ground',
+          path: { kind: 'rect', corner: vec2(LENS.x.from, LENS.y.from), width: LENS_ACROSS, height: LENS_UP },
+          style: { fill: { colour: PANEL } },
+        },
+        {
+          kind: 'shape',
+          name: 'edge',
+          path: {
+            kind: 'rect',
+            corner: vec2(LENS.x.from - LENS_EDGE / 2, LENS.y.from - LENS_EDGE / 2),
+            width: LENS_ACROSS + LENS_EDGE,
+            height: LENS_UP + LENS_EDGE,
+          },
+          style: { stroke: { colour: INK, width: LENS_EDGE } },
+        },
+      ],
+    },
+    {
+      kind: 'brace',
+      name: 'rise',
+      from: pointOf(coords, 3, RISE),
+      to: pointOf(coords, 3, 0),
+      content: labelFor(RISE, PRECISION),
+      options: { depth: RISE_DEPTH, padding: 0.28, stroke: pen, fill: ink, size: TEXT.tick },
+    },
+  ],
+  style: TYPE,
+};
 
 /**
- * The view following the dot, as an entry rather than as a function of the clock
- * written on the figure.
+ * When each wave of the entrance runs, in seconds.
  *
- * Its span is nothing wide, so it is applied in full from the first frame and the
- * picture is the one the closure drew. What the entry buys is that the figure's
- * extent is a plain extent, which a file can carry, and that the follow sits in
- * the same list the animations do.
+ * Every wave leaves before the one in front of it has finished, so the picture
+ * arrives as one movement rather than as eight that each stop. The labels along
+ * the x axis are the one wave that does not arrive together: each starts 0.08
+ * after the one before it and each takes 0.4, which is the row a reader sees
+ * being written out.
  */
-const follows = Timeline.empty().play(
-  followView('tangent/point', { within: REACH, room: ROOM, axis: 'x' }),
-  0
-);
+const GRID = { from: 0, to: 0.6 };
+const LINES = { from: 0.4, to: 1.1 };
+const TICKS = { from: 1, to: 1.4 };
+const LABELS = [1.4, 1.48, 1.56, 1.64, 1.72, 1.8];
+const LABEL_FADE = 0.4;
+const Y_LABELS = { from: 1.8, to: 2.2 };
+const CURVE = { from: 2.1, to: 3 };
+const LAND = { from: 2.8, to: 3.2 };
+const PARTS = { from: 3.1, to: 3.6 };
 
-/** The picture arriving, one part at a time. */
-const entrance = follows
-  // The panel arrives with the grid rather than later, because the inset's marks
-  // carry the opacity of the marks they copy: the picture inside the panel fades
-  // in as the picture does, and a panel arriving afterwards would leave that
-  // arrival hanging over the band with no ground behind it.
-  .together([fadeIn('tangent/grid'), fadeIn('tangent/window')], 0.6)
-  .together([draw('tangent/axes/x/line'), draw('tangent/axes/y/line')], 0.7, { after: -0.2 })
-  .together(
-    [
-      fadeIn('tangent/axes/x/ticks'),
-      fadeIn('tangent/axes/y/ticks'),
-      fadeIn('tangent/axes/x/tips'),
-      fadeIn('tangent/axes/y/tips'),
-    ],
-    0.4,
-    { after: -0.1 }
-  )
-  // A staggered row is paced by its gap, and 0.08 of a second is shorter than the
-  // rest a smoothstep spends leaving zero, so a label easing in as well arrives
-  // later than the row reads it as arriving.
-  .stagger(
-    acrossLabels.map((label) => fadeIn(label)),
-    0.4,
-    { gap: 0.08, curve: easeOut }
-  )
-  .play(fadeIn('tangent/axes/y/labels'), 0.4, { after: -0.4, curve: easeOut })
-  .play(draw('tangent/curve'), 0.9, { after: -0.1 })
-  // The dot passes its own size and settles on it, which is what says it landed
-  // rather than swelled into place.
-  .play(growFrom('tangent/point', pointOf(coords, 0, 0)), 0.4, { after: -0.2, curve: overshoot })
-  .together(
-    [
-      fadeIn('tangent/area'),
-      fadeIn('tangent/field'),
-      fadeIn('tangent/tangent'),
-      fadeIn('tangent/reading'),
-      fadeIn('tangent/equation'),
-    ],
-    0.5,
-    { after: -0.1 }
-  );
+/** How long the whole entrance takes, which is where its last fade ends. */
+const ENTRANCE = PARTS.to;
 
 /** The beat at the stationary point, where the slope is nothing and the reading
  * says so. */
-const beat = entrance.together(
-  [
-    indicate('tangent/point', { factor: 2, colour: lit }),
-    circumscribe('tangent/reading', { stroke: accent, padding: 0.14 }),
-  ],
-  1,
-  // A swell and a box that draws then lets go each carry their own out-and-back,
-  // so easing the clock as well eases the gesture twice and its two halves crawl
-  // away from the middle they turn at.
-  { after: 0.2, curve: linear }
-);
+const BEAT = { from: 3.8, to: 4.8 };
 
 const WALK = 3.6;
-const WALK_FROM = beat.duration;
+const WALK_FROM = BEAT.to;
 const WALK_TO = WALK_FROM + WALK;
 
 /** How long the right-hand side takes to walk, which starts as the walk does so
  * the reading and the rule stop disagreeing about the slope. */
 const MORPH = 0.9;
 
-const morphed = beat.play(morphEquation('tangent/equation/at-rest', 'tangent/equation/moving'), MORPH);
+/** The flash at the top of the curve, and the brace that follows it. */
+const FLASH = { from: WALK_TO, to: WALK_TO + 0.8 };
+const RISE_SPAN = { from: 9.35, to: 10.25 };
 
-const flashed = morphed
-  .wait(WALK - MORPH)
-  .play(flash('tangent/point', { stroke: accent, rays: 10 }), 0.8, { curve: linear });
+/** How long the figure runs, which is where its last span ends. */
+const DURATION = RISE_SPAN.to;
 
-/** The brace draws on while its number counts to the rise, which is one span so
- * the two cannot end at different moments. */
-const line = flashed.together(
-  [
-    draw('tangent/rise/brace'),
-    fadeIn('tangent/rise/word'),
-    countTo('tangent/rise/word', 0, RISE, (value) => labelFor(value, 0.01)),
-  ],
-  0.9,
-  { after: 0.15 }
-);
+/**
+ * The picture arriving, one part at a time, and the two gestures that follow it.
+ *
+ * The view follows the dot as an entry rather than as a function of the clock
+ * written on the figure, and its span is nothing wide, so it is applied in full
+ * from the first frame. What the entry buys is that the figure's extent is a
+ * plain extent, which a file can carry.
+ *
+ * A swell and a box that draws then lets go each carry their own out-and-back,
+ * so easing the clock as well eases the gesture twice and its two halves crawl
+ * away from the middle they turn at. That is why the beat is linear, and the
+ * flash with it.
+ */
+const spans: readonly SpanRecord[] = [
+  {
+    entry: { kind: 'followView', target: 'tangent/point', options: { within: REACH, room: ROOM, axis: 'x' } },
+    from: 0,
+    to: 0,
+  },
+  // The panel arrives with the grid rather than later, because the inset's marks
+  // carry the opacity of the marks they copy: the picture inside the panel fades
+  // in as the picture does, and a panel arriving afterwards would leave that
+  // arrival hanging over the band with no ground behind it.
+  { entry: { kind: 'fadeIn', target: 'tangent/grid' }, ...GRID },
+  { entry: { kind: 'fadeIn', target: 'tangent/window' }, ...GRID },
+  { entry: { kind: 'draw', target: 'tangent/axes/x/line' }, ...LINES },
+  { entry: { kind: 'draw', target: 'tangent/axes/y/line' }, ...LINES },
+  { entry: { kind: 'fadeIn', target: 'tangent/axes/x/ticks' }, ...TICKS },
+  { entry: { kind: 'fadeIn', target: 'tangent/axes/y/ticks' }, ...TICKS },
+  { entry: { kind: 'fadeIn', target: 'tangent/axes/x/tips' }, ...TICKS },
+  { entry: { kind: 'fadeIn', target: 'tangent/axes/y/tips' }, ...TICKS },
+  // A staggered row is paced by its gap, and 0.08 of a second is shorter than the
+  // rest a smoothstep spends leaving zero, so a label easing in as well arrives
+  // later than the row reads it as arriving.
+  ...acrossLabels.map((label, at): SpanRecord => ({
+    entry: { kind: 'fadeIn', target: label },
+    from: LABELS[at] as number,
+    to: (LABELS[at] as number) + LABEL_FADE,
+    curve: 'easeOut',
+  })),
+  { entry: { kind: 'fadeIn', target: 'tangent/axes/y/labels' }, ...Y_LABELS, curve: 'easeOut' },
+  { entry: { kind: 'draw', target: 'tangent/curve' }, ...CURVE },
+  // The dot passes its own size and settles on it, which is what says it landed
+  // rather than swelled into place.
+  { entry: { kind: 'growFrom', target: 'tangent/point', from: pointOf(coords, 0, 0) }, ...LAND, curve: 'overshoot' },
+  { entry: { kind: 'fadeIn', target: 'tangent/area' }, ...PARTS },
+  { entry: { kind: 'fadeIn', target: 'tangent/field' }, ...PARTS },
+  { entry: { kind: 'fadeIn', target: 'tangent/tangent' }, ...PARTS },
+  { entry: { kind: 'fadeIn', target: 'tangent/reading' }, ...PARTS },
+  { entry: { kind: 'fadeIn', target: 'tangent/equation' }, ...PARTS },
+  { entry: { kind: 'indicate', target: 'tangent/point', options: { factor: 2, colour: lit } }, ...BEAT, curve: 'linear' },
+  {
+    entry: { kind: 'circumscribe', target: 'tangent/reading', options: { stroke: accent, padding: 0.14 } },
+    ...BEAT,
+    curve: 'linear',
+  },
+  {
+    entry: { kind: 'morphEquation', from: 'tangent/equation/at-rest', to: 'tangent/equation/moving' },
+    from: WALK_FROM,
+    to: WALK_FROM + MORPH,
+  },
+  { entry: { kind: 'flash', target: 'tangent/point', options: { stroke: accent, rays: 10 } }, ...FLASH, curve: 'linear' },
+  // The brace draws on while its number counts to the rise, which is one span so
+  // the two cannot end at different moments.
+  { entry: { kind: 'draw', target: 'tangent/rise/brace' }, ...RISE_SPAN },
+  { entry: { kind: 'fadeIn', target: 'tangent/rise/word' }, ...RISE_SPAN },
+  {
+    entry: { kind: 'countTo', target: 'tangent/rise/word', from: 0, to: RISE, precision: PRECISION },
+    ...RISE_SPAN,
+  },
+];
 
 /** The walk holds at the stationary point until the picture has arrived and been
  * pointed at, then runs to the top of the curve. */
@@ -450,19 +581,13 @@ export const walk: Track = [
   { time: WALK_TO, value: 1, smooth: true },
 ];
 
-/** Where the dot is at a time, which is what the view follows and what the strip
- * lays each frame out against. */
-export function pointAt(seconds: number): Vec2 {
-  return pointAlong(walkPath, sampleTrack(walk, seconds) as number) ?? START;
-}
-
-export const tangent: Figure = {
+export const written: FigureRecord = {
   extent: size,
-  duration: line.duration,
-  still: WALK_FROM + WALK * 0.85,
+  scene,
   tracks: { s: walk },
-  timeline: line,
-  scene: (_seconds, values) => sceneAt(values.s as number),
+  timeline: { spans, duration: DURATION },
+  duration: DURATION,
+  still: WALK_FROM + WALK * 0.85,
   // The inset is named under the figure's own root, so the strip's move carries
   // its marks into their slot along with everything else. It hides the panel,
   // which is a figure mark: an inset that magnified its own ground and border
@@ -471,12 +596,26 @@ export const tangent: Figure = {
     {
       shows: LENS_SHOWS,
       into: LENS,
-      view: followView('tangent/point'),
+      view: { kind: 'followView', target: 'tangent/point' },
       name: 'tangent/lens',
       hides: ['tangent/window'],
     },
   ],
 };
+
+export const tangent: Figure = resolveFigure(written);
+
+/** The picture at one place along the walk, given as a fraction of the walk's
+ * own length, which is the scene read with that one track bound. */
+export function sceneAt(along: number): Node {
+  return resolveNode(scene, { tracks: { s: along } });
+}
+
+/** Where the dot is at a time, which is what the view follows and what the strip
+ * lays each frame out against. */
+export function pointAt(seconds: number): Vec2 {
+  return pointAlong(walkPath, sampleTrack(walk, seconds) as number) ?? vec2(0, 0);
+}
 
 /** How much wider each frame's slot is than the figure, so a strip of them has
  * white between the frames rather than one grid running into the next. */
@@ -524,10 +663,6 @@ export function stripMarks(
   return { marks, extent: { width: SLOT * columns, height: DOWN * rows } };
 }
 
-/** The times the strip shows, which are also the times the gate reads the demo
- * at: the picture arrived, the beat, half way up, and the end with the rise
- * braced. The last is the end rather than the top of the curve, because a strip
- * that stops at the top shows none of what the last beat adds. */
 /**
  * The four times the strip shows: the picture arrived and at rest, two moments
  * of the walk, and the finished reading under its brace.
@@ -535,16 +670,16 @@ export function stripMarks(
  * Nothing moves during the beat, so the beat's start and its end drew the same
  * image and two of the four frames were one frame twice.
  */
-export const FRAMES = [entrance.duration, WALK_FROM + WALK * 0.3, WALK_FROM + WALK * 0.7, line.duration];
+export const FRAMES = [ENTRANCE, WALK_FROM + WALK * 0.3, WALK_FROM + WALK * 0.7, DURATION];
 
 /** What the timeline is made of, for a gate that would otherwise have to guess
  * where one part of the story ends and the next begins. */
 export const TIMES = {
-  entrance: entrance.duration,
-  beat: beat.duration,
+  entrance: ENTRANCE,
+  beat: BEAT.to,
   walkFrom: WALK_FROM,
   morphTo: WALK_FROM + MORPH,
   walkTo: WALK_TO,
-  braceFrom: flashed.duration + 0.15,
-  braceTo: line.duration,
+  braceFrom: RISE_SPAN.from,
+  braceTo: RISE_SPAN.to,
 };

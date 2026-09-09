@@ -492,8 +492,17 @@ commit that cannot express something has found a gap in the vocabulary rather th
 Step 8.1 made the boolean demo a record: `demos/boolean.figure.json` is 13,914 bytes over 519 lines,
 its two sheets are byte for byte what they were, and the committed file read back draws twelve marks
 at each of the demo's seven named times. The record had been written in three places rather than the
-one the plan found, and collapsing them took 211 lines out of the tests. **Step 8.2 is what a session
-runs next**, which is the flat demo, 550 lines and the widest scene of the three.
+one the plan found, and collapsing them took 211 lines out of the tests.
+
+Step 8.2 made the flat demo a record, and it found the two gaps the plan said a commit would stop on.
+A text record's place was a `Vec2` where an equation's is an expression, so the two rules could hang
+off the frame the view has moved to and the reading standing between them could not. The validator's
+shape for a follow held `within` and `room` and not `axis`, so a figure that follows across and not up
+and down was refused by the reader. Each is a commit of its own in front of the transcription.
+`demos/tangent.figure.json` is 394,881 bytes over 10,637 lines, eleven children and thirty spans, and
+read back it draws 181 marks at the still time of 7.86 and 186, 185, 185, 182, 178, 178 and 178 at the
+seven named times. All eight sheets are byte for byte what they were. **Step 8.3 is what a session
+runs next**, which is the solid demo, 527 lines, and the held beat of step 3.9b is not in it.
 
 **Two things fall due before the format freezes and both are Siva's**, which are
 whether a `Mark` may be a raster image, due by step 3 where the node vocabulary lands, and the

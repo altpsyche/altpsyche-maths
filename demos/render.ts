@@ -19,7 +19,7 @@ import {
   type Mat3,
 } from '../index.js';
 import { GROUND, SHADE_THEME, THEME } from './palette.js';
-import { FRAMES, stripMarks, tangent } from './tangent.js';
+import { FRAMES, stripMarks, tangent, written as tangentWritten } from './tangent.js';
 import {
   FRAMES as BOOLEAN_FRAMES,
   booleans,
@@ -151,5 +151,6 @@ export const sheets: readonly Sheet[] = [
  */
 export const figures: readonly { file: string; text: () => string }[] = [
   { file: 'demos/boolean.figure.json', text: () => writeFigure(booleansWritten) },
+  { file: 'demos/tangent.figure.json', text: () => writeFigure(tangentWritten) },
   { file: 'demos/rotate.figure.json', text: () => writeFigure(turnsWritten) },
 ];

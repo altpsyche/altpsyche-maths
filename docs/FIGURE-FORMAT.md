@@ -1174,7 +1174,7 @@ release away and has a document of its own.
     all eight sheets byte for byte after `npm run demos`, and `demos/rotate.figure.json` and
     `demos/boolean.figure.json` unmoved.
 
-  - [ ] **8.2 The flat demo is a file.** 550 lines, and the widest scene of the three: the grid, both
+  - [x] **8.2 The flat demo is a file.** 550 lines, and the widest scene of the three: the grid, both
     axes, the shaded region, the field of tangents, the plotted parabola, the tangent at the dot, the
     dot, the reading, the typeset rule the reading is a value of, the brace and the number counting to
     the rise.
@@ -1199,6 +1199,24 @@ release away and has a document of its own.
     7.86 and 186, 185, 185, 182, 178, 178 and 178 at its seven named times, mark for mark within a
     tolerance of 1e-6; the panel's marks each carrying a clip at each of those times; the reading
     giving the same seven strings step 3.12 measured; the file's own bytes and lines.
+    **A second gap turned up in the reader rather than in the vocabulary**, and it is the commit in
+    front of this one: the validator's shape for a follow held `within` and `room` and not `axis`, so
+    a figure that follows across and not up and down could not be read back at all.
+    **The timeline's spans are written as the decimals they were meant to be** rather than as the
+    sums the builder left. `together` starts its second entry by subtracting the length it has just
+    added, so the two axis lines began 6e-17 apart and the five fades of the last wave ended at
+    3.5999999999999996. Every frame the strip draws sits at the end of a span or past it, so the
+    rounded times draw the same picture and the file carries numbers a reader can check.
+    **Measured:** all eight sheets byte for byte after `npm run demos`, `docs/tangent.svg` at 80,702
+    bytes and `docs/tangent-strip.svg` at 324,853, each the number above and the newline it ends in;
+    `demos/tangent.figure.json` at 394,881 bytes over 10,637 lines, of which the two typeset rules
+    are 87,698 of the scene's 96,000 written without its spaces; the committed file read back drawing
+    181 marks at the still time of 7.859999999999999 and 186, 185, 185, 182, 178, 178 and 178 at the
+    seven named times, mark for mark by tolerance; every mark of the panel carrying a clip at all
+    seven; the reading giving `slope 0.00` three times, `slope 1.16`, then `slope 6.00` three times;
+    eleven children and thirty spans in the file; the module from 550 lines to 685, since a record
+    names its fields where a call passes them in order; the suite from 1,027 tests to 1,033 over 65
+    files.
 
   - [ ] **8.3 The solid demo is a file.** 527 lines: the saddle, the plane cutting it, the two
     branches of the crossing, three axes in space, the three runs of steepest descent, the field they
