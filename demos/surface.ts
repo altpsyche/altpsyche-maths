@@ -560,7 +560,8 @@ export const DOWN = 6.8;
  * frame carried into its own slot and renamed so no two frames share an id. */
 export function stripMarks(
   times: readonly number[],
-  columns = times.length
+  columns = times.length,
+  figure: Figure = solid
 ): { marks: readonly Mark[]; extent: Extent } {
   const rows = Math.ceil(times.length / columns);
   const marks = times.flatMap((seconds, frame) => {
@@ -571,7 +572,7 @@ export function stripMarks(
     // which is the rule an animation wants and the wrong one here: a slot is a
     // second frame rather than a place inside one, so the inset's window travels
     // with the marks it holds or it would cut every frame but the middle away.
-    return moveBy('solid', by)(marksAt(solid, seconds), 1).map((mark) => ({
+    return moveBy('solid', by)(marksAt(figure, seconds), 1).map((mark) => ({
       ...mark,
       id: `at${frame}/${mark.id}`,
       clip: mark.clip

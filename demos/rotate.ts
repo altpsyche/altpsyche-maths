@@ -200,13 +200,14 @@ export const DOWN = 6.6;
  */
 export function stripMarks(
   times: readonly number[],
-  columns = times.length
+  columns = times.length,
+  figure: Figure = turns
 ): { marks: readonly Mark[]; extent: Extent } {
   const rows = Math.ceil(times.length / columns);
   const marks = times.flatMap((seconds, frame) => {
     const across = ((frame % columns) - (columns - 1) / 2) * SLOT;
     const up = ((rows - 1) / 2 - Math.floor(frame / columns)) * DOWN;
-    return moveBy('turns', vec2(across - CENTRE.x, up - CENTRE.y))(marksAt(turns, seconds), 1).map((mark) => ({
+    return moveBy('turns', vec2(across - CENTRE.x, up - CENTRE.y))(marksAt(figure, seconds), 1).map((mark) => ({
       ...mark,
       id: `at${frame}/${mark.id}`,
     }));

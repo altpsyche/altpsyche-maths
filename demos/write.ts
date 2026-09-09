@@ -6,14 +6,16 @@
 import { writeFileSync } from 'node:fs';
 import { figures, sheets } from './render.js';
 
-for (const sheet of sheets) {
-  const markup = sheet.markup();
-  writeFileSync(sheet.file, `${markup}\n`);
-  console.log(`${sheet.file} ${markup.length} bytes`);
-}
-
+// The figures go first, since every sheet is drawn from the file rather than
+// from the module that wrote it.
 for (const figure of figures) {
   const text = figure.text();
   writeFileSync(figure.file, text);
   console.log(`${figure.file} ${text.length} bytes`);
+}
+
+for (const sheet of sheets) {
+  const markup = sheet.markup();
+  writeFileSync(sheet.file, `${markup}\n`);
+  console.log(`${sheet.file} ${markup.length} bytes`);
 }

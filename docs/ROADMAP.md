@@ -525,8 +525,11 @@ and 202 marks at the flat demo's still time now 181. Its model gains a paragraph
 A fifth commit met the last of step 9's done-criteria, which asks the gate to name the block a broken
 example is in rather than a line of the module it assembles: each line of the body carries the block
 it came from and the line of the page, and the compiler's output is rewritten to name both. **Step 9
-is cut** and its four criteria are verified line by line. **Step 10 is what a session runs next**,
-which is the demos as the conformance suite.
+is cut** and its four criteria are verified line by line. Step 10 made the demos the conformance suite: every one of the eight sheets is drawn from the figure
+its committed file describes rather than from the module that wrote it, the files are written before
+the sheets in one run, and all eight stayed byte for byte. **Step 11 is what a session runs next**,
+which is cutting 2.0.0, and it is Siva's: the version is bumped in that commit and publishing is
+asked for rather than assumed.
 
 **Two things fall due before the format freezes and both are Siva's**, which are
 whether a `Mark` may be a raster image, due by step 3 where the node vocabulary lands, and the

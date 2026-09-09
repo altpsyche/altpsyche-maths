@@ -22,6 +22,7 @@ import {
   overlapOf,
   plot,
   pointAlong,
+  readFigure,
   pointOf,
   resolveExtent,
   resolveNode,
@@ -187,6 +188,18 @@ describe('the committed pictures', () => {
     for (const sheet of sheets) {
       const committed = readFileSync(path.join(root, sheet.file), 'utf8');
       expect(committed).toBe(`${sheet.markup()}\n`);
+    }
+  });
+
+  it('are drawn from the committed files rather than from the modules that wrote them', () => {
+    // A sheet drawn from the module says the code draws a picture. A sheet drawn
+    // from the file says the format carries one, which is the stronger claim and
+    // the only one a renderer in another language could make.
+    for (const figure of figures) {
+      const read = readFigure(readFileSync(path.join(root, figure.file), 'utf8'));
+      const sheet = sheets.find((one) => one.file === figure.file.replace('demos/', 'docs/').replace('.figure.json', '.svg'));
+      expect(sheet).toBeDefined();
+      expect(marksAt(read, read.still)).toEqual(sheet!.drawn().marks);
     }
   });
 

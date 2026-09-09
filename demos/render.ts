@@ -9,6 +9,7 @@
 import {
   marksAt,
   extentAt,
+  readFigure,
   svgMarkup,
   writeFigure,
   viewAt,
@@ -18,6 +19,7 @@ import {
   type Mark,
   type Mat3,
 } from '../index.js';
+import { readFileSync } from 'node:fs';
 import { GROUND, SHADE_THEME, THEME } from './palette.js';
 import { FRAMES, stripMarks, tangent, written as tangentWritten } from './tangent.js';
 import {
@@ -137,15 +139,34 @@ function sheetOf(file: string, drawn: () => Drawn): Sheet {
   return { file, drawn, markup: () => markupFor(drawn()) };
 }
 
+/**
+ * The figure a committed file describes, read when a sheet is drawn rather than
+ * when this module loads.
+ *
+ * Every sheet is drawn from a file rather than from the module that wrote it, so
+ * a picture is what the format carries and not what a closure remembers. Reading
+ * it late is what lets one run write the files and then draw from them: the
+ * writer names the figures first and the sheets second.
+ */
+const fileFor = (file: string): Figure => readFigure(readFileSync(file, 'utf8'));
+
 export const sheets: readonly Sheet[] = [
-  sheetOf('docs/tangent.svg', () => stillDrawn(tangent)),
-  sheetOf('docs/tangent-strip.svg', () => stripDrawn(stripMarks(FRAMES, 2))),
-  sheetOf('docs/boolean.svg', () => stillDrawn(booleans)),
-  sheetOf('docs/boolean-strip.svg', () => stripDrawn(booleanStripMarks(BOOLEAN_FRAMES, 2))),
-  sheetOf('docs/rotate.svg', () => stillDrawn(turns)),
-  sheetOf('docs/rotate-strip.svg', () => stripDrawn(turnStripMarks(TURN_FRAMES, 2))),
-  sheetOf('docs/surface.svg', () => stillDrawn(solid)),
-  sheetOf('docs/surface-strip.svg', () => stripDrawn(solidStripMarks(SOLID_FRAMES, 2))),
+  sheetOf('docs/tangent.svg', () => stillDrawn(fileFor('demos/tangent.figure.json'))),
+  sheetOf('docs/tangent-strip.svg', () =>
+    stripDrawn(stripMarks(FRAMES, 2, fileFor('demos/tangent.figure.json')))
+  ),
+  sheetOf('docs/boolean.svg', () => stillDrawn(fileFor('demos/boolean.figure.json'))),
+  sheetOf('docs/boolean-strip.svg', () =>
+    stripDrawn(booleanStripMarks(BOOLEAN_FRAMES, 2, fileFor('demos/boolean.figure.json')))
+  ),
+  sheetOf('docs/rotate.svg', () => stillDrawn(fileFor('demos/rotate.figure.json'))),
+  sheetOf('docs/rotate-strip.svg', () =>
+    stripDrawn(turnStripMarks(TURN_FRAMES, 2, fileFor('demos/rotate.figure.json')))
+  ),
+  sheetOf('docs/surface.svg', () => stillDrawn(fileFor('demos/surface.figure.json'))),
+  sheetOf('docs/surface-strip.svg', () =>
+    stripDrawn(solidStripMarks(SOLID_FRAMES, 2, fileFor('demos/surface.figure.json')))
+  ),
 ];
 
 /**

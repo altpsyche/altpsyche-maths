@@ -244,13 +244,14 @@ export const DOWN = 4.4;
  */
 export function stripMarks(
   times: readonly number[],
-  columns = times.length
+  columns = times.length,
+  figure: Figure = booleans
 ): { marks: readonly Mark[]; extent: Extent } {
   const rows = Math.ceil(times.length / columns);
   const marks = times.flatMap((seconds, frame) => {
     const across = ((frame % columns) - (columns - 1) / 2) * SLOT;
     const up = ((rows - 1) / 2 - Math.floor(frame / columns)) * DOWN;
-    return moveBy('booleans', vec2(across, up))(marksAt(booleans, seconds), 1).map((mark) => ({
+    return moveBy('booleans', vec2(across, up))(marksAt(figure, seconds), 1).map((mark) => ({
       ...mark,
       id: `at${frame}/${mark.id}`,
     }));

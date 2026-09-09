@@ -1362,9 +1362,18 @@ release away and has a document of its own.
     field the tree no longer has.
   - The README and `DESIGN.md` say what a figure is in the same words the guide does.
 
-- [ ] **10. The demos are the conformance suite.** The gate reads each figure from its file rather
+- [x] **10. The demos are the conformance suite.** The gate reads each figure from its file rather
   than from its module. **Measures:** the whole suite green with every demo loaded as data; the byte
   gate on all eight sheets unchanged.
+  **The file is read when a sheet is drawn rather than when the module loads**, which is what lets one
+  run of `npm run demos` write the four files and then draw the eight sheets from them. The writer
+  names the figures first and the sheets second for the same reason.
+  **A strip takes the figure it lays out** rather than closing over its module's, since four of the
+  eight sheets are strips and a strip drawn from a module would be half the claim. The parameter
+  defaults to the module's own figure, so every caller that had two arguments still has two.
+  **Measured:** all eight sheets byte for byte after `npm run demos` with every one of them drawn
+  from a file; the suite from 1,042 tests to 1,043 over 66 files, the new one holding each still's
+  marks against the marks of the figure its file describes.
 
 - [ ] **11. Cut 2.0.0.** The version bumped in this commit, `npm install --package-lock-only` in the
   same one, the done-criteria verified line by line with the number that satisfies each, and
