@@ -1009,12 +1009,20 @@ release away and has a document of its own.
     `apart`; a file whose `still` is text and one whose path kind is `squiggle` each refused by
     `readFigure` before anything is drawn; the suite from 1,005 tests to 1,013.
 
-  - [ ] **5.8 The rotation demo is a file.** `demos/rotate.figure.json` is written once with
-    `writeFigure` and committed, `demos/rotate.ts` reads it with `readFigure`, and `readFigure` runs
-    the validator over what it parsed.
-    **Measures:** `docs/rotate.svg` and `docs/rotate-strip.svg` byte for byte what is committed today
-    after `npm run demos`; the file's bytes and its line count against the 208 lines of module it
-    replaces; a field made wrong in each of four places in the committed file refused with its path.
+  - [x] **5.8 The rotation demo is a file.** `demos/rotate.ts` holds a `FigureRecord` rather than
+    calls, `demos/rotate.figure.json` is what `npm run demos` writes from it, and a gate reads the
+    committed bytes the way the sheet gate reads a picture.
+    **The demo keeps the record and the file is written from it**, rather than the module reading the
+    file it also produces, which would have been the same transcription twice with nothing between
+    them to disagree.
+    **What measures the rewrite is the committed sheets**, since those were drawn by the calls the
+    records replace: a record that resolved to anything else would move a byte of them.
+    **Measured:** `docs/rotate.svg` at 3,295 bytes and `docs/rotate-strip.svg` at 10,701 byte for
+    byte what was committed before the rewrite, after `npm run demos`; the file 6,624 bytes over 253
+    lines; the committed file read back drawing the demo's eight marks at each of the four times its
+    strip draws and at its still time, within a tolerance of 1e-6; the module from 208 lines to 234,
+    since a record names its fields where a call passes them in order; the suite from 1,013 tests to
+    1,017.
 
   #### Done-criteria for step 5
 

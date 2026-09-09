@@ -1,3 +1,4 @@
+import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 import {
   FIGURE_FORMAT_VERSION,
@@ -94,6 +95,27 @@ describe('a figure written as a file', () => {
     expect(() => writeFigure(holed)).toThrow('timeline.spans.1 is a list with nothing in it');
     const nulled = { ...turning, still: null } as unknown as FigureRecord;
     expect(() => writeFigure(nulled)).toThrow('still is null, which a file has no way to write');
+  });
+});
+
+describe('the rotation demo as a committed file', () => {
+  const committed = readFileSync('demos/rotate.figure.json', 'utf8');
+
+  it('is what the demo writes now', () => {
+    expect(committed).toBe(writeFigure(turning));
+  });
+
+  it('draws the demo mark for mark at each frame of its strip and at its still time', () => {
+    const read = readFigure(committed);
+    for (const seconds of [...FRAMES, turns.still]) {
+      const drawn = marksAt(turns, seconds);
+      expect(drawn).toHaveLength(8);
+      expect(sameMarks(marksAt(read, seconds), drawn)).toBe(true);
+    }
+  });
+
+  it('is read as the version this package writes', () => {
+    expect(JSON.parse(committed).format).toBe(FIGURE_FORMAT_VERSION);
   });
 });
 

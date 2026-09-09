@@ -1,0 +1,253 @@
+{
+  "format": 0,
+  "figure": {
+    "duration": 6,
+    "extent": {
+      "centre": {
+        "x": 0.53,
+        "y": -0.08
+      },
+      "height": 5.8,
+      "width": 10.15
+    },
+    "loop": true,
+    "scene": {
+      "children": [
+        {
+          "children": [
+            {
+              "at": {
+                "x": -2.6,
+                "y": 0.2
+              },
+              "fill": {
+                "colour": "var(--ember, #c2410c)"
+              },
+              "kind": "dot",
+              "name": "pivot",
+              "radius": 0.07
+            },
+            {
+              "children": [
+                {
+                  "kind": "shape",
+                  "name": "ell",
+                  "path": {
+                    "kind": "polygon",
+                    "points": [
+                      {
+                        "x": -3.2,
+                        "y": -0.6000000000000001
+                      },
+                      {
+                        "x": -2,
+                        "y": -0.6000000000000001
+                      },
+                      {
+                        "x": -2,
+                        "y": -0.2
+                      },
+                      {
+                        "x": -2.8000000000000003,
+                        "y": -0.2
+                      },
+                      {
+                        "x": -2.8000000000000003,
+                        "y": 1
+                      },
+                      {
+                        "x": -3.2,
+                        "y": 1
+                      }
+                    ]
+                  },
+                  "style": {
+                    "fill": {
+                      "colour": "var(--peach, #fdba74)"
+                    },
+                    "stroke": {
+                      "colour": "var(--deep, #0369a1)",
+                      "width": 0.04
+                    }
+                  }
+                },
+                {
+                  "at": {
+                    "x": -2,
+                    "y": 1
+                  },
+                  "content": "upright",
+                  "kind": "text",
+                  "name": "word",
+                  "options": {
+                    "align": "middle",
+                    "fill": {
+                      "colour": "var(--ink, #1b1b1b)"
+                    }
+                  },
+                  "size": 0.296
+                }
+              ],
+              "kind": "group",
+              "name": "rider"
+            },
+            {
+              "at": {
+                "x": -2.6,
+                "y": -2.75
+              },
+              "content": "about its centre",
+              "kind": "text",
+              "name": "label",
+              "options": {
+                "align": "middle",
+                "fill": {
+                  "colour": "var(--ink, #1b1b1b)"
+                }
+              },
+              "size": 0.41860721446243615
+            }
+          ],
+          "kind": "group",
+          "name": "own"
+        },
+        {
+          "children": [
+            {
+              "at": {
+                "x": 2.6,
+                "y": 0.2
+              },
+              "fill": {
+                "colour": "var(--ember, #c2410c)"
+              },
+              "kind": "dot",
+              "name": "pivot",
+              "radius": 0.07
+            },
+            {
+              "children": [
+                {
+                  "kind": "shape",
+                  "name": "ell",
+                  "path": {
+                    "kind": "polygon",
+                    "points": [
+                      {
+                        "x": 3.6,
+                        "y": -0.6000000000000001
+                      },
+                      {
+                        "x": 4.8,
+                        "y": -0.6000000000000001
+                      },
+                      {
+                        "x": 4.8,
+                        "y": -0.2
+                      },
+                      {
+                        "x": 4,
+                        "y": -0.2
+                      },
+                      {
+                        "x": 4,
+                        "y": 1
+                      },
+                      {
+                        "x": 3.6,
+                        "y": 1
+                      }
+                    ]
+                  },
+                  "style": {
+                    "fill": {
+                      "colour": "var(--peach, #fdba74)"
+                    },
+                    "stroke": {
+                      "colour": "var(--deep, #0369a1)",
+                      "width": 0.04
+                    }
+                  }
+                },
+                {
+                  "at": {
+                    "x": 4.8,
+                    "y": 1
+                  },
+                  "content": "upright",
+                  "kind": "text",
+                  "name": "word",
+                  "options": {
+                    "align": "middle",
+                    "fill": {
+                      "colour": "var(--ink, #1b1b1b)"
+                    }
+                  },
+                  "size": 0.296
+                }
+              ],
+              "kind": "group",
+              "name": "rider"
+            },
+            {
+              "at": {
+                "x": 2.6,
+                "y": -2.75
+              },
+              "content": "about a given point",
+              "kind": "text",
+              "name": "label",
+              "options": {
+                "align": "middle",
+                "fill": {
+                  "colour": "var(--ink, #1b1b1b)"
+                }
+              },
+              "size": 0.41860721446243615
+            }
+          ],
+          "kind": "group",
+          "name": "given"
+        }
+      ],
+      "kind": "group",
+      "name": "turns",
+      "style": {
+        "family": "system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif",
+        "weight": 400
+      }
+    },
+    "still": 0.75,
+    "timeline": {
+      "duration": 6,
+      "spans": [
+        {
+          "curve": "linear",
+          "entry": {
+            "angle": 6.283185307179586,
+            "kind": "rotate",
+            "target": "turns/own/rider"
+          },
+          "from": 0,
+          "to": 6
+        },
+        {
+          "curve": "linear",
+          "entry": {
+            "angle": 6.283185307179586,
+            "kind": "rotate",
+            "options": {
+              "pivot": {
+                "x": 2.6,
+                "y": 0.2
+              }
+            },
+            "target": "turns/given/rider"
+          },
+          "from": 0,
+          "to": 6
+        }
+      ]
+    }
+  }
+}

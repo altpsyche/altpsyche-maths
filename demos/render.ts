@@ -10,6 +10,7 @@ import {
   marksAt,
   extentAt,
   svgMarkup,
+  writeFigure,
   viewAt,
   viewMatrix,
   type Extent,
@@ -24,7 +25,7 @@ import {
   booleans,
   stripMarks as booleanStripMarks,
 } from './boolean.js';
-import { FRAMES as TURN_FRAMES, stripMarks as turnStripMarks, turns } from './rotate.js';
+import { FRAMES as TURN_FRAMES, stripMarks as turnStripMarks, turns, written as turnsWritten } from './rotate.js';
 import { FRAMES as SOLID_FRAMES, solid, stripMarks as solidStripMarks } from './surface.js';
 
 /** A hundred pixels to the figure unit, which is what turns an extent into the
@@ -139,4 +140,14 @@ export const sheets: readonly Sheet[] = [
   sheetOf('docs/rotate-strip.svg', () => stripDrawn(turnStripMarks(TURN_FRAMES, 2))),
   sheetOf('docs/surface.svg', () => stillDrawn(solid)),
   sheetOf('docs/surface-strip.svg', () => stripDrawn(solidStripMarks(SOLID_FRAMES, 2))),
+];
+
+/**
+ * The demos committed as files of the figure format, beside the pictures.
+ *
+ * A file nothing regenerates goes stale the way a picture does, so the same
+ * script writes both and the same gate reads both.
+ */
+export const figures: readonly { file: string; text: () => string }[] = [
+  { file: 'demos/rotate.figure.json', text: () => writeFigure(turnsWritten) },
 ];

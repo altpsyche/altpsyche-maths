@@ -21,25 +21,18 @@
  * picture at the start of it and a recording runs it round without a jump.
  */
 import {
-  dot,
-  frameTimesOf,
-  group,
-  linear,
-  polygon,
-  rotate,
-  shape,
-  text,
   TEXT_RATIO,
-  textScale,
-  vec2,
-  Timeline,
+  frameTimesOf,
   marksAt,
   moveBy,
+  resolveFigure,
+  textScale,
+  vec2,
   type Extent,
   type Figure,
+  type FigureRecord,
   type Mark,
-  type Node,
-  type Path,
+  type NodeRecord,
   type Vec2,
 } from '../index.js';
 import { DEEP, EMBER, INK, PEACH } from './palette.js';
@@ -92,8 +85,6 @@ export const LOCAL: readonly Vec2[] = [
  */
 export const RIDER = vec2(0.6, 0.8);
 
-const ell = (centre: Vec2): Path => polygon(LOCAL.map((point) => vec2.add(point, centre)));
-
 /** How far each panel's middle stands from the middle of the figure. */
 const PANEL = 2.6;
 const SHAPE_Y = 0.2;
@@ -113,23 +104,51 @@ export const OWN = vec2(-PANEL, SHAPE_Y);
 export const GIVEN = vec2(PANEL, SHAPE_Y);
 export const SWING = 1.6;
 
-function panel(name: string, pivot: Vec2, swing: number, label: string): Node {
+function panel(name: string, pivot: Vec2, swing: number, label: string): NodeRecord {
   const centre = vec2(pivot.x + swing, pivot.y);
-  return group(name, [
-    dot('pivot', pivot, 0.07, marker),
-    group('rider', [
-      shape('ell', ell(centre), { fill: wash, stroke: edge }),
-      text('word', vec2.add(centre, RIDER), 'upright', TEXT.label, { fill: ink, align: 'middle' }),
-    ]),
-    text('label', vec2(pivot.x, LABEL_Y), label, TEXT.note, { fill: ink, align: 'middle' }),
-  ]);
+  return {
+    kind: 'group',
+    name,
+    children: [
+      { kind: 'dot', name: 'pivot', at: pivot, radius: 0.07, fill: marker },
+      {
+        kind: 'group',
+        name: 'rider',
+        children: [
+          {
+            kind: 'shape',
+            name: 'ell',
+            path: { kind: 'polygon', points: LOCAL.map((point) => vec2.add(point, centre)) },
+            style: { fill: wash, stroke: edge },
+          },
+          {
+            kind: 'text',
+            name: 'word',
+            at: vec2.add(centre, RIDER),
+            content: 'upright',
+            size: TEXT.label,
+            options: { fill: ink, align: 'middle' },
+          },
+        ],
+      },
+      {
+        kind: 'text',
+        name: 'label',
+        at: vec2(pivot.x, LABEL_Y),
+        content: label,
+        size: TEXT.note,
+        options: { fill: ink, align: 'middle' },
+      },
+    ],
+  };
 }
 
-export const scene: Node = group(
-  'turns',
-  [panel('own', OWN, 0, 'about its centre'), panel('given', GIVEN, SWING, 'about a given point')],
-  { style: TYPE }
-);
+export const scene: NodeRecord = {
+  kind: 'group',
+  name: 'turns',
+  children: [panel('own', OWN, 0, 'about its centre'), panel('given', GIVEN, SWING, 'about a given point')],
+  style: TYPE,
+};
 
 /** How long the whole circle takes. */
 export const TURN = 6;
@@ -141,20 +160,27 @@ export const TURN = 6;
  * is, because this one loops: a turn that slows to a stop and starts again would
  * read as a stutter once a second time round.
  */
-const line = Timeline.empty().together(
-  [rotate('turns/own/rider', 2 * Math.PI), rotate('turns/given/rider', 2 * Math.PI, { pivot: GIVEN })],
-  TURN,
-  { curve: linear }
-);
-
-export const turns: Figure = {
+export const written: FigureRecord = {
   extent,
   scene,
-  timeline: line,
-  duration: line.duration,
+  timeline: {
+    spans: [
+      { entry: { kind: 'rotate', target: 'turns/own/rider', angle: 2 * Math.PI }, from: 0, to: TURN, curve: 'linear' },
+      {
+        entry: { kind: 'rotate', target: 'turns/given/rider', angle: 2 * Math.PI, options: { pivot: GIVEN } },
+        from: 0,
+        to: TURN,
+        curve: 'linear',
+      },
+    ],
+    duration: TURN,
+  },
+  duration: TURN,
   still: TURN * 0.125,
   loop: true,
 };
+
+export const turns: Figure = resolveFigure(written);
 
 /**
  * How much wider and taller each frame's slot is than the figure.

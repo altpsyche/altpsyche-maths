@@ -45,6 +45,7 @@ import {
   SHOWN_AT,
   SHOWN_AT_STRIP,
   WIDTH as STILL_WIDTH,
+  figures,
   sheets,
   stillMarkup,
 } from '../demos/render.js';
@@ -187,6 +188,14 @@ describe('the committed pictures', () => {
     for (const sheet of sheets) {
       const committed = readFileSync(path.join(root, sheet.file), 'utf8');
       expect(committed).toBe(`${sheet.markup()}\n`);
+    }
+  });
+
+  it('carry the figure files the code writes now', () => {
+    // A file of the format that nothing regenerates goes stale the way a picture
+    // does. Run `npm run demos` when this fails on purpose.
+    for (const figure of figures) {
+      expect(readFileSync(path.join(root, figure.file), 'utf8')).toBe(figure.text());
     }
   });
 

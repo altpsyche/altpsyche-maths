@@ -4,10 +4,16 @@
  * says the code still draws them.
  */
 import { writeFileSync } from 'node:fs';
-import { sheets } from './render.js';
+import { figures, sheets } from './render.js';
 
 for (const sheet of sheets) {
   const markup = sheet.markup();
   writeFileSync(sheet.file, `${markup}\n`);
   console.log(`${sheet.file} ${markup.length} bytes`);
+}
+
+for (const figure of figures) {
+  const text = figure.text();
+  writeFileSync(figure.file, text);
+  console.log(`${figure.file} ${text.length} bytes`);
 }
