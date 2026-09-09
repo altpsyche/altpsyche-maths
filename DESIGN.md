@@ -235,9 +235,10 @@ identifiers it would walk the figure instead, which is two traversals of one str
 
 **Marks are for explanation and not for data.** A figure of a few hundred marks redrawn sixty times
 a second is comfortable. At their still times the flat demo is 181 marks and the solid one 321, each
-counting the inset it draws. Reading a frame and writing its SVG at 1280 by 720 costs 3.9 and 4.2
-milliseconds at the median of sixty runs, against the 16.7 a sixtieth of a second allows. Ten
-thousand marks is not comfortable, and a figure wanting ten thousand wants a shader.
+counting the inset it draws. Reading a frame and writing its SVG at 1280 by 720 costs 5.13 and 5.14
+milliseconds at the median of sixty runs, measured on 2026-09-09 with both figures read from their
+records, against the 16.7 a sixtieth of a second allows. Ten thousand marks is not comfortable, and a
+figure wanting ten thousand wants a shader.
 
 ## Units and the frame
 
