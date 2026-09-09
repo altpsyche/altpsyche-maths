@@ -517,8 +517,9 @@ Its 23 blocks are 171 lines importing 61 names, and assembled into one module th
 tree with two errors, both of them one identifier declared twice. Step 9.1 landed that gate: the 23
 blocks are assembled into one module with their imports merged and type-checked by a spawned
 compiler, the duplicate `timeline` of the view section is now `viewed`, and the suite is 1,042 tests
-over 66 files. **Step 9.2 is what a session runs next**, which is the guide teaching a figure as
-data.
+over 66 files. Step 9.2 gave the guide the two sections it had none of, a record and a file, taking it from 713
+lines to 816 and its examples from 23 blocks to 27. **Step 9.3 is what a session runs next**, which
+is the reference's prose against the record kinds.
 
 **Two things fall due before the format freezes and both are Siva's**, which are
 whether a `Mark` may be a raster image, due by step 3 where the node vocabulary lands, and the

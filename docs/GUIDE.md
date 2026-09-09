@@ -651,6 +651,109 @@ Drive a camera with a track and never with an animation, for the reason tracks g
 The quarters of one orbit. The eye returns to where it started. A test holds that by comparing the
 marks at the end of the entrance against the marks one orbit later, mark for mark by name.
 
+## Records
+
+A **record** is a part of a figure written as data rather than built by a call. A node record is a
+kind, a name and the parameters that kind takes, and `resolveNode` walks it into the node the calls
+above build. Nothing in a record is a function, which is what lets the same figure be written to a
+file and read back.
+
+```ts
+import { resolveNode, vec2 } from '@altpsyche/maths';
+import type { NodeRecord } from '@altpsyche/maths';
+
+const ring: NodeRecord = {
+  kind: 'shape',
+  name: 'ring',
+  path: { kind: 'circle', centre: vec2(0, 0), radius: 3 },
+  style: { stroke: pen },
+};
+
+resolveNode(ring);
+```
+
+`shape`, `text` and `group` are the kinds the tree itself has, and every other kind resolves into a
+tree of those three. A path is a record of its own: a named form with parameters, the `d` attribute
+of an SVG path, or the cubics written out. `resolvePath` reads one.
+
+An **expression** is a parameter written as data. It is a literal, a track by name, a bound variable,
+an arithmetic combination, a comparison with a choice, a member of a value, or a call to one of the
+functions this package publishes. `EXPRESSION_FUNCTIONS` names the whole set, which is thirty-seven,
+and `evaluate` reads one against the tracks and variables it stands over.
+
+```ts
+import { evaluate, resolveNode } from '@altpsyche/maths';
+import type { Expression, NodeRecord } from '@altpsyche/maths';
+
+// Twice the value of the track called t, which is a number at every time.
+const twice: Expression = {
+  kind: 'arithmetic',
+  operator: '*',
+  left: 2,
+  right: { kind: 'track', name: 't' },
+};
+
+const walker: NodeRecord = {
+  kind: 'dot',
+  name: 'walker',
+  at: { kind: 'point', x: twice, y: 0 },
+  radius: 0.08,
+  fill: ink,
+};
+
+evaluate(twice, { tracks: { t: 1.5 } });
+resolveNode(walker, { tracks: { t: 1.5 } });
+```
+
+A whole figure is a record too: its extent, its scene, its tracks, its timeline as spans, its
+duration, its still time and its insets. `resolveFigure` builds the figure, reading the scene again
+at each time with that time's track values, so a picture a track drives stays data rather than
+becoming a function again.
+
+```ts
+import { resolveFigure } from '@altpsyche/maths';
+import type { FigureRecord } from '@altpsyche/maths';
+
+const written: FigureRecord = {
+  extent: { width: 16, height: 9 },
+  scene: { kind: 'group', name: 'fig', children: [ring, walker] },
+  tracks: { t: [{ time: 0, value: 0 }, { time: 2, value: 1 }] },
+  timeline: { spans: [{ entry: { kind: 'fadeIn', target: 'fig/ring' }, from: 0, to: 0.6 }] },
+  still: 1,
+};
+
+resolveFigure(written);
+```
+
+A span is an entry, a `from`, a `to` and the name of a curve. The `after` a call takes and a
+stagger's gap are folded into the numbers when the call is made, so a timeline written as data is the
+spans rather than the calls that built them.
+
+## A figure as a file
+
+A figure written as a record is text. `writeFigure` hands back the text of a file: the format version
+and the figure, with the keys of every object sorted, ending in a newline. `readFigure` reads that
+text back into a figure, and `checkFigure` holds a parsed value to the vocabulary and refuses with
+the path of the field it read and what it found there.
+
+```ts
+import { FIGURE_FORMAT_VERSION, checkFigure, marksAt, readFigure, writeFigure } from '@altpsyche/maths';
+
+const file = writeFigure(written);
+const read = readFigure(file);
+
+FIGURE_FORMAT_VERSION;
+checkFigure(JSON.parse(file).figure);
+marksAt(read, 1);
+```
+
+Sorting the keys is what makes two writings of one figure the same bytes, so a file is comparable
+against the last one committed. A version rides in front of the figure because a reader given a file
+from a version it does not know refuses it rather than drawing part of it.
+
+The four demos of this repository are committed as files beside their pictures, and a gate reads each
+file back and compares its marks against what the demo draws.
+
 ## Frames
 
 `framesOf` walks a figure at a fixed step and yields one moment of the walk at a time. A **frame**

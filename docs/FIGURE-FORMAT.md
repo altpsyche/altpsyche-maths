@@ -1298,13 +1298,20 @@ release away and has a document of its own.
     is what says the gate reads the code rather than the page; the suite from 1,038 tests to 1,042
     over 66 files.
 
-  - [ ] **9.2 The guide teaches a figure as data.** The page teaches the calls and stops, so a reader
+  - [x] **9.2 The guide teaches a figure as data.** The page teaches the calls and stops, so a reader
     reaches the end without learning what 2.0.0 is for. What it gains is the record vocabulary in the
     order the ideas depend on each other: a node as a record, a parameter as an expression, a track
     read through one, the timeline as spans, and the figure written to a file and read back. The call
     sections keep their examples, since a record resolves into exactly the tree they build.
     **Measures:** the guide's blocks compiling under 9.1's gate; the blocks and lines it goes from and
     to; the names its imports reach against the door's 375.
+    **Two sections rather than one**, since a record and a file are different questions: what a part
+    of a figure is when it is data, and what happens to a figure when it is text. Both sit after the
+    last kind the page teaches, so nothing in them is a forward reference.
+    **Measured:** the guide from 713 lines to 816 and its examples from 23 blocks to 27, which is 171
+    lines of TypeScript going to 223 and 61 names imported going to 71; the whole of it compiling
+    under 9.1's gate, which caught the two names the new blocks took from the door, `dot` and `text`,
+    now `walker` and `file`; the suite unchanged at 1,042 tests over 66 files.
 
   - [ ] **9.3 The reference's prose against the record kinds.** Its entry list is already held equal
     to the door by `tests/reference.test.ts`, so every name has an entry and no entry names nothing.
