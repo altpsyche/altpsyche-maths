@@ -800,11 +800,21 @@ release away and has a document of its own.
     animation for refused with the sentence naming it; the door from 332 names to 338 and the suite
     from 919 to 925.
 
-  - [ ] **4.2 The kinds that move marks.** `moveBy`, `moveAlong`, `rotate`, `scale` and `growFrom`.
-    `about` is a point or the centre of the marks' own bounds, read at play time rather than stored,
-    and `moveAlong` carries a path, so it takes the written form of step 3.2. **Measures:** the
-    rotation demo's turns and moves at each of the eight times its strip draws; `moveAlong` and
-    `scale` against their calls, since no demo plays either.
+  - [x] **4.2 The kinds that move marks.** `moveBy`, `moveAlong`, `rotate`, `scale` and `growFrom`.
+    The point a turn or a growth happens about stays in the options those calls already take, and it
+    is read off the marks as they arrive where a record names none, which is what keeps a turn of a
+    whole circle ending where it began. `moveAlong` carries a `PathRecord`, so a figure carrying
+    something along a curve it also draws names the same form twice rather than writing the curve out
+    beside the one it draws, and `resolveAnimation` takes the bindings that path is read with.
+    **The rotation demo's strip is four frames rather than the eight this plan wrote**, since
+    `frameTimesOf` is asked for four, and its named times are five.
+    **Measured:** both riders of the rotation demo turned a whole circle, one about its own middle and
+    one about the pivot the demo names, at each of its four strip times and each of its five named
+    times, at five fractions of the span, mark for mark against their own calls; the whole figure
+    carried into a slot the way the strip carries it; a whole turn about the marks' own middle ending
+    on the marks it started from; `moveAlong`, `scale` and `growFrom` against their calls, since no
+    demo plays one, and a path whose end follows a track carrying further at three than at one; the
+    door from 338 names to 343 and the suite from 925 to 931.
 
   - [ ] **4.3 The kinds that put one shape in place of another.** `morph`, which carries a path, and
     `morphEquation`, which names two targets and leaves glyph matching where it is. **Measures:** the

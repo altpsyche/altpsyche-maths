@@ -645,13 +645,25 @@ functions, which is what lets the same tree survive being written to a file and 
   own precision. A hole naming an index the list has no entry for is refused, and so is a hole whose
   expression is a place or a true or false.
 - `AnimationRecord` — one animation written as data: a `FadeInRecord`, a `FadeOutRecord`, a
-  `FadeToRecord` or a `DrawRecord`. A parameter is a plain value rather than an expression, since an
-  animation is built once and then asked what the marks are at a fraction of its own span.
+  `FadeToRecord`, a `DrawRecord`, a `MoveByRecord`, a `MoveAlongRecord`, a `RotateRecord`, a
+  `ScaleRecord` or a `GrowFromRecord`. A parameter is a plain value rather than an expression, since
+  an animation is built once and then asked what the marks are at a fraction of its own span. A path
+  is the exception, since a path record is the only form a path has and its own parameters are
+  expressions.
 - `FadeInRecord` — a `kind` of `fadeIn` and the `target` it fades.
 - `FadeOutRecord` — a `kind` of `fadeOut` and the `target` it fades.
 - `FadeToRecord` — a `kind` of `fadeTo`, the `target` and the `opacity` it fades to.
 - `DrawRecord` — a `kind` of `draw` and the `target` it draws.
-- `resolveAnimation(record)` — the animation a record describes, as the `Animation` the timeline
+- `MoveByRecord` — a `kind` of `moveBy`, the `target` and the `offset` it is carried by.
+- `MoveAlongRecord` — a `kind` of `moveAlong`, the `target` and the `path` it is carried along, as a
+  `PathRecord`. A figure carrying something along a curve it also draws names the same form twice
+  rather than writing the curve out beside the one it draws.
+- `RotateRecord` — a `kind` of `rotate`, the `target`, the `angle` and its `options`. The point the
+  turn happens about is the middle of the box round the marks unless the options name one, and it is
+  read off the marks as they arrive, so a turn of a whole circle ends where it began.
+- `ScaleRecord` — a `kind` of `scale`, the `target`, the factor `to` and its `options`.
+- `GrowFromRecord` — a `kind` of `growFrom`, the `target` and the point it grows `from`.
+- `resolveAnimation(record, bindings)` — the animation a record describes, as the `Animation` the timeline
   already plays. A kind outside the set is refused with a sentence naming it. A target stays an id or
   the front of one, so naming a group reaches everything inside it.
 - `resolveNode(record, bindings)` — the record walked into the node it describes. The bindings reach

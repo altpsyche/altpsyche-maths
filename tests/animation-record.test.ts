@@ -4,16 +4,25 @@ import {
   fadeIn,
   fadeOut,
   fadeTo,
+  growFrom,
   marksAt,
+  moveAlong,
+  moveBy,
   resolveAnimation,
+  resolvePath,
+  rotate,
   sameMarks,
+  scale,
+  vec2,
   type Animation,
   type AnimationRecord,
   type Mark,
+  type PathRecord,
 } from '../index.js';
 import { PANELS, TIMES as BOOLEAN_TIMES, booleans } from '../demos/boolean.js';
 import { TIMES as SOLID_TIMES, solid } from '../demos/surface.js';
 import { TIMES as FLAT_TIMES, tangent } from '../demos/tangent.js';
+import { CENTRE, FRAMES as TURN_FRAMES, GIVEN, TIMES as TURN_TIMES, turns } from '../demos/rotate.js';
 
 /** Five fractions of a span, both ends of it and the three quarters between, so
  * an animation that is right at nothing and at one is not called right. */
@@ -79,5 +88,73 @@ describe('the animations that change opacity as records', () => {
   it('refuses a kind the set has no animation for', () => {
     const record = { kind: 'fadeSideways', target: 'tangent/curve' } as unknown as AnimationRecord;
     expect(() => resolveAnimation(record)).toThrow('an animation has no kind called fadeSideways');
+  });
+});
+
+describe('the animations that move marks as records', () => {
+  const at = (seconds: number) => marksAt(turns, seconds);
+
+  it('turns both riders of the rotation demo where its own calls turn them', () => {
+    const times = [...Object.values(TURN_TIMES), ...TURN_FRAMES];
+    expect(TURN_FRAMES).toHaveLength(4);
+    expect(Object.values(TURN_TIMES)).toHaveLength(5);
+    for (const seconds of times) {
+      const marks = at(seconds);
+      expect(marks.length).toBeGreaterThan(0);
+      const whole = 2 * Math.PI;
+      expect(
+        agrees({ kind: 'rotate', target: 'turns/own/rider', angle: whole }, rotate('turns/own/rider', whole), marks),
+        `the rider about its own middle at ${seconds}`
+      ).toBe(true);
+      expect(
+        agrees(
+          { kind: 'rotate', target: 'turns/given/rider', angle: whole, options: { pivot: GIVEN } },
+          rotate('turns/given/rider', whole, { pivot: GIVEN }),
+          marks
+        ),
+        `the rider about the named pivot at ${seconds}`
+      ).toBe(true);
+    }
+  });
+
+  it('carries the whole figure into a slot where the strip carries it', () => {
+    const offset = vec2(7 - CENTRE.x, -CENTRE.y);
+    for (const seconds of TURN_FRAMES) {
+      expect(agrees({ kind: 'moveBy', target: 'turns', offset }, moveBy('turns', offset), at(seconds))).toBe(true);
+    }
+  });
+
+  it('reads the pivot off the marks where the record names none, so a whole turn ends where it began', () => {
+    const marks = at(TURN_TIMES.start);
+    const turned = resolveAnimation({ kind: 'rotate', target: 'turns/own/rider', angle: 2 * Math.PI })(marks, 1);
+    expect(sameMarks(turned, marks)).toBe(true);
+  });
+});
+
+describe('the moving animations no demo plays', () => {
+  const marks = marksAt(tangent, FLAT_TIMES.walkTo);
+  const walk: PathRecord = { kind: 'line', from: vec2(0, 0), to: { kind: 'point', x: { kind: 'track', name: 'reach' }, y: 1 } };
+
+  it('carries marks along a path where its own call carries them', () => {
+    const path = resolvePath(walk, { tracks: { reach: 3 } });
+    const record: AnimationRecord = { kind: 'moveAlong', target: 'tangent/point', path: walk };
+    const resolved = resolveAnimation(record, { tracks: { reach: 3 } });
+    expect(ALONG.every((along) => sameMarks(resolved(marks, along), moveAlong('tangent/point', path)(marks, along)))).toBe(true);
+  });
+
+  it('reads the path at the time the figure is built, so a path that follows a track carries further', () => {
+    const near = resolveAnimation({ kind: 'moveAlong', target: 'tangent/point', path: walk }, { tracks: { reach: 1 } });
+    const far = resolveAnimation({ kind: 'moveAlong', target: 'tangent/point', path: walk }, { tracks: { reach: 3 } });
+    expect(sameMarks(near(marks, 1), far(marks, 1))).toBe(false);
+  });
+
+  it('grows and shrinks about a point where its own call does', () => {
+    const options = { from: 0.5, pivot: vec2(1, 1) };
+    expect(agrees({ kind: 'scale', target: 'tangent/curve', to: 2, options }, scale('tangent/curve', 2, options), marks)).toBe(
+      true
+    );
+    expect(
+      agrees({ kind: 'growFrom', target: 'tangent/curve', from: vec2(1, 1) }, growFrom('tangent/curve', vec2(1, 1)), marks)
+    ).toBe(true);
   });
 });
