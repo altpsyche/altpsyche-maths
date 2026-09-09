@@ -509,9 +509,13 @@ for naming its own. `demos/surface.figure.json` is 263,847 bytes over 7,110 line
 draws 321 marks at the still time of 5.24 and 316, 317, 316 and 316 at its four named times. The
 record had been written in two test files rather than in the demo, and the calls those files measure
 it against are now `tests/solid-forms.ts`. **Step 8 is cut**: all four demos are files, all eight
-sheets are byte for byte what they were, and the suite is 1,038 tests over 65 files. **Step 9 is what
-a session runs next**, which is the guide and the reference rewritten, 709 and 976 lines describing an
-API that changed.
+sheets are byte for byte what they were, and the suite is 1,038 tests over 65 files. **Step 9 is planned and is four commits**: a gate that compiles the
+guide's code blocks, the guide teaching a figure as data, the reference's prose against the record
+kinds, and the README and the design read against the format. The two pages are less stale than their
+line counts say and stale in the one place that matters, since `Record` appears nowhere in the guide.
+Its 23 blocks are 171 lines importing 61 names, and assembled into one module they compile against the
+tree with two errors, both of them one identifier declared three times. **Step 9.1 is what a session
+runs next.**
 
 **Two things fall due before the format freezes and both are Siva's**, which are
 whether a `Mark` may be a raster image, due by step 3 where the node vocabulary lands, and the

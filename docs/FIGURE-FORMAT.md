@@ -1263,9 +1263,63 @@ release away and has a document of its own.
     within a tolerance of 1e-6.
   - `tests/figures.ts` assembles no record of its own.
 
-- [ ] **9. The guide and the reference rewritten.** 709 and 976 lines describing an API that changed.
+- [ ] **9. The guide and the reference rewritten.** 713 and 1,315 lines describing an API that
+  changed.
   **Measures:** the guide's code blocks compiling in order; the reference's entries against the door
   with the gate holding them equal.
+
+  **Planned on 2026-09-09, and it is four commits.** The two pages are read before they are written,
+  and what the reading found is that they are less stale than the line counts say and stale in one
+  place that matters: neither page knows a figure can be data. `Record` appears nowhere in the guide,
+  and the reference's own record sections were written kind by kind as each landed rather than as one
+  vocabulary a reader meets in order.
+
+  **The guide has no gate at all**, which is why this starts with one. Its 23 blocks of TypeScript are
+  171 lines importing 61 names, and assembled in order into one module with their imports merged they
+  compile against the tree with two errors, both of them `timeline` declared a second and a third
+  time. So the examples are current and nothing in them is checked.
+
+  - [ ] **9.1 The guide's code blocks are a gate.** One test reads `docs/GUIDE.md`, takes every
+    TypeScript block in order, merges the import lists into one and type-checks the result against the
+    tree. **The blocks are one module rather than one module each**, since a later block uses what an
+    earlier one declared: the notation block's four styles and its path are what the rest are written
+    against, and compiling each alone would need that block copied into all of them. A name declared
+    twice is then a defect of the guide rather than of the gate, and the fix is the guide's.
+    **Measures:** 23 blocks and 171 lines going in; 56 values and 5 types in the merged import; two
+    errors before and none after; the suite's own count.
+
+  - [ ] **9.2 The guide teaches a figure as data.** The page teaches the calls and stops, so a reader
+    reaches the end without learning what 2.0.0 is for. What it gains is the record vocabulary in the
+    order the ideas depend on each other: a node as a record, a parameter as an expression, a track
+    read through one, the timeline as spans, and the figure written to a file and read back. The call
+    sections keep their examples, since a record resolves into exactly the tree they build.
+    **Measures:** the guide's blocks compiling under 9.1's gate; the blocks and lines it goes from and
+    to; the names its imports reach against the door's 375.
+
+  - [ ] **9.3 The reference's prose against the record kinds.** Its entry list is already held equal
+    to the door by `tests/reference.test.ts`, so every name has an entry and no entry names nothing.
+    What is unread is the sentences: the record sections were written as each kind landed, and three
+    of them describe a field this session widened or corrected, which are a text record's place, a
+    follow's axis and the two projections.
+    **Measures:** the entries the gate counts, unchanged at the door's own number; the sections
+    rewritten; the fields whose description was wrong before.
+
+  - [ ] **9.4 The README and the design against the format.** Neither is named by this step and both
+    are read by anyone the release reaches. The README states what the package is and shows the four
+    demos, and `DESIGN.md` states the seam. A figure as a file is a change to both, and the audit of
+    2026-09-08 found three documents contradicting the tree at once, which is what this commit exists
+    to stop repeating.
+    **Measures:** the lines each changes; the four figure files named where the four sheets already
+    are.
+
+  #### Done-criteria for step 9
+
+  - `npm test` fails when a block of the guide stops compiling, and the gate names the block.
+  - The guide teaches a node record, an expression, a track through one, a timeline as spans and a
+    figure written to a file, each defined where it first appears.
+  - `tests/reference.test.ts` holds every name at the door to one entry, and no entry describes a
+    field the tree no longer has.
+  - The README and `DESIGN.md` say what a figure is in the same words the guide does.
 
 - [ ] **10. The demos are the conformance suite.** The gate reads each figure from its file rather
   than from its module. **Measures:** the whole suite green with every demo loaded as data; the byte
