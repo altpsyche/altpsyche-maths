@@ -3,8 +3,10 @@
 **A figure format is a declarative description of a picture over time.** It carries nodes, a timeline,
 value types and expressions, and a program reads one rather than running it.
 
-**This is a stub.** The specification is not written. What is below is what it has to contain, taken
-from the planning in [`FIGURE-FORMAT.md`](FIGURE-FORMAT.md), which is the design and the reason.
+**Three sections are written and the vocabulary is not.** The standing refusals, the version and the
+file are below in full. Every kind and its parameters is still a list of what has to be specified,
+taken from the planning in [`FIGURE-FORMAT.md`](FIGURE-FORMAT.md), which is the design and the
+reason.
 
 ## Standing refusals
 
@@ -41,23 +43,62 @@ consumer already has them.
 A figure declares which version of the format it is written in. A renderer declares which versions it
 reads. Neither number is this package's.
 
+**The version is one whole number and it is 0 today.** A renderer refuses a version it does not read
+and names both numbers, its own and the file's. A field added to a kind that leaves what every
+existing figure means alone keeps the version. A change to what a field means, a field removed and a
+kind removed are each a new version.
+
+## The file
+
+**A file is a JSON document carrying two fields.** `format` is the version of this specification the
+figure is written in, and `figure` is the figure.
+
+**A figure carries nine fields and three of them are required.** `extent` is how much of the world
+the figure shows in its own units, `scene` is the tree of nodes, and `still` is the one time a reader
+who asked for reduced motion is shown. The other six are optional: `fit` is how the extent meets a
+frame of a different shape, `tracks` is every value over time by name, `timeline` is the spans,
+`duration` is how long the figure runs where that is past the end of its last span, `loop` says the
+figure ends where it began, and `insets` is the second views drawn into rectangles of the figure's
+own frame.
+
+**A reader takes the fields of an object in any order.** The writer in this package sorts them, so
+the bytes of a file are a function of the figure rather than of the order its fields were built in,
+which is what lets a byte gate hold a figure at all.
+
+**A refusal names the path of the field, from the figure down**, with the index of a list wherever
+one is crossed: `scene.children.2.at.x` rather than `x`. A file is refused before it is drawn rather
+than part way through drawing it, since a picture stopped half way says nothing about which field
+was wrong.
+
+**A renderer that does not carry a kind a file names refuses the file and names the kind.** A figure
+drawn with a piece left out is a wrong picture with nothing to say it went wrong.
+
 ## What has to be specified
 
-- **Nineteen node kinds**, each with its parameters.
-- **Five path producers**, and whether a figure stores their output as cubics or names them with
-  parameters. That choice is open.
+- **Twenty-three node kinds**, each with its parameters, and the two item producers a `scene3`
+  holds beside its nodes.
+- **Thirteen forms of path in fifteen kinds**: the ten producers a figure names with their
+  parameters, a path written out as cubics, the path data of an SVG `d` attribute, and one form
+  carrying the three boolean operations. A figure names a producer and stores cubics both, since a
+  producer read at authoring time is one frame of a shape a track drives. And **two point
+  producers**, which hand back the points a path is then drawn through.
 - **Fifteen animation kinds**, each with its parameters.
-- **The timeline**, which is a sequence of entries each carrying animations, a duration, an `after`
-  offset that may be negative so two runs overlap, and a `gap` for a stagger.
-- **The extent**, including a view that follows something, which is a function of the clock today.
-- **Nine value types**: `Coords`, `Scale`, `Interval`, `Extent`, `Camera3`, `Mat3`, `Style` with its
-  `Stroke` and `Fill`, `Equation`, and a `Track`.
+- **The timeline**, which is the compiled spans and how long the figure runs. A span is an entry, a
+  `from`, a `to` and a curve by name. The `after` offset a call takes and a stagger's gap are not in
+  the format, since a call folds each into the next span's `from` when it is made.
+- **The extent**, which is a fixed extent, a choice on the frame's aspect or one matching an aspect,
+  and the three view moves folded over it: a move to another extent, a follow of a named mark, and a
+  framing of several.
+- **Eleven value types**: `Coords`, `Scale`, `Interval`, `Extent`, `Camera3Choice`, `Mat3`, `Style`
+  with its `Stroke`, its `Fill` and the `Bounds` it carries as a clip, `Equation`, a `Track`, a
+  `Curve` and an `Inset`. The choice is in this list rather than the `Camera3` it builds, because the
+  built one carries closures.
 - **The expression form**: a literal, a track reference, a bound variable, arithmetic, a comparison
   with a choice, a member of a value, or a call into a named and versioned function vocabulary.
 - **The standing refusals**, in the first section rather than an appendix: no loops, no recursion, no
   user-defined functions, no assignment, and not Turing-complete. A reader deciding whether to write
   a renderer needs the bound before the vocabulary.
-- **The version field**, what a renderer does with a version it does not know, and what a major means.
+- **The version field**, which the section above answers.
 - **Conformance**: two renderers agree if they draw the same marks at the same times, compared by
   tolerance and never by hash. That covers a flat figure and covers nothing a depth buffer does.
 

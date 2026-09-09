@@ -885,13 +885,18 @@ release away and has a document of its own.
   its extent is fixed and it draws eight marks, which is the smallest whole figure this package has.
   Step 8 carries the remaining three.
 
-  - [ ] **5.1 The specification's file section.** What a file is, what a renderer does with a version
+  - [x] **5.1 The specification's file section.** What a file is, what a renderer does with a version
     it does not read, and what a refusal names. It is first because the specification changes before
     the code does, and this is the part the code below decides nothing on its own.
-    **Measures:** the envelope's two fields and the figure's nine named in
-    [`SPECIFICATION.md`](SPECIFICATION.md); its three stale counts corrected against the inventory,
-    from nineteen node kinds to twenty-three, from five path producers to eleven and from nine value
-    types to eleven; the door and the suite unchanged at 365 names and 959 tests.
+    **Measured:** [`SPECIFICATION.md`](SPECIFICATION.md) from 67 lines to 108, with the envelope's
+    two fields and the figure's nine named, three of the nine required; the version one whole number,
+    0 today, and what keeps it against what makes a new one; a refusal naming the path of the field
+    from the figure down. **Five stale facts corrected rather than the three the plan named**, since
+    the counts were not the only thing steps 3, 6 and 7 moved: nineteen node kinds to twenty-three,
+    five path producers to thirteen forms in fifteen kinds, nine value types to eleven, the timeline
+    from entries with an `after` and a `gap` to the compiled spans, and the extent from a function of
+    the clock to three records with three view moves. The door and the suite unchanged at 365 names
+    and 959 tests.
 
   - [ ] **5.2 The figure as data.** A `FigureRecord` is an `ExtentRecord`, a fit, a `NodeRecord`, its
     tracks, a `TimelineRecord`, a duration, a still time, a loop flag and its insets, and
