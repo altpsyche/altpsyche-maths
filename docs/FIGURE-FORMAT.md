@@ -848,9 +848,17 @@ release away and has a document of its own.
     span and as the label of the rise at its end; the door from 348 names to 349 and the suite from
     937 to 939.
 
-- [ ] **5. The file: a serialiser, a reader, a validator and a version.** **Measures:** each demo
-  written out, read back, and drawing marks identical within tolerance; a figure of a later version
-  refused; a malformed figure refused with the field named; the bytes of each demo as data.
+- [ ] **5. The file: a serialiser, a reader, a validator and a version.** **This is worked after 7.5
+  rather than in its written place**, because a figure written out is a scene, a timeline and a view,
+  and two of the three are still functions until steps 6 and 7 land: a `Span` carries an `Animation`
+  and a `Curve`, and an `Entry` may be a `ViewChange` holding a `ViewAnimation`. A serialiser written
+  first would carry the scene alone and be rewritten twice. The numbers stay as they are, since three
+  steps above name step 5 by number and renumbering would leave those pointing at nothing.
+  **It has no step list and it is bigger than one commit**, so the session that reaches it writes one
+  before it writes code.
+  **Measures:** each demo written out, read back, and drawing marks identical within tolerance; a
+  figure of a later version refused; a malformed figure refused with the field named; the bytes of
+  each demo as data.
 
 - [ ] **6. The timeline as data, and it is the compiled spans rather than the calls that built
   them.** A span is an entry, a `from`, a `to` and a `CurveName`, which is what `figure/timeline.ts`
