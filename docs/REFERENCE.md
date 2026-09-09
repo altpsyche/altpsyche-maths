@@ -1120,12 +1120,15 @@ a group of that name.
 - `checkFigure(value)` — a value held to the shape of a figure and handed back as one, or refused
   with the path of the field from the figure down, `scene.children.2.at.x` rather than `x`. A
   required field that is absent, a field of the wrong type, a kind the format has no form for and a
-  field a kind does not carry are each refused. What comes back is the value it was given rather than
-  a copy, so a reader parses once and draws what it parsed.
+  field a kind does not carry are each refused. Two things it reads are not shapes: a span whose
+  `to` is before its `from`, and an expression naming a track the figure does not carry. What comes
+  back is the value it was given rather than a copy, so a reader parses once and draws what it
+  parsed.
 - `readFigure(text)` — the figure a file's text describes. The version is read before anything else,
   and a version this package does not read is refused with both numbers in the sentence. Text that
   is not a JSON document, a document that is not an object, a file with no `format` and a file with
-  no `figure` are each refused with what was found.
+  no `figure` are each refused with what was found. What it parsed goes through `checkFigure`, so a
+  field of the wrong shape is refused with its path before anything is drawn.
 - `marksAt(figure, seconds)` — the marks a figure shows at a time. A tapered stroke is turned into
   its filled outline after the timeline has run, so an animation that trims a path trims the
   centreline and the outline follows it.

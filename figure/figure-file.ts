@@ -12,6 +12,7 @@
  * record whose fields were written the other way round and draw the same
  * picture.
  */
+import { checkFigure } from './figure-check.js';
 import { resolveFigure, type FigureRecord } from './figure-record.js';
 import type { Figure } from './figure.js';
 
@@ -116,5 +117,5 @@ export function readFigure(text: string): Figure {
   if (typeof file.figure !== 'object' || file.figure === null || Array.isArray(file.figure)) {
     throw new Error(`a file carries a figure, and figure is ${nameOf(file.figure)}`);
   }
-  return resolveFigure(file.figure as FigureRecord);
+  return resolveFigure(checkFigure(file.figure));
 }

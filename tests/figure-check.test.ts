@@ -114,6 +114,29 @@ const EVERY_PATH: readonly Record<string, unknown>[] = [
   { kind: 'union', first: { kind: 'circle', centre: PLACE, radius: 1 }, second: { kind: 'circle', centre: PLACE, radius: 0.5 } },
 ];
 
+/** One entry of every kind a span may carry: the fifteen animations and the
+ * three view moves, which are one list because a timeline holds both. */
+const EVERY_ENTRY: readonly Record<string, unknown>[] = [
+  { kind: 'fadeIn', target: 'turns' },
+  { kind: 'fadeOut', target: 'turns' },
+  { kind: 'fadeTo', target: 'turns', opacity: 0.4 },
+  { kind: 'draw', target: 'turns' },
+  { kind: 'moveBy', target: 'turns', offset: { x: 1, y: 0 } },
+  { kind: 'moveAlong', target: 'turns', path: { kind: 'line', from: PLACE, to: { x: 1, y: 1 } } },
+  { kind: 'rotate', target: 'turns', angle: 1, options: { pivot: PLACE } },
+  { kind: 'scale', target: 'turns', to: 2, options: { pivot: PLACE, from: 1 } },
+  { kind: 'growFrom', target: 'turns', from: PLACE },
+  { kind: 'morph', target: 'turns', into: { kind: 'circle', centre: PLACE, radius: 1 } },
+  { kind: 'morphEquation', from: 'first', to: 'second' },
+  { kind: 'indicate', target: 'turns', options: { factor: 1.2, colour: '#101010', pivot: PLACE } },
+  { kind: 'flash', target: 'turns', options: { stroke: STROKE, at: PLACE, rays: 8, reach: 1, inner: 0.4 } },
+  { kind: 'circumscribe', target: 'turns', options: { stroke: STROKE, around: 'ellipse', padding: 0.1 } },
+  { kind: 'countTo', target: 'turns', from: 0, to: 10, precision: 0.01 },
+  { kind: 'moveView', to: { width: 8, height: 4, centre: PLACE } },
+  { kind: 'followView', target: 'turns/own/pivot', options: { within: 0.5, room: 2 } },
+  { kind: 'frameView', targets: ['turns/own', 'turns/given'], options: { padding: 0.2 } },
+];
+
 describe('a figure held to the vocabulary', () => {
   it('takes both demos as they stand', () => {
     expect(checkFigure(JSON.parse(JSON.stringify(turning)))).toBeTruthy();
@@ -474,7 +497,13 @@ describe('a figure held to the vocabulary', () => {
         options: { at: PLACE, align: 'middle', width: 1, height: 1, fill: FILL },
       },
     ];
-    expect(checkFigure({ ...turning, scene: { kind: 'group', name: 'dressed', children: dressed } })).toBeTruthy();
+    expect(
+      checkFigure({
+        ...turning,
+        tracks: { apart: [{ time: 0, value: 0 }] },
+        scene: { kind: 'group', name: 'dressed', children: dressed },
+      }),
+    ).toBeTruthy();
   });
 
   it('takes a path of every form and refuses one the format has none for', () => {
@@ -545,6 +574,64 @@ describe('a figure held to the vocabulary', () => {
       checkFigure(withField(turning, [...stroke, 'width'], { from: 0.01, to: 0.04, curve: 'thereAndBack' })),
     ).toBeTruthy();
     expect(() => checkFigure(withField(turning, [...stroke, 'width'], { from: 0.01 }))).toThrow('is a width');
+  });
+
+  it('takes an entry of every kind a span may carry', () => {
+    expect(EVERY_ENTRY).toHaveLength(18);
+    const spans = EVERY_ENTRY.map((entry, at) => ({ entry, from: at, to: at + 1 }));
+    expect(checkFigure({ ...turning, timeline: { spans, duration: EVERY_ENTRY.length } })).toBeTruthy();
+  });
+
+  it('refuses each entry short of a field it requires', () => {
+    EVERY_ENTRY.forEach((entry, at) => {
+      const [field] = Object.keys(entry).filter((name) => name !== 'kind' && name !== 'options');
+      const short = Object.fromEntries(Object.entries(entry).filter(([name]) => name !== field));
+      expect(() => checkFigure({ ...turning, timeline: { spans: [{ entry: short, from: 0, to: 1 }] } })).toThrow(
+        `timeline.spans.0.entry.${field} is required and is missing`,
+      );
+    });
+  });
+
+  it('refuses an entry of a kind the format has no form for', () => {
+    expect(() =>
+      checkFigure({ ...turning, timeline: { spans: [{ entry: { kind: 'wiggle', target: 'turns' }, from: 0, to: 1 }] } }),
+    ).toThrow('timeline.spans.0.entry is a timeline entry and has no kind called the text "wiggle"');
+  });
+
+  it('holds an animation option to its own fields', () => {
+    expect(() => checkFigure(withField(turning, ['timeline', 'spans', '0', 'entry', 'options'], { pivot: 4 }))).toThrow(
+      'timeline.spans.0.entry.options.pivot is a place and is 4',
+    );
+    expect(() =>
+      checkFigure(withField(turning, ['timeline', 'spans', '0', 'entry', 'options'], { about: { x: 0, y: 0 } })),
+    ).toThrow('timeline.spans.0.entry.options.about is not a field of what a turn takes');
+  });
+
+  it('takes an inset whose view move is one of the three, and refuses a fourth', () => {
+    const inset = {
+      shows: { width: 2, height: 1 },
+      into: { x: { from: 1, to: 3 }, y: { from: 1, to: 2 } },
+      view: { kind: 'followView', target: 'turns/own/pivot', options: { within: 0.5, room: 1 } },
+    };
+    expect(checkFigure({ ...turning, insets: [inset] })).toBeTruthy();
+    expect(() => checkFigure({ ...turning, insets: [{ ...inset, view: { kind: 'chaseView', target: 'x' } }] })).toThrow(
+      'insets.0.view is a view move and has no kind called the text "chaseView"',
+    );
+  });
+
+  it('refuses a span that runs backwards', () => {
+    const spans = [{ entry: { kind: 'fadeIn', target: 'turns' }, from: 4, to: 2 }];
+    expect(() => checkFigure({ ...turning, timeline: { spans } })).toThrow(
+      'timeline.spans.0.to is 2 and its from is 4',
+    );
+  });
+
+  it('refuses an expression reading a track the figure does not carry, by path', () => {
+    const { tracks, ...without } = operations;
+    expect(tracks).toBeTruthy();
+    expect(() => checkFigure(JSON.parse(JSON.stringify(without)))).toThrow(
+      'scene.children.0.children.0.path.second.centre.x.right reads the track apart, which the figure does not carry',
+    );
   });
 
   it('refuses a value that is not a figure at all', () => {

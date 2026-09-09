@@ -989,16 +989,25 @@ release away and has a document of its own.
     accepted as expressions and text refused; a width refused where a taper is short of its second
     number; the table from 358 lines to 767 and the suite from 994 to 1,005.
 
-  - [ ] **5.7 The validator over the animations and the view, and the reader routed through it.**
-    Fifteen animation kinds and the three view moves, which are the last two entries of the table
-    still shallow. **An expression naming a track the figure does not carry is refused here**, since a
-    renderer reading a file wants that answer before it draws rather than at the first time the
-    expression is reached. `readFigure` then checks what it parsed, which is the step the vocabulary
-    is complete at rather than 5.8.
-    **Measures:** each of the fifteen kinds accepted and refused with the path named; a span whose
-    `to` is before its `from` refused; a view move naming a mark no scene carries refused; an
-    expression reading a track the figure has no keys for refused at read time, where the same figure
-    draws for four seconds before the drawing refuses it today.
+  - [x] **5.7 The validator over the animations and the view, and the reader routed through it.**
+    Fifteen animation kinds and the three view moves in one table, since a span holds either.
+    **Two things are read after the shapes and neither is a shape**: a span that runs backwards, and
+    an expression naming a track the figure does not carry, which otherwise refuses at the first time
+    that span begins. `readFigure` checks what it parsed, which is the step the vocabulary is
+    complete at rather than 5.8.
+    **A target naming no mark is not checked and the plan was wrong to promise it.** A target names
+    an id built from the names on the way down the tree, and several kinds make marks the record does
+    not name: a flash's rays, the shape a circumscribe draws, an inset's copies, and every kind that
+    builds children of its own. A check would refuse figures that draw, so what is refused is the
+    track, whose names a figure carries in full.
+    **Measured:** one entry of each of the eighteen kinds accepted, and each of the eighteen refused
+    at `timeline.spans.0.entry.<field>` when the field it requires is dropped; an entry of kind
+    `wiggle` refused; a turn's option refused at `timeline.spans.0.entry.options.pivot` and a field a
+    turn does not take refused by name; an inset's `followView` accepted and `chaseView` refused; a
+    span from 4 to 2 refused with both numbers; the boolean demo with its tracks removed refused at
+    `scene.children.0.children.0.path.second.centre.x.right`, which is where the expression reads
+    `apart`; a file whose `still` is text and one whose path kind is `squiggle` each refused by
+    `readFigure` before anything is drawn; the suite from 1,005 tests to 1,013.
 
   - [ ] **5.8 The rotation demo is a file.** `demos/rotate.figure.json` is written once with
     `writeFigure` and committed, `demos/rotate.ts` reads it with `readFigure`, and `readFigure` runs

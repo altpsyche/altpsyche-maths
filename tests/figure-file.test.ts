@@ -143,6 +143,13 @@ describe('a figure read back from a file', () => {
     expect(() => readFigure('{"format": 0}')).toThrow('a file carries a figure, and figure is missing');
   });
 
+  it('refuses a field the vocabulary does not carry, by path, before it draws', () => {
+    const text = writeFigure(turning).replace('"still": 0.75', '"still": "soon"');
+    expect(() => readFigure(text)).toThrow('still is a number and is the text "soon"');
+    const wrong = writeFigure(turning).replace('"kind": "polygon"', '"kind": "squiggle"');
+    expect(() => readFigure(wrong)).toThrow('is a path and has no kind called the text "squiggle"');
+  });
+
   it('refuses text that is not a JSON document, and one that is not an object', () => {
     expect(() => readFigure('{ figure: }')).toThrow('a file is a JSON document and this text is not one');
     expect(() => readFigure('[]')).toThrow('a file is an object carrying a format and a figure, and this is a list');

@@ -605,8 +605,60 @@ const SHAPES: Readonly<Record<string, Shape>> = {
       },
     },
   },
-  entry: { form: 'object', what: 'a timeline entry' },
-  viewChange: { form: 'object', what: 'a view move' },
+  aboutOptions: fields('what a turn takes', { pivot: may(ref('point')) }),
+  scaleOptions: fields('what a scaling takes', { pivot: may(ref('point')), from: may(number) }),
+  indicateOptions: fields('what an indication takes', {
+    pivot: may(ref('point')),
+    factor: may(number),
+    colour: may(ref('colour')),
+  }),
+  flashOptions: fields('what a flash takes', {
+    stroke: need(ref('stroke')),
+    at: may(ref('point')),
+    rays: may(number),
+    reach: may(number),
+    inner: may(number),
+  }),
+  circumscribeOptions: fields('what a circumscription takes', {
+    stroke: need(ref('stroke')),
+    around: may(named('a shape drawn round something', ['box', 'ellipse'])),
+    padding: may(number),
+  }),
+  followOptions: fields('what a follow takes', { within: may(number), room: may(number) }),
+  frameOptions: fields('what a framing takes', { padding: may(number) }),
+  viewChange: {
+    form: 'kinds',
+    what: 'a view move',
+    kinds: {
+      moveView: { to: need(fields('an extent', { width: may(number), height: may(number), centre: may(ref('point')) })) },
+      followView: { target: need(text), options: may(ref('followOptions')) },
+      frameView: { targets: need(list(text)), options: may(ref('frameOptions')) },
+    },
+  },
+  entry: {
+    form: 'kinds',
+    what: 'a timeline entry',
+    kinds: {
+      fadeIn: { target: need(text) },
+      fadeOut: { target: need(text) },
+      fadeTo: { target: need(text), opacity: need(number) },
+      draw: { target: need(text) },
+      moveBy: { target: need(text), offset: need(ref('point')) },
+      moveAlong: { target: need(text), path: need(ref('carriedPath')) },
+      rotate: { target: need(text), angle: need(number), options: may(ref('aboutOptions')) },
+      scale: { target: need(text), to: need(number), options: may(ref('scaleOptions')) },
+      growFrom: { target: need(text), from: may(ref('point')) },
+      morph: { target: need(text), into: need(ref('carriedPath')) },
+      morphEquation: { from: need(text), to: need(text) },
+      indicate: { target: need(text), options: may(ref('indicateOptions')) },
+      flash: { target: need(text), options: need(ref('flashOptions')) },
+      circumscribe: { target: need(text), options: need(ref('circumscribeOptions')) },
+      countTo: { target: need(text), from: need(number), to: need(number), precision: need(number) },
+      moveView: { to: need(fields('an extent', { width: may(number), height: may(number), centre: may(ref('point')) })) },
+      followView: { target: need(text), options: may(ref('followOptions')) },
+      frameView: { targets: need(list(text)), options: may(ref('frameOptions')) },
+    },
+  },
   span: fields('a span', {
     entry: need(ref('entry')),
     from: need(number),
@@ -761,7 +813,53 @@ function checkFields(value: unknown, what: string, held: Fields, path: string, t
  * What comes back is the value that was given rather than a copy of it, so a
  * reader parses once and draws what it parsed.
  */
+/**
+ * Every track an expression reads somewhere inside a value, by the path it is
+ * read at.
+ *
+ * A name is collected rather than checked here, since the figure's own tracks
+ * are one field of the same record and the walk reaches them in whatever order
+ * the fields were written.
+ */
+function tracksRead(value: unknown, path: string, found: Map<string, string>): void {
+  if (Array.isArray(value)) {
+    value.forEach((item, at) => tracksRead(item, `${path}.${at}`, found));
+    return;
+  }
+  if (!isObject(value)) return;
+  const held = value as { kind?: unknown; name?: unknown };
+  if (held.kind === 'track' && typeof held.name === 'string' && !found.has(held.name)) {
+    found.set(held.name, path === '' ? 'the figure' : path);
+  }
+  for (const [name, inside] of Object.entries(value)) {
+    tracksRead(inside, path === '' ? name : `${path}.${name}`, found);
+  }
+}
+
+/**
+ * A value held to the shape of a figure, handed back as one.
+ *
+ * Two things are read after the shapes and neither is a shape: a span that runs
+ * backwards, and an expression naming a track the figure does not carry. A
+ * renderer wants both answers before it draws, where a track missing from a
+ * figure otherwise refuses at the first time the expression is reached, which is
+ * however far into the timeline that span begins.
+ *
+ * What comes back is the value that was given rather than a copy of it, so a
+ * reader parses once and draws what it parsed.
+ */
 export function checkFigure(value: unknown): FigureRecord {
   check(value, SHAPES.figure, '');
-  return value as FigureRecord;
+  const record = value as FigureRecord;
+  record.timeline?.spans.forEach((span, at) => {
+    if (span.to < span.from) refuse(`timeline.spans.${at}.to`, `is ${span.to} and its from is ${span.from}`);
+  });
+  const found = new Map<string, string>();
+  tracksRead(record, '', found);
+  for (const [name, path] of found) {
+    if (!record.tracks || !(name in record.tracks)) {
+      refuse(path, `reads the track ${name}, which the figure does not carry`);
+    }
+  }
+  return record;
 }
