@@ -1155,6 +1155,39 @@ format a recorder reads a file, which is also what lets one run without a page a
 
 ## Found while working, not yet queued
 
+- **A figure whose marks are placed against the frame cannot be a file, and the consumer's second
+  figure is one.** Found from the site's tree while crossing it to 2.0.0, and Siva's call of
+  2026-09-09 was to queue it here rather than work around it there. `one-pixel` places all four of its
+  marks with `fractionOf(extent, across, up)`, and its aspect is read off a shader embed's box by a
+  `ResizeObserver` at run time, so the shape is not known until the reader's browser has laid the page
+  out. A file cannot hold that: `scene` is a node and never a function, and no expression reaches the
+  frame. The kinds are `track`, `variable`, `point`, `member`, `arithmetic`, `compare`, `choice`,
+  `call`, `path`, `coords` and `camera`, and the thirty-seven functions are arithmetic and geometry.
+  **Its other figure is the same finding and the consumer measured that afterwards.** All eleven of
+  `circle-distance`'s marks move with the aspect in both axes, because its glyphs are scaled to fit a
+  box of `extent.width * 0.84` and the width binds at every shape. It is drawn at four aspects rather
+  than one: its route uses the 3 its entry declares, and that tree's recorder builds it at
+  `width / height`, so the export's three shapes draw it at 1.7778, 1.0 and 0.5625. Its first glyph
+  sits at x = -114.029, -67.573, -38.010 and -21.380 across those four, a factor of 5.3333 on a
+  picture 100 units tall. So **neither of that repository's two figures can be a file**, and this is
+  what the whole of its format work waits on rather than one figure of it.
+  **What the shape looks like** is an expression kind answering where the frame is, which the extent
+  already knows at the time being drawn, since `matchingAspect` takes its width from the frame and
+  `extentAt` resolves it per time. **A kind added leaves every existing figure meaning what it meant,
+  so the format's own version rule keeps this at format 0** rather than making it a version 1.
+  **What has to be settled first** is what such a kind reads: the resolved extent is the honest
+  answer, and a view that follows a mark resolves the extent from the marks, so a scene reading the
+  frame through one is asking for what is being built. That is the same circularity `extentAt`'s own
+  header already describes, and it is the reason this is a question rather than a step.
+  **Measurement when it is taken:** each figure written as a file and read back, its marks against the
+  module's at every aspect that figure is drawn at, by tolerance. For `one-pixel` that is its four
+  marks at 0, 0.50, 1.20 and 1.60; for `circle-distance` its eleven at 3, 1.7778, 1.0 and 0.5625.
+
+- **The specification counts its expression kinds as ten and lists eleven.** `## The expression form`
+  says "there are ten" above a table of eleven rows, `track` through `camera`. Nothing reads the
+  sentence, so no gate can catch it and no picture changes. It is the same undercount `6c34e63`'s
+  subject carried when it said ten renames and listed eleven.
+
 - **The reference is held to the door by name and to the records by nothing.** `tests/reference.test.ts`
   says every name at the door has one entry and no entry names a name the door lacks, which is what
   keeps a rename from leaving a description of nothing. What it does not read is the fields inside an
