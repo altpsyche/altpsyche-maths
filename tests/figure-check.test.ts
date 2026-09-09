@@ -133,7 +133,7 @@ const EVERY_ENTRY: readonly Record<string, unknown>[] = [
   { kind: 'circumscribe', target: 'turns', options: { stroke: STROKE, around: 'ellipse', padding: 0.1 } },
   { kind: 'countTo', target: 'turns', from: 0, to: 10, precision: 0.01 },
   { kind: 'moveView', to: { width: 8, height: 4, centre: PLACE } },
-  { kind: 'followView', target: 'turns/own/pivot', options: { within: 0.5, room: 2 } },
+  { kind: 'followView', target: 'turns/own/pivot', options: { within: 0.5, room: 2, axis: 'x' } },
   { kind: 'frameView', targets: ['turns/own', 'turns/given'], options: { padding: 0.2 } },
 ];
 
@@ -169,6 +169,10 @@ describe('a figure held to the vocabulary', () => {
       'still is a number and is the text "soon"',
     );
     expect(() => checkFigure(withField(turning, ['loop'], 1))).toThrow('loop is a true or false and is 1');
+    const sideways = { kind: 'followView', target: 'turns/own/pivot', options: { axis: 'sideways' } };
+    expect(() => checkFigure(withField(turning, ['timeline', 'spans', '0', 'entry'], sideways))).toThrow(
+      'timeline.spans.0.entry.options.axis is a way a view follows, one of x, y, both'
+    );
     expect(() => checkFigure(withField(turning, ['extent'], []))).toThrow('extent is an extent and is a list');
   });
 

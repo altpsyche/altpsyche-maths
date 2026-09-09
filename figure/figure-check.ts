@@ -630,7 +630,11 @@ const SHAPES: Readonly<Record<string, Shape>> = {
     around: may(named('a shape drawn round something', ['box', 'ellipse'])),
     padding: may(number),
   }),
-  followOptions: fields('what a follow takes', { within: may(number), room: may(number) }),
+  followOptions: fields('what a follow takes', {
+    within: may(number),
+    room: may(number),
+    axis: may(named('a way a view follows', ['x', 'y', 'both'])),
+  }),
   frameOptions: fields('what a framing takes', { padding: may(number) }),
   viewChange: {
     form: 'kinds',
