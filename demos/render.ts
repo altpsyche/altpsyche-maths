@@ -28,6 +28,7 @@ import {
   written as booleansWritten,
 } from './boolean.js';
 import { FRAMES as TURN_FRAMES, stripMarks as turnStripMarks, written as turnsWritten } from './rotate.js';
+import { stripMarks as frameStripMarks, written as frameWritten } from './frame.js';
 import {
   FRAMES as SOLID_FRAMES,
   stripMarks as solidStripMarks,
@@ -168,6 +169,11 @@ export const sheets: readonly Sheet[] = [
   sheetOf('docs/surface-strip.svg', () =>
     stripDrawn(solidStripMarks(SOLID_FRAMES, 2, fileFor('demos/surface.figure.json')))
   ),
+  sheetOf('docs/frame.svg', () => stillDrawn(fileFor('demos/frame.figure.json'))),
+  sheetOf('docs/frame-strip.svg', () => {
+    const figure = fileFor('demos/frame.figure.json');
+    return stripDrawn(frameStripMarks(figure.still, undefined, figure));
+  }),
 ];
 
 /**
@@ -181,4 +187,5 @@ export const figures: readonly { file: string; text: () => string }[] = [
   { file: 'demos/tangent.figure.json', text: () => writeFigure(tangentWritten) },
   { file: 'demos/rotate.figure.json', text: () => writeFigure(turnsWritten) },
   { file: 'demos/surface.figure.json', text: () => writeFigure(solidWritten) },
+  { file: 'demos/frame.figure.json', text: () => writeFigure(frameWritten) },
 ];

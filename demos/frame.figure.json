@@ -1,0 +1,267 @@
+{
+  "format": 0,
+  "figure": {
+    "extent": {
+      "height": 6,
+      "kind": "matchingAspect"
+    },
+    "fit": "contain",
+    "scene": {
+      "children": [
+        {
+          "kind": "shape",
+          "name": "plate",
+          "path": {
+            "corner": {
+              "kind": "point",
+              "x": {
+                "kind": "arithmetic",
+                "left": {
+                  "kind": "member",
+                  "name": "x",
+                  "of": {
+                    "kind": "frame",
+                    "name": "centre"
+                  }
+                },
+                "operator": "+",
+                "right": {
+                  "kind": "arithmetic",
+                  "left": -0.45,
+                  "operator": "*",
+                  "right": {
+                    "kind": "frame",
+                    "name": "width"
+                  }
+                }
+              },
+              "y": {
+                "kind": "arithmetic",
+                "left": {
+                  "kind": "member",
+                  "name": "y",
+                  "of": {
+                    "kind": "frame",
+                    "name": "centre"
+                  }
+                },
+                "operator": "+",
+                "right": {
+                  "kind": "arithmetic",
+                  "left": -0.45,
+                  "operator": "*",
+                  "right": {
+                    "kind": "frame",
+                    "name": "height"
+                  }
+                }
+              }
+            },
+            "height": {
+              "kind": "arithmetic",
+              "left": 0.9,
+              "operator": "*",
+              "right": {
+                "kind": "frame",
+                "name": "height"
+              }
+            },
+            "kind": "rect",
+            "width": {
+              "kind": "arithmetic",
+              "left": 0.9,
+              "operator": "*",
+              "right": {
+                "kind": "frame",
+                "name": "width"
+              }
+            }
+          },
+          "style": {
+            "fill": {
+              "colour": {
+                "a": 1,
+                "b": 116,
+                "g": 186,
+                "name": "peach",
+                "r": 253
+              }
+            },
+            "stroke": {
+              "colour": {
+                "a": 1,
+                "b": 161,
+                "g": 105,
+                "name": "deep",
+                "r": 3
+              },
+              "width": 0.04
+            }
+          }
+        },
+        {
+          "kind": "shape",
+          "name": "disc",
+          "path": {
+            "centre": {
+              "x": 0,
+              "y": 0
+            },
+            "kind": "circle",
+            "radius": 1.05
+          },
+          "style": {
+            "fill": {
+              "colour": {
+                "a": 1,
+                "b": 12,
+                "g": 65,
+                "name": "ember",
+                "r": 194
+              }
+            },
+            "stroke": {
+              "colour": {
+                "a": 1,
+                "b": 161,
+                "g": 105,
+                "name": "deep",
+                "r": 3
+              },
+              "width": 0.04
+            }
+          }
+        },
+        {
+          "at": {
+            "x": 0,
+            "y": -1.8
+          },
+          "content": "figure units",
+          "kind": "text",
+          "name": "discWord",
+          "options": {
+            "align": "middle",
+            "fill": {
+              "colour": {
+                "a": 1,
+                "b": 27,
+                "g": 27,
+                "name": "ink",
+                "r": 27
+              }
+            }
+          },
+          "size": 0.3818376618407357
+        },
+        {
+          "at": {
+            "kind": "point",
+            "x": {
+              "kind": "arithmetic",
+              "left": {
+                "kind": "member",
+                "name": "x",
+                "of": {
+                  "kind": "frame",
+                  "name": "centre"
+                }
+              },
+              "operator": "+",
+              "right": {
+                "kind": "arithmetic",
+                "left": 0,
+                "operator": "*",
+                "right": {
+                  "kind": "frame",
+                  "name": "width"
+                }
+              }
+            },
+            "y": {
+              "kind": "arithmetic",
+              "left": {
+                "kind": "member",
+                "name": "y",
+                "of": {
+                  "kind": "frame",
+                  "name": "centre"
+                }
+              },
+              "operator": "+",
+              "right": {
+                "kind": "arithmetic",
+                "left": 0.38,
+                "operator": "*",
+                "right": {
+                  "kind": "frame",
+                  "name": "height"
+                }
+              }
+            }
+          },
+          "content": "the frame",
+          "kind": "text",
+          "name": "plateWord",
+          "options": {
+            "align": "middle",
+            "fill": {
+              "colour": {
+                "a": 1,
+                "b": 27,
+                "g": 27,
+                "name": "ink",
+                "r": 27
+              }
+            }
+          },
+          "size": 0.3818376618407357
+        }
+      ],
+      "kind": "group",
+      "name": "frame",
+      "style": {
+        "family": "system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif",
+        "weight": 400
+      }
+    },
+    "still": 1.8,
+    "timeline": {
+      "duration": 1.8,
+      "spans": [
+        {
+          "entry": {
+            "kind": "fadeIn",
+            "target": "frame/plate"
+          },
+          "from": 0,
+          "to": 0.6
+        },
+        {
+          "entry": {
+            "kind": "growFrom",
+            "target": "frame/disc"
+          },
+          "from": 0.5,
+          "to": 1.2
+        },
+        {
+          "entry": {
+            "kind": "fadeIn",
+            "target": "frame/discWord"
+          },
+          "from": 1,
+          "to": 1.5
+        },
+        {
+          "entry": {
+            "kind": "fadeIn",
+            "target": "frame/plateWord"
+          },
+          "from": 1.3,
+          "to": 1.8
+        }
+      ]
+    }
+  }
+}

@@ -1260,13 +1260,17 @@ inset is the nearest thing and it is a rectangle of the frame rather than a mark
   `figure/plate`, `figure/pixel/marker`, `figure/pixel/leader` and `figure/pixel/word` with every one
   of them moving by more than one figure unit between aspect 3 and aspect 1. 1075 tests before, 1078
   after.
-- [ ] **5. A flat demo whose marks answer to the frame.** `demos/frame.ts` declares `matchingAspect`,
+- [x] **5. A flat demo whose marks answer to the frame.** `demos/frame.ts` declares `matchingAspect`,
   places its marks by the frame beside one shape in the figure's own units, and is written out as
   `demos/frame.figure.json` with a still and a strip whose three columns are that figure at 1.7778, 1.0
   and 0.5625. It is the exception the boolean demo and the rotation demo already are, since a mark
   placed against the frame has no picture in a graph of a function. **The measurement**: the pinned
   mark's place at each of the three shapes, and the place of the mark in figure units at all three,
-  which is one place.
+  which is one place. **Landed 2026-09-10**: the plate is 9.6, 5.4 and 3.0375 units across at 1.7778,
+  1.0 and 0.5625, which is nine tenths of a frame six units tall, and the disc's box is -1.05 to 1.05
+  in both members at all three. `docs/frame.svg` is 1,950 bytes and `docs/frame-strip.svg` 4,406, and
+  they read 25.46 and 14.60 pixels at their smallest glyph on the page with 9.1% and 9.3% of the frame
+  bare. 1078 tests before, 1082 after.
 - [ ] **6. The solid demo's title and its equation are placed by the frame.** `demos/surface.ts` writes
   its two `fractionOf` calls as frame expressions, so the kind is carried by a fixture whose subject is
   something else. **The measurement**: `demos/surface.figure.json` before and after, and the demo's

@@ -199,7 +199,7 @@ describe('the committed pictures', () => {
       const read = readFigure(readFileSync(path.join(root, figure.file), 'utf8'));
       const sheet = sheets.find((one) => one.file === figure.file.replace('demos/', 'docs/').replace('.figure.json', '.svg'));
       expect(sheet).toBeDefined();
-      expect(marksAt(read, read.still)).toEqual(sheet!.drawn().marks);
+      expect(marksAt(read, read.still, STILL_WIDTH / STILL_HEIGHT)).toEqual(sheet!.drawn().marks);
     }
   });
 
@@ -407,7 +407,7 @@ describe('the committed pictures', () => {
     }
   });
 
-  it('are all eight there', () => {
+  it('are all ten there', () => {
     expect(sheets.map((sheet) => sheet.file)).toEqual([
       'docs/tangent.svg',
       'docs/tangent-strip.svg',
@@ -417,6 +417,8 @@ describe('the committed pictures', () => {
       'docs/rotate-strip.svg',
       'docs/surface.svg',
       'docs/surface-strip.svg',
+      'docs/frame.svg',
+      'docs/frame-strip.svg',
     ]);
   });
 });
