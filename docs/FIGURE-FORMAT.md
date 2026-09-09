@@ -1492,11 +1492,15 @@ release away and has a document of its own.
     arrow's length, and `u` and `v` for a surface. The suite goes from 1,053 tests over 67 files to
     1,056.
 
-  - [ ] **10.6d The animation vocabulary, the timeline, the extent and the insets.** The fifteen
+  - [x] **10.6d The animation vocabulary, the timeline, the extent and the insets.** The fifteen
     animation kinds with their fields, `TimelineRecord` and `SpanRecord`, the extent with the three
-    view moves folded over it, and `InsetRecord`. **Measures:** each `kind` string of
-    `AnimationRecord` and its fields against the entry; the four structures; the lines added; the
-    suite's count.
+    view moves folded over it, and `InsetRecord`. **Measured:** four sections take the document from
+    490 lines to 576: the fifteen kinds as a table with their five options records in the prose, the
+    timeline and its spans, the three extent forms with the three view changes, and the figure's own
+    nine fields. Naming `kind` in the extent section is what the gate asked for, since a bare
+    `Extent` carries none and that is what tells a fixed extent from a choice. Dropping `precision`
+    from `countTo` fails with `CountToRecord: precision`. The suite goes from 1,056 tests over 67
+    files to 1,061.
 
   - [ ] **10.6e The document reads as one specification.** The "What has to be specified" list
     replaced by what is specified, the pointer at this document left only where it is history, and

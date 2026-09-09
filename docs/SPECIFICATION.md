@@ -468,15 +468,101 @@ scene then sorts by depth.
 **Neither carries a camera.** The scene holding them has one, and a producer taking a second could
 disagree with it.
 
+## The animations
+
+**An animation names what it moves and how, and the timeline says when.** Every one carries a `kind`
+and a `target`, which is the id of a mark or the prefix every mark of a group shares, so one
+animation reaches a whole group.
+
+**An animation's numbers are plain numbers rather than expressions.** A track drives the scene and an
+animation moves marks the scene has already made, so a figure whose shape follows a value writes that
+value into the scene and not into a span.
+
+| kind | fields beyond the target | what it does |
+| --- | --- | --- |
+| `fadeIn` | none | nothing to fully opaque |
+| `fadeOut` | none | fully opaque to nothing |
+| `fadeTo` | `opacity` | to the opacity named |
+| `draw` | none | the path drawn on from its start to its end |
+| `moveBy` | `offset` | shifted by a place |
+| `moveAlong` | `path` | placed along a path record, by length rather than by parameter |
+| `rotate` | `angle`, `options` | turned by radians, about the middle of its own box unless a `pivot` is named |
+| `scale` | `to`, `options` | scaled to a factor, `from` one unless named |
+| `growFrom` | `from` | grown out of a place, the middle of its own box unless named |
+| `morph` | `into` | walked point by point into another path |
+| `morphEquation` | `from`, `to` | one typeset rule walked into another, glyph by glyph |
+| `indicate` | `options` | swelled and returned, by a `factor` and to a `colour` |
+| `flash` | `options` | rays thrown out and drawn back, by `rays`, `reach` and `inner` |
+| `circumscribe` | `options` | a box or an ellipse drawn round it, by `around` and `padding` |
+| `countTo` | `from`, `to`, `precision` | a number counted up, written to the precision named |
+
+**`morphEquation` carries `from` and `to` rather than a target**, since what it walks is one node
+into another and the pair is the animation.
+
+**A flash's `options` carries a required `stroke`** and `at`, `rays`, `reach` and `inner` beside it,
+where `at` is where the rays are thrown from and the two lengths are how far out and how far in they
+reach. A circumscribe's carries a required `stroke` with `around` and `padding`.
+
+**A fade is an opacity and never a removal.** A mark faded out is in the list with an opacity of
+nothing, so the list of marks at a time has the same ids whichever way the clock came.
+
+## The timeline
+
+**A timeline is its spans and how long the figure runs, and both are data.** `spans` is the list and
+`duration` is optional, the last span's own end unless named, which is what holds a figure after its
+last animation finishes.
+
+**A span carries an `entry`, a `from` and a `to` in seconds, and a `curve` by name.** The entry is an
+animation or a view change, told apart by its kind.
+
+**The offset a call takes and a stagger's gap are not in the format.** A call folds each into the next
+span's `from` when it is made, so what a file carries is where every span actually starts.
+
+**A span is read at every time rather than played.** A figure at a time is the marks the scene makes
+put through every span that covers that time, which is why a figure scrubs backwards as well as
+forwards and why nothing in the format is a step from the frame before.
+
+## The extent and the view
+
+**An extent is one of three forms.** A bare `Extent`, which is a fixed `width`, `height` and
+`centre`. A `byAspect` choice, which carries a `wide`, a `square` and a `tall` extent and picks by
+the shape of the frame. Or a `matchingAspect` extent, which carries a `height` and takes its width
+from the frame, so the area it covers is the frame's own shape.
+
+**A view change is one of three forms, told apart by its `kind`, and each is a span's entry the way
+an animation is.** An extent choice carries a `kind` too, and a bare `Extent` carries none, which is
+what tells a fixed extent from a choice.
+
+| kind | fields | what it does |
+| --- | --- | --- |
+| `moveView` | `to` | to another extent, any of whose fields may be left out |
+| `followView` | `target`, `options` | the view keeps a named mark near the middle |
+| `frameView` | `targets`, `options` | the view opens far enough to hold several marks |
+
+**A follow's `options` carries `within`, `room` and `axis`.** `within` is how far from the middle the
+mark may drift before the view moves, `room` is how much of the extent the view may give up to follow
+it, and `axis` is `x`, `y` or `both`. A frame's carries `padding`, which is the margin left round what
+it holds.
+
+**A view change is a timeline entry rather than a function of the clock.** So a figure's extent at a
+time is read the same way its marks are, and an inset carries one view change applied in full at
+every time rather than a span.
+
+## The figure
+
+**A figure carries nine fields and three of them are required**, which the file section above states.
+`extent`, `scene` and `still` are required; `fit`, `tracks`, `timeline`, `duration`, `loop` and
+`insets` are not.
+
+**`scene` is a node and never a function.** A figure whose shape follows a value reaches it through an
+expression in that node, which is what keeps a figure a file.
+
+**`still` is the one time a reader who asked for reduced motion is shown**, and `loop` says the
+figure ends where it began. A renderer holding a figure to its `loop` compares the marks at nothing
+and at the duration by tolerance.
+
 ## What has to be specified
 
-- **Fifteen animation kinds**, each with its parameters.
-- **The timeline**, which is the compiled spans and how long the figure runs. A span is an entry, a
-  `from`, a `to` and a curve by name. The `after` offset a call takes and a stagger's gap are not in
-  the format, since a call folds each into the next span's `from` when it is made.
-- **The extent**, which is a fixed extent, a choice on the frame's aspect or one matching an aspect,
-  and the three view moves folded over it: a move to another extent, a follow of a named mark, and a
-  framing of several.
 - **The standing refusals**, in the first section rather than an appendix: no loops, no recursion, no
   user-defined functions, no assignment, and not Turing-complete. A reader deciding whether to write
   a renderer needs the bound before the vocabulary.

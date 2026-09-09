@@ -222,6 +222,67 @@ describe('the specification and the nodes', () => {
   });
 });
 
+describe('the specification and the timeline', () => {
+  it('names every animation kind and its fields', () => {
+    const kinds = membersOf('figure/animation-record.ts', 'AnimationRecord');
+    expect(kinds).toHaveLength(15);
+    const inside = quoted(written.get('The animations') ?? '');
+    const absent = kinds.flatMap((name) => {
+      const missing = fieldsOf('figure/animation-record.ts', name).filter((field) => !inside.has(field));
+      return missing.length === 0 ? [] : [`${name}: ${missing.join(', ')}`];
+    });
+    expect(absent).toEqual([]);
+  });
+
+  it('names every field of every options record an animation carries', () => {
+    const inside = quoted(written.get('The animations') ?? '');
+    const absent = [
+      { name: 'AboutOptions', file: 'figure/animation.ts' },
+      { name: 'ScaleOptions', file: 'figure/animation.ts' },
+      { name: 'IndicateOptions', file: 'figure/animation.ts' },
+      { name: 'FlashOptions', file: 'figure/animation.ts' },
+      { name: 'CircumscribeOptions', file: 'figure/animation.ts' },
+    ].flatMap(({ name, file }) => {
+      const missing = fieldsOf(file, name).filter((field) => !inside.has(field));
+      return missing.length === 0 ? [] : [`${name}: ${missing.join(', ')}`];
+    });
+    expect(absent).toEqual([]);
+  });
+
+  it('names the timeline and a span with their fields', () => {
+    const inside = quoted(written.get('The timeline') ?? '');
+    const absent = ['TimelineRecord', 'SpanRecord'].flatMap((name) => {
+      const missing = fieldsOf('figure/timeline-record.ts', name).filter((field) => !inside.has(field));
+      return missing.length === 0 ? [] : [`${name}: ${missing.join(', ')}`];
+    });
+    expect(absent).toEqual([]);
+  });
+
+  it('names all three view changes and both extent choices with their fields', () => {
+    const inside = quoted(written.get('The extent and the view') ?? '');
+    const absent = [
+      'MoveViewRecord',
+      'FollowViewRecord',
+      'FrameViewRecord',
+      'ByAspectRecord',
+      'MatchingAspectRecord',
+    ].flatMap((name) => {
+      const missing = fieldsOf('figure/view-record.ts', name).filter((field) => !inside.has(field));
+      return missing.length === 0 ? [] : [`${name}: ${missing.join(', ')}`];
+    });
+    const options = ['FollowOptions', 'FrameOptions'].flatMap((name) => {
+      const missing = fieldsOf('figure/view.ts', name).filter((field) => !inside.has(field));
+      return missing.length === 0 ? [] : [`${name}: ${missing.join(', ')}`];
+    });
+    expect([...absent, ...options]).toEqual([]);
+  });
+
+  it('names every field a figure itself carries', () => {
+    const inside = quoted(written.get('The figure') ?? '');
+    expect(fieldsOf('figure/figure-record.ts', 'FigureRecord').filter((field) => !inside.has(field))).toEqual([]);
+  });
+});
+
 describe('the specification and the expression form', () => {
   it('names every kind an expression may carry', () => {
     const source = readFileSync(path.join(root, 'figure/expression.ts'), 'utf8');
