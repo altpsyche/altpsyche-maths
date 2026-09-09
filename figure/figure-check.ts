@@ -17,7 +17,7 @@
  * arrives with instead.
  */
 import { CURVE_NAMES } from '../values/ease.js';
-import { EXPRESSION_FUNCTIONS } from './expression.js';
+import { EXPRESSION_FUNCTIONS, FRAME_MEASURES } from './expression.js';
 import type { FigureRecord } from './figure-record.js';
 
 /** One field of a record, and whether a figure has to carry it. */
@@ -173,6 +173,7 @@ const SHAPES: Readonly<Record<string, Shape>> = {
     kinds: {
       track: { name: need(text) },
       variable: { name: need(text) },
+      frame: { name: need(named('a measure of the frame', FRAME_MEASURES)) },
       point: { x: need(ref('expression')), y: need(ref('expression')) },
       member: { of: need(ref('expression')), name: need(named('a member', ['x', 'y'])) },
       arithmetic: {

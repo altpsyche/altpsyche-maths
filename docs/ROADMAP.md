@@ -1234,10 +1234,13 @@ inset is the nearest thing and it is a rectangle of the frame rather than a mark
   with nothing bound refuses with `an expression reads the frame's width, which is not among the
   values it was given`; `fractionOf` written as expressions matches the call at aspects 3, 1.7778, 1
   and 0.5625 to ten places. 1070 tests pass, up from 1066.
-- [ ] **2. A file carrying the frame kind is read, or refused by name.** `figure/figure-check.ts` gains
+- [x] **2. A file carrying the frame kind is read, or refused by name.** `figure/figure-check.ts` gains
   the kind under `SHAPES.expression`, with its `name` held to the four measures. **The measurement**:
   the four committed fixtures read unchanged, byte for byte, and a file naming a fifth measure refused
-  with the path of the field and the four names in the sentence.
+  with the path of the field and the four names in the sentence. **Landed 2026-09-10**: the four
+  fixtures are unmodified in the tree and their `figure-file` gate reads them; a fifth measure refuses
+  with `scene.children.0.path.radius.name is a measure of the frame, one of width, height, aspect,
+  centre, and is the text "depth"`. 1073 tests pass, up from 1070.
 - [ ] **3. The seam takes an aspect and the frame reaches the scene.** `marksAt(figure, seconds,
   aspect?)` resolves the declared extent at that aspect and hands it to the scene, to the insets and to
   `resolveFigure`, `Figure.scene` widens to `(seconds, values, frame?)`, and `viewAt`, `framesOf` and

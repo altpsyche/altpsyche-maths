@@ -652,3 +652,44 @@ describe('a figure held to the vocabulary', () => {
     expect(() => checkFigure(4)).toThrow('the figure is a figure and is 4');
   });
 });
+
+describe('the reader and the frame a figure is drawn in', () => {
+  /** The frame expression sits where a radius goes, so the refusal has a path
+   * through a node and a path rather than a path through the figure's own
+   * fields. */
+  const withMeasure = (name: unknown) => ({
+    ...turning,
+    scene: {
+      kind: 'group',
+      name: 'all',
+      children: [{ kind: 'shape', name: 'ring', path: { kind: 'circle', centre: PLACE, radius: { kind: 'frame', name } } }],
+    },
+  });
+
+  it('reads each of the four measures', () => {
+    for (const name of ['width', 'height', 'aspect', 'centre']) {
+      expect(checkFigure(withMeasure(name)), name).toBeTruthy();
+    }
+  });
+
+  it('refuses a measure outside the four, with the path of the field and the four names', () => {
+    expect(() => checkFigure(withMeasure('depth'))).toThrow(
+      'scene.children.0.path.radius.name is a measure of the frame, one of width, height, aspect, centre, and is the text "depth"'
+    );
+  });
+
+  it('refuses a frame expression carrying a field the kind does not have', () => {
+    expect(() =>
+      checkFigure({
+        ...turning,
+        scene: {
+          kind: 'group',
+          name: 'all',
+          children: [
+            { kind: 'shape', name: 'ring', path: { kind: 'circle', centre: PLACE, radius: { kind: 'frame', name: 'width', of: 1 } } },
+          ],
+        },
+      })
+    ).toThrow('scene.children.0.path.radius.of is not a field of an expression');
+  });
+});
