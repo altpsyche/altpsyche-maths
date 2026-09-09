@@ -473,7 +473,7 @@ frozen door is what a major exists for, so either the old calls keep working bes
 which means two APIs and two things to test, or the version goes to two. **That is Siva's call and
 this plan assumed a minor without asking.**
 
-**Realistic shape: forty-one commits over the vocabulary and the surfaces, plus the
+**Realistic shape: forty commits over the vocabulary and the surfaces, plus the
 site.** Against evenings and weekends that is months rather than weeks. The plan is still worth doing
 and the reasons in this document are unchanged. What was wrong was the size written next to them.
 
@@ -488,9 +488,9 @@ commits and step 4 is five, each named below with the demo whose marks measure i
 version and there is no step between it and step 10. **Step 7.5 was added by the audit of the 1.x
 band**, since 1.6.0 gave a figure insets and nothing here carried them.
 
-**The honest count is forty-one commits rather than twelve to sixteen.** Seven of the thirteen steps
-are one commit each. Step 3 is fourteen, step 4 is five, step 5 is eight and step 12 is two, the last
-two written on 2026-09-09. Step 8 rewrites the three demos step 5.8 leaves and is three. Step 9
+**The honest count is forty commits rather than twelve to sixteen.** Eight of the thirteen steps
+are one commit each. Step 3 is fourteen, step 4 is five and step 5 is eight, the last written on
+2026-09-09. Step 8 rewrites the three demos step 5.8 leaves and is three. Step 9
 rewrites the guide and the reference and is two. **Step 12 is worked after step 5 rather than in its
 written place**, and the numbers stay as they are because three steps name step 5 by number and
 renumbering would leave those pointing at nothing. The site is not counted here at all, since it is a
@@ -1126,7 +1126,7 @@ release away and has a document of its own.
   all eight sheets identical after `npm run demos`; the door and the suite from 266 names and 785
   tests; the specification's own version, which is separate from this one.
 
-- [ ] **12. A colour is channels and a name, which is two commits and is worked after step 5.**
+- [ ] **12. A colour is channels and a name, which is one commit and is worked after step 5.**
   Siva's call of 2026-09-09, and it is gap 8 of the GPU spike. A mark's colour is a CSS string today,
   the four demos paint every mark as `var(--name, #rrggbb)`, and a shader wants four numbers while a
   renderer in another language cannot read a custom property at all. **A colour becomes four channels
@@ -1135,42 +1135,50 @@ release away and has a document of its own.
   sheet's own theme block. **The number is here rather than after step 8**, since a colour written
   into four demo files and changed afterwards is four files rewritten twice.
 
-  **The blast radius was measured on 2026-09-09, before any of it was written, and it is wider than
-  the two commits below were written as.** `Colour` is `string` in `figure/mark.ts` and 20 places in
-  the library name the type. What actually has to move is every place a colour is written down: 90
-  sites write `colour: '...'` across the tests, the demos and the library, 151 hex literals sit in
-  those files, and 7 places write a `var(--name, #rrggbb)` by hand. The two painters each read
-  `.colour` straight into what they paint, `paint/canvas.ts` handing it to `strokeStyle` and to
-  `addColorStop`, which is where a `var()` a canvas cannot resolve is painted as nothing today.
+  **The split into two commits was tried on 2026-09-09 and it does not hold, so this step is one
+  commit.** The seam was drawn between the painters and the records, and there is no seam there:
+  `figure/node-record.ts` imports `Fill`, `Stop` and `Stroke` from `figure/mark.ts`, so a record's
+  colour is the mark's colour and the same type change reaches both at once. `figure/figure-file.ts`
+  writes any value as JSON, and the validator's `colour` shape in `figure/figure-check.ts` is `text`,
+  so the moment `Colour` stops being a string the committed figure file carries an object the
+  validator refuses and the gate reading that file fails. A commit stopping at the painters is a
+  commit whose suite does not run, which is the same reason the 90 written colours cannot be moved in
+  halves. The plan is forty commits rather than forty-one.
 
-  **Fifteen of those written colours are CSS names and change value as well as form**, since
+  **The blast radius was measured on 2026-09-09, before any of it was written.** `Colour` is `string`
+  in `figure/mark.ts` and 19 places in the library name the type: five in `figure/animation.ts`, five
+  in `figure/node-record.ts`, four in `figure/mark.ts`, two each in `figure/field.ts` and
+  `figure/field3.ts`, and one at the door. What has to move is every place a colour is written down:
+  90 sites write `colour: '...'`, all of them in the tests, 176 hex literals sit in the tests and the
+  demos, and `demos/palette.ts` writes a `var(--name, #rrggbb)` in two places while
+  `tests/demos.test.ts` asserts one in three. The two painters each read `.colour` straight into what
+  they paint, `paint/canvas.ts` handing it to `strokeStyle` and to `addColorStop`, which is where a
+  `var()` a canvas cannot resolve is painted as nothing today.
+
+  **Twenty-three of those written colours are CSS names and change value as well as form**, since
   `colourOf` reads hex and `rgb()` and refuses every other form rather than guessing at it, so
-  `'red'`, `'black'` and `'rebeccapurple'` in the tests become hex. `tests/paint.test.ts` also asserts
-  the text a painter writes, so what a named colour and an unnamed one are painted as is a decision
-  those assertions are rewritten against. **This is why 12.1 is a session of its own** and was not
-  started at 28.6 per cent of a window.
+  `'red'`, `'black'`, `'grey'` and `'rebeccapurple'` in the tests become hex. `tests/paint.test.ts`
+  also asserts the text a painter writes, and four of its colours are three-digit hex, so `#fff`
+  asserted back as `#fff` becomes `#ffffff` once a painter writes hex from channels.
 
   **The channels are 0 to 255 with the alpha 0 to 1, which is `Rgba` in `values/colour.ts` already.**
   A hex then round-trips exactly, which is what lets the sheets stay byte for byte: the SVG painter
   writes `var(--name, #rrggbb)` back from the channels and the name, and a shader divides by 255.
-  Floats from 0 to 1 would write a hex a rounding away from the one the palette shipped.
+  Floats from 0 to 1 would write a hex a rounding away from the one the palette shipped. A colour
+  whose alpha is under one is written as eight digits, which nothing in the tree writes today.
 
-  - [ ] **12.1 The colour record, both painters, and every place a colour is written.** `Colour` is
-    `Rgba` with an optional `name`, `values/colour.ts` reads the two text forms into one and refuses
-    the rest, and the SVG painter writes the `var()` it writes today from the channels and the name
-    while the canvas painter writes the hex. `demos/palette.ts` hands out records. **The 90 written
-    colours move in this commit**, since a suite half moved does not run.
-    **Measures:** all eight sheets byte for byte as committed after `npm run demos`; the flat demo's
-    forty-three colours at its still time each four channels and a name; the contrast readings
-    against both grounds unchanged; the canvas painter given a hex where it is given a `var()` today.
-
-  - [ ] **12.2 The colour in the records, the file and the table.** `ColourChoice`, `ShadeRecord` and
-    a gradient's stops carry the record, the validator's `colour` shape stops being text, and the
-    committed figure file carries channels rather than a custom property.
-    **Measures:** the rotation demo's file with `var(--ember, #c2410c)` gone and four channels in its
-    place, in bytes; the vector field's two colours and the surface's shade ramp giving the same marks
-    as their own calls within 1e-6; a colour that is neither a hex nor an `rgb()` refused with the
-    text it was given.
+  **What lands.** `Colour` is `Rgba` with an optional `name`, `values/colour.ts` reads the two text
+  forms into one and refuses the rest, the SVG painter writes the `var()` it writes today from the
+  channels and the name while the canvas painter writes the hex, `demos/palette.ts` hands out
+  records, the validator's `colour` shape stops being text, and the committed figure file carries
+  channels.
+  **Measures:** all eight sheets byte for byte as committed after `npm run demos`; the flat demo's
+  nine distinct colours over 185 colour slots at its still time each four channels and a name; the
+  contrast readings against both grounds unchanged; the canvas painter given a hex where it is given
+  a `var()` today; the rotation demo's file with `var(--ember, #c2410c)` gone and four channels in
+  its place, in bytes; the vector field's two colours and the surface's shade ramp giving the same
+  marks as their own calls within 1e-6; a colour that is neither a hex nor an `rgb()` refused with
+  the text it was given.
 
 #### Done-criteria
 

@@ -472,9 +472,11 @@ the orbit it sits.
 
 Step 3.10 added `polyline3`, `dot3`, `text3`, `arrow3`, `scene3` and `axes3`, so the solid demo's
 axes, its three runs of descent and its crossing curve all draw from records at each of the four times
-its strip draws. The door is 316 names and the suite is 894 tests over 58 files. **Step 3.11 is what a
-session runs next**, which is `surface3`, `surfaceCells`, `fieldArrows3` and `vectorField3`, with
-`sectionOf` and `streamlineOf` as the point producers they are.
+its strip draws. The door is 316 names and the suite is 894 tests over 58 files. Step 3.11 added
+`surface3`, `surfaceCells`, `fieldArrows3` and `vectorField3`, with `sectionOf` and `streamlineOf` as
+the point producers they are, so steps 1 through 7.5 are landed. The door is 373 names and the suite
+is 1,017 tests over 65 files. **Step 12 is what a session runs next**, which is the colour, and it
+runs before step 8 so a colour is not written into four demo files and changed afterwards.
 
 **Two things fall due before the format freezes and both are Siva's**, which are
 whether a `Mark` may be a raster image, due by step 3 where the node vocabulary lands, and the
@@ -517,7 +519,7 @@ one 265 at 2.5 and 2.7 milliseconds a frame.
 
 **The format plan gained step 7.5, because 1.6.0 landed after it was written.** Step 6 carries the
 timeline as data and step 7 the extent, and nothing carried `Figure.insets`, so step 8 could not have
-written the flat demo out as a file with the panel it draws. The plan is forty-one commits and its
+written the flat demo out as a file with the panel it draws. The plan is forty commits and its
 value types eleven.
 
 **The solid demo carries an inset, so the clip reached both demos the way every 1.x feature before it
@@ -977,7 +979,8 @@ of the 1.x band added a step to it for the insets 1.6.0 gave a figure and the re
 added one for the boolean operations, and step 3.2 added one for the three calls that take geometry,
 step 3.9 split its look off as a step of its own, and step 3.11 found the pane's wash. Step 5 was
 planned on 2026-09-09 and is eight commits, the rotation demo moved into it out of step 8, and gap 8
-became step 12 and two commits on the same day, so it is forty-one commits.
+became step 12 on the same day. Step 12's own split into two commits was tried and does not hold,
+since the records share the mark's colour type, so it is forty commits.
 
 A figure format is a description of a picture over time that a program reads rather than runs. It
 carries nodes, tracks and animations, each a named thing with parameters, and no function anywhere.
@@ -1059,7 +1062,7 @@ twelve to sixteen it claimed. The audit of the 1.x band added a step for the ins
 2026-09-09 added one for the boolean operations, and step 3.2 added one for the three calls that take
 geometry, and step 3.9 split the held beat off as a look of its own, so it is thirty-two. Step 5's own
 plan of 2026-09-09 is eight commits and takes the rotation demo out of step 8, and gap 8 is step 12
-and two commits, which makes it forty-one.
+and one commit, which makes it forty.
 
 **Splitting them corrected the inventory in four places**, because the tables had been read from the
 names at the door rather than from each builder's return type. `riemannBars` returns a node and was
