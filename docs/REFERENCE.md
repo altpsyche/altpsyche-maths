@@ -234,7 +234,20 @@ numbers and a pointwise map of a shape.
   that read geometry, and `pointAlong` given a path with no points in it is refused rather than read.
   `project(camera, x, y, z)` is the place in space put on the page, which is what a wash whose axis
   follows the eye is written with. It gives the place whether or not the eye can see it, the way the
-  camera's own `project` hands back a point beside the depth it was at.
+  camera's own `project` hands back a point beside the depth it was at. The thirty-seven, in the order
+  the set sorts them and with the arguments each takes:
+  - Over one number: `abs`, `sign`, `floor`, `round`, `sqrt`, `exp`, `log`, `sin`, `cos`, `tan`,
+    `asin`, `acos`, `atan`.
+  - Over two numbers: `pow`, `atan2`, `min`, `max`, `hypot`.
+  - Over three numbers: `clamp(value, low, high)` and `inverseLerp(from, to, value)`, and over five
+    `remap(value, fromLow, fromHigh, toLow, toHigh)`.
+  - `lerp(from, to, along)` — both ends numbers or both ends places, since a fraction of the way from
+    a number to a place is nothing.
+  - Over two places: `add`, `subtract`, `dot`, `cross`, `distance`.
+  - Over one place: `magnitude`, `normalize`, `perpendicular`, `angle`.
+  - `scale(place, by)` and `rotate(place, radians)`, each a place and a number.
+  - `lengthOf(path)`, `pointAlong(path, fraction)` and `slopeOf(coords, path, x)`, the three that read
+    geometry, and `project(camera, x, y, z)`.
 - `evaluate(expression, bindings)` — the value an expression has for a set of tracks and variables.
   Division by nothing is left as the infinity the arithmetic gives, so a field sampled at a pole reads
   as a pole.

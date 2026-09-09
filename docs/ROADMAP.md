@@ -545,9 +545,9 @@ and seven commits closed what it found. The reading on 2026-09-09 found seven th
 is the damage each does if it ships: the consumer has drawn no 2.x figure at all and holds 0.6.0;
 `DESIGN.md` quoted 3.9 and 4.2 milliseconds a frame where this machine reads 5.13 and 5.14;
 `stripMarks` was written four times; the reference is held to the records by nothing; the
-thirty-seven expression functions are named nowhere a reader can look them up; the npm tarball is
+thirty-seven expression functions were named nowhere a reader could look them up; the npm tarball is
 `dist`, `LICENSE` and `README.md` while the README shows four pictures out of `docs/`; and
-`tests/figures.ts` described two demos as records when four are. The last, the third and the second are closed. **One call inside the cut is still Siva's**, which is what
+`tests/figures.ts` described two demos as records when four are. The last, the third, the second and the fifth are closed. **One call inside the cut is still Siva's**, which is what
 becomes of [`FIGURE-FORMAT.md`](FIGURE-FORMAT.md), a document `CLAUDE.md` calls the change in flight
 and which a cut version leaves as a specification rather than a plan.
 
