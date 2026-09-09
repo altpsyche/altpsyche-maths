@@ -362,7 +362,7 @@ import { Timeline, fadeIn, followView, moveView, vec2 } from '@altpsyche/maths';
 
 // The dot is followed from the first frame, held within a unit of the middle, and
 // the camera pushes in on it once the picture has arrived.
-const timeline = Timeline.empty()
+const viewed = Timeline.empty()
   .play(followView('fig/dot', { within: 1, axis: 'x' }), 0)
   .play(fadeIn('fig/grid'), 0.6)
   .play(moveView({ width: 6, height: 3 }), 1.2, { after: 0.4 });

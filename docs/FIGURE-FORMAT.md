@@ -1279,7 +1279,7 @@ release away and has a document of its own.
   compile against the tree with two errors, both of them `timeline` declared a second and a third
   time. So the examples are current and nothing in them is checked.
 
-  - [ ] **9.1 The guide's code blocks are a gate.** One test reads `docs/GUIDE.md`, takes every
+  - [x] **9.1 The guide's code blocks are a gate.** One test reads `docs/GUIDE.md`, takes every
     TypeScript block in order, merges the import lists into one and type-checks the result against the
     tree. **The blocks are one module rather than one module each**, since a later block uses what an
     earlier one declared: the notation block's four styles and its path are what the rest are written
@@ -1287,6 +1287,16 @@ release away and has a document of its own.
     twice is then a defect of the guide rather than of the gate, and the fix is the guide's.
     **Measures:** 23 blocks and 171 lines going in; 56 values and 5 types in the merged import; two
     errors before and none after; the suite's own count.
+    **The compiler is spawned rather than called in this process**, since the merged module imports
+    the door by an absolute path and a type-check of a file outside the tree needs its own invocation.
+    It reads `--allowImportingTsExtensions`, which is what lets that path name `index.ts` itself
+    rather than a build that may not exist.
+    **Measured:** the two errors were one identifier, `timeline`, declared in the timelines section
+    and again in the view section, and the second is now `viewed`; the gate is four cases and runs in
+    1.3 seconds, of which the two compilations are 1.2; a deliberate `const wrong: number = vec2(0,
+    0)` appended to the module is reported as `Type 'Vec2' is not assignable to type 'number'`, which
+    is what says the gate reads the code rather than the page; the suite from 1,038 tests to 1,042
+    over 66 files.
 
   - [ ] **9.2 The guide teaches a figure as data.** The page teaches the calls and stops, so a reader
     reaches the end without learning what 2.0.0 is for. What it gains is the record vocabulary in the

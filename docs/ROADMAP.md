@@ -514,8 +514,11 @@ guide's code blocks, the guide teaching a figure as data, the reference's prose 
 kinds, and the README and the design read against the format. The two pages are less stale than their
 line counts say and stale in the one place that matters, since `Record` appears nowhere in the guide.
 Its 23 blocks are 171 lines importing 61 names, and assembled into one module they compile against the
-tree with two errors, both of them one identifier declared three times. **Step 9.1 is what a session
-runs next.**
+tree with two errors, both of them one identifier declared twice. Step 9.1 landed that gate: the 23
+blocks are assembled into one module with their imports merged and type-checked by a spawned
+compiler, the duplicate `timeline` of the view section is now `viewed`, and the suite is 1,042 tests
+over 66 files. **Step 9.2 is what a session runs next**, which is the guide teaching a figure as
+data.
 
 **Two things fall due before the format freezes and both are Siva's**, which are
 whether a `Mark` may be a raster image, due by step 3 where the node vocabulary lands, and the
