@@ -1222,13 +1222,18 @@ inset is the nearest thing and it is a rectangle of the frame rather than a mark
 
 **The steps, seven of them, and each one is a commit.**
 
-- [ ] **1. The frame is a binding and the twelfth expression kind.** `Bindings` gains a `frame`
+- [x] **1. The frame is a binding and the twelfth expression kind.** `Bindings` gains a `frame`
   holding the extent the figure declares, `Expression` gains `{ kind: 'frame', name }`, and `evaluate`
   answers `width`, `height`, `aspect` and `centre` off it and refuses with a sentence when the bindings
   carry no frame. The specification's expression table gains the row, its count goes from eleven to
   twelve, and the count gate in `tests/specification.test.ts` learns the word. **The measurement**: the
   kinds the union carries, eleven before and twelve after, read by the gate out of the source and out
-  of the sentence, and the sentence a frame expression refuses with when nothing bound one.
+  of the sentence, and the sentence a frame expression refuses with when nothing bound one. **Landed
+  2026-09-10**: the union counts twelve and the specification writes twelve, both read by the count
+  gate; `FRAME_MEASURES` holds `name` to `width`, `height`, `aspect` and `centre`; a frame expression
+  with nothing bound refuses with `an expression reads the frame's width, which is not among the
+  values it was given`; `fractionOf` written as expressions matches the call at aspects 3, 1.7778, 1
+  and 0.5625 to ten places. 1070 tests pass, up from 1066.
 - [ ] **2. A file carrying the frame kind is read, or refused by name.** `figure/figure-check.ts` gains
   the kind under `SHAPES.expression`, with its `name` held to the four measures. **The measurement**:
   the four committed fixtures read unchanged, byte for byte, and a file naming a fifth measure refused

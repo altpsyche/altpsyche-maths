@@ -4,12 +4,15 @@ import {
   clamp,
   coordsOf,
   evaluate,
+  fractionOf,
   interval,
   inverseLerp,
   lengthOf,
   lerp,
+  matchingAspect,
   pointAlong,
   remap,
+  resolveExtent,
   resolveCamera,
   resolvePath,
   scaleOf,
@@ -402,5 +405,52 @@ describe('the call that puts a place in space on the page', () => {
     expect(() => evaluate(of('sqrt', written), bindings)).toThrow(
       'the argument of sqrt is a number and was given a camera'
     );
+  });
+});
+
+describe('an expression that reads the frame', () => {
+  const declared = matchingAspect(100);
+
+  it('answers each of the four measures off the extent the figure declares', () => {
+    const frame = resolveExtent(declared, 1.7778);
+    const read = (name: 'width' | 'height' | 'aspect' | 'centre') => evaluate({ kind: 'frame', name }, { frame });
+    expect(read('width')).toBeCloseTo(177.78, 10);
+    expect(read('height')).toBe(100);
+    expect(read('aspect')).toBeCloseTo(1.7778, 10);
+    expect(read('centre')).toEqual(vec2(0, 0));
+  });
+
+  it('gives the centre the extent names rather than the origin', () => {
+    expect(evaluate({ kind: 'frame', name: 'centre' }, { frame: { width: 8, height: 5, centre: vec2(3, -2) } })).toEqual(
+      vec2(3, -2)
+    );
+  });
+
+  it('refuses when nothing bound a frame, naming the measure it was asked for', () => {
+    expect(() => evaluate({ kind: 'frame', name: 'aspect' })).toThrow(/the frame's aspect/);
+    expect(() => evaluate({ kind: 'frame', name: 'width' }, { tracks: { t: 1 } })).toThrow(
+      "an expression reads the frame's width, which is not among the values it was given"
+    );
+  });
+
+  // fractionOf written as expressions, which is the call the consumer's figures
+  // place every mark with and the one a file has no form for without this kind.
+  it('writes fractionOf as an expression, at every shape the frame takes', () => {
+    const across = (fraction: number): Expression => ({
+      kind: 'arithmetic',
+      operator: '+',
+      left: { kind: 'member', of: { kind: 'frame', name: 'centre' }, name: 'x' },
+      right: {
+        kind: 'arithmetic',
+        operator: '*',
+        left: fraction - 0.5,
+        right: { kind: 'frame', name: 'width' },
+      },
+    });
+    for (const aspect of [3, 1.7778, 1, 0.5625]) {
+      const frame = resolveExtent(declared, aspect);
+      expect(evaluate(across(0.02), { frame })).toBeCloseTo(fractionOf(frame, 0.02, 0.5).x, 10);
+      expect(evaluate(across(0.84), { frame })).toBeCloseTo(fractionOf(frame, 0.84, 0.5).x, 10);
+    }
   });
 });

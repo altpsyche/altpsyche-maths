@@ -27,6 +27,7 @@ import { clamp, inverseLerp, lerp, remap } from '../values/scalar.js';
 import { vec2, type Vec2 } from '../values/vec2.js';
 import { vec3 } from '../values/vec3.js';
 import type { TrackValue } from '../timing/track.js';
+import type { Extent } from './extent.js';
 import type { Path } from './path.js';
 import type { Coords } from './scale.js';
 import { lengthOf, pointAlong } from './length.js';
@@ -55,7 +56,18 @@ export interface Bindings {
   /** The tracks' own values at the time being drawn. */
   readonly tracks?: Record<string, TrackValue>;
   readonly variables?: Variables;
+  /** Frame: the extent the figure declares, resolved at the aspect being drawn,
+   * and never the extent a view move or a follow has left. A follow resolves its
+   * extent from the marks, so a mark reading that extent would ask for what is
+   * being built. */
+  readonly frame?: Extent;
 }
+
+/** What a frame expression may read off the extent. The set is versioned the
+ * way the function set is, so a reader holds a file's `name` to these four. */
+export const FRAME_MEASURES = Object.freeze(['width', 'height', 'aspect', 'centre'] as const);
+
+export type FrameMeasure = (typeof FRAME_MEASURES)[number];
 
 export type Arithmetic = '+' | '-' | '*' | '/';
 export type Comparison = '<' | '<=' | '>' | '>=' | '=' | '!=';
@@ -74,6 +86,7 @@ export type Expression =
   | Vec2
   | { readonly kind: 'track'; readonly name: string }
   | { readonly kind: 'variable'; readonly name: string }
+  | { readonly kind: 'frame'; readonly name: FrameMeasure }
   | { readonly kind: 'point'; readonly x: Expression; readonly y: Expression }
   | { readonly kind: 'member'; readonly of: Expression; readonly name: 'x' | 'y' }
   | {
@@ -350,6 +363,17 @@ export function evaluate(expression: Expression, bindings: Bindings = {}): Expre
         throw new Error(`an expression reads ${expression.name}, which is not among the variables it was given`);
       }
       return value;
+    }
+    case 'frame': {
+      const frame = bindings.frame;
+      if (frame === undefined) {
+        throw new Error(
+          `an expression reads the frame's ${expression.name}, which is not among the values it was given`
+        );
+      }
+      if (expression.name === 'aspect') return frame.width / frame.height;
+      if (expression.name === 'centre') return frame.centre ?? vec2(0, 0);
+      return frame[expression.name];
     }
     case 'point':
       return vec2(

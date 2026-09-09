@@ -287,6 +287,7 @@ describe('the specification and the timeline', () => {
 const WRITTEN = new Map([
   ['ten', 10],
   ['eleven', 11],
+  ['twelve', 12],
   ['thirteen', 13],
   ['fifteen', 15],
   ['twenty-three', 23],

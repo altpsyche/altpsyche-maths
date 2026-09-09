@@ -210,12 +210,13 @@ recursion, no assignment and no user-defined functions, which the refusals above
 told from the record forms by carrying no `kind`, so a fixed place is written the way every other
 fixed place in a figure is.
 
-**Every other form carries a `kind`**, and there are eleven:
+**Every other form carries a `kind`**, and there are twelve:
 
 | kind | fields | what it is |
 | --- | --- | --- |
 | `track` | `name` | the value of that track at the time being drawn |
 | `variable` | `name` | the value the geometry taking the expression bound under that name |
+| `frame` | `name` | the `width`, `height`, `aspect` or `centre` of the frame the figure is drawn in |
 | `point` | `x`, `y` | a place whose members are themselves expressions |
 | `member` | `of`, `name` | the `x` or the `y` of a place |
 | `arithmetic` | `operator`, `left`, `right` | `+`, `-`, `*` or `/` over two numbers or two places |
@@ -225,6 +226,12 @@ fixed place in a figure is.
 | `path` | `of` | a path record as a value, for the three functions that read geometry |
 | `coords` | `of` | a `Coords` as a value, for `slopeOf` |
 | `camera` | `of` | a `Camera3Record` as a value, for `project` |
+
+**The frame a `frame` expression reads is the extent the figure declares, resolved at the aspect
+being drawn.** It is never the extent a view change or a follow has moved: a follow resolves its
+extent from the marks, so a mark reading that extent would ask for the marks that are being built.
+`name` outside those four is refused with the name in the sentence, and so is a `frame` expression in
+a figure drawn with no frame, which is a figure whose declared extent is a function read at no aspect.
 
 **A value an expression may have is a number, a boolean, a place, a path, a `Coords` or a camera.**
 The last three widen what a call may take rather than what arithmetic works over: neither is added
