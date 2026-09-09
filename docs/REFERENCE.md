@@ -1098,6 +1098,14 @@ a group of that name.
     what holds that rather than trust.
   - `insets` — the second views of the figure drawn into rectangles of its own frame.
 - `TrackValues` — every sampled value by name, which is what a scene function is handed.
+- `FigureRecord` — a whole figure written as data: the `extent` as an `ExtentRecord`, the `fit`, the
+  `scene` as a `NodeRecord`, its `tracks`, the `timeline` as a `TimelineRecord`, the `duration`, the
+  `still` time, the `loop` flag, and its `insets` as `InsetRecord`s. `extent`, `scene` and `still`
+  are required and the other six are optional, which is what `Figure` itself holds.
+- `resolveFigure(record)` — the figure a record describes. The scene is read again at each time with
+  the sampled track values as its bindings, so a scene a track drives stays a record rather than a
+  closure. An animation's parameters are read once, since a figure carries one timeline and every
+  time reads that same one.
 - `marksAt(figure, seconds)` — the marks a figure shows at a time. A tapered stroke is turned into
   its filled outline after the timeline has run, so an animation that trims a path trims the
   centreline and the outline follows it.

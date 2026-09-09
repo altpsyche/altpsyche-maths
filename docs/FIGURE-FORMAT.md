@@ -898,15 +898,23 @@ release away and has a document of its own.
     the clock to three records with three view moves. The door and the suite unchanged at 365 names
     and 959 tests.
 
-  - [ ] **5.2 The figure as data.** A `FigureRecord` is an `ExtentRecord`, a fit, a `NodeRecord`, its
+  - [x] **5.2 The figure as data.** A `FigureRecord` is an `ExtentRecord`, a fit, a `NodeRecord`, its
     tracks, a `TimelineRecord`, a duration, a still time, a loop flag and its insets, and
     `resolveFigure` builds the `Figure` that `marksAt` already takes. The scene is rebuilt at each
     time with the sampled track values as its bindings, so a scene driven by a track stays a record
     rather than becoming a closure again.
-    **Measures:** the rotation demo as one record drawing its eight marks at each of the four times
-    its strip draws, within a tolerance of 1e-6 and under the same ids; the boolean demo as one
-    record at each of its seven named times, whose scene is a boolean operation over a track and is
-    the case a fixed tree does not check; the door from 365 names and the suite from 959 tests.
+    **An animation's own parameters are read once**, since a figure carries one timeline and every
+    time reads that same one, so a track reaches a picture through the scene rather than through a
+    span.
+    **Measured:** the rotation demo as one record drawing its eight marks at each of the four times
+    its strip draws and at its still time of 0.75, within a tolerance of 1e-6; the boolean demo as
+    one record drawing its twelve marks at each of its seven named times, whose scene is a boolean
+    operation over a track; the walking disc's three marks different at the clear, the crossing and
+    the inside, which is what says the scene is read again rather than kept; a duration of 6, a still
+    of 0.75 and the loop flag held by `isLoop`; a `byAspect` extent giving a width of 8 at an aspect
+    of 2 and a height of 8 at 0.5; an inset carried, where the figure's eight marks become fourteen
+    and the panel's six each carry the clip of its rectangle; the door from 365 names to 367 and the
+    suite from 959 to 965.
 
   - [ ] **5.3 The serialiser, and the format's version.** `writeFigure` turns a `FigureRecord` into
     the text of a file, and `FIGURE_FORMAT_VERSION` is the number the envelope carries.

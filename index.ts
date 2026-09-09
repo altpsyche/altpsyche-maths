@@ -185,6 +185,8 @@ export { durationOf, extentAt, isLoop, marksAt, sameMarks, viewAt } from './figu
 export { frameTimesOf, framesOf } from './figure/frames.js';
 export type { Frame, FrameStep, FramesOptions } from './figure/frames.js';
 export type { Figure, TrackValues } from './figure/figure.js';
+export { resolveFigure } from './figure/figure-record.js';
+export type { FigureRecord } from './figure/figure-record.js';
 export { paintSvg, pathToData, svgElements, svgMarkup } from './paint/svg.js';
 export type { ElementMaker, PaintNode, PaintTarget, SvgColour, SvgElement, SvgMarkupOptions, SvgTheme } from './paint/svg.js';
 export { paintCanvas } from './paint/canvas.js';
