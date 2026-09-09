@@ -1135,18 +1135,42 @@ release away and has a document of its own.
   sheet's own theme block. **The number is here rather than after step 8**, since a colour written
   into four demo files and changed afterwards is four files rewritten twice.
 
-  - [ ] **12.1 The colour at the door and in both painters.** `Colour` is a record of `r`, `g`, `b`,
-    `a` and an optional `name`, `values/colour.ts` reads the two text forms into one, and the SVG and
-    canvas painters write from the record.
-    **Measures:** all eight sheets byte for byte as committed after `npm run demos`; the flat demo's
-    forty-three colours at its still time each carrying four channels and the name they are written
-    to; the contrast readings against both grounds unchanged.
+  **The blast radius was measured on 2026-09-09, before any of it was written, and it is wider than
+  the two commits below were written as.** `Colour` is `string` in `figure/mark.ts` and 20 places in
+  the library name the type. What actually has to move is every place a colour is written down: 90
+  sites write `colour: '...'` across the tests, the demos and the library, 151 hex literals sit in
+  those files, and 7 places write a `var(--name, #rrggbb)` by hand. The two painters each read
+  `.colour` straight into what they paint, `paint/canvas.ts` handing it to `strokeStyle` and to
+  `addColorStop`, which is where a `var()` a canvas cannot resolve is painted as nothing today.
 
-  - [ ] **12.2 The colour in the records and in the palette.** `ColourChoice`, `ShadeRecord` and a
-    gradient's stops carry the record, and `demos/palette.ts` hands one out rather than a string.
-    **Measures:** the vector field's two colours and the surface's shade ramp giving the same marks as
-    their own calls within 1e-6; the sheets byte for byte; a colour that is neither a hex nor an
-    `rgb()` refused with the text it was given.
+  **Fifteen of those written colours are CSS names and change value as well as form**, since
+  `colourOf` reads hex and `rgb()` and refuses every other form rather than guessing at it, so
+  `'red'`, `'black'` and `'rebeccapurple'` in the tests become hex. `tests/paint.test.ts` also asserts
+  the text a painter writes, so what a named colour and an unnamed one are painted as is a decision
+  those assertions are rewritten against. **This is why 12.1 is a session of its own** and was not
+  started at 28.6 per cent of a window.
+
+  **The channels are 0 to 255 with the alpha 0 to 1, which is `Rgba` in `values/colour.ts` already.**
+  A hex then round-trips exactly, which is what lets the sheets stay byte for byte: the SVG painter
+  writes `var(--name, #rrggbb)` back from the channels and the name, and a shader divides by 255.
+  Floats from 0 to 1 would write a hex a rounding away from the one the palette shipped.
+
+  - [ ] **12.1 The colour record, both painters, and every place a colour is written.** `Colour` is
+    `Rgba` with an optional `name`, `values/colour.ts` reads the two text forms into one and refuses
+    the rest, and the SVG painter writes the `var()` it writes today from the channels and the name
+    while the canvas painter writes the hex. `demos/palette.ts` hands out records. **The 90 written
+    colours move in this commit**, since a suite half moved does not run.
+    **Measures:** all eight sheets byte for byte as committed after `npm run demos`; the flat demo's
+    forty-three colours at its still time each four channels and a name; the contrast readings
+    against both grounds unchanged; the canvas painter given a hex where it is given a `var()` today.
+
+  - [ ] **12.2 The colour in the records, the file and the table.** `ColourChoice`, `ShadeRecord` and
+    a gradient's stops carry the record, the validator's `colour` shape stops being text, and the
+    committed figure file carries channels rather than a custom property.
+    **Measures:** the rotation demo's file with `var(--ember, #c2410c)` gone and four channels in its
+    place, in bytes; the vector field's two colours and the surface's shade ramp giving the same marks
+    as their own calls within 1e-6; a colour that is neither a hex nor an `rgb()` refused with the
+    text it was given.
 
 #### Done-criteria
 
