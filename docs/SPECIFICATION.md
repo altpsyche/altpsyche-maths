@@ -8,7 +8,7 @@ the value types and the expression form every kind is written in terms of, then 
 the animations, the timeline and the extent, and conformance last. A renderer is written from this
 page and needs nothing else.
 
-**Five counts say how large the format is.** Twenty-three node kinds, fifteen animation kinds,
+**Five counts say how large the format is.** Twenty-seven node kinds, fifteen animation kinds,
 sixteen forms of path in eighteen kinds, eleven value types, and thirty-seven functions an expression
 may call.
 
@@ -374,7 +374,7 @@ hand back a different number of points at every time, and a morph pairs two runs
 ## The nodes
 
 **A node is a named record with a `kind`, and every one of them carries a `name`.** Three kinds are
-the tree itself and the other twenty resolve into a tree of those three, so a renderer implementing
+the tree itself and the other twenty-four resolve into a tree of those three, so a renderer implementing
 `group`, `shape` and `text` and resolving the rest draws every figure there is.
 
 **A name is what an animation and an inset reach a node by**, and a mark's id is the names of the
@@ -462,6 +462,10 @@ holding above it, read in order so the last threshold a magnitude clears decides
 | `scene3` | `items`, `camera` |
 | `axes3` | `camera`, `options` |
 | `surface3` | `of`, `camera`, `options` |
+| `sphere3` | `centre`, `radius`, `camera`, `options` |
+| `cube3` | `centre`, `size`, `camera`, `options` |
+| `cylinder3` | `centre`, `radius`, `height`, `camera`, `options` |
+| `torus3` | `centre`, `ring`, `tube`, `camera`, `options` |
 | `vectorField3` | `of`, `camera`, `options` |
 | `section3` | `curve`, `camera`, `options`, `style` |
 | `streamline3` | `runs`, `on`, `camera`, `options`, `style` |
@@ -477,7 +481,7 @@ far the label stands off the point it names.
 
 **`scene3` is what puts pieces in the right order.** Its `items` are entries sorted by depth and
 drawn back to front, which is the painter's algorithm. An entry written out is a `points` list and
-the `node` drawn for it; an entry that produces many carries a `kind` and is one of the two producers
+the `node` drawn for it; an entry that produces many carries a `kind` and is one of the six producers
 below.
 
 **Axes in space take `x`, `y` and `z` as the `Interval` each axis covers**, a required `stroke`, and
@@ -492,11 +496,28 @@ is the direction the light comes from, a place in space.
 **A field in space reads the same way as a flat one**, so `vectorField3` and `fieldArrows3` each
 carry `lengthOf` and `colourFor`.
 
+**The four solids are cells over a parametrisation the format names rather than carries.** Each takes
+a `centre` as a place in space, its own measurements as expressions, and `options`, which is a
+surface's own without `over`, since a solid fixes the runs of its two parameters itself. A sphere
+takes a `radius`, a cube a `size` as the length of one edge, a cylinder a `radius` and a `height`, and
+a torus a `ring` as how far the middle of the tube stands from the axis and a `tube` as how thick it
+is. A cylinder stands on the axis through its centre and a torus lies about it.
+
+**A solid's cells face away from it.** A sphere is one patch, a torus is one, a cylinder is a side and
+then the cap above and the cap below, and a cube is six faces named `right`, `left`, `far`, `near`,
+`top` and `bottom` in that order. A renderer writing its own parametrisation has to run the two
+parameters in the order that faces the cells out, or the solid is shaded as though lit from inside.
+
+**A sphere's poles and a cylinder's cap centres are places a whole edge of the grid collapses to.**
+Those cells are drawn rather than dropped, and a renderer reading a cell's direction by crossing two
+of its edges gets nothing for them. The direction is the sum over every edge, which is Newell's
+method.
+
 **`section3` draws the curve a plane cuts in a surface** and `streamline3` draws `runs` walked
 through a flat field and lifted onto the surface named by `on`. Both take their points from a
 producer above rather than from a path.
 
-### The two item producers
+### The six item producers
 
 **These are entries of a `scene3` rather than nodes**, since what each hands back is many pieces the
 scene then sorts by depth.
@@ -505,6 +526,10 @@ scene then sorts by depth.
 | --- | --- | --- |
 | `surfaceCells` | `of`, `options` | the surface as a grid of four-cornered cells, each shaded |
 | `fieldArrows3` | `of`, `options` | an arrow at each sample of a field in space |
+| `sphereCells` | `centre`, `radius`, `options` | a sphere's cells |
+| `cubeCells` | `centre`, `size`, `options` | a cube's cells, six faces of them |
+| `cylinderCells` | `centre`, `radius`, `height`, `options` | a cylinder's cells, a side and two caps |
+| `torusCells` | `centre`, `ring`, `tube`, `options` | a torus's cells |
 
 **Neither carries a camera.** The scene holding them has one, and a producer taking a second could
 disagree with it.

@@ -1257,12 +1257,15 @@ shaded correctly, and their count is a measurement rather than a silence.
   a flat cell has. A cube's eight corners are at their exact places.
   **The step was split**: the format half of it is step 6 below, since a fix to `surfaceCells` had to
   land in front of the builders and one commit was already carrying two findings.
-- [ ] **6. The solids in the format.** `NodeRecord` gains the eight kinds, four that draw a solid and
-  four that hand a scene its cells, the way `surface3` and `surfaceCells` are two kinds already.
-  `checkFigure` holds each to its fields and `SPECIFICATION.md` reads thirty-one node kinds rather than
-  twenty-three. **The measurement**: each record's marks against the same solid written as a call; the
-  node count gate reading thirty-one; and the refusal a bad field gives, naming its path from the figure
-  down.
+- [x] **6. The solids in the format.** `NodeRecord` gains the four kinds that draw a solid and
+  `SceneItemRecord` the four that hand a scene its cells, the way `surface3` and `surfaceCells` are two
+  kinds already. **The measurement**: each of the four records draws the marks its own call draws, under
+  the comparison the package publishes over marks. The node count gate reads twenty-seven rather than
+  twenty-three and the producers gate reads six rather than two, since four of the eight are entries of
+  a scene rather than nodes and the plan's thirty-one counted them in the wrong place. A scene of a
+  sphere's cells and a torus's is 72 marks sorted as one run, 36 named for each. A sphere whose radius
+  follows a track draws 36 marks at both 0.5 and 2 and they are not the same marks. The checker refuses
+  a solid with no radius as `scene.children.0.radius is required and is missing`.
 - [ ] **7. A parametric curve in space.** `figure/curve3.ts` hands back places in space from a function
   of one number, which is a point producer beside `sectionOf` and `streamlineOf`, and `SPECIFICATION.md`
   reads three producers rather than two. **The measurement**: the point count at a named resolution, and

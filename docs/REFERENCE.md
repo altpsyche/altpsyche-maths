@@ -626,6 +626,23 @@ functions, which is what lets the same tree survive being written to a file and 
 - `SurfaceCellsRecord` — a `kind` of `surfaceCells`, a `name`, its `of` and its `options`. It carries
   no camera and takes the scene's, so a surface sharing a depth sort with a second surface is written
   as a piece of that scene.
+- `Solid3RecordOptions` — what a solid takes, which is what a surface takes without `over`, since a
+  solid fixes the runs of its two parameters itself.
+- `SphereFields` — what a sphere carries: a `name`, a `centre` as a `Point3Record`, its `options` and
+  its `radius`.
+- `CubeFields` — the same with a `size`, which is the length of one edge.
+- `CylinderFields` — the same with a `radius` and a `height`.
+- `TorusFields` — the same with a `ring`, how far the middle of the tube stands from the axis, and a
+  `tube`, how thick it is.
+- `Sphere3Record` — a `kind` of `sphere3`, the sphere's fields and its `camera`.
+- `SphereCellsRecord` — a `kind` of `sphereCells` and the sphere's fields. It carries no camera and
+  takes the scene's, the way a surface's cells do.
+- `Cube3Record` — a `kind` of `cube3`, the cube's fields and its `camera`.
+- `CubeCellsRecord` — a `kind` of `cubeCells` and the cube's fields.
+- `Cylinder3Record` — a `kind` of `cylinder3`, the cylinder's fields and its `camera`.
+- `CylinderCellsRecord` — a `kind` of `cylinderCells` and the cylinder's fields.
+- `Torus3Record` — a `kind` of `torus3`, the torus's fields and its `camera`.
+- `TorusCellsRecord` — a `kind` of `torusCells` and the torus's fields.
 - `Field3RecordOptions` — what a field in space takes beyond its own vectors: its `lengthOf` as an
   expression of the bound variable `magnitude`, in the world's own units, and its `colourFor` as a
   `ColourChoice`.

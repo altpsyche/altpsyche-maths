@@ -41,6 +41,7 @@ import { vectorField, type VectorFieldOptions } from './field.js';
 import { arrow3, dot3, polyline3, scene3, text3, type Arrow3Options, type Polyline3Options, type SpaceItem, type Text3Options } from './space.js';
 import { axes3, type Axes3Options } from './axis3.js';
 import { surface3, surfaceCells, type Surface3Options } from './surface3.js';
+import { cubeCells, cylinderCells, sphereCells, torusCells, type Solid3Options } from './solid3.js';
 import { fieldArrows3, vectorField3, type VectorField3Options } from './field3.js';
 import { sectionOf, type SectionOptions } from './section.js';
 import { streamlineOf, type StreamlineOptions } from './streamline.js';
@@ -405,6 +406,77 @@ export interface SurfaceCellsRecord {
   readonly options: Surface3RecordOptions;
 }
 
+/** What a solid takes, which is what a surface takes without the runs of its two
+ * parameters. A solid fixes those itself, since a sphere over half of one is not
+ * a sphere. */
+export type Solid3RecordOptions = Omit<Surface3RecordOptions, 'over'>;
+
+/** What every solid carries beyond its own measurements: where it stands, how it
+ * is shaded, and, where it is drawn on its own rather than sorted with a scene,
+ * the camera it is seen from. */
+interface Solid3Fields {
+  readonly name: string;
+  readonly centre: Point3Record;
+  readonly options: Solid3RecordOptions;
+}
+
+export interface SphereFields extends Solid3Fields {
+  readonly radius: Expression;
+}
+
+export interface CubeFields extends Solid3Fields {
+  /** The length of one edge, so a cube is a cube rather than a box. */
+  readonly size: Expression;
+}
+
+export interface CylinderFields extends Solid3Fields {
+  readonly radius: Expression;
+  readonly height: Expression;
+}
+
+export interface TorusFields extends Solid3Fields {
+  /** How far the middle of the tube stands from the axis. */
+  readonly ring: Expression;
+  /** How thick the tube is. */
+  readonly tube: Expression;
+}
+
+export interface Sphere3Record extends SphereFields {
+  readonly kind: 'sphere3';
+  readonly camera: Camera3Record;
+}
+
+export interface SphereCellsRecord extends SphereFields {
+  readonly kind: 'sphereCells';
+}
+
+export interface Cube3Record extends CubeFields {
+  readonly kind: 'cube3';
+  readonly camera: Camera3Record;
+}
+
+export interface CubeCellsRecord extends CubeFields {
+  readonly kind: 'cubeCells';
+}
+
+export interface Cylinder3Record extends CylinderFields {
+  readonly kind: 'cylinder3';
+  readonly camera: Camera3Record;
+}
+
+export interface CylinderCellsRecord extends CylinderFields {
+  readonly kind: 'cylinderCells';
+}
+
+export interface Torus3Record extends TorusFields {
+  readonly kind: 'torus3';
+  readonly camera: Camera3Record;
+}
+
+export interface TorusCellsRecord extends TorusFields {
+  readonly kind: 'torusCells';
+}
+
 /**
  * What a field in space takes beyond its own vectors and its camera.
  *
@@ -505,7 +577,14 @@ export interface Streamline3Record {
  * A producer carries a kind and a written-out piece carries none, so a scene
  * written before the producers existed still reads.
  */
-export type SceneItemRecord = SpaceItemRecord | SurfaceCellsRecord | FieldArrows3Record;
+export type SceneItemRecord =
+  | SpaceItemRecord
+  | SurfaceCellsRecord
+  | FieldArrows3Record
+  | SphereCellsRecord
+  | CubeCellsRecord
+  | CylinderCellsRecord
+  | TorusCellsRecord;
 
 export type NodeRecord =
   | ShapeRecord
@@ -528,6 +607,10 @@ export type NodeRecord =
   | Scene3Record
   | Axes3Record
   | Surface3Record
+  | Sphere3Record
+  | Cube3Record
+  | Cylinder3Record
+  | Torus3Record
   | VectorField3Record
   | Section3Record
   | Streamline3Record;
@@ -650,6 +733,60 @@ const surfaceOptions = (options: Surface3RecordOptions, bindings: Bindings): Sur
 });
 
 /** What a field in space takes, from what its record carries. */
+/** What a solid takes, from what its record carries, which is the surface's own
+ * reading without the runs a solid fixes for itself. */
+const solidOptions = (options: Solid3RecordOptions, bindings: Bindings): Solid3Options => ({
+  ...options,
+  shade: shadeFrom(options.shade, bindings),
+  light: options.light ? resolvePoint3(options.light, bindings, "a solid's light") : undefined,
+});
+
+/** Where a solid stands and how it is shaded, which every one of the four reads
+ * the same way before its own measurements. */
+const solidStands = (record: SphereFields | CubeFields | CylinderFields | TorusFields, bindings: Bindings) =>
+  ({
+    centre: resolvePoint3(record.centre, bindings, "a solid's centre"),
+    options: solidOptions(record.options, bindings),
+  });
+
+/** The cells of one solid, whichever of the four it is, for a scene that sorts
+ * them among pieces of its own or for a scene of the solid alone. */
+function solidCells(
+  record: SphereCellsRecord | CubeCellsRecord | CylinderCellsRecord | TorusCellsRecord | Sphere3Record | Cube3Record | Cylinder3Record | Torus3Record,
+  camera: Camera3,
+  bindings: Bindings
+): SpaceItem[] {
+  const { centre, options } = solidStands(record, bindings);
+  const measure = (expression: Expression, what: string) => numberOf(expression, bindings, what);
+  switch (record.kind) {
+    case 'sphere3':
+    case 'sphereCells':
+      return sphereCells(record.name, centre, measure(record.radius, "a sphere's radius"), camera, options);
+    case 'cube3':
+    case 'cubeCells':
+      return cubeCells(record.name, centre, measure(record.size, "a cube's size"), camera, options);
+    case 'cylinder3':
+    case 'cylinderCells':
+      return cylinderCells(
+        record.name,
+        centre,
+        measure(record.radius, "a cylinder's radius"),
+        measure(record.height, "a cylinder's height"),
+        camera,
+        options
+      );
+    default:
+      return torusCells(
+        record.name,
+        centre,
+        measure(record.ring, "a torus's ring"),
+        measure(record.tube, "a torus's tube"),
+        camera,
+        options
+      );
+  }
+}
+
 const field3Options = (options: Field3RecordOptions, bindings: Bindings): VectorField3Options => ({
   ...options,
   lengthOf: lengthFrom(options.lengthOf, bindings),
@@ -700,6 +837,14 @@ function resolveItems(item: SceneItemRecord, camera: Camera3, bindings: Bindings
   }
   if (item.kind === 'fieldArrows3') {
     return fieldArrows3(item.name, field3Of(item.of, bindings), camera, field3Options(item.options, bindings));
+  }
+  if (
+    item.kind === 'sphereCells' ||
+    item.kind === 'cubeCells' ||
+    item.kind === 'cylinderCells' ||
+    item.kind === 'torusCells'
+  ) {
+    return solidCells(item, camera, bindings);
   }
   throw new Error(`a scene has no piece called ${String((item as { kind?: unknown }).kind)}`);
 }
@@ -835,6 +980,13 @@ export function resolveNode(record: NodeRecord, bindings: Bindings = {}): Node {
         resolveCamera(record.camera, bindings),
         surfaceOptions(record.options, bindings)
       );
+    case 'sphere3':
+    case 'cube3':
+    case 'cylinder3':
+    case 'torus3': {
+      const camera = resolveCamera(record.camera, bindings);
+      return scene3(record.name, solidCells({ ...record, name: 'face' }, camera, bindings), camera);
+    }
     case 'vectorField3':
       return vectorField3(
         record.name,

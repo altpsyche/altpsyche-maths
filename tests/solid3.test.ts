@@ -2,6 +2,9 @@ import { describe, expect, it } from 'vitest';
 import {
   camera3,
   colourFrom,
+  perspective,
+  resolveNode,
+  sameMarks,
   cube3,
   cubeCells,
   cylinder3,
@@ -13,6 +16,8 @@ import {
   torus3,
   torusCells,
   vec3,
+  type NodeRecord,
+  type ShadeRecord,
   type SpaceItem,
   type Vec3,
 } from '../index.js';
@@ -194,5 +199,78 @@ describe('a solid drawn on its own', () => {
     for (const [node, cells] of drawn) {
       expect(flatten(node as never)).toHaveLength((cells as SpaceItem[]).length);
     }
+  });
+});
+
+describe('the four solids as records', () => {
+  // A camera written as a record and the same camera built, so the two sides of
+  // each case are seen from one place.
+  const seen = { eye: { x: 4, y: 5, z: 3 }, target: { x: 0, y: 0, z: 0 }, projection: { kind: 'perspective' as const, fov: 0.7, height: 6, near: 0.2 } };
+  const built = camera3({ eye: vec3(4, 5, 3), target: vec3(0, 0, 0), projection: perspective({ fov: 0.7, height: 6, near: 0.2 }) });
+  // A ramp of one colour twice, so every amount of light gives that colour and
+  // what the two sides are compared on is the geometry rather than the shading.
+  const ONE = { colour: colourFrom('#334455') };
+  const shade: ShadeRecord = { ramp: [ONE, ONE] };
+  const options = { shade, resolution: 6 };
+  const called = { ...options, shade: () => ONE };
+  const centre = { x: 0.3, y: -0.2, z: 0.5 };
+
+  const cases: readonly { readonly record: NodeRecord; readonly node: ReturnType<typeof sphere3> }[] = [
+    {
+      record: { kind: 'sphere3', name: 'ball', centre, radius: 1.4, camera: seen, options },
+      node: sphere3('ball', CENTRE, 1.4, built, called),
+    },
+    {
+      record: { kind: 'cube3', name: 'box', centre, size: 2, camera: seen, options },
+      node: cube3('box', CENTRE, 2, built, called),
+    },
+    {
+      record: { kind: 'cylinder3', name: 'can', centre, radius: 1.2, height: 2.4, camera: seen, options },
+      node: cylinder3('can', CENTRE, 1.2, 2.4, built, called),
+    },
+    {
+      record: { kind: 'torus3', name: 'ring', centre, ring: 2, tube: 0.6, camera: seen, options },
+      node: torus3('ring', CENTRE, 2, 0.6, built, called),
+    },
+  ];
+
+  it('draws each solid where its own call draws one', () => {
+    for (const { record, node } of cases) {
+      expect(sameMarks(flatten(resolveNode(record)), flatten(node)), record.kind).toBe(true);
+    }
+  });
+
+  it("hands a scene the cells of a solid, sorted among the scene's own", () => {
+    const record: NodeRecord = {
+      kind: 'scene3',
+      name: 'both',
+      camera: seen,
+      items: [
+        { kind: 'sphereCells', name: 'ball', centre, radius: 1, options },
+        { kind: 'torusCells', name: 'ring', centre, ring: 2, tube: 0.4, options },
+      ],
+    };
+    const marks = flatten(resolveNode(record));
+    // Two solids sorted together are one run of marks, and every mark names the
+    // solid it came from ahead of its own place in the grid.
+    expect(marks).toHaveLength(2 * 6 * 6);
+    expect(marks.filter((mark) => mark.id.includes('/ball/'))).toHaveLength(36);
+    expect(marks.filter((mark) => mark.id.includes('/ring/'))).toHaveLength(36);
+  });
+
+  it("drives a solid's own measurements with a track", () => {
+    const record: NodeRecord = {
+      kind: 'sphere3',
+      name: 'ball',
+      centre,
+      radius: { kind: 'track', name: 'grows' },
+      camera: seen,
+      options,
+    };
+    const small = flatten(resolveNode(record, { tracks: { grows: 0.5 } }));
+    const large = flatten(resolveNode(record, { tracks: { grows: 2 } }));
+    expect(small).toHaveLength(36);
+    expect(large).toHaveLength(36);
+    expect(sameMarks(small, large)).toBe(false);
   });
 });

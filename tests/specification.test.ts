@@ -181,7 +181,7 @@ const nodeProse = [
 describe('the specification and the nodes', () => {
   it('names every node kind and its fields', () => {
     const kinds = membersOf('figure/node-record.ts', 'NodeRecord');
-    expect(kinds).toHaveLength(23);
+    expect(kinds).toHaveLength(27);
     const inside = quoted(nodeProse);
     const absent = kinds.flatMap((name) => {
       const missing = fieldsOf('figure/node-record.ts', name).filter((field) => !inside.has(field));
@@ -216,9 +216,13 @@ describe('the specification and the nodes', () => {
     expect(absent).toEqual([]);
   });
 
-  it('names both item producers, which are entries of a scene rather than nodes', () => {
-    const inside = quoted(written.get('The two item producers') ?? '');
-    for (const name of ['surfaceCells', 'fieldArrows3']) expect(inside.has(name), name).toBe(true);
+  it('names every item producer, which are entries of a scene rather than nodes', () => {
+    const inside = quoted(written.get('The six item producers') ?? '');
+    const producers = membersOf('figure/node-record.ts', 'SceneItemRecord').filter((name) => name !== 'SpaceItemRecord');
+    expect(producers).toHaveLength(6);
+    for (const name of ['surfaceCells', 'fieldArrows3', 'sphereCells', 'cubeCells', 'cylinderCells', 'torusCells']) {
+      expect(inside.has(name), name).toBe(true);
+    }
   });
 });
 
@@ -292,6 +296,7 @@ const WRITTEN = new Map([
   ['fifteen', 15],
   ['sixteen', 16],
   ['twenty-three', 23],
+  ['twenty-seven', 27],
   ['thirty-seven', 37],
 ]);
 

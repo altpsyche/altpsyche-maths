@@ -52,10 +52,20 @@ type Shape =
 const number: Shape = { form: 'number' };
 const text: Shape = { form: 'text' };
 const flag: Shape = { form: 'flag' };
+
 const need = (shape: Shape): Field => ({ shape, required: true });
 const may = (shape: Shape): Field => ({ shape });
 const ref = (name: string): Shape => ({ form: 'ref', name });
 const list = (of: Shape, length?: number): Shape => (length === undefined ? { form: 'list', of } : { form: 'list', of, length });
+
+/** What every solid carries beyond its own measurements, written once because
+ * the eight kinds of solid differ only in those measurements and in whether they
+ * name the camera they are seen from. */
+const STANDS = { name: need(text), centre: need(ref('point3')), options: need(ref('solidOptions')) };
+const SPHERE = { ...STANDS, radius: need(ref('expression')) };
+const CUBE = { ...STANDS, size: need(ref('expression')) };
+const CYLINDER = { ...STANDS, radius: need(ref('expression')), height: need(ref('expression')) };
+const TORUS = { ...STANDS, ring: need(ref('expression')), tube: need(ref('expression')) };
 const fields = (what: string, held: Fields): Shape => ({ form: 'fields', what, fields: held });
 const named = (what: string, names: readonly string[]): Shape => ({ form: 'named', what, names });
 
@@ -368,6 +378,13 @@ const SHAPES: Readonly<Record<string, Shape>> = {
     cull: may(flag),
     stroke: may(ref('stroke')),
   }),
+  solidOptions: fields('what a solid takes', {
+    shade: need(ref('shade')),
+    light: may(ref('point3')),
+    resolution: may(ref('surfaceResolution')),
+    cull: may(flag),
+    stroke: may(ref('stroke')),
+  }),
   polyline3Options: fields('what a run in space takes', {
     fill: may(ref('fill')),
     stroke: may(ref('stroke')),
@@ -433,6 +450,10 @@ const SHAPES: Readonly<Record<string, Shape>> = {
     kinds: {
       surfaceCells: { name: need(text), of: need(ref('point3')), options: need(ref('surfaceOptions')) },
       fieldArrows3: { name: need(text), of: need(ref('point3')), options: need(ref('field3Options')) },
+      sphereCells: SPHERE,
+      cubeCells: CUBE,
+      cylinderCells: CYLINDER,
+      torusCells: TORUS,
     },
     kindless: ref('spaceItem'),
   },
@@ -610,6 +631,10 @@ const SHAPES: Readonly<Record<string, Shape>> = {
         camera: need(ref('camera')),
         options: need(ref('surfaceOptions')),
       },
+      sphere3: { ...SPHERE, camera: need(ref('camera')) },
+      cube3: { ...CUBE, camera: need(ref('camera')) },
+      cylinder3: { ...CYLINDER, camera: need(ref('camera')) },
+      torus3: { ...TORUS, camera: need(ref('camera')) },
       vectorField3: {
         name: need(text),
         of: need(ref('point3')),

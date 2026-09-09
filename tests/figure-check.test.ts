@@ -397,6 +397,10 @@ describe('a figure held to the vocabulary', () => {
         items: [
           { points: [SPOT], node: { kind: 'dot', name: 'spot', at: PLACE, radius: 0.1, fill: FILL } },
           { kind: 'surfaceCells', name: 'cells', of: SPOT, options: { shade: { ramp: [FILL] }, resolution: 6 } },
+          { kind: 'sphereCells', name: 'ball', centre: SPOT, radius: 1, options: { shade: { ramp: [FILL] } } },
+          { kind: 'cubeCells', name: 'box', centre: SPOT, size: 1, options: { shade: { ramp: [FILL] } } },
+          { kind: 'cylinderCells', name: 'can', centre: SPOT, radius: 1, height: 2, options: { shade: { ramp: [FILL] } } },
+          { kind: 'torusCells', name: 'ring', centre: SPOT, ring: 2, tube: 0.5, options: { shade: { ramp: [FILL] } } },
           {
             kind: 'fieldArrows3',
             name: 'arrows',
@@ -519,6 +523,24 @@ describe('a figure held to the vocabulary', () => {
     expect(() =>
       checkFigure(withField(held, ['scene', 'children', '6', 'camera', 'projection'], { kind: 'perspective', scale: 2 }))
     ).toThrow('scene.children.6.camera.projection.scale is not a field of a projection of kind perspective');
+  });
+
+  it('names the field inside a solid that names its measurements wrong', () => {
+    const inside = (node: unknown) => ({ ...turning, scene: { kind: 'group', name: 'solids', children: [node] } });
+    const shade = { ramp: [FILL] };
+    expect(() =>
+      checkFigure(inside({ kind: 'sphere3', name: 'ball', centre: SPOT, camera: CAMERA, options: { shade } }))
+    ).toThrow('scene.children.0.radius is required and is missing');
+    expect(() =>
+      checkFigure(
+        inside({ kind: 'cylinder3', name: 'can', centre: SPOT, radius: 1, height: 2, camera: CAMERA, options: {} })
+      )
+    ).toThrow('scene.children.0.options.shade is required and is missing');
+    expect(() =>
+      checkFigure(
+        inside({ kind: 'torus3', name: 'ring', centre: SPOT, ring: 2, tube: 1, camera: CAMERA, options: { shade, over: {} } })
+      )
+    ).toThrow('scene.children.0.options.over');
   });
 
   it('names the field inside a curve of the three new forms', () => {
