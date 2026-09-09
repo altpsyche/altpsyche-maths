@@ -1286,7 +1286,7 @@ shaded correctly, and their count is a measurement rather than a silence.
   at most 6.6558e-6 figure units off the drawn spiral inside the cycle and 2.2323e-4 off the one
   outside it. `demos/portrait.figure.json` is 23,389 bytes and is the sixth fixture of the conformance
   suite, which is the figure carrying the three curve forms.
-- [ ] **9. A curve in space cut into pieces a scene sorts.** `figure/curve3.ts` gains `curvePieces3`,
+- [x] **9. A curve in space cut into pieces a scene sorts.** `figure/curve3.ts` gains `curvePieces3`,
   which cuts the places `curveOf3` hands back into one `SpaceItem` per step, and `SceneItemRecord`
   gains the kind for it. `SPECIFICATION.md` reads seven item producers rather than six.
 
@@ -1301,11 +1301,13 @@ shaded correctly, and their count is a measurement rather than a silence.
   scene in pieces, where `curve3` had no counterpart.
 
   **The measurement**: the piece count is the step count, one fewer than the places, so a helix at 96
-  is 96 pieces; a helix of three turns among a cylinder's 432 cells sorts into the run rather than
-  before or after all of it, and the count of cells painted over each half turn is a number; the joins
-  between consecutive pieces leave no gap under a round cap at the stroke widths the demo draws; the
-  producer gate reads seven rather than six and the specification's own sentence reads seven; and the
-  record draws the marks the call draws under the comparison the package publishes over marks.
+  is 96 pieces and at 1 is 1. A helix of three turns cut into 48 pieces among a cylinder's 108 cells
+  sorts into 156 marks, the first piece painted first and the last painted 153 marks later, with 106
+  of the cylinder's cells standing between them where a curve sorted whole is one mark at one depth.
+  Consecutive pieces share their meeting place exactly and a piece is capped round where the style
+  leaves the cap out, which is what closes the join between two separate strokes. The producer gate
+  reads seven rather than six and the specification's own sentence reads seven. The record draws the
+  same 48 marks its own call draws under the comparison the package publishes over marks.
 - [ ] **10. The solids demo.** `demos/solids.ts` turns a sphere, a cube, a cylinder and a torus through
   one turn on a track, with a helix drawn on the cylinder and a torus knot on the torus, both as pieces
   in their panel's own scene. **The measurement**: the cell count of each solid, the piece count of each

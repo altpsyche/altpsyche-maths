@@ -44,7 +44,7 @@ import { surface3, surfaceCells, type Surface3Options } from './surface3.js';
 import { cubeCells, cylinderCells, sphereCells, torusCells, type Solid3Options } from './solid3.js';
 import { fieldArrows3, vectorField3, type VectorField3Options } from './field3.js';
 import { sectionOf, type SectionOptions } from './section.js';
-import { curveOf3, type Curve3Options } from './curve3.js';
+import { curveOf3, curvePieces3, type Curve3Options } from './curve3.js';
 import { streamlineOf, type StreamlineOptions } from './streamline.js';
 import type { Camera3 } from './camera.js';
 import { resolveCamera, resolvePoint3, type Camera3Record, type Point3Record } from './camera-record.js';
@@ -557,6 +557,22 @@ export interface Curve3Record {
   readonly style?: Style;
 }
 
+/**
+ * A curve in space cut into pieces a scene sorts, rather than one run drawn
+ * whole.
+ *
+ * The curve is written the same way `Curve3Record` writes it, so the same helix
+ * is a node over a scene or an entry of one by which of the two kinds names it,
+ * and neither reads the other's fields.
+ */
+export interface CurvePieces3Record {
+  readonly kind: 'curvePieces3';
+  readonly name: string;
+  readonly curve: SpaceCurveRecord;
+  /** How each piece is drawn. */
+  readonly options?: Style;
+}
+
 export interface Section3Record {
   readonly kind: 'section3';
   readonly name: string;
@@ -614,7 +630,8 @@ export type SceneItemRecord =
   | SphereCellsRecord
   | CubeCellsRecord
   | CylinderCellsRecord
-  | TorusCellsRecord;
+  | TorusCellsRecord
+  | CurvePieces3Record;
 
 export type NodeRecord =
   | ShapeRecord
@@ -875,6 +892,19 @@ function resolveItems(item: SceneItemRecord, camera: Camera3, bindings: Bindings
   }
   if (item.kind === 'surfaceCells') {
     return surfaceCells(item.name, surfaceOf(item.of, bindings), camera, surfaceOptions(item.options, bindings));
+  }
+  if (item.kind === 'curvePieces3') {
+    const { of, resolution, over } = item.curve;
+    return curvePieces3(
+      item.name,
+      (t) => resolvePoint3(of, binding(bindings, { t }), 'a place on a curve in space'),
+      camera,
+      {
+        resolution,
+        over: over ? spanOf(over, bindings, 'a curve in space') : undefined,
+        ...item.options,
+      }
+    );
   }
   if (item.kind === 'fieldArrows3') {
     return fieldArrows3(item.name, field3Of(item.of, bindings), camera, field3Options(item.options, bindings));

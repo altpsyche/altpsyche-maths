@@ -123,6 +123,7 @@ export type {
   TorusCellsRecord,
   Surface3Record,
   Surface3RecordOptions,
+  CurvePieces3Record,
   SurfaceCellsRecord,
   TextContent,
   TextHole,
@@ -166,8 +167,8 @@ export { cube3, cubeCells, cylinder3, cylinderCells, sphere3, sphereCells, torus
 export type { Solid3Options } from './figure/solid3.js';
 export { axes3 } from './figure/axis3.js';
 export type { Axes3Options } from './figure/axis3.js';
-export { curveOf3 } from './figure/curve3.js';
-export type { Curve3Options } from './figure/curve3.js';
+export { curveOf3, curvePieces3 } from './figure/curve3.js';
+export type { Curve3Options, CurvePieces3Options } from './figure/curve3.js';
 export { sectionOf } from './figure/section.js';
 export type { Plane, SectionOptions } from './figure/section.js';
 export { coordsOf, pointOf, scaleOf, toGraph, toUnits } from './figure/scale.js';

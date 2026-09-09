@@ -496,7 +496,7 @@ far the label stands off the point it names.
 
 **`scene3` is what puts pieces in the right order.** Its `items` are entries sorted by depth and
 drawn back to front, which is the painter's algorithm. An entry written out is a `points` list and
-the `node` drawn for it; an entry that produces many carries a `kind` and is one of the six producers
+the `node` drawn for it; an entry that produces many carries a `kind` and is one of the seven producers
 below.
 
 **Axes in space take `x`, `y` and `z` as the `Interval` each axis covers**, a required `stroke`, and
@@ -531,11 +531,19 @@ method.
 **`curve3` draws one run from a curve in space**, taking its places from the producer above rather than
 from a list written out, and its `options` is a run in space's own.
 
+**A curve that wraps a solid is `curvePieces3` rather than `curve3`.** A scene sorts its entries whole,
+so a curve handed to one as a single piece takes the depth of its middle, and a helix round a cylinder
+is then painted entirely in front of it or entirely behind. `curvePieces3` is the same `curve` cut into
+one piece per step of its run, each sorted on its own, and its `options` is the style each piece is
+drawn with. A renderer draws each piece with a round cap unless the style says another, since
+consecutive pieces are separate strokes and a butt cap leaves the background showing on the outside of
+every bend.
+
 **`section3` draws the curve a plane cuts in a surface** and `streamline3` draws `runs` walked
 through a flat field and lifted onto the surface named by `on`. Both take their points from a
 producer above rather than from a path.
 
-### The six item producers
+### The seven item producers
 
 **These are entries of a `scene3` rather than nodes**, since what each hands back is many pieces the
 scene then sorts by depth.
@@ -548,6 +556,7 @@ scene then sorts by depth.
 | `cubeCells` | `centre`, `size`, `options` | a cube's cells, six faces of them |
 | `cylinderCells` | `centre`, `radius`, `height`, `options` | a cylinder's cells, a side and two caps |
 | `torusCells` | `centre`, `ring`, `tube`, `options` | a torus's cells |
+| `curvePieces3` | `curve`, `options` | a curve in space, one piece per step of its run |
 
 **Neither carries a camera.** The scene holding them has one, and a producer taking a second could
 disagree with it.

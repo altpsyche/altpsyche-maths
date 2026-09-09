@@ -459,6 +459,7 @@ const SHAPES: Readonly<Record<string, Shape>> = {
       cubeCells: CUBE,
       cylinderCells: CYLINDER,
       torusCells: TORUS,
+      curvePieces3: { name: need(text), curve: need(ref('spaceCurve')), options: may(ref('style')) },
     },
     kindless: ref('spaceItem'),
   },

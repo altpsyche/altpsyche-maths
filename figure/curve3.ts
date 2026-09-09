@@ -13,6 +13,9 @@
  */
 import { interval, type Interval } from '../values/interval.js';
 import type { Vec3 } from '../values/vec3.js';
+import type { Camera3 } from './camera.js';
+import type { Style } from './node.js';
+import { polyline3, type SpaceItem } from './space.js';
 
 export interface Curve3Options {
   /** How many steps the run is cut into, which is one fewer than the count of
@@ -45,4 +48,42 @@ export function curveOf3(of: (t: number) => Vec3, options: Curve3Options = {}): 
   const places: Vec3[] = [];
   for (let at = 0; at <= steps; at += 1) places.push(of(interval.at(run, at / steps)));
   return places;
+}
+
+/** How the pieces of a curve are drawn, which is a curve's own options and the
+ * style each piece carries. */
+export type CurvePieces3Options = Curve3Options & Style;
+
+/**
+ * The pieces a curve in space is made of, before they are put in an order.
+ *
+ * Pieces rather than one run is what lets a scene paint a curve that wraps a
+ * solid: a helix round a cylinder passes through it, and the painter's algorithm
+ * has no one order for two pieces that do. A curve sorted whole takes the depth
+ * of its middle, which paints the half of it that is behind the cylinder in
+ * front of the cylinder.
+ *
+ * Each piece carries the name it was given ahead of its own place along the run,
+ * so an animation can still name a whole curve once its pieces are mixed with a
+ * solid's cells.
+ *
+ * The cap is round unless the caller says otherwise, since consecutive pieces are
+ * separate strokes and a butt cap leaves a wedge of background showing on the
+ * outside of every bend.
+ */
+export function curvePieces3(
+  name: string,
+  of: (t: number) => Vec3,
+  camera: Camera3,
+  options: CurvePieces3Options = {},
+): SpaceItem[] {
+  const { resolution, over, ...style } = options;
+  const places = curveOf3(of, { resolution, over });
+  const stroke = style.stroke ? { cap: 'round' as const, ...style.stroke } : style.stroke;
+  const pieces: SpaceItem[] = [];
+  for (let at = 0; at + 1 < places.length; at += 1) {
+    const ends = [places[at], places[at + 1]];
+    pieces.push({ points: ends, node: polyline3(`${name}/${at}`, ends, camera, { ...style, stroke }) });
+  }
+  return pieces;
 }

@@ -631,6 +631,9 @@ functions, which is what lets the same tree survive being written to a file and 
   called a curve record on its own because `Curve` is already the name of an easing curve.
 - `Curve3Record` — a `kind` of `curve3`, a `name`, its `curve` as a `SpaceCurveRecord`, its `camera`,
   its `options` and its `style`.
+- `CurvePieces3Record` — a `kind` of `curvePieces3`, a `name`, its `curve` as a `SpaceCurveRecord` and
+  the `options` each piece is drawn with. It carries no camera and takes the scene's, the way a
+  surface's cells do, and it is the same curve `Curve3Record` writes cut into pieces a scene sorts.
 - `Solid3RecordOptions` — what a solid takes, which is what a surface takes without `over`, since a
   solid fixes the runs of its two parameters itself.
 - `SphereFields` — what a sphere carries: a `name`, a `centre` as a `Point3Record`, its `options` and
@@ -669,8 +672,9 @@ functions, which is what lets the same tree survive being written to a file and 
 - `Streamline3Record` — a `kind` of `streamline3`, a `name`, its `runs`, the surface they stand `on`
   read from `u` and `v`, its `camera`, the `options` each run is drawn with and its `style`. A run
   drawn in a plane is that plane written as a surface, so there is no second form for one.
-- `SceneItemRecord` — one entry of a scene: a `SpaceItemRecord` written out, a `SurfaceCellsRecord` or
-  a `FieldArrows3Record`. A producer carries a kind and a written-out piece carries none, so a scene
+- `SceneItemRecord` — one entry of a scene: a `SpaceItemRecord` written out, or one of the seven
+  producers, which are `SurfaceCellsRecord`, `FieldArrows3Record`, the four solids' cells and
+  `CurvePieces3Record`. A producer carries a kind and a written-out piece carries none, so a scene
   written before the producers existed still reads.
 - `resolveSection(record, bindings)` — the runs of points where a plane cuts a surface, from the
   record naming both. A run whose two ends meet comes back with its first point repeated at the end.
@@ -1078,6 +1082,12 @@ animations reach a picture in space and a picture on a graph.
 - `Curve3Options` — what a curve in space takes.
   - `resolution` — how many steps the run is cut into.
   - `over` — the run of the parameter, nothing to one where it is left out.
+- `curvePieces3(name, of, camera, options)` — the same curve as one piece per step of its run, each an
+  entry a scene sorts on its own, so a helix round a cylinder is painted with the half behind it
+  hidden. Each piece is named for its place along the run under the name given. A curve sorted whole
+  takes the depth of its middle and is painted entirely in front of the solid or entirely behind.
+- `CurvePieces3Options` — a curve's own options and the `Style` each piece is drawn with. The `cap` is
+  round where the style leaves it out, since consecutive pieces are separate strokes.
 - `resolveSpaceCurve(record, bindings)` — the places a curve in space passes through, from the record
   naming the curve and the run of its parameter.
 - `sectionOf(of, plane, options)` — the runs of points where a plane cuts a surface, in space. A run

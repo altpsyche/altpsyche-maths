@@ -3,6 +3,7 @@ import {
   camera3,
   colourFrom,
   curveOf3,
+  curvePieces3,
   cylinderCells,
   flatten,
   interval,
@@ -13,6 +14,7 @@ import {
   scene3,
   vec3,
   type NodeRecord,
+  type SceneItemRecord,
   type SpaceCurveRecord,
 } from '../index.js';
 
@@ -66,16 +68,18 @@ describe('a curve in space', () => {
   });
 });
 
-describe('a curve in space as a record', () => {
-  const curve: SpaceCurveRecord = {
-    of: {
-      x: { kind: 'arithmetic', operator: '*', left: RADIUS, right: { kind: 'call', name: 'cos', arguments: [{ kind: 'arithmetic', operator: '*', left: TURNS * 2 * Math.PI, right: { kind: 'variable', name: 't' } }] } },
-      y: { kind: 'arithmetic', operator: '*', left: RADIUS, right: { kind: 'call', name: 'sin', arguments: [{ kind: 'arithmetic', operator: '*', left: TURNS * 2 * Math.PI, right: { kind: 'variable', name: 't' } }] } },
-      z: { kind: 'arithmetic', operator: '*', left: HEIGHT, right: { kind: 'arithmetic', operator: '-', left: { kind: 'variable', name: 't' }, right: 0.5 } },
-    },
-    resolution: 48,
-  };
+/** The helix above written as a record, so the call and the record are held to
+ * the same curve. */
+const curve: SpaceCurveRecord = {
+  of: {
+    x: { kind: 'arithmetic', operator: '*', left: RADIUS, right: { kind: 'call', name: 'cos', arguments: [{ kind: 'arithmetic', operator: '*', left: TURNS * 2 * Math.PI, right: { kind: 'variable', name: 't' } }] } },
+    y: { kind: 'arithmetic', operator: '*', left: RADIUS, right: { kind: 'call', name: 'sin', arguments: [{ kind: 'arithmetic', operator: '*', left: TURNS * 2 * Math.PI, right: { kind: 'variable', name: 't' } }] } },
+    z: { kind: 'arithmetic', operator: '*', left: HEIGHT, right: { kind: 'arithmetic', operator: '-', left: { kind: 'variable', name: 't' }, right: 0.5 } },
+  },
+  resolution: 48,
+};
 
+describe('a curve in space as a record', () => {
   it('reads its curve from the bound variable t', () => {
     const places = resolveSpaceCurve(curve);
     const called = curveOf3(helix, { resolution: 48 });
@@ -122,5 +126,64 @@ describe('a curve in space as a record', () => {
   it('is the same run whichever side of the seam it is built from', () => {
     const record: NodeRecord = { kind: 'curve3', name: 'coil', curve, camera: seen, options: WIRE };
     expect(sameMarks(flatten(resolveNode(record)), flatten(resolveNode(record)))).toBe(true);
+  });
+});
+
+describe('a curve in space cut into pieces a scene sorts', () => {
+  const shade = () => ({ colour: colourFrom('#334455') });
+
+  it('hands back one piece per step of the run', () => {
+    expect(curvePieces3('coil', helix, camera, { resolution: 96, ...WIRE })).toHaveLength(96);
+    expect(curvePieces3('coil', helix, camera, { resolution: 1, ...WIRE })).toHaveLength(1);
+  });
+
+  it('names each piece for its place along the run and draws it from two places', () => {
+    const pieces = curvePieces3('coil', helix, camera, { resolution: 8, ...WIRE });
+    expect(pieces.map((piece) => piece.points)).toHaveLength(8);
+    for (const piece of pieces) expect(piece.points).toHaveLength(2);
+    expect(flatten(pieces[0].node)[0].id).toBe('coil/0/run');
+    expect(flatten(pieces[7].node)[0].id).toBe('coil/7/run');
+  });
+
+  it('hands consecutive pieces the same place, so a round cap closes the join', () => {
+    const pieces = curvePieces3('coil', helix, camera, { resolution: 32, ...WIRE });
+    for (let at = 0; at + 1 < pieces.length; at += 1) {
+      expect(pieces[at].points[1]).toEqual(pieces[at + 1].points[0]);
+    }
+  });
+
+  it('caps a piece round where the style leaves the cap out and keeps the one it names', () => {
+    const capOf = (options: Parameters<typeof curvePieces3>[3]) => {
+      const [first] = curvePieces3('coil', helix, camera, options);
+      const mark = flatten(first.node)[0];
+      return mark.kind === 'path' ? mark.stroke?.cap : undefined;
+    };
+    expect(capOf({ resolution: 4, ...WIRE })).toBe('round');
+    expect(capOf({ resolution: 4, stroke: { ...WIRE.stroke, cap: 'butt' } })).toBe('butt');
+  });
+
+  it('interleaves its pieces with the cells of the cylinder it wraps', () => {
+    const cells = cylinderCells('can', vec3(0, 0, 0), RADIUS, HEIGHT, camera, { shade, resolution: 6 });
+    const pieces = curvePieces3('coil', helix, camera, { resolution: 48, ...WIRE });
+    const marks = flatten(scene3('both', [...cells, ...pieces], camera));
+    const places = marks.flatMap((mark, at) => (mark.id.includes('coil') ? [at] : []));
+    expect(places).toHaveLength(48);
+    // A curve sorted whole is one contiguous run of marks. The cells standing
+    // between the first piece and the last are the ones a whole run would have
+    // been painted over or under together, and each of them is a cell some
+    // pieces are behind and others in front of.
+    const between = places[places.length - 1] - places[0] + 1 - places.length;
+    expect(between).toBe(106);
+    expect(marks).toHaveLength(cells.length + pieces.length);
+  });
+
+  it('draws the marks its own call draws, as a record', () => {
+    const record: SceneItemRecord = { kind: 'curvePieces3', name: 'coil', curve, options: WIRE };
+    const fromRecord = flatten(
+      resolveNode({ kind: 'scene3', name: 'both', items: [record], camera: seen })
+    );
+    const fromCall = flatten(scene3('both', curvePieces3('coil', helix, camera, { resolution: 48, ...WIRE }), camera));
+    expect(fromRecord).toHaveLength(48);
+    expect(sameMarks(fromRecord, fromCall)).toBe(true);
   });
 });
