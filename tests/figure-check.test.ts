@@ -12,7 +12,11 @@ function withField(record: FigureRecord, path: readonly string[], value: unknown
   return copy;
 }
 
-const CAMERA = { eye: { x: 3, y: 3, z: 3 }, target: { x: 0, y: 0, z: 0 } };
+const CAMERA = {
+  eye: { x: 3, y: 3, z: 3 },
+  target: { x: 0, y: 0, z: 0 },
+  projection: { kind: 'perspective', fov: 0.6, height: 5, near: 0.2 },
+};
 const SCALE = { graph: { from: 0, to: 1 }, units: { from: 0, to: 1 } };
 const COORDS = { x: SCALE, y: SCALE };
 const FILL = { colour: colourFrom('#101010') };
@@ -367,7 +371,7 @@ describe('a figure held to the vocabulary', () => {
       {
         kind: 'axes3',
         name: 'frame',
-        camera: { ...CAMERA, projection: { kind: 'orthographic', height: 4 } },
+        camera: { ...CAMERA, projection: { kind: 'orthographic', scale: 2 } },
         options: {
           stroke: STROKE,
           fill: FILL,
@@ -501,13 +505,17 @@ describe('a figure held to the vocabulary', () => {
         options: { at: PLACE, align: 'middle', width: 1, height: 1, fill: FILL },
       },
     ];
-    expect(
-      checkFigure({
-        ...turning,
-        tracks: { apart: [{ time: 0, value: 0 }] },
-        scene: { kind: 'group', name: 'dressed', children: dressed },
-      }),
-    ).toBeTruthy();
+    const held = {
+      ...turning,
+      tracks: { apart: [{ time: 0, value: 0 }] },
+      scene: { kind: 'group', name: 'dressed', children: dressed },
+    } as unknown as FigureRecord;
+    expect(checkFigure(held)).toBeTruthy();
+    // A parallel projection scales and a perspective one has a frame height, and
+    // naming the other's field is what says the two tables were read apart.
+    expect(() =>
+      checkFigure(withField(held, ['scene', 'children', '6', 'camera', 'projection'], { kind: 'perspective', scale: 2 }))
+    ).toThrow('scene.children.6.camera.projection.scale is not a field of a projection of kind perspective');
   });
 
   it('takes a path of every form and refuses one the format has none for', () => {

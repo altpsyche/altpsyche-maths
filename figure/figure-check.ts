@@ -157,8 +157,8 @@ const SHAPES: Readonly<Record<string, Shape>> = {
     form: 'kinds',
     what: 'a projection',
     kinds: {
-      perspective: { fov: may(number), near: may(number), far: may(number) },
-      orthographic: { height: may(number), near: may(number), far: may(number) },
+      perspective: { fov: may(number), height: may(number), near: may(number), far: may(number) },
+      orthographic: { scale: may(number) },
     },
   },
   camera: fields('a camera', {
