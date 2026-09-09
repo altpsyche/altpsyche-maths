@@ -1,10 +1,11 @@
 /**
- * Two demos as figure records, which every test of the file reads.
+ * The two demos the tests of the file read, as their own records.
  *
- * Both are the demo's own record, since both demos are written as data and their
- * committed files are what the sheets are drawn from. Nothing here assembles a
- * record of its own: a second transcription beside the demo's would be the same
- * writing twice with nothing between the two to disagree.
+ * All four demos are records and all four are committed as files, and these two
+ * are the smallest of them, which is what the cases about writing and reading
+ * want. Nothing here assembles a record of its own: a second transcription
+ * beside the demo's would be the same writing twice with nothing between the two
+ * to disagree.
  */
 export { written as operations } from '../demos/boolean.js';
 export { written as turning } from '../demos/rotate.js';
