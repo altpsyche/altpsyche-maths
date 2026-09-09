@@ -11,7 +11,7 @@
 export { clamp, inverseLerp, lerp, remap } from './values/scalar.js';
 export { colourOf, colourText, lerpColour } from './values/colour.js';
 export type { Rgba } from './values/colour.js';
-export { curveFor, curveNamed, easeIn, easeOut, linear, nameOfCurve, overshoot, smoothstep, thereAndBack } from './values/ease.js';
+export { CURVE_NAMES, curveFor, curveNamed, easeIn, easeOut, linear, nameOfCurve, overshoot, smoothstep, thereAndBack } from './values/ease.js';
 export type { Curve, CurveName } from './values/ease.js';
 export { vec2 } from './values/vec2.js';
 export type { Vec2 } from './values/vec2.js';
@@ -187,6 +187,7 @@ export type { Frame, FrameStep, FramesOptions } from './figure/frames.js';
 export type { Figure, TrackValues } from './figure/figure.js';
 export { resolveFigure } from './figure/figure-record.js';
 export type { FigureRecord } from './figure/figure-record.js';
+export { checkFigure } from './figure/figure-check.js';
 export { FIGURE_FORMAT_VERSION, readFigure, writeFigure } from './figure/figure-file.js';
 export type { FigureFile } from './figure/figure-file.js';
 export { paintSvg, pathToData, svgElements, svgMarkup } from './paint/svg.js';

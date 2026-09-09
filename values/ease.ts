@@ -66,6 +66,12 @@ const CURVES = {
  * as data may name. */
 export type CurveName = keyof typeof CURVES;
 
+/** Every curve by name, sorted, which is the closed set a figure as data may
+ * name and what a validator holds a file to. */
+export const CURVE_NAMES: readonly CurveName[] = Object.freeze(
+  (Object.keys(CURVES) as CurveName[]).sort(),
+);
+
 /** The curve a name stands for. */
 export function curveNamed(name: CurveName): Curve {
   return CURVES[name];

@@ -81,6 +81,8 @@ the value never turns back. `overshoot` passes 1 before settling on it and `ther
 - `curveNamed(name)` — the curve a `CurveName` stands for.
 - `nameOfCurve(curve)` — the name of a curve, or `undefined` for one a caller wrote itself, which is
   what a writer checks before it claims a figure is expressible as data.
+- `CURVE_NAMES` — every curve by name, sorted, which is the closed set a figure as data may name and
+  what a validator holds a file to.
 
 ## Vectors
 
@@ -1115,6 +1117,11 @@ a group of that name.
   number that is not finite, a hole in a list, a null and a function are each refused with the path
   of the field named. What is written is a `FigureRecord` and never a `Figure`, since a figure's
   scene may be a closure and no reading recovers one.
+- `checkFigure(value)` — a value held to the shape of a figure and handed back as one, or refused
+  with the path of the field from the figure down, `scene.children.2.at.x` rather than `x`. A
+  required field that is absent, a field of the wrong type, a kind the format has no form for and a
+  field a kind does not carry are each refused. What comes back is the value it was given rather than
+  a copy, so a reader parses once and draws what it parsed.
 - `readFigure(text)` — the figure a file's text describes. The version is read before anything else,
   and a version this package does not read is refused with both numbers in the sentence. Text that
   is not a JSON document, a document that is not an object, a file with no `format` and a file with

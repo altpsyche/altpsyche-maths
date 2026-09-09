@@ -944,26 +944,46 @@ release away and has a document of its own.
     document and a document that is a list each refused with what was found; the door from 370 names
     to 371 and the suite from 974 to 981.
 
-  - [ ] **5.5 The validator, and the value types and expressions.** `checkFigure` walks a value
-    against a description of the vocabulary and names the path of the field it refuses,
-    `scene.children.2.at.x` rather than the field's own name, since a name alone does not say which of
-    forty nodes carries it. **The vocabulary is described as a table rather than as a function per
+  - [x] **5.5 The validator, and the figure's own fields.** `checkFigure` walks a value against a
+    description of the vocabulary and names the path of the field it refuses,
+    `scene.children.2.at.x` rather than the field's own name, since a name alone does not say which
+    of forty nodes carries it. **The vocabulary is described as a table rather than as a function per
     kind**, because sixty-one kinds hand-written are sixty-one places a field can be forgotten.
-    **Measures:** the eleven value types and the seven expression forms each accepted out of the two
-    demos' records; each refused with the path named for a missing field, a field of the wrong type
-    and a kind the vocabulary does not carry; the suite from wherever 5.4 leaves it.
+    **A field a kind does not carry is refused rather than ignored**, and the specification says so
+    before the code does: a renderer that ignored one would draw a figure another renderer draws
+    differently with nothing to say the two disagreed.
+    **The three validator steps were resplit here.** The plan gave 5.5 the value types and
+    expressions, and an expression only ever sits inside a node or a path, so nothing above a node
+    reaches one and the tests could not have measured it. What this step checks is what a figure
+    carries above its scene: the nine fields, the two extent choices, the tracks with their keys and
+    curve names, the spans, and the insets with their rectangles. The whole table is written here,
+    the shapes under a node are reached by 5.6, and 5.7 is what wires the reader.
+    **Measured:** both demos taken as they stand and handed back rather than copied; `CURVE_NAMES` a
+    closed set of six, with `bounce` refused at `timeline.spans.0.curve` and the six named in the
+    sentence; a required field missing refused at `still` and at `extent.width`; a field of the wrong
+    type at `still`, `loop` and `extent`; a field the kind does not carry at `wobble` and
+    `extent.depth`; an extent of kind `byMood` refused and one short of `tall` refused by that name;
+    a track's key refused at `tracks.apart.0.time` and its value at `tracks.apart.0.value`; a span's
+    `from`, its `entry` and the list of spans each refused by path; an inset refused at
+    `insets.0.into.x.to`, at its fit and at what it hides; the door from 371 names to 373 and the
+    suite from 981 to 994.
 
   - [ ] **5.6 The validator over the nodes, the paths, the points and the items.** Twenty-three node
-    kinds, eleven path producers, two point producers and two item producers.
+    kinds, thirteen path forms, two point producers and two item producers, which is what turns the
+    `node` and `path` entries of the table from an object carrying a kind into the kinds themselves.
+    **This is what brings a style, a fill, a stroke, a typeset expression, a written-out path and the
+    expression form into reach**, since every one of them sits inside a node.
     **Measures:** every kind accepted where its own step's test already builds it; one refusal per
     kind naming the path of the field; a group whose children hold a kind that does not exist refused
-    with the index of the child in the path.
+    with the index of the child in the path; an expression's operator, a call into a function the
+    vocabulary does not carry, and a bare number, a true or false and a place as expressions.
 
-  - [ ] **5.7 The validator over the animations, the timeline, the view, the insets and the figure.**
-    Fifteen animation kinds, the spans, the two extent choices, the three view moves, the insets and
-    the figure's own nine fields. **An expression naming a track the figure does not carry is refused
-    here**, since a renderer reading a file wants that answer before it draws rather than at the first
-    time the expression is reached.
+  - [ ] **5.7 The validator over the animations and the view, and the reader routed through it.**
+    Fifteen animation kinds and the three view moves, which are the last two entries of the table
+    still shallow. **An expression naming a track the figure does not carry is refused here**, since a
+    renderer reading a file wants that answer before it draws rather than at the first time the
+    expression is reached. `readFigure` then checks what it parsed, which is the step the vocabulary
+    is complete at rather than 5.8.
     **Measures:** each of the fifteen kinds accepted and refused with the path named; a span whose
     `to` is before its `from` refused; a view move naming a mark no scene carries refused; an
     expression reading a track the figure has no keys for refused at read time, where the same figure

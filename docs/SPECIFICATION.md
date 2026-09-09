@@ -73,6 +73,10 @@ was wrong.
 **A renderer that does not carry a kind a file names refuses the file and names the kind.** A figure
 drawn with a piece left out is a wrong picture with nothing to say it went wrong.
 
+**A field a kind does not carry is refused rather than ignored.** A renderer that ignored one would
+draw a figure another renderer draws differently with nothing to say the two disagreed, and the
+version above is what a new field arrives with instead.
+
 ## What has to be specified
 
 - **Twenty-three node kinds**, each with its parameters, and the two item producers a `scene3`
