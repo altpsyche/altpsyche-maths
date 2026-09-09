@@ -674,7 +674,7 @@ renderer is conformant inside that band and wrong outside it in either direction
 
 ## The fixtures
 
-**Six figures are the conformance suite, and each is a file in this repository.**
+**Seven figures are the conformance suite, and each is a file in this repository.**
 
 | file | bytes | what it exercises |
 | --- | --- | --- |
@@ -684,6 +684,7 @@ renderer is conformant inside that band and wrong outside it in either direction
 | `demos/rotate.figure.json` | 8,244 | a rotation about a box's middle and about a named place, and a loop |
 | `demos/frame.figure.json` | 6,360 | a mark placed against the frame beside one placed in the figure's own units |
 | `demos/portrait.figure.json` | 23,389 | a parametric closed orbit, two polar spirals and two implicit nullclines over a field |
+| `demos/solids.figure.json` | 82,783 | the four solids as cells, and two curves in space cut into pieces the scenes sort |
 
 **Each carries `format` 0 and reads with no renderer at all.** A reader in another language that draws
 the same marks at these figures' named times, inside the tolerances above, is conformant.

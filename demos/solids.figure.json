@@ -1,0 +1,3051 @@
+{
+  "format": 0,
+  "figure": {
+    "duration": 6,
+    "extent": {
+      "height": 9.4,
+      "width": 8.8
+    },
+    "fit": "contain",
+    "scene": {
+      "children": [
+        {
+          "children": [
+            {
+              "camera": {
+                "eye": {
+                  "x": {
+                    "kind": "arithmetic",
+                    "left": 4.6,
+                    "operator": "*",
+                    "right": {
+                      "arguments": [
+                        {
+                          "kind": "arithmetic",
+                          "left": 6.283185307179586,
+                          "operator": "*",
+                          "right": {
+                            "kind": "track",
+                            "name": "turn"
+                          }
+                        }
+                      ],
+                      "kind": "call",
+                      "name": "cos"
+                    }
+                  },
+                  "y": {
+                    "kind": "arithmetic",
+                    "left": 4.6,
+                    "operator": "*",
+                    "right": {
+                      "arguments": [
+                        {
+                          "kind": "arithmetic",
+                          "left": 6.283185307179586,
+                          "operator": "*",
+                          "right": {
+                            "kind": "track",
+                            "name": "turn"
+                          }
+                        }
+                      ],
+                      "kind": "call",
+                      "name": "sin"
+                    }
+                  },
+                  "z": 2.3
+                },
+                "projection": {
+                  "fov": 0.6283185307179586,
+                  "height": 4.2,
+                  "kind": "perspective",
+                  "near": 0.2
+                },
+                "target": {
+                  "x": 0,
+                  "y": 0,
+                  "z": 0
+                },
+                "up": {
+                  "x": 0,
+                  "y": 0,
+                  "z": 1
+                }
+              },
+              "items": [
+                {
+                  "centre": {
+                    "x": 0,
+                    "y": 0,
+                    "z": 0
+                  },
+                  "kind": "sphereCells",
+                  "name": "skin",
+                  "options": {
+                    "light": {
+                      "x": -0.4,
+                      "y": -0.6,
+                      "z": 0.7
+                    },
+                    "resolution": 14,
+                    "shade": {
+                      "band": {
+                        "from": 0,
+                        "to": 1
+                      },
+                      "ramp": [
+                        {
+                          "colour": {
+                            "a": 1,
+                            "b": 99,
+                            "g": 119,
+                            "name": "shade0",
+                            "r": 133
+                          }
+                        },
+                        {
+                          "colour": {
+                            "a": 1,
+                            "b": 109,
+                            "g": 129,
+                            "name": "shade1",
+                            "r": 143
+                          }
+                        },
+                        {
+                          "colour": {
+                            "a": 1,
+                            "b": 120,
+                            "g": 140,
+                            "name": "shade2",
+                            "r": 154
+                          }
+                        },
+                        {
+                          "colour": {
+                            "a": 1,
+                            "b": 130,
+                            "g": 150,
+                            "name": "shade3",
+                            "r": 164
+                          }
+                        },
+                        {
+                          "colour": {
+                            "a": 1,
+                            "b": 140,
+                            "g": 160,
+                            "name": "shade4",
+                            "r": 174
+                          }
+                        },
+                        {
+                          "colour": {
+                            "a": 1,
+                            "b": 150,
+                            "g": 170,
+                            "name": "shade5",
+                            "r": 184
+                          }
+                        },
+                        {
+                          "colour": {
+                            "a": 1,
+                            "b": 161,
+                            "g": 181,
+                            "name": "shade6",
+                            "r": 195
+                          }
+                        },
+                        {
+                          "colour": {
+                            "a": 1,
+                            "b": 171,
+                            "g": 191,
+                            "name": "shade7",
+                            "r": 205
+                          }
+                        },
+                        {
+                          "colour": {
+                            "a": 1,
+                            "b": 181,
+                            "g": 201,
+                            "name": "shade8",
+                            "r": 215
+                          }
+                        },
+                        {
+                          "colour": {
+                            "a": 1,
+                            "b": 191,
+                            "g": 211,
+                            "name": "shade9",
+                            "r": 225
+                          }
+                        },
+                        {
+                          "colour": {
+                            "a": 1,
+                            "b": 202,
+                            "g": 222,
+                            "name": "shade10",
+                            "r": 236
+                          }
+                        },
+                        {
+                          "colour": {
+                            "a": 1,
+                            "b": 212,
+                            "g": 232,
+                            "name": "shade11",
+                            "r": 246
+                          }
+                        }
+                      ]
+                    },
+                    "stroke": {
+                      "colour": {
+                        "a": 1,
+                        "b": 192,
+                        "g": 185,
+                        "name": "mist",
+                        "r": 180
+                      },
+                      "width": 0.008
+                    }
+                  },
+                  "radius": 1.15
+                }
+              ],
+              "kind": "scene3",
+              "name": "body"
+            },
+            {
+              "at": {
+                "x": 0,
+                "y": -2.07
+              },
+              "content": "a sphere",
+              "kind": "text",
+              "name": "name",
+              "options": {
+                "align": "middle",
+                "fill": {
+                  "colour": {
+                    "a": 1,
+                    "b": 27,
+                    "g": 27,
+                    "name": "ink",
+                    "r": 27
+                  }
+                }
+              },
+              "size": 0.36769552621700474
+            }
+          ],
+          "kind": "group",
+          "name": "ball",
+          "transform": [
+            1,
+            0,
+            0,
+            0,
+            1,
+            0,
+            -2.15,
+            2.45,
+            1
+          ]
+        },
+        {
+          "children": [
+            {
+              "camera": {
+                "eye": {
+                  "x": {
+                    "kind": "arithmetic",
+                    "left": 4.6,
+                    "operator": "*",
+                    "right": {
+                      "arguments": [
+                        {
+                          "kind": "arithmetic",
+                          "left": 6.283185307179586,
+                          "operator": "*",
+                          "right": {
+                            "kind": "track",
+                            "name": "turn"
+                          }
+                        }
+                      ],
+                      "kind": "call",
+                      "name": "cos"
+                    }
+                  },
+                  "y": {
+                    "kind": "arithmetic",
+                    "left": 4.6,
+                    "operator": "*",
+                    "right": {
+                      "arguments": [
+                        {
+                          "kind": "arithmetic",
+                          "left": 6.283185307179586,
+                          "operator": "*",
+                          "right": {
+                            "kind": "track",
+                            "name": "turn"
+                          }
+                        }
+                      ],
+                      "kind": "call",
+                      "name": "sin"
+                    }
+                  },
+                  "z": 2.3
+                },
+                "projection": {
+                  "fov": 0.6283185307179586,
+                  "height": 4.2,
+                  "kind": "perspective",
+                  "near": 0.2
+                },
+                "target": {
+                  "x": 0,
+                  "y": 0,
+                  "z": 0
+                },
+                "up": {
+                  "x": 0,
+                  "y": 0,
+                  "z": 1
+                }
+              },
+              "items": [
+                {
+                  "centre": {
+                    "x": 0,
+                    "y": 0,
+                    "z": 0
+                  },
+                  "kind": "cubeCells",
+                  "name": "skin",
+                  "options": {
+                    "light": {
+                      "x": -0.4,
+                      "y": -0.6,
+                      "z": 0.7
+                    },
+                    "resolution": 2,
+                    "shade": {
+                      "band": {
+                        "from": 0,
+                        "to": 1
+                      },
+                      "ramp": [
+                        {
+                          "colour": {
+                            "a": 1,
+                            "b": 99,
+                            "g": 119,
+                            "name": "shade0",
+                            "r": 133
+                          }
+                        },
+                        {
+                          "colour": {
+                            "a": 1,
+                            "b": 109,
+                            "g": 129,
+                            "name": "shade1",
+                            "r": 143
+                          }
+                        },
+                        {
+                          "colour": {
+                            "a": 1,
+                            "b": 120,
+                            "g": 140,
+                            "name": "shade2",
+                            "r": 154
+                          }
+                        },
+                        {
+                          "colour": {
+                            "a": 1,
+                            "b": 130,
+                            "g": 150,
+                            "name": "shade3",
+                            "r": 164
+                          }
+                        },
+                        {
+                          "colour": {
+                            "a": 1,
+                            "b": 140,
+                            "g": 160,
+                            "name": "shade4",
+                            "r": 174
+                          }
+                        },
+                        {
+                          "colour": {
+                            "a": 1,
+                            "b": 150,
+                            "g": 170,
+                            "name": "shade5",
+                            "r": 184
+                          }
+                        },
+                        {
+                          "colour": {
+                            "a": 1,
+                            "b": 161,
+                            "g": 181,
+                            "name": "shade6",
+                            "r": 195
+                          }
+                        },
+                        {
+                          "colour": {
+                            "a": 1,
+                            "b": 171,
+                            "g": 191,
+                            "name": "shade7",
+                            "r": 205
+                          }
+                        },
+                        {
+                          "colour": {
+                            "a": 1,
+                            "b": 181,
+                            "g": 201,
+                            "name": "shade8",
+                            "r": 215
+                          }
+                        },
+                        {
+                          "colour": {
+                            "a": 1,
+                            "b": 191,
+                            "g": 211,
+                            "name": "shade9",
+                            "r": 225
+                          }
+                        },
+                        {
+                          "colour": {
+                            "a": 1,
+                            "b": 202,
+                            "g": 222,
+                            "name": "shade10",
+                            "r": 236
+                          }
+                        },
+                        {
+                          "colour": {
+                            "a": 1,
+                            "b": 212,
+                            "g": 232,
+                            "name": "shade11",
+                            "r": 246
+                          }
+                        }
+                      ]
+                    },
+                    "stroke": {
+                      "colour": {
+                        "a": 1,
+                        "b": 192,
+                        "g": 185,
+                        "name": "mist",
+                        "r": 180
+                      },
+                      "width": 0.008
+                    }
+                  },
+                  "size": 1.7
+                }
+              ],
+              "kind": "scene3",
+              "name": "body"
+            },
+            {
+              "at": {
+                "x": 0,
+                "y": -2.07
+              },
+              "content": "a cube",
+              "kind": "text",
+              "name": "name",
+              "options": {
+                "align": "middle",
+                "fill": {
+                  "colour": {
+                    "a": 1,
+                    "b": 27,
+                    "g": 27,
+                    "name": "ink",
+                    "r": 27
+                  }
+                }
+              },
+              "size": 0.36769552621700474
+            }
+          ],
+          "kind": "group",
+          "name": "box",
+          "transform": [
+            1,
+            0,
+            0,
+            0,
+            1,
+            0,
+            2.15,
+            2.45,
+            1
+          ]
+        },
+        {
+          "children": [
+            {
+              "camera": {
+                "eye": {
+                  "x": {
+                    "kind": "arithmetic",
+                    "left": 4.6,
+                    "operator": "*",
+                    "right": {
+                      "arguments": [
+                        {
+                          "kind": "arithmetic",
+                          "left": 6.283185307179586,
+                          "operator": "*",
+                          "right": {
+                            "kind": "track",
+                            "name": "turn"
+                          }
+                        }
+                      ],
+                      "kind": "call",
+                      "name": "cos"
+                    }
+                  },
+                  "y": {
+                    "kind": "arithmetic",
+                    "left": 4.6,
+                    "operator": "*",
+                    "right": {
+                      "arguments": [
+                        {
+                          "kind": "arithmetic",
+                          "left": 6.283185307179586,
+                          "operator": "*",
+                          "right": {
+                            "kind": "track",
+                            "name": "turn"
+                          }
+                        }
+                      ],
+                      "kind": "call",
+                      "name": "sin"
+                    }
+                  },
+                  "z": 2.3
+                },
+                "projection": {
+                  "fov": 0.6283185307179586,
+                  "height": 4.2,
+                  "kind": "perspective",
+                  "near": 0.2
+                },
+                "target": {
+                  "x": 0,
+                  "y": 0,
+                  "z": 0
+                },
+                "up": {
+                  "x": 0,
+                  "y": 0,
+                  "z": 1
+                }
+              },
+              "items": [
+                {
+                  "centre": {
+                    "x": 0,
+                    "y": 0,
+                    "z": 0
+                  },
+                  "height": 2.1,
+                  "kind": "cylinderCells",
+                  "name": "skin",
+                  "options": {
+                    "light": {
+                      "x": -0.4,
+                      "y": -0.6,
+                      "z": 0.7
+                    },
+                    "resolution": 10,
+                    "shade": {
+                      "band": {
+                        "from": 0,
+                        "to": 1
+                      },
+                      "ramp": [
+                        {
+                          "colour": {
+                            "a": 1,
+                            "b": 99,
+                            "g": 119,
+                            "name": "shade0",
+                            "r": 133
+                          }
+                        },
+                        {
+                          "colour": {
+                            "a": 1,
+                            "b": 109,
+                            "g": 129,
+                            "name": "shade1",
+                            "r": 143
+                          }
+                        },
+                        {
+                          "colour": {
+                            "a": 1,
+                            "b": 120,
+                            "g": 140,
+                            "name": "shade2",
+                            "r": 154
+                          }
+                        },
+                        {
+                          "colour": {
+                            "a": 1,
+                            "b": 130,
+                            "g": 150,
+                            "name": "shade3",
+                            "r": 164
+                          }
+                        },
+                        {
+                          "colour": {
+                            "a": 1,
+                            "b": 140,
+                            "g": 160,
+                            "name": "shade4",
+                            "r": 174
+                          }
+                        },
+                        {
+                          "colour": {
+                            "a": 1,
+                            "b": 150,
+                            "g": 170,
+                            "name": "shade5",
+                            "r": 184
+                          }
+                        },
+                        {
+                          "colour": {
+                            "a": 1,
+                            "b": 161,
+                            "g": 181,
+                            "name": "shade6",
+                            "r": 195
+                          }
+                        },
+                        {
+                          "colour": {
+                            "a": 1,
+                            "b": 171,
+                            "g": 191,
+                            "name": "shade7",
+                            "r": 205
+                          }
+                        },
+                        {
+                          "colour": {
+                            "a": 1,
+                            "b": 181,
+                            "g": 201,
+                            "name": "shade8",
+                            "r": 215
+                          }
+                        },
+                        {
+                          "colour": {
+                            "a": 1,
+                            "b": 191,
+                            "g": 211,
+                            "name": "shade9",
+                            "r": 225
+                          }
+                        },
+                        {
+                          "colour": {
+                            "a": 1,
+                            "b": 202,
+                            "g": 222,
+                            "name": "shade10",
+                            "r": 236
+                          }
+                        },
+                        {
+                          "colour": {
+                            "a": 1,
+                            "b": 212,
+                            "g": 232,
+                            "name": "shade11",
+                            "r": 246
+                          }
+                        }
+                      ]
+                    },
+                    "stroke": {
+                      "colour": {
+                        "a": 1,
+                        "b": 192,
+                        "g": 185,
+                        "name": "mist",
+                        "r": 180
+                      },
+                      "width": 0.008
+                    }
+                  },
+                  "radius": 0.8
+                },
+                {
+                  "curve": {
+                    "of": {
+                      "x": {
+                        "kind": "arithmetic",
+                        "left": 0.8700000000000001,
+                        "operator": "*",
+                        "right": {
+                          "arguments": [
+                            {
+                              "kind": "arithmetic",
+                              "left": 18.84955592153876,
+                              "operator": "*",
+                              "right": {
+                                "kind": "variable",
+                                "name": "t"
+                              }
+                            }
+                          ],
+                          "kind": "call",
+                          "name": "cos"
+                        }
+                      },
+                      "y": {
+                        "kind": "arithmetic",
+                        "left": 0.8700000000000001,
+                        "operator": "*",
+                        "right": {
+                          "arguments": [
+                            {
+                              "kind": "arithmetic",
+                              "left": 18.84955592153876,
+                              "operator": "*",
+                              "right": {
+                                "kind": "variable",
+                                "name": "t"
+                              }
+                            }
+                          ],
+                          "kind": "call",
+                          "name": "sin"
+                        }
+                      },
+                      "z": {
+                        "kind": "arithmetic",
+                        "left": 2.1,
+                        "operator": "*",
+                        "right": {
+                          "kind": "arithmetic",
+                          "left": {
+                            "kind": "variable",
+                            "name": "t"
+                          },
+                          "operator": "-",
+                          "right": 0.5
+                        }
+                      }
+                    },
+                    "resolution": 96
+                  },
+                  "kind": "curvePieces3",
+                  "name": "coil",
+                  "options": {
+                    "stroke": {
+                      "colour": {
+                        "a": 1,
+                        "b": 12,
+                        "g": 65,
+                        "name": "ember",
+                        "r": 194
+                      },
+                      "width": 0.05
+                    }
+                  }
+                }
+              ],
+              "kind": "scene3",
+              "name": "body"
+            },
+            {
+              "at": {
+                "x": 0,
+                "y": -2.07
+              },
+              "content": "a cylinder, with a helix",
+              "kind": "text",
+              "name": "name",
+              "options": {
+                "align": "middle",
+                "fill": {
+                  "colour": {
+                    "a": 1,
+                    "b": 27,
+                    "g": 27,
+                    "name": "ink",
+                    "r": 27
+                  }
+                }
+              },
+              "size": 0.36769552621700474
+            }
+          ],
+          "kind": "group",
+          "name": "can",
+          "transform": [
+            1,
+            0,
+            0,
+            0,
+            1,
+            0,
+            -2.15,
+            -2.05,
+            1
+          ]
+        },
+        {
+          "children": [
+            {
+              "camera": {
+                "eye": {
+                  "x": {
+                    "kind": "arithmetic",
+                    "left": 4.6,
+                    "operator": "*",
+                    "right": {
+                      "arguments": [
+                        {
+                          "kind": "arithmetic",
+                          "left": 6.283185307179586,
+                          "operator": "*",
+                          "right": {
+                            "kind": "track",
+                            "name": "turn"
+                          }
+                        }
+                      ],
+                      "kind": "call",
+                      "name": "cos"
+                    }
+                  },
+                  "y": {
+                    "kind": "arithmetic",
+                    "left": 4.6,
+                    "operator": "*",
+                    "right": {
+                      "arguments": [
+                        {
+                          "kind": "arithmetic",
+                          "left": 6.283185307179586,
+                          "operator": "*",
+                          "right": {
+                            "kind": "track",
+                            "name": "turn"
+                          }
+                        }
+                      ],
+                      "kind": "call",
+                      "name": "sin"
+                    }
+                  },
+                  "z": 2.3
+                },
+                "projection": {
+                  "fov": 0.6283185307179586,
+                  "height": 4.2,
+                  "kind": "perspective",
+                  "near": 0.2
+                },
+                "target": {
+                  "x": 0,
+                  "y": 0,
+                  "z": 0
+                },
+                "up": {
+                  "x": 0,
+                  "y": 0,
+                  "z": 1
+                }
+              },
+              "items": [
+                {
+                  "centre": {
+                    "x": 0,
+                    "y": 0,
+                    "z": 0
+                  },
+                  "kind": "torusCells",
+                  "name": "skin",
+                  "options": {
+                    "light": {
+                      "x": -0.4,
+                      "y": -0.6,
+                      "z": 0.7
+                    },
+                    "resolution": 18,
+                    "shade": {
+                      "band": {
+                        "from": 0,
+                        "to": 1
+                      },
+                      "ramp": [
+                        {
+                          "colour": {
+                            "a": 1,
+                            "b": 99,
+                            "g": 119,
+                            "name": "shade0",
+                            "r": 133
+                          }
+                        },
+                        {
+                          "colour": {
+                            "a": 1,
+                            "b": 109,
+                            "g": 129,
+                            "name": "shade1",
+                            "r": 143
+                          }
+                        },
+                        {
+                          "colour": {
+                            "a": 1,
+                            "b": 120,
+                            "g": 140,
+                            "name": "shade2",
+                            "r": 154
+                          }
+                        },
+                        {
+                          "colour": {
+                            "a": 1,
+                            "b": 130,
+                            "g": 150,
+                            "name": "shade3",
+                            "r": 164
+                          }
+                        },
+                        {
+                          "colour": {
+                            "a": 1,
+                            "b": 140,
+                            "g": 160,
+                            "name": "shade4",
+                            "r": 174
+                          }
+                        },
+                        {
+                          "colour": {
+                            "a": 1,
+                            "b": 150,
+                            "g": 170,
+                            "name": "shade5",
+                            "r": 184
+                          }
+                        },
+                        {
+                          "colour": {
+                            "a": 1,
+                            "b": 161,
+                            "g": 181,
+                            "name": "shade6",
+                            "r": 195
+                          }
+                        },
+                        {
+                          "colour": {
+                            "a": 1,
+                            "b": 171,
+                            "g": 191,
+                            "name": "shade7",
+                            "r": 205
+                          }
+                        },
+                        {
+                          "colour": {
+                            "a": 1,
+                            "b": 181,
+                            "g": 201,
+                            "name": "shade8",
+                            "r": 215
+                          }
+                        },
+                        {
+                          "colour": {
+                            "a": 1,
+                            "b": 191,
+                            "g": 211,
+                            "name": "shade9",
+                            "r": 225
+                          }
+                        },
+                        {
+                          "colour": {
+                            "a": 1,
+                            "b": 202,
+                            "g": 222,
+                            "name": "shade10",
+                            "r": 236
+                          }
+                        },
+                        {
+                          "colour": {
+                            "a": 1,
+                            "b": 212,
+                            "g": 232,
+                            "name": "shade11",
+                            "r": 246
+                          }
+                        }
+                      ]
+                    },
+                    "stroke": {
+                      "colour": {
+                        "a": 1,
+                        "b": 192,
+                        "g": 185,
+                        "name": "mist",
+                        "r": 180
+                      },
+                      "width": 0.008
+                    }
+                  },
+                  "ring": 0.78,
+                  "tube": 0.36
+                },
+                {
+                  "curve": {
+                    "of": {
+                      "x": {
+                        "kind": "arithmetic",
+                        "left": {
+                          "kind": "arithmetic",
+                          "left": 0.78,
+                          "operator": "+",
+                          "right": {
+                            "kind": "arithmetic",
+                            "left": 0.40499999999999997,
+                            "operator": "*",
+                            "right": {
+                              "arguments": [
+                                {
+                                  "kind": "arithmetic",
+                                  "left": 18.84955592153876,
+                                  "operator": "*",
+                                  "right": {
+                                    "kind": "variable",
+                                    "name": "t"
+                                  }
+                                }
+                              ],
+                              "kind": "call",
+                              "name": "cos"
+                            }
+                          }
+                        },
+                        "operator": "*",
+                        "right": {
+                          "arguments": [
+                            {
+                              "kind": "arithmetic",
+                              "left": 12.566370614359172,
+                              "operator": "*",
+                              "right": {
+                                "kind": "variable",
+                                "name": "t"
+                              }
+                            }
+                          ],
+                          "kind": "call",
+                          "name": "cos"
+                        }
+                      },
+                      "y": {
+                        "kind": "arithmetic",
+                        "left": {
+                          "kind": "arithmetic",
+                          "left": 0.78,
+                          "operator": "+",
+                          "right": {
+                            "kind": "arithmetic",
+                            "left": 0.40499999999999997,
+                            "operator": "*",
+                            "right": {
+                              "arguments": [
+                                {
+                                  "kind": "arithmetic",
+                                  "left": 18.84955592153876,
+                                  "operator": "*",
+                                  "right": {
+                                    "kind": "variable",
+                                    "name": "t"
+                                  }
+                                }
+                              ],
+                              "kind": "call",
+                              "name": "cos"
+                            }
+                          }
+                        },
+                        "operator": "*",
+                        "right": {
+                          "arguments": [
+                            {
+                              "kind": "arithmetic",
+                              "left": 12.566370614359172,
+                              "operator": "*",
+                              "right": {
+                                "kind": "variable",
+                                "name": "t"
+                              }
+                            }
+                          ],
+                          "kind": "call",
+                          "name": "sin"
+                        }
+                      },
+                      "z": {
+                        "kind": "arithmetic",
+                        "left": 0.40499999999999997,
+                        "operator": "*",
+                        "right": {
+                          "arguments": [
+                            {
+                              "kind": "arithmetic",
+                              "left": 18.84955592153876,
+                              "operator": "*",
+                              "right": {
+                                "kind": "variable",
+                                "name": "t"
+                              }
+                            }
+                          ],
+                          "kind": "call",
+                          "name": "sin"
+                        }
+                      }
+                    },
+                    "resolution": 120
+                  },
+                  "kind": "curvePieces3",
+                  "name": "knot",
+                  "options": {
+                    "stroke": {
+                      "colour": {
+                        "a": 1,
+                        "b": 248,
+                        "g": 189,
+                        "name": "sky",
+                        "r": 56
+                      },
+                      "width": 0.05
+                    }
+                  }
+                }
+              ],
+              "kind": "scene3",
+              "name": "body"
+            },
+            {
+              "at": {
+                "x": 0,
+                "y": -2.07
+              },
+              "content": "a torus, with a trefoil",
+              "kind": "text",
+              "name": "name",
+              "options": {
+                "align": "middle",
+                "fill": {
+                  "colour": {
+                    "a": 1,
+                    "b": 27,
+                    "g": 27,
+                    "name": "ink",
+                    "r": 27
+                  }
+                }
+              },
+              "size": 0.36769552621700474
+            }
+          ],
+          "kind": "group",
+          "name": "ring",
+          "transform": [
+            1,
+            0,
+            0,
+            0,
+            1,
+            0,
+            2.15,
+            -2.05,
+            1
+          ]
+        },
+        {
+          "at": {
+            "x": 0,
+            "y": 4.36
+          },
+          "content": "four solids, and two curves wound on them",
+          "kind": "text",
+          "name": "title",
+          "options": {
+            "align": "middle",
+            "fill": {
+              "colour": {
+                "a": 1,
+                "b": 27,
+                "g": 27,
+                "name": "ink",
+                "r": 27
+              }
+            }
+          },
+          "size": 0.36769552621700474
+        }
+      ],
+      "kind": "group",
+      "name": "solids",
+      "style": {
+        "family": "system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif",
+        "weight": 400
+      }
+    },
+    "still": 4.5,
+    "timeline": {
+      "duration": 6,
+      "spans": [
+        {
+          "entry": {
+            "kind": "fadeIn",
+            "target": "solids/ball"
+          },
+          "from": 0,
+          "to": 0.7
+        },
+        {
+          "entry": {
+            "kind": "fadeIn",
+            "target": "solids/box"
+          },
+          "from": 0.3,
+          "to": 1
+        },
+        {
+          "entry": {
+            "kind": "fadeIn",
+            "target": "solids/can/body/skin"
+          },
+          "from": 0.6,
+          "to": 1.3
+        },
+        {
+          "entry": {
+            "kind": "fadeIn",
+            "target": "solids/can/name"
+          },
+          "from": 0.6,
+          "to": 1.3
+        },
+        {
+          "entry": {
+            "kind": "fadeIn",
+            "target": "solids/ring/body/skin"
+          },
+          "from": 0.9,
+          "to": 1.6
+        },
+        {
+          "entry": {
+            "kind": "fadeIn",
+            "target": "solids/ring/name"
+          },
+          "from": 0.9,
+          "to": 1.6
+        },
+        {
+          "entry": {
+            "kind": "fadeIn",
+            "target": "solids/can/body/coil/0"
+          },
+          "from": 1.4,
+          "to": 1.446875
+        },
+        {
+          "entry": {
+            "kind": "fadeIn",
+            "target": "solids/can/body/coil/1"
+          },
+          "from": 1.415625,
+          "to": 1.4625
+        },
+        {
+          "entry": {
+            "kind": "fadeIn",
+            "target": "solids/can/body/coil/2"
+          },
+          "from": 1.43125,
+          "to": 1.478125
+        },
+        {
+          "entry": {
+            "kind": "fadeIn",
+            "target": "solids/can/body/coil/3"
+          },
+          "from": 1.446875,
+          "to": 1.49375
+        },
+        {
+          "entry": {
+            "kind": "fadeIn",
+            "target": "solids/can/body/coil/4"
+          },
+          "from": 1.4625,
+          "to": 1.509375
+        },
+        {
+          "entry": {
+            "kind": "fadeIn",
+            "target": "solids/can/body/coil/5"
+          },
+          "from": 1.478125,
+          "to": 1.525
+        },
+        {
+          "entry": {
+            "kind": "fadeIn",
+            "target": "solids/can/body/coil/6"
+          },
+          "from": 1.49375,
+          "to": 1.540625
+        },
+        {
+          "entry": {
+            "kind": "fadeIn",
+            "target": "solids/can/body/coil/7"
+          },
+          "from": 1.509375,
+          "to": 1.55625
+        },
+        {
+          "entry": {
+            "kind": "fadeIn",
+            "target": "solids/can/body/coil/8"
+          },
+          "from": 1.525,
+          "to": 1.571875
+        },
+        {
+          "entry": {
+            "kind": "fadeIn",
+            "target": "solids/can/body/coil/9"
+          },
+          "from": 1.540625,
+          "to": 1.5875
+        },
+        {
+          "entry": {
+            "kind": "fadeIn",
+            "target": "solids/can/body/coil/10"
+          },
+          "from": 1.55625,
+          "to": 1.603125
+        },
+        {
+          "entry": {
+            "kind": "fadeIn",
+            "target": "solids/can/body/coil/11"
+          },
+          "from": 1.571875,
+          "to": 1.61875
+        },
+        {
+          "entry": {
+            "kind": "fadeIn",
+            "target": "solids/can/body/coil/12"
+          },
+          "from": 1.5875,
+          "to": 1.634375
+        },
+        {
+          "entry": {
+            "kind": "fadeIn",
+            "target": "solids/can/body/coil/13"
+          },
+          "from": 1.603125,
+          "to": 1.65
+        },
+        {
+          "entry": {
+            "kind": "fadeIn",
+            "target": "solids/can/body/coil/14"
+          },
+          "from": 1.61875,
+          "to": 1.665625
+        },
+        {
+          "entry": {
+            "kind": "fadeIn",
+            "target": "solids/can/body/coil/15"
+          },
+          "from": 1.634375,
+          "to": 1.68125
+        },
+        {
+          "entry": {
+            "kind": "fadeIn",
+            "target": "solids/can/body/coil/16"
+          },
+          "from": 1.65,
+          "to": 1.696875
+        },
+        {
+          "entry": {
+            "kind": "fadeIn",
+            "target": "solids/can/body/coil/17"
+          },
+          "from": 1.665625,
+          "to": 1.7125
+        },
+        {
+          "entry": {
+            "kind": "fadeIn",
+            "target": "solids/can/body/coil/18"
+          },
+          "from": 1.68125,
+          "to": 1.728125
+        },
+        {
+          "entry": {
+            "kind": "fadeIn",
+            "target": "solids/can/body/coil/19"
+          },
+          "from": 1.696875,
+          "to": 1.74375
+        },
+        {
+          "entry": {
+            "kind": "fadeIn",
+            "target": "solids/can/body/coil/20"
+          },
+          "from": 1.7125,
+          "to": 1.759375
+        },
+        {
+          "entry": {
+            "kind": "fadeIn",
+            "target": "solids/can/body/coil/21"
+          },
+          "from": 1.728125,
+          "to": 1.775
+        },
+        {
+          "entry": {
+            "kind": "fadeIn",
+            "target": "solids/can/body/coil/22"
+          },
+          "from": 1.74375,
+          "to": 1.790625
+        },
+        {
+          "entry": {
+            "kind": "fadeIn",
+            "target": "solids/can/body/coil/23"
+          },
+          "from": 1.759375,
+          "to": 1.80625
+        },
+        {
+          "entry": {
+            "kind": "fadeIn",
+            "target": "solids/can/body/coil/24"
+          },
+          "from": 1.775,
+          "to": 1.821875
+        },
+        {
+          "entry": {
+            "kind": "fadeIn",
+            "target": "solids/can/body/coil/25"
+          },
+          "from": 1.790625,
+          "to": 1.8375
+        },
+        {
+          "entry": {
+            "kind": "fadeIn",
+            "target": "solids/can/body/coil/26"
+          },
+          "from": 1.80625,
+          "to": 1.853125
+        },
+        {
+          "entry": {
+            "kind": "fadeIn",
+            "target": "solids/can/body/coil/27"
+          },
+          "from": 1.821875,
+          "to": 1.86875
+        },
+        {
+          "entry": {
+            "kind": "fadeIn",
+            "target": "solids/can/body/coil/28"
+          },
+          "from": 1.8375,
+          "to": 1.884375
+        },
+        {
+          "entry": {
+            "kind": "fadeIn",
+            "target": "solids/can/body/coil/29"
+          },
+          "from": 1.853125,
+          "to": 1.9
+        },
+        {
+          "entry": {
+            "kind": "fadeIn",
+            "target": "solids/can/body/coil/30"
+          },
+          "from": 1.86875,
+          "to": 1.915625
+        },
+        {
+          "entry": {
+            "kind": "fadeIn",
+            "target": "solids/can/body/coil/31"
+          },
+          "from": 1.884375,
+          "to": 1.93125
+        },
+        {
+          "entry": {
+            "kind": "fadeIn",
+            "target": "solids/can/body/coil/32"
+          },
+          "from": 1.9,
+          "to": 1.946875
+        },
+        {
+          "entry": {
+            "kind": "fadeIn",
+            "target": "solids/can/body/coil/33"
+          },
+          "from": 1.915625,
+          "to": 1.9625
+        },
+        {
+          "entry": {
+            "kind": "fadeIn",
+            "target": "solids/can/body/coil/34"
+          },
+          "from": 1.93125,
+          "to": 1.978125
+        },
+        {
+          "entry": {
+            "kind": "fadeIn",
+            "target": "solids/can/body/coil/35"
+          },
+          "from": 1.946875,
+          "to": 1.99375
+        },
+        {
+          "entry": {
+            "kind": "fadeIn",
+            "target": "solids/can/body/coil/36"
+          },
+          "from": 1.9625,
+          "to": 2.009375
+        },
+        {
+          "entry": {
+            "kind": "fadeIn",
+            "target": "solids/can/body/coil/37"
+          },
+          "from": 1.978125,
+          "to": 2.025
+        },
+        {
+          "entry": {
+            "kind": "fadeIn",
+            "target": "solids/can/body/coil/38"
+          },
+          "from": 1.99375,
+          "to": 2.040625
+        },
+        {
+          "entry": {
+            "kind": "fadeIn",
+            "target": "solids/can/body/coil/39"
+          },
+          "from": 2.009375,
+          "to": 2.05625
+        },
+        {
+          "entry": {
+            "kind": "fadeIn",
+            "target": "solids/can/body/coil/40"
+          },
+          "from": 2.025,
+          "to": 2.071875
+        },
+        {
+          "entry": {
+            "kind": "fadeIn",
+            "target": "solids/can/body/coil/41"
+          },
+          "from": 2.040625,
+          "to": 2.0875
+        },
+        {
+          "entry": {
+            "kind": "fadeIn",
+            "target": "solids/can/body/coil/42"
+          },
+          "from": 2.05625,
+          "to": 2.103125
+        },
+        {
+          "entry": {
+            "kind": "fadeIn",
+            "target": "solids/can/body/coil/43"
+          },
+          "from": 2.071875,
+          "to": 2.11875
+        },
+        {
+          "entry": {
+            "kind": "fadeIn",
+            "target": "solids/can/body/coil/44"
+          },
+          "from": 2.0875,
+          "to": 2.134375
+        },
+        {
+          "entry": {
+            "kind": "fadeIn",
+            "target": "solids/can/body/coil/45"
+          },
+          "from": 2.103125,
+          "to": 2.15
+        },
+        {
+          "entry": {
+            "kind": "fadeIn",
+            "target": "solids/can/body/coil/46"
+          },
+          "from": 2.11875,
+          "to": 2.165625
+        },
+        {
+          "entry": {
+            "kind": "fadeIn",
+            "target": "solids/can/body/coil/47"
+          },
+          "from": 2.134375,
+          "to": 2.18125
+        },
+        {
+          "entry": {
+            "kind": "fadeIn",
+            "target": "solids/can/body/coil/48"
+          },
+          "from": 2.15,
+          "to": 2.196875
+        },
+        {
+          "entry": {
+            "kind": "fadeIn",
+            "target": "solids/can/body/coil/49"
+          },
+          "from": 2.165625,
+          "to": 2.2125
+        },
+        {
+          "entry": {
+            "kind": "fadeIn",
+            "target": "solids/can/body/coil/50"
+          },
+          "from": 2.18125,
+          "to": 2.228125
+        },
+        {
+          "entry": {
+            "kind": "fadeIn",
+            "target": "solids/can/body/coil/51"
+          },
+          "from": 2.196875,
+          "to": 2.24375
+        },
+        {
+          "entry": {
+            "kind": "fadeIn",
+            "target": "solids/can/body/coil/52"
+          },
+          "from": 2.2125,
+          "to": 2.259375
+        },
+        {
+          "entry": {
+            "kind": "fadeIn",
+            "target": "solids/can/body/coil/53"
+          },
+          "from": 2.228125,
+          "to": 2.275
+        },
+        {
+          "entry": {
+            "kind": "fadeIn",
+            "target": "solids/can/body/coil/54"
+          },
+          "from": 2.24375,
+          "to": 2.290625
+        },
+        {
+          "entry": {
+            "kind": "fadeIn",
+            "target": "solids/can/body/coil/55"
+          },
+          "from": 2.259375,
+          "to": 2.30625
+        },
+        {
+          "entry": {
+            "kind": "fadeIn",
+            "target": "solids/can/body/coil/56"
+          },
+          "from": 2.275,
+          "to": 2.321875
+        },
+        {
+          "entry": {
+            "kind": "fadeIn",
+            "target": "solids/can/body/coil/57"
+          },
+          "from": 2.290625,
+          "to": 2.3375
+        },
+        {
+          "entry": {
+            "kind": "fadeIn",
+            "target": "solids/can/body/coil/58"
+          },
+          "from": 2.30625,
+          "to": 2.353125
+        },
+        {
+          "entry": {
+            "kind": "fadeIn",
+            "target": "solids/can/body/coil/59"
+          },
+          "from": 2.321875,
+          "to": 2.36875
+        },
+        {
+          "entry": {
+            "kind": "fadeIn",
+            "target": "solids/can/body/coil/60"
+          },
+          "from": 2.3375,
+          "to": 2.384375
+        },
+        {
+          "entry": {
+            "kind": "fadeIn",
+            "target": "solids/can/body/coil/61"
+          },
+          "from": 2.353125,
+          "to": 2.4
+        },
+        {
+          "entry": {
+            "kind": "fadeIn",
+            "target": "solids/can/body/coil/62"
+          },
+          "from": 2.36875,
+          "to": 2.415625
+        },
+        {
+          "entry": {
+            "kind": "fadeIn",
+            "target": "solids/can/body/coil/63"
+          },
+          "from": 2.384375,
+          "to": 2.43125
+        },
+        {
+          "entry": {
+            "kind": "fadeIn",
+            "target": "solids/can/body/coil/64"
+          },
+          "from": 2.4,
+          "to": 2.446875
+        },
+        {
+          "entry": {
+            "kind": "fadeIn",
+            "target": "solids/can/body/coil/65"
+          },
+          "from": 2.415625,
+          "to": 2.4625
+        },
+        {
+          "entry": {
+            "kind": "fadeIn",
+            "target": "solids/can/body/coil/66"
+          },
+          "from": 2.43125,
+          "to": 2.478125
+        },
+        {
+          "entry": {
+            "kind": "fadeIn",
+            "target": "solids/can/body/coil/67"
+          },
+          "from": 2.446875,
+          "to": 2.49375
+        },
+        {
+          "entry": {
+            "kind": "fadeIn",
+            "target": "solids/can/body/coil/68"
+          },
+          "from": 2.4625,
+          "to": 2.509375
+        },
+        {
+          "entry": {
+            "kind": "fadeIn",
+            "target": "solids/can/body/coil/69"
+          },
+          "from": 2.478125,
+          "to": 2.525
+        },
+        {
+          "entry": {
+            "kind": "fadeIn",
+            "target": "solids/can/body/coil/70"
+          },
+          "from": 2.49375,
+          "to": 2.540625
+        },
+        {
+          "entry": {
+            "kind": "fadeIn",
+            "target": "solids/can/body/coil/71"
+          },
+          "from": 2.509375,
+          "to": 2.55625
+        },
+        {
+          "entry": {
+            "kind": "fadeIn",
+            "target": "solids/can/body/coil/72"
+          },
+          "from": 2.525,
+          "to": 2.571875
+        },
+        {
+          "entry": {
+            "kind": "fadeIn",
+            "target": "solids/can/body/coil/73"
+          },
+          "from": 2.540625,
+          "to": 2.5875
+        },
+        {
+          "entry": {
+            "kind": "fadeIn",
+            "target": "solids/can/body/coil/74"
+          },
+          "from": 2.55625,
+          "to": 2.603125
+        },
+        {
+          "entry": {
+            "kind": "fadeIn",
+            "target": "solids/can/body/coil/75"
+          },
+          "from": 2.571875,
+          "to": 2.61875
+        },
+        {
+          "entry": {
+            "kind": "fadeIn",
+            "target": "solids/can/body/coil/76"
+          },
+          "from": 2.5875,
+          "to": 2.634375
+        },
+        {
+          "entry": {
+            "kind": "fadeIn",
+            "target": "solids/can/body/coil/77"
+          },
+          "from": 2.603125,
+          "to": 2.65
+        },
+        {
+          "entry": {
+            "kind": "fadeIn",
+            "target": "solids/can/body/coil/78"
+          },
+          "from": 2.61875,
+          "to": 2.665625
+        },
+        {
+          "entry": {
+            "kind": "fadeIn",
+            "target": "solids/can/body/coil/79"
+          },
+          "from": 2.634375,
+          "to": 2.68125
+        },
+        {
+          "entry": {
+            "kind": "fadeIn",
+            "target": "solids/can/body/coil/80"
+          },
+          "from": 2.65,
+          "to": 2.696875
+        },
+        {
+          "entry": {
+            "kind": "fadeIn",
+            "target": "solids/can/body/coil/81"
+          },
+          "from": 2.665625,
+          "to": 2.7125
+        },
+        {
+          "entry": {
+            "kind": "fadeIn",
+            "target": "solids/can/body/coil/82"
+          },
+          "from": 2.68125,
+          "to": 2.728125
+        },
+        {
+          "entry": {
+            "kind": "fadeIn",
+            "target": "solids/can/body/coil/83"
+          },
+          "from": 2.696875,
+          "to": 2.74375
+        },
+        {
+          "entry": {
+            "kind": "fadeIn",
+            "target": "solids/can/body/coil/84"
+          },
+          "from": 2.7125,
+          "to": 2.759375
+        },
+        {
+          "entry": {
+            "kind": "fadeIn",
+            "target": "solids/can/body/coil/85"
+          },
+          "from": 2.728125,
+          "to": 2.775
+        },
+        {
+          "entry": {
+            "kind": "fadeIn",
+            "target": "solids/can/body/coil/86"
+          },
+          "from": 2.74375,
+          "to": 2.790625
+        },
+        {
+          "entry": {
+            "kind": "fadeIn",
+            "target": "solids/can/body/coil/87"
+          },
+          "from": 2.759375,
+          "to": 2.80625
+        },
+        {
+          "entry": {
+            "kind": "fadeIn",
+            "target": "solids/can/body/coil/88"
+          },
+          "from": 2.775,
+          "to": 2.821875
+        },
+        {
+          "entry": {
+            "kind": "fadeIn",
+            "target": "solids/can/body/coil/89"
+          },
+          "from": 2.790625,
+          "to": 2.8375
+        },
+        {
+          "entry": {
+            "kind": "fadeIn",
+            "target": "solids/can/body/coil/90"
+          },
+          "from": 2.80625,
+          "to": 2.853125
+        },
+        {
+          "entry": {
+            "kind": "fadeIn",
+            "target": "solids/can/body/coil/91"
+          },
+          "from": 2.821875,
+          "to": 2.86875
+        },
+        {
+          "entry": {
+            "kind": "fadeIn",
+            "target": "solids/can/body/coil/92"
+          },
+          "from": 2.8375,
+          "to": 2.884375
+        },
+        {
+          "entry": {
+            "kind": "fadeIn",
+            "target": "solids/can/body/coil/93"
+          },
+          "from": 2.853125,
+          "to": 2.9
+        },
+        {
+          "entry": {
+            "kind": "fadeIn",
+            "target": "solids/can/body/coil/94"
+          },
+          "from": 2.86875,
+          "to": 2.915625
+        },
+        {
+          "entry": {
+            "kind": "fadeIn",
+            "target": "solids/can/body/coil/95"
+          },
+          "from": 2.884375,
+          "to": 2.93125
+        },
+        {
+          "entry": {
+            "kind": "fadeIn",
+            "target": "solids/ring/body/knot/0"
+          },
+          "from": 2.4,
+          "to": 2.44
+        },
+        {
+          "entry": {
+            "kind": "fadeIn",
+            "target": "solids/ring/body/knot/1"
+          },
+          "from": 2.413333333333333,
+          "to": 2.453333333333333
+        },
+        {
+          "entry": {
+            "kind": "fadeIn",
+            "target": "solids/ring/body/knot/2"
+          },
+          "from": 2.4266666666666667,
+          "to": 2.466666666666667
+        },
+        {
+          "entry": {
+            "kind": "fadeIn",
+            "target": "solids/ring/body/knot/3"
+          },
+          "from": 2.44,
+          "to": 2.48
+        },
+        {
+          "entry": {
+            "kind": "fadeIn",
+            "target": "solids/ring/body/knot/4"
+          },
+          "from": 2.453333333333333,
+          "to": 2.493333333333333
+        },
+        {
+          "entry": {
+            "kind": "fadeIn",
+            "target": "solids/ring/body/knot/5"
+          },
+          "from": 2.466666666666667,
+          "to": 2.506666666666667
+        },
+        {
+          "entry": {
+            "kind": "fadeIn",
+            "target": "solids/ring/body/knot/6"
+          },
+          "from": 2.48,
+          "to": 2.52
+        },
+        {
+          "entry": {
+            "kind": "fadeIn",
+            "target": "solids/ring/body/knot/7"
+          },
+          "from": 2.493333333333333,
+          "to": 2.533333333333333
+        },
+        {
+          "entry": {
+            "kind": "fadeIn",
+            "target": "solids/ring/body/knot/8"
+          },
+          "from": 2.5066666666666664,
+          "to": 2.5466666666666664
+        },
+        {
+          "entry": {
+            "kind": "fadeIn",
+            "target": "solids/ring/body/knot/9"
+          },
+          "from": 2.52,
+          "to": 2.56
+        },
+        {
+          "entry": {
+            "kind": "fadeIn",
+            "target": "solids/ring/body/knot/10"
+          },
+          "from": 2.533333333333333,
+          "to": 2.5733333333333333
+        },
+        {
+          "entry": {
+            "kind": "fadeIn",
+            "target": "solids/ring/body/knot/11"
+          },
+          "from": 2.5466666666666664,
+          "to": 2.5866666666666664
+        },
+        {
+          "entry": {
+            "kind": "fadeIn",
+            "target": "solids/ring/body/knot/12"
+          },
+          "from": 2.56,
+          "to": 2.6
+        },
+        {
+          "entry": {
+            "kind": "fadeIn",
+            "target": "solids/ring/body/knot/13"
+          },
+          "from": 2.5733333333333333,
+          "to": 2.6133333333333333
+        },
+        {
+          "entry": {
+            "kind": "fadeIn",
+            "target": "solids/ring/body/knot/14"
+          },
+          "from": 2.5866666666666664,
+          "to": 2.6266666666666665
+        },
+        {
+          "entry": {
+            "kind": "fadeIn",
+            "target": "solids/ring/body/knot/15"
+          },
+          "from": 2.6,
+          "to": 2.64
+        },
+        {
+          "entry": {
+            "kind": "fadeIn",
+            "target": "solids/ring/body/knot/16"
+          },
+          "from": 2.6133333333333333,
+          "to": 2.6533333333333333
+        },
+        {
+          "entry": {
+            "kind": "fadeIn",
+            "target": "solids/ring/body/knot/17"
+          },
+          "from": 2.6266666666666665,
+          "to": 2.6666666666666665
+        },
+        {
+          "entry": {
+            "kind": "fadeIn",
+            "target": "solids/ring/body/knot/18"
+          },
+          "from": 2.64,
+          "to": 2.68
+        },
+        {
+          "entry": {
+            "kind": "fadeIn",
+            "target": "solids/ring/body/knot/19"
+          },
+          "from": 2.6533333333333333,
+          "to": 2.6933333333333334
+        },
+        {
+          "entry": {
+            "kind": "fadeIn",
+            "target": "solids/ring/body/knot/20"
+          },
+          "from": 2.6666666666666665,
+          "to": 2.7066666666666666
+        },
+        {
+          "entry": {
+            "kind": "fadeIn",
+            "target": "solids/ring/body/knot/21"
+          },
+          "from": 2.6799999999999997,
+          "to": 2.7199999999999998
+        },
+        {
+          "entry": {
+            "kind": "fadeIn",
+            "target": "solids/ring/body/knot/22"
+          },
+          "from": 2.6933333333333334,
+          "to": 2.7333333333333334
+        },
+        {
+          "entry": {
+            "kind": "fadeIn",
+            "target": "solids/ring/body/knot/23"
+          },
+          "from": 2.7066666666666666,
+          "to": 2.7466666666666666
+        },
+        {
+          "entry": {
+            "kind": "fadeIn",
+            "target": "solids/ring/body/knot/24"
+          },
+          "from": 2.7199999999999998,
+          "to": 2.76
+        },
+        {
+          "entry": {
+            "kind": "fadeIn",
+            "target": "solids/ring/body/knot/25"
+          },
+          "from": 2.7333333333333334,
+          "to": 2.7733333333333334
+        },
+        {
+          "entry": {
+            "kind": "fadeIn",
+            "target": "solids/ring/body/knot/26"
+          },
+          "from": 2.7466666666666666,
+          "to": 2.7866666666666666
+        },
+        {
+          "entry": {
+            "kind": "fadeIn",
+            "target": "solids/ring/body/knot/27"
+          },
+          "from": 2.76,
+          "to": 2.8
+        },
+        {
+          "entry": {
+            "kind": "fadeIn",
+            "target": "solids/ring/body/knot/28"
+          },
+          "from": 2.7733333333333334,
+          "to": 2.8133333333333335
+        },
+        {
+          "entry": {
+            "kind": "fadeIn",
+            "target": "solids/ring/body/knot/29"
+          },
+          "from": 2.7866666666666666,
+          "to": 2.8266666666666667
+        },
+        {
+          "entry": {
+            "kind": "fadeIn",
+            "target": "solids/ring/body/knot/30"
+          },
+          "from": 2.8,
+          "to": 2.84
+        },
+        {
+          "entry": {
+            "kind": "fadeIn",
+            "target": "solids/ring/body/knot/31"
+          },
+          "from": 2.8133333333333335,
+          "to": 2.8533333333333335
+        },
+        {
+          "entry": {
+            "kind": "fadeIn",
+            "target": "solids/ring/body/knot/32"
+          },
+          "from": 2.8266666666666667,
+          "to": 2.8666666666666667
+        },
+        {
+          "entry": {
+            "kind": "fadeIn",
+            "target": "solids/ring/body/knot/33"
+          },
+          "from": 2.84,
+          "to": 2.88
+        },
+        {
+          "entry": {
+            "kind": "fadeIn",
+            "target": "solids/ring/body/knot/34"
+          },
+          "from": 2.8533333333333335,
+          "to": 2.8933333333333335
+        },
+        {
+          "entry": {
+            "kind": "fadeIn",
+            "target": "solids/ring/body/knot/35"
+          },
+          "from": 2.8666666666666667,
+          "to": 2.9066666666666667
+        },
+        {
+          "entry": {
+            "kind": "fadeIn",
+            "target": "solids/ring/body/knot/36"
+          },
+          "from": 2.88,
+          "to": 2.92
+        },
+        {
+          "entry": {
+            "kind": "fadeIn",
+            "target": "solids/ring/body/knot/37"
+          },
+          "from": 2.893333333333333,
+          "to": 2.933333333333333
+        },
+        {
+          "entry": {
+            "kind": "fadeIn",
+            "target": "solids/ring/body/knot/38"
+          },
+          "from": 2.9066666666666667,
+          "to": 2.9466666666666668
+        },
+        {
+          "entry": {
+            "kind": "fadeIn",
+            "target": "solids/ring/body/knot/39"
+          },
+          "from": 2.92,
+          "to": 2.96
+        },
+        {
+          "entry": {
+            "kind": "fadeIn",
+            "target": "solids/ring/body/knot/40"
+          },
+          "from": 2.933333333333333,
+          "to": 2.973333333333333
+        },
+        {
+          "entry": {
+            "kind": "fadeIn",
+            "target": "solids/ring/body/knot/41"
+          },
+          "from": 2.9466666666666668,
+          "to": 2.986666666666667
+        },
+        {
+          "entry": {
+            "kind": "fadeIn",
+            "target": "solids/ring/body/knot/42"
+          },
+          "from": 2.96,
+          "to": 3
+        },
+        {
+          "entry": {
+            "kind": "fadeIn",
+            "target": "solids/ring/body/knot/43"
+          },
+          "from": 2.973333333333333,
+          "to": 3.013333333333333
+        },
+        {
+          "entry": {
+            "kind": "fadeIn",
+            "target": "solids/ring/body/knot/44"
+          },
+          "from": 2.9866666666666664,
+          "to": 3.0266666666666664
+        },
+        {
+          "entry": {
+            "kind": "fadeIn",
+            "target": "solids/ring/body/knot/45"
+          },
+          "from": 3,
+          "to": 3.04
+        },
+        {
+          "entry": {
+            "kind": "fadeIn",
+            "target": "solids/ring/body/knot/46"
+          },
+          "from": 3.013333333333333,
+          "to": 3.0533333333333332
+        },
+        {
+          "entry": {
+            "kind": "fadeIn",
+            "target": "solids/ring/body/knot/47"
+          },
+          "from": 3.0266666666666664,
+          "to": 3.0666666666666664
+        },
+        {
+          "entry": {
+            "kind": "fadeIn",
+            "target": "solids/ring/body/knot/48"
+          },
+          "from": 3.04,
+          "to": 3.08
+        },
+        {
+          "entry": {
+            "kind": "fadeIn",
+            "target": "solids/ring/body/knot/49"
+          },
+          "from": 3.0533333333333332,
+          "to": 3.0933333333333333
+        },
+        {
+          "entry": {
+            "kind": "fadeIn",
+            "target": "solids/ring/body/knot/50"
+          },
+          "from": 3.0666666666666664,
+          "to": 3.1066666666666665
+        },
+        {
+          "entry": {
+            "kind": "fadeIn",
+            "target": "solids/ring/body/knot/51"
+          },
+          "from": 3.08,
+          "to": 3.12
+        },
+        {
+          "entry": {
+            "kind": "fadeIn",
+            "target": "solids/ring/body/knot/52"
+          },
+          "from": 3.0933333333333333,
+          "to": 3.1333333333333333
+        },
+        {
+          "entry": {
+            "kind": "fadeIn",
+            "target": "solids/ring/body/knot/53"
+          },
+          "from": 3.1066666666666665,
+          "to": 3.1466666666666665
+        },
+        {
+          "entry": {
+            "kind": "fadeIn",
+            "target": "solids/ring/body/knot/54"
+          },
+          "from": 3.12,
+          "to": 3.16
+        },
+        {
+          "entry": {
+            "kind": "fadeIn",
+            "target": "solids/ring/body/knot/55"
+          },
+          "from": 3.1333333333333333,
+          "to": 3.1733333333333333
+        },
+        {
+          "entry": {
+            "kind": "fadeIn",
+            "target": "solids/ring/body/knot/56"
+          },
+          "from": 3.1466666666666665,
+          "to": 3.1866666666666665
+        },
+        {
+          "entry": {
+            "kind": "fadeIn",
+            "target": "solids/ring/body/knot/57"
+          },
+          "from": 3.16,
+          "to": 3.2
+        },
+        {
+          "entry": {
+            "kind": "fadeIn",
+            "target": "solids/ring/body/knot/58"
+          },
+          "from": 3.1733333333333333,
+          "to": 3.2133333333333334
+        },
+        {
+          "entry": {
+            "kind": "fadeIn",
+            "target": "solids/ring/body/knot/59"
+          },
+          "from": 3.1866666666666665,
+          "to": 3.2266666666666666
+        },
+        {
+          "entry": {
+            "kind": "fadeIn",
+            "target": "solids/ring/body/knot/60"
+          },
+          "from": 3.2,
+          "to": 3.24
+        },
+        {
+          "entry": {
+            "kind": "fadeIn",
+            "target": "solids/ring/body/knot/61"
+          },
+          "from": 3.2133333333333334,
+          "to": 3.2533333333333334
+        },
+        {
+          "entry": {
+            "kind": "fadeIn",
+            "target": "solids/ring/body/knot/62"
+          },
+          "from": 3.2266666666666666,
+          "to": 3.2666666666666666
+        },
+        {
+          "entry": {
+            "kind": "fadeIn",
+            "target": "solids/ring/body/knot/63"
+          },
+          "from": 3.24,
+          "to": 3.2800000000000002
+        },
+        {
+          "entry": {
+            "kind": "fadeIn",
+            "target": "solids/ring/body/knot/64"
+          },
+          "from": 3.2533333333333334,
+          "to": 3.2933333333333334
+        },
+        {
+          "entry": {
+            "kind": "fadeIn",
+            "target": "solids/ring/body/knot/65"
+          },
+          "from": 3.2666666666666666,
+          "to": 3.3066666666666666
+        },
+        {
+          "entry": {
+            "kind": "fadeIn",
+            "target": "solids/ring/body/knot/66"
+          },
+          "from": 3.28,
+          "to": 3.32
+        },
+        {
+          "entry": {
+            "kind": "fadeIn",
+            "target": "solids/ring/body/knot/67"
+          },
+          "from": 3.2933333333333334,
+          "to": 3.3333333333333335
+        },
+        {
+          "entry": {
+            "kind": "fadeIn",
+            "target": "solids/ring/body/knot/68"
+          },
+          "from": 3.3066666666666666,
+          "to": 3.3466666666666667
+        },
+        {
+          "entry": {
+            "kind": "fadeIn",
+            "target": "solids/ring/body/knot/69"
+          },
+          "from": 3.32,
+          "to": 3.36
+        },
+        {
+          "entry": {
+            "kind": "fadeIn",
+            "target": "solids/ring/body/knot/70"
+          },
+          "from": 3.333333333333333,
+          "to": 3.373333333333333
+        },
+        {
+          "entry": {
+            "kind": "fadeIn",
+            "target": "solids/ring/body/knot/71"
+          },
+          "from": 3.3466666666666667,
+          "to": 3.3866666666666667
+        },
+        {
+          "entry": {
+            "kind": "fadeIn",
+            "target": "solids/ring/body/knot/72"
+          },
+          "from": 3.36,
+          "to": 3.4
+        },
+        {
+          "entry": {
+            "kind": "fadeIn",
+            "target": "solids/ring/body/knot/73"
+          },
+          "from": 3.373333333333333,
+          "to": 3.413333333333333
+        },
+        {
+          "entry": {
+            "kind": "fadeIn",
+            "target": "solids/ring/body/knot/74"
+          },
+          "from": 3.3866666666666667,
+          "to": 3.4266666666666667
+        },
+        {
+          "entry": {
+            "kind": "fadeIn",
+            "target": "solids/ring/body/knot/75"
+          },
+          "from": 3.4,
+          "to": 3.44
+        },
+        {
+          "entry": {
+            "kind": "fadeIn",
+            "target": "solids/ring/body/knot/76"
+          },
+          "from": 3.413333333333333,
+          "to": 3.453333333333333
+        },
+        {
+          "entry": {
+            "kind": "fadeIn",
+            "target": "solids/ring/body/knot/77"
+          },
+          "from": 3.4266666666666667,
+          "to": 3.466666666666667
+        },
+        {
+          "entry": {
+            "kind": "fadeIn",
+            "target": "solids/ring/body/knot/78"
+          },
+          "from": 3.44,
+          "to": 3.48
+        },
+        {
+          "entry": {
+            "kind": "fadeIn",
+            "target": "solids/ring/body/knot/79"
+          },
+          "from": 3.453333333333333,
+          "to": 3.493333333333333
+        },
+        {
+          "entry": {
+            "kind": "fadeIn",
+            "target": "solids/ring/body/knot/80"
+          },
+          "from": 3.466666666666667,
+          "to": 3.506666666666667
+        },
+        {
+          "entry": {
+            "kind": "fadeIn",
+            "target": "solids/ring/body/knot/81"
+          },
+          "from": 3.48,
+          "to": 3.52
+        },
+        {
+          "entry": {
+            "kind": "fadeIn",
+            "target": "solids/ring/body/knot/82"
+          },
+          "from": 3.493333333333333,
+          "to": 3.533333333333333
+        },
+        {
+          "entry": {
+            "kind": "fadeIn",
+            "target": "solids/ring/body/knot/83"
+          },
+          "from": 3.506666666666667,
+          "to": 3.546666666666667
+        },
+        {
+          "entry": {
+            "kind": "fadeIn",
+            "target": "solids/ring/body/knot/84"
+          },
+          "from": 3.52,
+          "to": 3.56
+        },
+        {
+          "entry": {
+            "kind": "fadeIn",
+            "target": "solids/ring/body/knot/85"
+          },
+          "from": 3.533333333333333,
+          "to": 3.5733333333333333
+        },
+        {
+          "entry": {
+            "kind": "fadeIn",
+            "target": "solids/ring/body/knot/86"
+          },
+          "from": 3.546666666666667,
+          "to": 3.586666666666667
+        },
+        {
+          "entry": {
+            "kind": "fadeIn",
+            "target": "solids/ring/body/knot/87"
+          },
+          "from": 3.56,
+          "to": 3.6
+        },
+        {
+          "entry": {
+            "kind": "fadeIn",
+            "target": "solids/ring/body/knot/88"
+          },
+          "from": 3.5733333333333333,
+          "to": 3.6133333333333333
+        },
+        {
+          "entry": {
+            "kind": "fadeIn",
+            "target": "solids/ring/body/knot/89"
+          },
+          "from": 3.586666666666667,
+          "to": 3.626666666666667
+        },
+        {
+          "entry": {
+            "kind": "fadeIn",
+            "target": "solids/ring/body/knot/90"
+          },
+          "from": 3.6,
+          "to": 3.64
+        },
+        {
+          "entry": {
+            "kind": "fadeIn",
+            "target": "solids/ring/body/knot/91"
+          },
+          "from": 3.6133333333333333,
+          "to": 3.6533333333333333
+        },
+        {
+          "entry": {
+            "kind": "fadeIn",
+            "target": "solids/ring/body/knot/92"
+          },
+          "from": 3.626666666666667,
+          "to": 3.666666666666667
+        },
+        {
+          "entry": {
+            "kind": "fadeIn",
+            "target": "solids/ring/body/knot/93"
+          },
+          "from": 3.6399999999999997,
+          "to": 3.6799999999999997
+        },
+        {
+          "entry": {
+            "kind": "fadeIn",
+            "target": "solids/ring/body/knot/94"
+          },
+          "from": 3.6533333333333333,
+          "to": 3.6933333333333334
+        },
+        {
+          "entry": {
+            "kind": "fadeIn",
+            "target": "solids/ring/body/knot/95"
+          },
+          "from": 3.666666666666667,
+          "to": 3.706666666666667
+        },
+        {
+          "entry": {
+            "kind": "fadeIn",
+            "target": "solids/ring/body/knot/96"
+          },
+          "from": 3.6799999999999997,
+          "to": 3.7199999999999998
+        },
+        {
+          "entry": {
+            "kind": "fadeIn",
+            "target": "solids/ring/body/knot/97"
+          },
+          "from": 3.6933333333333334,
+          "to": 3.7333333333333334
+        },
+        {
+          "entry": {
+            "kind": "fadeIn",
+            "target": "solids/ring/body/knot/98"
+          },
+          "from": 3.7066666666666666,
+          "to": 3.7466666666666666
+        },
+        {
+          "entry": {
+            "kind": "fadeIn",
+            "target": "solids/ring/body/knot/99"
+          },
+          "from": 3.7199999999999998,
+          "to": 3.76
+        },
+        {
+          "entry": {
+            "kind": "fadeIn",
+            "target": "solids/ring/body/knot/100"
+          },
+          "from": 3.7333333333333334,
+          "to": 3.7733333333333334
+        },
+        {
+          "entry": {
+            "kind": "fadeIn",
+            "target": "solids/ring/body/knot/101"
+          },
+          "from": 3.7466666666666666,
+          "to": 3.7866666666666666
+        },
+        {
+          "entry": {
+            "kind": "fadeIn",
+            "target": "solids/ring/body/knot/102"
+          },
+          "from": 3.76,
+          "to": 3.8
+        },
+        {
+          "entry": {
+            "kind": "fadeIn",
+            "target": "solids/ring/body/knot/103"
+          },
+          "from": 3.7733333333333334,
+          "to": 3.8133333333333335
+        },
+        {
+          "entry": {
+            "kind": "fadeIn",
+            "target": "solids/ring/body/knot/104"
+          },
+          "from": 3.7866666666666666,
+          "to": 3.8266666666666667
+        },
+        {
+          "entry": {
+            "kind": "fadeIn",
+            "target": "solids/ring/body/knot/105"
+          },
+          "from": 3.8,
+          "to": 3.84
+        },
+        {
+          "entry": {
+            "kind": "fadeIn",
+            "target": "solids/ring/body/knot/106"
+          },
+          "from": 3.8133333333333335,
+          "to": 3.8533333333333335
+        },
+        {
+          "entry": {
+            "kind": "fadeIn",
+            "target": "solids/ring/body/knot/107"
+          },
+          "from": 3.8266666666666667,
+          "to": 3.8666666666666667
+        },
+        {
+          "entry": {
+            "kind": "fadeIn",
+            "target": "solids/ring/body/knot/108"
+          },
+          "from": 3.84,
+          "to": 3.88
+        },
+        {
+          "entry": {
+            "kind": "fadeIn",
+            "target": "solids/ring/body/knot/109"
+          },
+          "from": 3.8533333333333335,
+          "to": 3.8933333333333335
+        },
+        {
+          "entry": {
+            "kind": "fadeIn",
+            "target": "solids/ring/body/knot/110"
+          },
+          "from": 3.8666666666666667,
+          "to": 3.9066666666666667
+        },
+        {
+          "entry": {
+            "kind": "fadeIn",
+            "target": "solids/ring/body/knot/111"
+          },
+          "from": 3.88,
+          "to": 3.92
+        },
+        {
+          "entry": {
+            "kind": "fadeIn",
+            "target": "solids/ring/body/knot/112"
+          },
+          "from": 3.8933333333333335,
+          "to": 3.9333333333333336
+        },
+        {
+          "entry": {
+            "kind": "fadeIn",
+            "target": "solids/ring/body/knot/113"
+          },
+          "from": 3.9066666666666667,
+          "to": 3.9466666666666668
+        },
+        {
+          "entry": {
+            "kind": "fadeIn",
+            "target": "solids/ring/body/knot/114"
+          },
+          "from": 3.92,
+          "to": 3.96
+        },
+        {
+          "entry": {
+            "kind": "fadeIn",
+            "target": "solids/ring/body/knot/115"
+          },
+          "from": 3.9333333333333336,
+          "to": 3.9733333333333336
+        },
+        {
+          "entry": {
+            "kind": "fadeIn",
+            "target": "solids/ring/body/knot/116"
+          },
+          "from": 3.9466666666666668,
+          "to": 3.986666666666667
+        },
+        {
+          "entry": {
+            "kind": "fadeIn",
+            "target": "solids/ring/body/knot/117"
+          },
+          "from": 3.96,
+          "to": 4
+        },
+        {
+          "entry": {
+            "kind": "fadeIn",
+            "target": "solids/ring/body/knot/118"
+          },
+          "from": 3.9733333333333336,
+          "to": 4.013333333333334
+        },
+        {
+          "entry": {
+            "kind": "fadeIn",
+            "target": "solids/ring/body/knot/119"
+          },
+          "from": 3.9866666666666664,
+          "to": 4.026666666666666
+        },
+        {
+          "entry": {
+            "kind": "fadeIn",
+            "target": "solids/title"
+          },
+          "from": 4.2,
+          "to": 4.8
+        }
+      ]
+    },
+    "tracks": {
+      "turn": [
+        {
+          "time": 0.1,
+          "value": 0
+        },
+        {
+          "time": 6,
+          "value": 1
+        }
+      ]
+    }
+  }
+}

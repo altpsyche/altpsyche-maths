@@ -353,7 +353,7 @@ describe('the specification as one document', () => {
 
   it('names each committed figure as a fixture, with the bytes it holds', () => {
     const inside = written.get('The fixtures') ?? '';
-    for (const name of ['tangent', 'surface', 'boolean', 'rotate', 'frame']) {
+    for (const name of ['tangent', 'surface', 'boolean', 'rotate', 'frame', 'portrait', 'solids']) {
       const file = `demos/${name}.figure.json`;
       expect(inside, file).toContain(file);
       const bytes = statSync(path.join(root, file)).size.toLocaleString('en-US');

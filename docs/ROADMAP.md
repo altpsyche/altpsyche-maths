@@ -1308,11 +1308,22 @@ shaded correctly, and their count is a measurement rather than a silence.
   leaves the cap out, which is what closes the join between two separate strokes. The producer gate
   reads seven rather than six and the specification's own sentence reads seven. The record draws the
   same 48 marks its own call draws under the comparison the package publishes over marks.
-- [ ] **10. The solids demo.** `demos/solids.ts` turns a sphere, a cube, a cylinder and a torus through
+- [x] **10. The solids demo.** `demos/solids.ts` turns a sphere, a cube, a cylinder and a torus through
   one turn on a track, with a helix drawn on the cylinder and a torus knot on the torus, both as pieces
-  in their panel's own scene. **The measurement**: the cell count of each solid, the piece count of each
-  curve, the marks at named times, the count of a curve's pieces painted behind its solid at a named
-  time, and the still and the strip regenerating byte for byte.
+  in their panel's own scene. **The measurement**: 1065 marks at every named time, of which 0 are drawn
+  at the opening, 848 at 1.3 seconds, 940 at 2.6, 1049 at 3.8 and 1065 at the still. The four solids
+  are 844 cells, 196 for the sphere at 14 steps, 24 for the cube at 2, 300 for the cylinder at 10 and
+  324 for the torus at 18, and the two curves are 96 pieces and 120. Every one of the cylinder's 300
+  cells stands between the first piece of the helix and the last in a panel of 396 marks, and every one
+  of the torus's 324 between the first piece of the trefoil and the last in a panel of 444. The trefoil
+  is on the torus its standoff names to under 1e-15. `demos/solids.figure.json` is 82,783 bytes and is
+  the seventh fixture of the conformance suite.
+
+  **A curve at the solid's own radius has no order against it**, which the plan did not foresee: the
+  helix and the cells under it read one depth, the sort fell to the order they were given, and the
+  curve came out broken into dashes on the near side as well as the far. Each curve stands off its
+  solid, the helix by 0.07 figure units and the trefoil by 0.045, which is what the counts above are
+  measured at.
 - [ ] **11. The reference, the guide, the reasoning, and 2.2.0 cut.** `docs/REFERENCE.md` names every new
   door name, `docs/GUIDE.md` gains the section that draws a curve no function of x describes,
   `docs/FIGURE-FORMAT.md` carries why an implicit curve's count is not fixed, and the version is bumped

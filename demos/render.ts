@@ -35,6 +35,11 @@ import {
 } from './portrait.js';
 import { stripMarks as frameStripMarks, written as frameWritten } from './frame.js';
 import {
+  FRAMES as SOLIDS_FRAMES,
+  stripMarks as solidsStripMarks,
+  written as solidsWritten,
+} from './solids.js';
+import {
   FRAMES as SOLID_FRAMES,
   stripMarks as solidStripMarks,
   written as solidWritten,
@@ -178,6 +183,10 @@ export const sheets: readonly Sheet[] = [
   sheetOf('docs/portrait-strip.svg', () =>
     stripDrawn(portraitStripMarks(PORTRAIT_FRAMES, 2, fileFor('demos/portrait.figure.json')))
   ),
+  sheetOf('docs/solids.svg', () => stillDrawn(fileFor('demos/solids.figure.json'))),
+  sheetOf('docs/solids-strip.svg', () =>
+    stripDrawn(solidsStripMarks(SOLIDS_FRAMES, 2, fileFor('demos/solids.figure.json')))
+  ),
   sheetOf('docs/frame.svg', () => stillDrawn(fileFor('demos/frame.figure.json'))),
   sheetOf('docs/frame-strip.svg', () => {
     const figure = fileFor('demos/frame.figure.json');
@@ -197,5 +206,6 @@ export const figures: readonly { file: string; text: () => string }[] = [
   { file: 'demos/rotate.figure.json', text: () => writeFigure(turnsWritten) },
   { file: 'demos/surface.figure.json', text: () => writeFigure(solidWritten) },
   { file: 'demos/portrait.figure.json', text: () => writeFigure(portraitWritten) },
+  { file: 'demos/solids.figure.json', text: () => writeFigure(solidsWritten) },
   { file: 'demos/frame.figure.json', text: () => writeFigure(frameWritten) },
 ];

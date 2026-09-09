@@ -125,11 +125,16 @@ fix, so it cannot be a morph's source.
 
 <img src="https://raw.githubusercontent.com/altpsyche/altpsyche-maths/master/docs/surface.svg" width="720" alt="A saddle-shaped surface drawn as a grid of shaded cells, with a flat pane cutting through it at one height and the two branches of the curve where they meet drawn in orange along the surface. Blue arrows across the pane show the way the saddle falls and three green runs of steepest descent are drawn on it.">
 
+<img src="https://raw.githubusercontent.com/altpsyche/altpsyche-maths/master/docs/solids.svg" width="640" alt="Four panels: a shaded sphere, a shaded cube, a cylinder with an orange helix wound three times round it, and a torus with a blue trefoil knot wound through its hole. Each curve passes behind its solid on the far side and in front of it on the near side.">
+
 `sphere3`, `cube3`, `cylinder3` and `torus3` are cells over a parametrisation run in the order that
 faces every cell away from the solid, each also available as cells for a scene to sort among its own.
 A flat cell falls inside a sphere's true radius by 417.5, 106.4 and 26.7 parts in ten thousand at 12,
 24 and 48 steps. `curveOf3` reads a curve in space from one parameter, which is the third point
-producer beside `sectionOf` and `streamlineOf`.
+producer beside `sectionOf` and `streamlineOf`. `curvePieces3` cuts that curve into one entry per
+step, so a helix round a cylinder is sorted against the cylinder's own cells: all 300 of them stand
+between the first piece of the helix and the last, where a curve sorted whole is one mark at one depth
+and is painted entirely in front of the solid or entirely behind it.
 
 `camera3` holds an eye, a target, an up vector, a view matrix and a projection. `perspective` and
 `orthographic` supply the projection; the orthographic case is a scale rather than a divide and

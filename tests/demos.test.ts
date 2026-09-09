@@ -61,6 +61,14 @@ import {
   coords as portraitCoords,
   portrait,
 } from '../demos/portrait.js';
+import {
+  FRAMES as SOLIDS_FRAMES,
+  LIFT,
+  PIECES,
+  STEPS,
+  STILL as SOLIDS_STILL,
+  solids,
+} from '../demos/solids.js';
 import { FAMILY, WEIGHT } from '../demos/typeface.js';
 import {
   FRAMES as SOLID_FRAMES,
@@ -415,7 +423,7 @@ describe('the committed pictures', () => {
     }
   });
 
-  it('are all twelve there', () => {
+  it('are all fourteen there', () => {
     expect(sheets.map((sheet) => sheet.file)).toEqual([
       'docs/tangent.svg',
       'docs/tangent-strip.svg',
@@ -427,6 +435,8 @@ describe('the committed pictures', () => {
       'docs/surface-strip.svg',
       'docs/portrait.svg',
       'docs/portrait-strip.svg',
+      'docs/solids.svg',
+      'docs/solids-strip.svg',
       'docs/frame.svg',
       'docs/frame-strip.svg',
     ]);
@@ -1681,5 +1691,69 @@ describe('the portrait demo', () => {
     // turn, which is where a curve sampled evenly in the angle is coarsest.
     expect(worst.inward).toBeLessThan(5e-6);
     expect(worst.outward).toBeLessThan(3e-4);
+  });
+});
+
+describe('the solids demo', () => {
+  const named = (seconds: number, id: string) =>
+    marksAt(solids, seconds).filter((mark) => mark.id.startsWith(`solids/${id}/`));
+
+  const seen = (seconds: number) => marksAt(solids, seconds).filter((mark) => (mark.opacity ?? 1) > 0.01);
+
+  it('draws the same count of marks at every time and holds none of them back', () => {
+    for (const seconds of [0, ...SOLIDS_FRAMES]) expect(marksAt(solids, seconds)).toHaveLength(1065);
+  });
+
+  it('opens on nothing and arrives one solid and one piece of curve at a time', () => {
+    expect(seen(0)).toHaveLength(0);
+    expect(seen(SOLIDS_FRAMES[0])).toHaveLength(848);
+    expect(seen(SOLIDS_FRAMES[1])).toHaveLength(940);
+    expect(seen(SOLIDS_FRAMES[2])).toHaveLength(1049);
+    expect(seen(SOLIDS_STILL)).toHaveLength(1065);
+  });
+
+  it('cuts each solid into the cells its own steps ask for', () => {
+    const cells = (panel: string) => named(SOLIDS_STILL, `${panel}/body/skin`).length;
+    expect(cells('ball')).toBe(STEPS.sphere * STEPS.sphere);
+    expect(cells('box')).toBe(6 * STEPS.cube * STEPS.cube);
+    expect(cells('can')).toBe(3 * STEPS.cylinder * STEPS.cylinder);
+    expect(cells('ring')).toBe(STEPS.torus * STEPS.torus);
+    expect(cells('ball') + cells('box') + cells('can') + cells('ring')).toBe(844);
+  });
+
+  it('cuts each curve into the pieces its own count asks for', () => {
+    expect(named(SOLIDS_STILL, 'can/body/coil')).toHaveLength(PIECES.coil);
+    expect(named(SOLIDS_STILL, 'ring/body/knot')).toHaveLength(PIECES.knot);
+  });
+
+  it('sorts every cell of a solid between the first piece of its curve and the last', () => {
+    // A curve sorted whole would be one contiguous run of marks at one depth, so
+    // no cell of the solid could stand between two of its pieces and the half of
+    // the curve behind the solid would be painted over it.
+    const spread = (panel: string, curve: string) => {
+      const inside = marksAt(solids, SOLIDS_STILL)
+        .map((mark) => mark.id)
+        .filter((id) => id.startsWith(`solids/${panel}/body/`));
+      const places = inside.flatMap((id, at) => (id.startsWith(`solids/${panel}/body/${curve}/`) ? [at] : []));
+      return { run: inside.length, between: places[places.length - 1] - places[0] + 1 - places.length };
+    };
+    expect(spread('can', 'coil')).toEqual({ run: 396, between: 300 });
+    expect(spread('ring', 'knot')).toEqual({ run: 444, between: 324 });
+  });
+
+  it('winds the trefoil on the torus it is drawn round, at the standoff it is lifted by', () => {
+    const RING = 0.78;
+    const TUBE = 0.36;
+    let worst = 0;
+    for (let step = 0; step <= 1200; step += 1) {
+      const t = step / 1200;
+      const round = 3 * 2 * Math.PI * t;
+      const about = 2 * 2 * Math.PI * t;
+      const reach = RING + (TUBE + LIFT.knot) * Math.cos(round);
+      const height = (TUBE + LIFT.knot) * Math.sin(round);
+      const from = Math.hypot(Math.hypot(reach * Math.cos(about), reach * Math.sin(about)) - RING, height);
+      worst = Math.max(worst, Math.abs(from - (TUBE + LIFT.knot)));
+    }
+    expect(worst).toBeLessThan(1e-15);
   });
 });
