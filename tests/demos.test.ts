@@ -37,6 +37,7 @@ import {
   viewAt,
   widthAt,
   type Figure,
+  pointOn,
   type Mark,
   type Taper,
   type Vec2,
@@ -53,6 +54,13 @@ import {
   stillMarkup,
 } from '../demos/render.js';
 import { ADVANCE, CAP, bareShare } from '../demos/cover.js';
+import {
+  FRAMES as PORTRAIT_FRAMES,
+  SEEDS as PORTRAIT_SEEDS,
+  STILL as PORTRAIT_STILL,
+  coords as portraitCoords,
+  portrait,
+} from '../demos/portrait.js';
 import { FAMILY, WEIGHT } from '../demos/typeface.js';
 import {
   FRAMES as SOLID_FRAMES,
@@ -407,7 +415,7 @@ describe('the committed pictures', () => {
     }
   });
 
-  it('are all ten there', () => {
+  it('are all twelve there', () => {
     expect(sheets.map((sheet) => sheet.file)).toEqual([
       'docs/tangent.svg',
       'docs/tangent-strip.svg',
@@ -417,6 +425,8 @@ describe('the committed pictures', () => {
       'docs/rotate-strip.svg',
       'docs/surface.svg',
       'docs/surface-strip.svg',
+      'docs/portrait.svg',
+      'docs/portrait-strip.svg',
       'docs/frame.svg',
       'docs/frame-strip.svg',
     ]);
@@ -1564,5 +1574,112 @@ describe("the demos' palette", () => {
     ] as const) {
       expect(colour).toEqual(colourFrom(THEME[name as keyof typeof THEME].light, name));
     }
+  });
+});
+
+describe('the portrait demo', () => {
+  /** The demo's own marks under one name at a time, read off the committed file
+   * rather than off the module that wrote it. */
+  const named = (seconds: number, id: string) =>
+    marksAt(portrait, seconds).filter((mark) => mark.id === `portrait/${id}` || mark.id.startsWith(`portrait/${id}/`));
+
+  const seen = (seconds: number) => marksAt(portrait, seconds).filter((mark) => (mark.opacity ?? 1) > 0.01);
+
+  it('draws the same count of marks at every time and holds none of them back', () => {
+    // A mark an animation introduces exists at every fraction, at no opacity
+    // where it is not yet drawn, so a frame-to-frame comparison reports nothing
+    // arriving.
+    for (const seconds of [0, ...PORTRAIT_FRAMES]) expect(marksAt(portrait, seconds)).toHaveLength(305);
+  });
+
+  it('opens on nothing and arrives one piece at a time', () => {
+    expect(seen(0)).toHaveLength(0);
+    expect(seen(PORTRAIT_FRAMES[0])).toHaveLength(300);
+    expect(seen(PORTRAIT_FRAMES[1])).toHaveLength(302);
+    expect(seen(PORTRAIT_FRAMES[2])).toHaveLength(303);
+    expect(seen(PORTRAIT_STILL)).toHaveLength(305);
+  });
+
+  it('draws the limit cycle as one closed run that no function of x could write', () => {
+    const cycle = named(PORTRAIT_STILL, 'cycle');
+    expect(cycle).toHaveLength(1);
+    const mark = cycle[0];
+    expect(mark.kind).toBe('path');
+    if (mark.kind !== 'path') return;
+    expect(mark.path).toHaveLength(1);
+    expect(mark.path[0].closed).toBe(true);
+    expect(mark.path[0].curves).toHaveLength(96);
+  });
+
+  it('holds the limit cycle to the radius the flow settles on', () => {
+    const mark = named(PORTRAIT_STILL, 'cycle')[0];
+    if (mark.kind !== 'path') throw new Error('the limit cycle is a path');
+    let low = Infinity;
+    let high = -Infinity;
+    for (const subpath of mark.path) {
+      let from = subpath.start;
+      for (const piece of subpath.curves) {
+        for (let at = 0; at <= 32; at++) {
+          const drawn = pointOn(from, piece, at / 32);
+          const radius = Math.hypot(
+            interval.remap(drawn.x, portraitCoords.x.units, portraitCoords.x.graph),
+            interval.remap(drawn.y, portraitCoords.y.units, portraitCoords.y.graph)
+          );
+          low = Math.min(low, radius);
+          high = Math.max(high, radius);
+        }
+        from = piece.to;
+      }
+    }
+    // A Hermite cubic through samples of a circle bulges inward between them, so
+    // the drawn edge is never over the true radius.
+    expect((low - 1) * 1e4).toBeGreaterThan(-0.005);
+    expect((high - 1) * 1e4).toBeLessThan(0.001);
+  });
+
+  it('draws each nullcline as the one run the level set makes', () => {
+    for (const name of ['nullX', 'nullY']) {
+      const mark = named(PORTRAIT_STILL, name)[0];
+      expect(mark.kind).toBe('path');
+      if (mark.kind !== 'path') return;
+      expect(mark.path).toHaveLength(1);
+      expect(mark.path[0].closed).toBe(false);
+    }
+  });
+
+  it('draws the spirals the flow itself walks', () => {
+    // The system in polar coordinates is r' = r(1 - r²) and θ' = 1, so a run
+    // walked through the field by Runge-Kutta traces the curve the closed form
+    // draws. The gap is what says the two are the same curve.
+    const system = (at: Vec2) => {
+      const square = at.x * at.x + at.y * at.y;
+      return vec2(at.x - at.y - at.x * square, at.x + at.y - at.y * square);
+    };
+    const bounds = { x: portraitCoords.x.graph, y: portraitCoords.y.graph };
+    const worst: Record<string, number> = {};
+    for (const [name, from] of Object.entries(PORTRAIT_SEEDS)) {
+      const mark = named(PORTRAIT_STILL, name)[0];
+      if (mark.kind !== 'path') throw new Error('a spiral is a path');
+      const drawn = flattenPath(mark.path, { tolerance: 1e-7 });
+      let gap = 0;
+      for (const place of streamlineOf(system, vec2(from, 0), {
+        step: 0.005,
+        steps: 1800,
+        direction: 'forward',
+        within: bounds,
+      })) {
+        const at = vec2(
+          interval.remap(place.x, portraitCoords.x.graph, portraitCoords.x.units),
+          interval.remap(place.y, portraitCoords.y.graph, portraitCoords.y.units)
+        );
+        const near = nearestEdge(drawn, at);
+        if (near) gap = Math.max(gap, near.gap);
+      }
+      worst[name] = gap;
+    }
+    // The run starting outside falls from 1.9 to near 1 inside its first half
+    // turn, which is where a curve sampled evenly in the angle is coarsest.
+    expect(worst.inward).toBeLessThan(5e-6);
+    expect(worst.outward).toBeLessThan(3e-4);
   });
 });

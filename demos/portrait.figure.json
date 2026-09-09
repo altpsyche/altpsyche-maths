@@ -1,0 +1,909 @@
+{
+  "format": 0,
+  "figure": {
+    "extent": {
+      "height": 6.4,
+      "width": 6.4
+    },
+    "fit": "contain",
+    "scene": {
+      "children": [
+        {
+          "coords": {
+            "x": {
+              "graph": {
+                "from": -2.2,
+                "to": 2.2
+              },
+              "units": {
+                "from": -2.6,
+                "to": 2.6
+              }
+            },
+            "y": {
+              "graph": {
+                "from": -2.2,
+                "to": 2.2
+              },
+              "units": {
+                "from": -2.6,
+                "to": 2.6
+              }
+            }
+          },
+          "kind": "numberPlane",
+          "name": "grid",
+          "options": {
+            "minorOpacity": 0.45,
+            "minors": 4,
+            "stroke": {
+              "colour": {
+                "a": 1,
+                "b": 192,
+                "g": 185,
+                "name": "mist",
+                "r": 180
+              },
+              "width": 0.012
+            }
+          }
+        },
+        {
+          "coords": {
+            "x": {
+              "graph": {
+                "from": -2.2,
+                "to": 2.2
+              },
+              "units": {
+                "from": -2.6,
+                "to": 2.6
+              }
+            },
+            "y": {
+              "graph": {
+                "from": -2.2,
+                "to": 2.2
+              },
+              "units": {
+                "from": -2.6,
+                "to": 2.6
+              }
+            }
+          },
+          "kind": "axes",
+          "name": "axes",
+          "options": {
+            "fill": {
+              "colour": {
+                "a": 1,
+                "b": 27,
+                "g": 27,
+                "name": "ink",
+                "r": 27
+              }
+            },
+            "size": 0.3,
+            "stroke": {
+              "colour": {
+                "a": 1,
+                "b": 27,
+                "g": 27,
+                "name": "ink",
+                "r": 27
+              },
+              "width": 0.02
+            },
+            "tip": 0.16
+          }
+        },
+        {
+          "coords": {
+            "x": {
+              "graph": {
+                "from": -2.2,
+                "to": 2.2
+              },
+              "units": {
+                "from": -2.6,
+                "to": 2.6
+              }
+            },
+            "y": {
+              "graph": {
+                "from": -2.2,
+                "to": 2.2
+              },
+              "units": {
+                "from": -2.6,
+                "to": 2.6
+              }
+            }
+          },
+          "kind": "vectorField",
+          "name": "field",
+          "of": {
+            "kind": "point",
+            "x": {
+              "kind": "arithmetic",
+              "left": {
+                "kind": "arithmetic",
+                "left": {
+                  "kind": "member",
+                  "name": "x",
+                  "of": {
+                    "kind": "variable",
+                    "name": "at"
+                  }
+                },
+                "operator": "-",
+                "right": {
+                  "kind": "member",
+                  "name": "y",
+                  "of": {
+                    "kind": "variable",
+                    "name": "at"
+                  }
+                }
+              },
+              "operator": "-",
+              "right": {
+                "kind": "arithmetic",
+                "left": {
+                  "kind": "member",
+                  "name": "x",
+                  "of": {
+                    "kind": "variable",
+                    "name": "at"
+                  }
+                },
+                "operator": "*",
+                "right": {
+                  "kind": "arithmetic",
+                  "left": {
+                    "kind": "arithmetic",
+                    "left": {
+                      "kind": "member",
+                      "name": "x",
+                      "of": {
+                        "kind": "variable",
+                        "name": "at"
+                      }
+                    },
+                    "operator": "*",
+                    "right": {
+                      "kind": "member",
+                      "name": "x",
+                      "of": {
+                        "kind": "variable",
+                        "name": "at"
+                      }
+                    }
+                  },
+                  "operator": "+",
+                  "right": {
+                    "kind": "arithmetic",
+                    "left": {
+                      "kind": "member",
+                      "name": "y",
+                      "of": {
+                        "kind": "variable",
+                        "name": "at"
+                      }
+                    },
+                    "operator": "*",
+                    "right": {
+                      "kind": "member",
+                      "name": "y",
+                      "of": {
+                        "kind": "variable",
+                        "name": "at"
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "y": {
+              "kind": "arithmetic",
+              "left": {
+                "kind": "arithmetic",
+                "left": {
+                  "kind": "member",
+                  "name": "x",
+                  "of": {
+                    "kind": "variable",
+                    "name": "at"
+                  }
+                },
+                "operator": "+",
+                "right": {
+                  "kind": "member",
+                  "name": "y",
+                  "of": {
+                    "kind": "variable",
+                    "name": "at"
+                  }
+                }
+              },
+              "operator": "-",
+              "right": {
+                "kind": "arithmetic",
+                "left": {
+                  "kind": "member",
+                  "name": "y",
+                  "of": {
+                    "kind": "variable",
+                    "name": "at"
+                  }
+                },
+                "operator": "*",
+                "right": {
+                  "kind": "arithmetic",
+                  "left": {
+                    "kind": "arithmetic",
+                    "left": {
+                      "kind": "member",
+                      "name": "x",
+                      "of": {
+                        "kind": "variable",
+                        "name": "at"
+                      }
+                    },
+                    "operator": "*",
+                    "right": {
+                      "kind": "member",
+                      "name": "x",
+                      "of": {
+                        "kind": "variable",
+                        "name": "at"
+                      }
+                    }
+                  },
+                  "operator": "+",
+                  "right": {
+                    "kind": "arithmetic",
+                    "left": {
+                      "kind": "member",
+                      "name": "y",
+                      "of": {
+                        "kind": "variable",
+                        "name": "at"
+                      }
+                    },
+                    "operator": "*",
+                    "right": {
+                      "kind": "member",
+                      "name": "y",
+                      "of": {
+                        "kind": "variable",
+                        "name": "at"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "options": {
+            "colourFor": {
+              "first": {
+                "a": 1,
+                "b": 248,
+                "g": 189,
+                "name": "sky",
+                "r": 56
+              },
+              "kind": "bands",
+              "then": [
+                {
+                  "above": 1.6,
+                  "colour": {
+                    "a": 1,
+                    "b": 9,
+                    "g": 83,
+                    "name": "amber",
+                    "r": 180
+                  }
+                }
+              ]
+            },
+            "head": 0.1,
+            "lengthOf": {
+              "kind": "arithmetic",
+              "left": {
+                "kind": "arithmetic",
+                "left": 0.2,
+                "operator": "*",
+                "right": {
+                  "kind": "variable",
+                  "name": "magnitude"
+                }
+              },
+              "operator": "/",
+              "right": {
+                "kind": "arithmetic",
+                "left": 0.55,
+                "operator": "+",
+                "right": {
+                  "kind": "variable",
+                  "name": "magnitude"
+                }
+              }
+            },
+            "resolution": 11,
+            "width": 0.024
+          }
+        },
+        {
+          "kind": "shape",
+          "name": "nullX",
+          "path": {
+            "coords": {
+              "x": {
+                "graph": {
+                  "from": -2.2,
+                  "to": 2.2
+                },
+                "units": {
+                  "from": -2.6,
+                  "to": 2.6
+                }
+              },
+              "y": {
+                "graph": {
+                  "from": -2.2,
+                  "to": 2.2
+                },
+                "units": {
+                  "from": -2.6,
+                  "to": 2.6
+                }
+              }
+            },
+            "kind": "implicit",
+            "of": {
+              "kind": "arithmetic",
+              "left": {
+                "kind": "arithmetic",
+                "left": {
+                  "kind": "variable",
+                  "name": "x"
+                },
+                "operator": "-",
+                "right": {
+                  "kind": "variable",
+                  "name": "y"
+                }
+              },
+              "operator": "-",
+              "right": {
+                "kind": "arithmetic",
+                "left": {
+                  "kind": "variable",
+                  "name": "x"
+                },
+                "operator": "*",
+                "right": {
+                  "kind": "arithmetic",
+                  "left": {
+                    "kind": "arithmetic",
+                    "left": {
+                      "kind": "variable",
+                      "name": "x"
+                    },
+                    "operator": "*",
+                    "right": {
+                      "kind": "variable",
+                      "name": "x"
+                    }
+                  },
+                  "operator": "+",
+                  "right": {
+                    "kind": "arithmetic",
+                    "left": {
+                      "kind": "variable",
+                      "name": "y"
+                    },
+                    "operator": "*",
+                    "right": {
+                      "kind": "variable",
+                      "name": "y"
+                    }
+                  }
+                }
+              }
+            },
+            "resolution": 48
+          },
+          "style": {
+            "stroke": {
+              "colour": {
+                "a": 1,
+                "b": 61,
+                "g": 128,
+                "name": "moss",
+                "r": 21
+              },
+              "width": 0.026
+            }
+          }
+        },
+        {
+          "kind": "shape",
+          "name": "nullY",
+          "path": {
+            "coords": {
+              "x": {
+                "graph": {
+                  "from": -2.2,
+                  "to": 2.2
+                },
+                "units": {
+                  "from": -2.6,
+                  "to": 2.6
+                }
+              },
+              "y": {
+                "graph": {
+                  "from": -2.2,
+                  "to": 2.2
+                },
+                "units": {
+                  "from": -2.6,
+                  "to": 2.6
+                }
+              }
+            },
+            "kind": "implicit",
+            "of": {
+              "kind": "arithmetic",
+              "left": {
+                "kind": "arithmetic",
+                "left": {
+                  "kind": "variable",
+                  "name": "x"
+                },
+                "operator": "+",
+                "right": {
+                  "kind": "variable",
+                  "name": "y"
+                }
+              },
+              "operator": "-",
+              "right": {
+                "kind": "arithmetic",
+                "left": {
+                  "kind": "variable",
+                  "name": "y"
+                },
+                "operator": "*",
+                "right": {
+                  "kind": "arithmetic",
+                  "left": {
+                    "kind": "arithmetic",
+                    "left": {
+                      "kind": "variable",
+                      "name": "x"
+                    },
+                    "operator": "*",
+                    "right": {
+                      "kind": "variable",
+                      "name": "x"
+                    }
+                  },
+                  "operator": "+",
+                  "right": {
+                    "kind": "arithmetic",
+                    "left": {
+                      "kind": "variable",
+                      "name": "y"
+                    },
+                    "operator": "*",
+                    "right": {
+                      "kind": "variable",
+                      "name": "y"
+                    }
+                  }
+                }
+              }
+            },
+            "resolution": 48
+          },
+          "style": {
+            "stroke": {
+              "colour": {
+                "a": 1,
+                "b": 61,
+                "g": 128,
+                "name": "moss",
+                "r": 21
+              },
+              "width": 0.026
+            }
+          }
+        },
+        {
+          "kind": "shape",
+          "name": "inward",
+          "path": {
+            "coords": {
+              "x": {
+                "graph": {
+                  "from": -2.2,
+                  "to": 2.2
+                },
+                "units": {
+                  "from": -2.6,
+                  "to": 2.6
+                }
+              },
+              "y": {
+                "graph": {
+                  "from": -2.2,
+                  "to": 2.2
+                },
+                "units": {
+                  "from": -2.6,
+                  "to": 2.6
+                }
+              }
+            },
+            "kind": "polar",
+            "of": {
+              "kind": "arithmetic",
+              "left": 1,
+              "operator": "/",
+              "right": {
+                "arguments": [
+                  {
+                    "kind": "arithmetic",
+                    "left": 1,
+                    "operator": "+",
+                    "right": {
+                      "kind": "arithmetic",
+                      "left": 43.44444444444444,
+                      "operator": "*",
+                      "right": {
+                        "arguments": [
+                          {
+                            "kind": "arithmetic",
+                            "left": -2,
+                            "operator": "*",
+                            "right": {
+                              "kind": "variable",
+                              "name": "angle"
+                            }
+                          }
+                        ],
+                        "kind": "call",
+                        "name": "exp"
+                      }
+                    }
+                  }
+                ],
+                "kind": "call",
+                "name": "sqrt"
+              }
+            },
+            "over": {
+              "from": 0,
+              "to": 12.566370614359172
+            },
+            "resolution": 384
+          },
+          "style": {
+            "stroke": {
+              "colour": {
+                "a": 1,
+                "b": 161,
+                "g": 105,
+                "name": "deep",
+                "r": 3
+              },
+              "width": 0.032
+            }
+          }
+        },
+        {
+          "kind": "shape",
+          "name": "outward",
+          "path": {
+            "coords": {
+              "x": {
+                "graph": {
+                  "from": -2.2,
+                  "to": 2.2
+                },
+                "units": {
+                  "from": -2.6,
+                  "to": 2.6
+                }
+              },
+              "y": {
+                "graph": {
+                  "from": -2.2,
+                  "to": 2.2
+                },
+                "units": {
+                  "from": -2.6,
+                  "to": 2.6
+                }
+              }
+            },
+            "kind": "polar",
+            "of": {
+              "kind": "arithmetic",
+              "left": 1,
+              "operator": "/",
+              "right": {
+                "arguments": [
+                  {
+                    "kind": "arithmetic",
+                    "left": 1,
+                    "operator": "+",
+                    "right": {
+                      "kind": "arithmetic",
+                      "left": -0.7229916897506925,
+                      "operator": "*",
+                      "right": {
+                        "arguments": [
+                          {
+                            "kind": "arithmetic",
+                            "left": -2,
+                            "operator": "*",
+                            "right": {
+                              "kind": "variable",
+                              "name": "angle"
+                            }
+                          }
+                        ],
+                        "kind": "call",
+                        "name": "exp"
+                      }
+                    }
+                  }
+                ],
+                "kind": "call",
+                "name": "sqrt"
+              }
+            },
+            "over": {
+              "from": 0,
+              "to": 12.566370614359172
+            },
+            "resolution": 384
+          },
+          "style": {
+            "stroke": {
+              "colour": {
+                "a": 1,
+                "b": 161,
+                "g": 105,
+                "name": "deep",
+                "r": 3
+              },
+              "width": 0.032
+            }
+          }
+        },
+        {
+          "kind": "shape",
+          "name": "cycle",
+          "path": {
+            "closed": true,
+            "coords": {
+              "x": {
+                "graph": {
+                  "from": -2.2,
+                  "to": 2.2
+                },
+                "units": {
+                  "from": -2.6,
+                  "to": 2.6
+                }
+              },
+              "y": {
+                "graph": {
+                  "from": -2.2,
+                  "to": 2.2
+                },
+                "units": {
+                  "from": -2.6,
+                  "to": 2.6
+                }
+              }
+            },
+            "kind": "parametric",
+            "of": {
+              "kind": "point",
+              "x": {
+                "arguments": [
+                  {
+                    "kind": "variable",
+                    "name": "t"
+                  }
+                ],
+                "kind": "call",
+                "name": "cos"
+              },
+              "y": {
+                "arguments": [
+                  {
+                    "kind": "variable",
+                    "name": "t"
+                  }
+                ],
+                "kind": "call",
+                "name": "sin"
+              }
+            },
+            "over": {
+              "from": 0,
+              "to": 6.283185307179586
+            },
+            "resolution": 96
+          },
+          "style": {
+            "stroke": {
+              "colour": {
+                "a": 1,
+                "b": 12,
+                "g": 65,
+                "name": "ember",
+                "r": 194
+              },
+              "width": 0.055
+            }
+          }
+        },
+        {
+          "at": {
+            "x": 0,
+            "y": -2.3200000000000003
+          },
+          "content": "a limit cycle",
+          "kind": "text",
+          "name": "title",
+          "options": {
+            "align": "middle",
+            "fill": {
+              "colour": {
+                "a": 1,
+                "b": 27,
+                "g": 27,
+                "name": "ink",
+                "r": 27
+              }
+            }
+          },
+          "size": 0.4242640687119285
+        }
+      ],
+      "kind": "group",
+      "name": "portrait",
+      "style": {
+        "family": "system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif",
+        "weight": 400
+      }
+    },
+    "still": 4.8,
+    "timeline": {
+      "duration": 5.4,
+      "spans": [
+        {
+          "entry": {
+            "kind": "fadeIn",
+            "target": "portrait/grid"
+          },
+          "from": 0,
+          "to": 0.6
+        },
+        {
+          "entry": {
+            "kind": "fadeIn",
+            "target": "portrait/axes"
+          },
+          "from": 0.2,
+          "to": 0.9
+        },
+        {
+          "entry": {
+            "kind": "fadeIn",
+            "target": "portrait/field"
+          },
+          "from": 0.7,
+          "to": 1.6
+        },
+        {
+          "entry": {
+            "kind": "draw",
+            "target": "portrait/nullX"
+          },
+          "from": 1.4,
+          "to": 2.4
+        },
+        {
+          "entry": {
+            "kind": "fadeIn",
+            "target": "portrait/nullX"
+          },
+          "from": 1.4,
+          "to": 1.5
+        },
+        {
+          "entry": {
+            "kind": "draw",
+            "target": "portrait/nullY"
+          },
+          "from": 1.7,
+          "to": 2.7
+        },
+        {
+          "entry": {
+            "kind": "fadeIn",
+            "target": "portrait/nullY"
+          },
+          "from": 1.7,
+          "to": 1.8
+        },
+        {
+          "entry": {
+            "kind": "draw",
+            "target": "portrait/inward"
+          },
+          "from": 2.5,
+          "to": 3.9
+        },
+        {
+          "entry": {
+            "kind": "fadeIn",
+            "target": "portrait/inward"
+          },
+          "from": 2.5,
+          "to": 2.6
+        },
+        {
+          "entry": {
+            "kind": "draw",
+            "target": "portrait/outward"
+          },
+          "from": 2.8,
+          "to": 4.2
+        },
+        {
+          "entry": {
+            "kind": "fadeIn",
+            "target": "portrait/outward"
+          },
+          "from": 2.8,
+          "to": 2.9
+        },
+        {
+          "entry": {
+            "kind": "draw",
+            "target": "portrait/cycle"
+          },
+          "from": 3.9,
+          "to": 4.8
+        },
+        {
+          "entry": {
+            "kind": "fadeIn",
+            "target": "portrait/cycle"
+          },
+          "from": 3.9,
+          "to": 4
+        },
+        {
+          "entry": {
+            "kind": "fadeIn",
+            "target": "portrait/title"
+          },
+          "from": 4.6,
+          "to": 5.4
+        }
+      ]
+    }
+  }
+}

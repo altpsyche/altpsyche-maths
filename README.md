@@ -108,9 +108,28 @@ edge once.
 in time, which keeps the points evenly spaced. Halving the step divides the error along the curve by
 15.1 and then 15.6, against the factor of 16 the order predicts.
 
+<img src="https://raw.githubusercontent.com/altpsyche/altpsyche-maths/master/docs/portrait.svg" width="640" alt="A phase portrait on a square grid: blue and amber arrows show the flow turning about the origin, two green curves cross where the flow stands still, and two blue spirals wind in from inside and outside onto an orange circle of radius one.">
+
+Three forms draw what no function of x describes. `parametric` samples a function of one parameter
+and joins the samples by the same Hermite construction, cut where the curve leaves the graph across
+the width as well as the height; a unit circle at 96 samples reads within 4.3 × 10⁻⁷ of the true
+radius, where the four cubic quarters `circle` writes leave it 2.7 × 10⁻⁴ out. `polar` is that call
+under the map from a radius and an angle to a place. `implicit` finds the curve where a function of
+two numbers reaches a level, by marching squares: crossings are bisected on the cell edge rather than
+interpolated along it, an ambiguous cell is resolved by the value at its middle, and each place leaves
+along the gradient turned a quarter turn, which holds a unit circle within 2.3 × 10⁻⁷ of the true
+radius at 64 cells. An implicit curve is the one curve here whose count of places the figure does not
+fix, so it cannot be a morph's source.
+
 ## Space
 
 <img src="https://raw.githubusercontent.com/altpsyche/altpsyche-maths/master/docs/surface.svg" width="720" alt="A saddle-shaped surface drawn as a grid of shaded cells, with a flat pane cutting through it at one height and the two branches of the curve where they meet drawn in orange along the surface. Blue arrows across the pane show the way the saddle falls and three green runs of steepest descent are drawn on it.">
+
+`sphere3`, `cube3`, `cylinder3` and `torus3` are cells over a parametrisation run in the order that
+faces every cell away from the solid, each also available as cells for a scene to sort among its own.
+A flat cell falls inside a sphere's true radius by 417.5, 106.4 and 26.7 parts in ten thousand at 12,
+24 and 48 steps. `curveOf3` reads a curve in space from one parameter, which is the third point
+producer beside `sectionOf` and `streamlineOf`.
 
 `camera3` holds an eye, a target, an up vector, a view matrix and a projection. `perspective` and
 `orthographic` supply the projection; the orthographic case is a scale rather than a divide and

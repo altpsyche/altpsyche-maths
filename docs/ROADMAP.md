@@ -1275,13 +1275,17 @@ shaded correctly, and their count is a measurement rather than a silence.
   twelve places, and a run of the parameter driven by a track hands back 49 places at both a quarter and
   the whole of it. A curve sorted among a cylinder's cells lands in the middle of the run rather than in
   front of all of them.
-- [ ] **8. The phase portrait demo.** `demos/portrait.ts` draws the field of `ẋ = x − y − x(x² + y²)`
+- [x] **8. The phase portrait demo.** `demos/portrait.ts` draws the field of `ẋ = x − y − x(x² + y²)`
   and `ẏ = x + y − y(x² + y²)`, whose polar form is `ṙ = r(1 − r²)` and `θ̇ = 1`: the limit cycle at
   `r = 1` as a parametric, two spirals as polar curves at the closed form
   `r(θ) = 1 / √(1 + (1/r₀² − 1)e^(−2θ))`, and the two nullclines as implicit curves, one of which is a
-  cubic that is a function of neither coordinate. **The measurement**: the marks at named times; the
-  greatest distance from the points of a `streamlineOf` run to the drawn polar spiral through the same
-  seed; and the drawn radius of the limit cycle.
+  cubic that is a function of neither coordinate. **The measurement**: 305 marks at every named time,
+  of which 0 are drawn at the opening, 300 at 1.6 seconds, 302 at 2.7, 303 at 3.9 and 305 at the still.
+  The limit cycle is one closed run of 96 pieces reading −0.0043 to 0.0000 parts in ten thousand of its
+  true radius, and each nullcline is one open run. A run walked through the field by Runge-Kutta stands
+  at most 6.6558e-6 figure units off the drawn spiral inside the cycle and 2.2323e-4 off the one
+  outside it. `demos/portrait.figure.json` is 23,389 bytes and is the sixth fixture of the conformance
+  suite, which is the figure carrying the three curve forms.
 - [ ] **9. The solids demo.** `demos/solids.ts` turns a sphere, a cube, a cylinder and a torus through
   one turn on a track, with a helix drawn on the cylinder and a torus knot on the torus. **The
   measurement**: the cell count of each solid, the marks at named times, and the still and the strip
