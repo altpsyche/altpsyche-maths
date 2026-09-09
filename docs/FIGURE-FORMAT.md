@@ -473,7 +473,7 @@ frozen door is what a major exists for, so either the old calls keep working bes
 which means two APIs and two things to test, or the version goes to two. **That is Siva's call and
 this plan assumed a minor without asking.**
 
-**Realistic shape: at least thirty-two commits over the vocabulary and the surfaces, plus the
+**Realistic shape: forty-one commits over the vocabulary and the surfaces, plus the
 site.** Against evenings and weekends that is months rather than weeks. The plan is still worth doing
 and the reasons in this document are unchanged. What was wrong was the size written next to them.
 
@@ -488,10 +488,12 @@ commits and step 4 is five, each named below with the demo whose marks measure i
 version and there is no step between it and step 10. **Step 7.5 was added by the audit of the 1.x
 band**, since 1.6.0 gave a figure insets and nothing here carried them.
 
-**The honest count is at least thirty-two commits rather than twelve to sixteen.** Eight of the
-twelve steps are one commit each, which is the seven this plan was written with and the inset step
-1.6.0 added to it. Step 3 is thirteen and step 4 is five. Step 8 rewrites four demos and is four. Step 9
-rewrites the guide and the reference and is two. The site is not counted here at all, since it is a
+**The honest count is forty-one commits rather than twelve to sixteen.** Seven of the thirteen steps
+are one commit each. Step 3 is fourteen, step 4 is five, step 5 is eight and step 12 is two, the last
+two written on 2026-09-09. Step 8 rewrites the three demos step 5.8 leaves and is three. Step 9
+rewrites the guide and the reference and is two. **Step 12 is worked after step 5 rather than in its
+written place**, and the numbers stay as they are because three steps name step 5 by number and
+renumbering would leave those pointing at nothing. The site is not counted here at all, since it is a
 release away and has a document of its own.
 
 - [x] **1. The readers take geometry rather than functions.** `slopeOf(coords, curve, x)`,
@@ -859,17 +861,120 @@ release away and has a document of its own.
     span and as the label of the rise at its end; the door from 348 names to 349 and the suite from
     937 to 939.
 
-- [ ] **5. The file: a serialiser, a reader, a validator and a version.** **This is worked after 7.5
-  rather than in its written place**, because a figure written out is a scene, a timeline and a view,
-  and two of the three are still functions until steps 6 and 7 land: a `Span` carries an `Animation`
-  and a `Curve`, and an `Entry` may be a `ViewChange` holding a `ViewAnimation`. A serialiser written
-  first would carry the scene alone and be rewritten twice. The numbers stay as they are, since three
-  steps above name step 5 by number and renumbering would leave those pointing at nothing.
-  **It has no step list and it is bigger than one commit**, so the session that reaches it writes one
-  before it writes code.
-  **Measures:** each demo written out, read back, and drawing marks identical within tolerance; a
-  figure of a later version refused; a malformed figure refused with the field named; the bytes of
-  each demo as data.
+- [ ] **5. The file: a serialiser, a reader, a validator and a version, which is eight commits.**
+  **This is worked after 7.5 rather than in its written place**, because a figure written out is a
+  scene, a timeline and a view, and two of the three are still functions until steps 6 and 7 land: a
+  `Span` carries an `Animation` and a `Curve`, and an `Entry` may be a `ViewChange` holding a
+  `ViewAnimation`. A serialiser written first would carry the scene alone and be rewritten twice. The
+  numbers stay as they are, since three steps above name step 5 by number and renumbering would leave
+  those pointing at nothing.
+
+  **A file is an envelope carrying the format's version and one figure.** Steps 3, 4, 6, 7 and 7.5
+  wrote the scene, the animations, the spans, the extent and the insets as records, and a track is
+  keys with a curve by name, so the whole vocabulary under a figure is already values. What is
+  missing is the figure itself, the bytes, the version and the refusals.
+
+  **The writer takes a `FigureRecord` rather than a `Figure`**, since a `Figure`'s scene may be a
+  closure and no reading recovers a closure. `nameOfCurve` is the one exception and it stays: a
+  `Timeline` compiled by calls carries curves that can be named again.
+
+  **The plan was written on 2026-09-09 and it corrects this step in one place.** The measures below
+  said each demo written out and read back, and a demo is a module of calls until step 8, so nothing
+  at step 5 could satisfy that. The rotation demo moves here instead, because a serialiser measured
+  against records assembled in a test is a serialiser no picture has been through: its scene is fixed,
+  its extent is fixed and it draws eight marks, which is the smallest whole figure this package has.
+  Step 8 carries the remaining three.
+
+  - [ ] **5.1 The specification's file section.** What a file is, what a renderer does with a version
+    it does not read, and what a refusal names. It is first because the specification changes before
+    the code does, and this is the part the code below decides nothing on its own.
+    **Measures:** the envelope's two fields and the figure's nine named in
+    [`SPECIFICATION.md`](SPECIFICATION.md); its three stale counts corrected against the inventory,
+    from nineteen node kinds to twenty-three, from five path producers to eleven and from nine value
+    types to eleven; the door and the suite unchanged at 365 names and 959 tests.
+
+  - [ ] **5.2 The figure as data.** A `FigureRecord` is an `ExtentRecord`, a fit, a `NodeRecord`, its
+    tracks, a `TimelineRecord`, a duration, a still time, a loop flag and its insets, and
+    `resolveFigure` builds the `Figure` that `marksAt` already takes. The scene is rebuilt at each
+    time with the sampled track values as its bindings, so a scene driven by a track stays a record
+    rather than becoming a closure again.
+    **Measures:** the rotation demo as one record drawing its eight marks at each of the four times
+    its strip draws, within a tolerance of 1e-6 and under the same ids; the boolean demo as one
+    record at each of its seven named times, whose scene is a boolean operation over a track and is
+    the case a fixed tree does not check; the door from 365 names and the suite from 959 tests.
+
+  - [ ] **5.3 The serialiser, and the format's version.** `writeFigure` turns a `FigureRecord` into
+    the text of a file, and `FIGURE_FORMAT_VERSION` is the number the envelope carries.
+    **The keys are written in sorted order**, so the bytes are a function of the record rather than of
+    the order its fields were built in, which is what lets a byte gate hold a figure at all.
+    **Measures:** the rotation demo's file in bytes; two records of that figure whose fields are built
+    in different orders writing the same bytes; a number that is not finite, a value that is
+    `undefined` inside a list and a function each refused with the path of the field named.
+
+  - [ ] **5.4 The reader, and the round trip.** `readFigure` parses the text, reads the version,
+    refuses one it does not read, and resolves the figure.
+    **Measures:** the rotation demo and the boolean demo each written out and read back, drawing the
+    same marks as their own figures at every named time within 1e-6; a file declaring version 1
+    refused with both numbers in the sentence; text that is not JSON refused with what was read at the
+    front of it.
+
+  - [ ] **5.5 The validator, and the value types and expressions.** `checkFigure` walks a value
+    against a description of the vocabulary and names the path of the field it refuses,
+    `scene.children.2.at.x` rather than the field's own name, since a name alone does not say which of
+    forty nodes carries it. **The vocabulary is described as a table rather than as a function per
+    kind**, because sixty-one kinds hand-written are sixty-one places a field can be forgotten.
+    **Measures:** the eleven value types and the seven expression forms each accepted out of the two
+    demos' records; each refused with the path named for a missing field, a field of the wrong type
+    and a kind the vocabulary does not carry; the suite from wherever 5.4 leaves it.
+
+  - [ ] **5.6 The validator over the nodes, the paths, the points and the items.** Twenty-three node
+    kinds, eleven path producers, two point producers and two item producers.
+    **Measures:** every kind accepted where its own step's test already builds it; one refusal per
+    kind naming the path of the field; a group whose children hold a kind that does not exist refused
+    with the index of the child in the path.
+
+  - [ ] **5.7 The validator over the animations, the timeline, the view, the insets and the figure.**
+    Fifteen animation kinds, the spans, the two extent choices, the three view moves, the insets and
+    the figure's own nine fields. **An expression naming a track the figure does not carry is refused
+    here**, since a renderer reading a file wants that answer before it draws rather than at the first
+    time the expression is reached.
+    **Measures:** each of the fifteen kinds accepted and refused with the path named; a span whose
+    `to` is before its `from` refused; a view move naming a mark no scene carries refused; an
+    expression reading a track the figure has no keys for refused at read time, where the same figure
+    draws for four seconds before the drawing refuses it today.
+
+  - [ ] **5.8 The rotation demo is a file.** `demos/rotate.figure.json` is written once with
+    `writeFigure` and committed, `demos/rotate.ts` reads it with `readFigure`, and `readFigure` runs
+    the validator over what it parsed.
+    **Measures:** `docs/rotate.svg` and `docs/rotate-strip.svg` byte for byte what is committed today
+    after `npm run demos`; the file's bytes and its line count against the 208 lines of module it
+    replaces; a field made wrong in each of four places in the committed file refused with its path.
+
+  #### Done-criteria for step 5
+
+  - `FigureRecord`, `resolveFigure`, `writeFigure`, `readFigure`, `checkFigure` and
+    `FIGURE_FORMAT_VERSION` are at the door, each has an entry in [`REFERENCE.md`](REFERENCE.md), and
+    the reference gate holds the door and the reference equal.
+  - The rotation demo and the boolean demo each written out and read back draw the same marks as
+    their own figures at every named time, within a tolerance of 1e-6.
+  - Two records of one figure whose fields were built in different orders write the same bytes.
+  - A file declaring a format version above the reader's is refused with both numbers in the
+    sentence, and a file declaring the reader's own version is read.
+  - A malformed figure is refused with the path of the field named, held at one place in each of a
+    value, an expression, a node, a path, an animation, a span, a view move and an inset.
+  - An expression naming a track the figure does not carry is refused when the file is read rather
+    than when the figure is drawn.
+  - [`SPECIFICATION.md`](SPECIFICATION.md) carries the file section, and its counts are the
+    inventory's.
+  - `demos/rotate.figure.json` is committed, `demos/rotate.ts` reads it, and both of that demo's
+    sheets are byte for byte what is committed today.
+  - `npm test`, `npm run type-check` and `npm run build` all pass.
+
+  **Gap 8 is answered and it is step 12, worked after this step.** Siva's call of 2026-09-09: a
+  colour is four channels and may carry the name of a custom property a page overrides, so every
+  renderer has the numbers and the sheets keep their theming. It is a step of its own rather than a
+  ninth commit here, because it changes `Colour` at the door, both painters and the demos' palette,
+  and the file's eight commits stay measurable one at a time.
 
 - [x] **6. The timeline as data, and it is the compiled spans rather than the calls that built
   them.** A `SpanRecord` is an entry, a `from`, a `to` and a `CurveName`, and a `TimelineRecord` is
@@ -915,7 +1020,9 @@ release away and has a document of its own.
   no view move of its own carried through unchanged; the door from 358 names to 360 and the suite from
   948 to 951.
 
-- [ ] **8. The four demos rewritten as files**, 1,484 lines of module becoming descriptions.
+- [ ] **8. The three demos step 5.8 leaves, rewritten as files**, 1,298 lines of module becoming
+  descriptions. The rotation demo is a file already, since a serialiser measured against records
+  assembled in a test is a serialiser no picture has been through.
   **Measures:** all eight sheets byte for byte as committed after `npm run demos`.
 
 - [ ] **9. The guide and the reference rewritten.** 709 and 976 lines describing an API that changed.
@@ -933,6 +1040,28 @@ release away and has a document of its own.
   all eight sheets identical after `npm run demos`; the door and the suite from 266 names and 785
   tests; the specification's own version, which is separate from this one.
 
+- [ ] **12. A colour is channels and a name, which is two commits and is worked after step 5.**
+  Siva's call of 2026-09-09, and it is gap 8 of the GPU spike. A mark's colour is a CSS string today,
+  the four demos paint every mark as `var(--name, #rrggbb)`, and a shader wants four numbers while a
+  renderer in another language cannot read a custom property at all. **A colour becomes four channels
+  and an optional name**, so a renderer reads the numbers, the SVG painter writes the `var()` it
+  writes now, and the palette's two values per ground stay where they are, in the demos and in the
+  sheet's own theme block. **The number is here rather than after step 8**, since a colour written
+  into four demo files and changed afterwards is four files rewritten twice.
+
+  - [ ] **12.1 The colour at the door and in both painters.** `Colour` is a record of `r`, `g`, `b`,
+    `a` and an optional `name`, `values/colour.ts` reads the two text forms into one, and the SVG and
+    canvas painters write from the record.
+    **Measures:** all eight sheets byte for byte as committed after `npm run demos`; the flat demo's
+    forty-three colours at its still time each carrying four channels and the name they are written
+    to; the contrast readings against both grounds unchanged.
+
+  - [ ] **12.2 The colour in the records and in the palette.** `ColourChoice`, `ShadeRecord` and a
+    gradient's stops carry the record, and `demos/palette.ts` hands one out rather than a string.
+    **Measures:** the vector field's two colours and the surface's shade ramp giving the same marks as
+    their own calls within 1e-6; the sheets byte for byte; a colour that is neither a hex nor an
+    `rgb()` refused with the text it was given.
+
 #### Done-criteria
 
 - Every demo is a file, and reading it draws marks identical within tolerance to the module it
@@ -947,6 +1076,8 @@ release away and has a document of its own.
 - The expression vocabulary is closed, published, and refuses a name it does not know.
 - The format carries a version, an old figure keeps rendering, and a validator names the field that
   is wrong.
+- A colour is four channels and an optional name, no mark carries a CSS custom property, and every
+  sheet is byte for byte what it is today.
 - The reference has an entry per name at the door and the gate holds them equal.
 - `npm test`, `npm run type-check` and `npm run build` pass, and the lock file agrees with the
   manifest.

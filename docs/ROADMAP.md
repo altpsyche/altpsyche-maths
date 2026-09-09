@@ -238,7 +238,10 @@ string. All 43 colours the painter read at the flat demo's still time are `var(-
 a shader wants four numbers, so the painter took the hex out of the fallback and a custom property
 without one would have to be resolved against the document. **This belongs to 2.0.0 rather than to a
 batch for the engine**, since the format is where a colour's written form is decided and a figure
-read by a renderer in another language cannot carry a CSS custom property.
+read by a renderer in another language cannot carry a CSS custom property. **It is answered and it is
+step 12 of the format's plan**, Siva's call of 2026-09-09: a colour is four channels and may carry the
+name of a custom property a page overrides, so a renderer reads the numbers and the sheets keep their
+theming.
 
 **The known stencil gap, re-measured rather than re-found.** `StencilMode` is `'mark' | 'inside'` and
 its own comment says what each is: `mark` leaves the reference behind everywhere it draws, and
@@ -268,7 +271,7 @@ three more are written past those because a session should not rediscover them.
 
 | version | what lands | what it changes | steps | cut against | depends on | plan |
 | --- | --- | --- | --- | --- | --- | --- |
-| 2.0.0 | the figure format | every builder's shape, and the door | 33 | all four demos read from files, and the eight sheets | MathJax, which is already a dependency | written, in [`FIGURE-FORMAT.md`](FIGURE-FORMAT.md) |
+| 2.0.0 | the figure format | every builder's shape, and the door | 41 | all four demos read from files, and the eight sheets | MathJax, which is already a dependency | written, in [`FIGURE-FORMAT.md`](FIGURE-FORMAT.md) |
 | 2.1.0 | the curves and surfaces a figure can name: parametric, polar, implicit, and the solids | adds kinds | to plan | a phase portrait, which the flat demo's field cannot express | nothing outside this package | to plan |
 | 2.2.0 | matrices and tables, and a matrix applied to a grid | adds kinds | to plan | a grid under a linear map, which nothing here can draw | nothing outside this package | to plan |
 | 2.3.0 | the indications that run along a path, and text written on rather than faded in | adds kinds, and outlines for plain text | to plan | the flat demo's reading, written on | a source of glyph outlines for plain text | to plan |
@@ -514,7 +517,7 @@ one 265 at 2.5 and 2.7 milliseconds a frame.
 
 **The format plan gained step 7.5, because 1.6.0 landed after it was written.** Step 6 carries the
 timeline as data and step 7 the extent, and nothing carried `Figure.insets`, so step 8 could not have
-written the flat demo out as a file with the panel it draws. The plan is thirty-two commits and its
+written the flat demo out as a file with the panel it draws. The plan is forty-one commits and its
 value types eleven.
 
 **The solid demo carries an inset, so the clip reached both demos the way every 1.x feature before it
@@ -972,8 +975,9 @@ it reads, and neither number is this package's.
 down, the six questions below answered, and a step list Siva reads before anything lands. The audit
 of the 1.x band added a step to it for the insets 1.6.0 gave a figure and the review of 2026-09-09
 added one for the boolean operations, and step 3.2 added one for the three calls that take geometry,
-step 3.9 split its look off as a step of its own, and step 3.11 found the pane's wash, so it is
-thirty-three commits.
+step 3.9 split its look off as a step of its own, and step 3.11 found the pane's wash. Step 5 was
+planned on 2026-09-09 and is eight commits, the rotation demo moved into it out of step 8, and gap 8
+became step 12 and two commits on the same day, so it is forty-one commits.
 
 A figure format is a description of a picture over time that a program reads rather than runs. It
 carries nodes, tracks and animations, each a named thing with parameters, and no function anywhere.
@@ -1053,7 +1057,9 @@ when a tool wants the types and a validator without the whole library, which is 
 each naming the demo whose marks measure it, and the plan was twenty-eight commits rather than the
 twelve to sixteen it claimed. The audit of the 1.x band added a step for the insets, the review of
 2026-09-09 added one for the boolean operations, and step 3.2 added one for the three calls that take
-geometry, and step 3.9 split the held beat off as a look of its own, so it is thirty-two.
+geometry, and step 3.9 split the held beat off as a look of its own, so it is thirty-two. Step 5's own
+plan of 2026-09-09 is eight commits and takes the rotation demo out of step 8, and gap 8 is step 12
+and two commits, which makes it forty-one.
 
 **Splitting them corrected the inventory in four places**, because the tables had been read from the
 names at the door rather than from each builder's return type. `riemannBars` returns a node and was
