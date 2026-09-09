@@ -19,7 +19,6 @@ import {
   resolveFigure,
   textScale,
   vec2,
-  type Expression,
   type Extent,
   type Figure,
   type FigureRecord,
@@ -27,6 +26,7 @@ import {
   type NodeRecord,
 } from '../index.js';
 import { DEEP, EMBER, INK, PEACH } from './palette.js';
+import { atFraction, shareOf } from './place.js';
 import { TYPE } from './typeface.js';
 
 const ink = { colour: INK };
@@ -51,32 +51,6 @@ const INSET = 0.05;
  * two sheets this figure writes. */
 export const TEXT = textScale(0.27);
 
-/** One member of `fractionOf(frame, across, up)` as an expression: the centre of
- * the declared extent, plus how far from the middle the fraction asks for. */
-function fraction(name: 'width' | 'height', member: 'x' | 'y', of: number): Expression {
-  return {
-    kind: 'arithmetic',
-    operator: '+',
-    left: { kind: 'member', of: { kind: 'frame', name: 'centre' }, name: member },
-    right: { kind: 'arithmetic', operator: '*', left: of - 0.5, right: { kind: 'frame', name } },
-  };
-}
-
-/** A share of the frame as a length rather than as a place, which is what sizes
- * the plate. */
-const share = (name: 'width' | 'height', of: number): Expression => ({
-  kind: 'arithmetic',
-  operator: '*',
-  left: of,
-  right: { kind: 'frame', name },
-});
-
-const at = (across: number, up: number): Expression => ({
-  kind: 'point',
-  x: fraction('width', 'x', across),
-  y: fraction('height', 'y', up),
-});
-
 /** The circle the plate is read against, in the figure's own units. */
 export const DISC = 1.05;
 export const DISC_WORD_Y = -1.8;
@@ -90,9 +64,9 @@ export const scene: NodeRecord = {
       name: 'plate',
       path: {
         kind: 'rect',
-        corner: at(INSET, INSET),
-        width: share('width', 1 - INSET * 2),
-        height: share('height', 1 - INSET * 2),
+        corner: atFraction(INSET, INSET),
+        width: shareOf('width', 1 - INSET * 2),
+        height: shareOf('height', 1 - INSET * 2),
       },
       style: { fill: wash, stroke: edge },
     },
@@ -113,7 +87,7 @@ export const scene: NodeRecord = {
     {
       kind: 'text',
       name: 'plateWord',
-      at: at(0.5, 0.88),
+      at: atFraction(0.5, 0.88),
       content: 'the frame',
       size: TEXT.label,
       options: { fill: ink, align: 'middle' },

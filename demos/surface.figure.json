@@ -2054,8 +2054,49 @@
         },
         {
           "at": {
-            "x": 3.9359999999999995,
-            "y": 2.65984
+            "kind": "point",
+            "x": {
+              "kind": "arithmetic",
+              "left": {
+                "kind": "member",
+                "name": "x",
+                "of": {
+                  "kind": "frame",
+                  "name": "centre"
+                }
+              },
+              "operator": "+",
+              "right": {
+                "kind": "arithmetic",
+                "left": 0.48,
+                "operator": "*",
+                "right": {
+                  "kind": "frame",
+                  "name": "width"
+                }
+              }
+            },
+            "y": {
+              "kind": "arithmetic",
+              "left": {
+                "kind": "member",
+                "name": "y",
+                "of": {
+                  "kind": "frame",
+                  "name": "centre"
+                }
+              },
+              "operator": "+",
+              "right": {
+                "kind": "arithmetic",
+                "left": 0.41559999999999997,
+                "operator": "*",
+                "right": {
+                  "kind": "frame",
+                  "name": "height"
+                }
+              }
+            }
           },
           "content": "a saddle",
           "kind": "text",
@@ -6938,8 +6979,49 @@
           "options": {
             "align": "start",
             "at": {
-              "x": -3.9359999999999995,
-              "y": 2.7520000000000007
+              "kind": "point",
+              "x": {
+                "kind": "arithmetic",
+                "left": {
+                  "kind": "member",
+                  "name": "x",
+                  "of": {
+                    "kind": "frame",
+                    "name": "centre"
+                  }
+                },
+                "operator": "+",
+                "right": {
+                  "kind": "arithmetic",
+                  "left": -0.48,
+                  "operator": "*",
+                  "right": {
+                    "kind": "frame",
+                    "name": "width"
+                  }
+                }
+              },
+              "y": {
+                "kind": "arithmetic",
+                "left": {
+                  "kind": "member",
+                  "name": "y",
+                  "of": {
+                    "kind": "frame",
+                    "name": "centre"
+                  }
+                },
+                "operator": "+",
+                "right": {
+                  "kind": "arithmetic",
+                  "left": 0.43000000000000005,
+                  "operator": "*",
+                  "right": {
+                    "kind": "frame",
+                    "name": "height"
+                  }
+                }
+              }
             },
             "fill": {
               "colour": {

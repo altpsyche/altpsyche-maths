@@ -29,7 +29,6 @@
  * `demos/surface.figure.json` is written from that record beside the pictures.
  */
 import {
-  fractionOf,
   interval,
   resolveFigure,
   resolveNode,
@@ -55,6 +54,7 @@ import {
 } from '../index.js';
 import { DEEP, EMBER, FROST, GLAZE, INK, MOSS, PANEL, SHADE_THEME, SKY, shadeOf } from './palette.js';
 import { stripOf } from './strip.js';
+import { atFraction } from './place.js';
 import { TYPE } from './typeface.js';
 
 const ink = { colour: INK };
@@ -400,7 +400,7 @@ export const scene: NodeRecord = {
     {
       kind: 'text',
       name: 'title',
-      at: fractionOf(extent, 0.98, 0.9156),
+      at: atFraction(0.98, 0.9156),
       content: 'a saddle',
       size: TEXT.title,
       options: { fill: ink, align: 'end' },
@@ -409,7 +409,7 @@ export const scene: NodeRecord = {
       kind: 'equationNode',
       name: 'rule',
       equation: rule,
-      options: { at: fractionOf(extent, 0.02, 0.93), align: 'start', width: 1.6, height: 0.7, fill: ink },
+      options: { at: atFraction(0.02, 0.93), align: 'start', width: 1.6, height: 0.7, fill: ink },
     },
   ],
   style: TYPE,
@@ -542,7 +542,9 @@ export const solid: Figure = resolveFigure(written);
 /** The picture at one place in the orbit, given as a fraction of the turn, which
  * is the scene read with that one track bound. */
 export function sceneAt(along: number): Node {
-  return resolveNode(scene, { tracks: { turn: along } });
+  // The title and the equation are placed against the frame, and the frame is
+  // the extent this figure declares, which is one extent at every aspect.
+  return resolveNode(scene, { tracks: { turn: along }, frame: extent });
 }
 
 /** Where the eye is at a time, for a gate that would otherwise rebuild the track

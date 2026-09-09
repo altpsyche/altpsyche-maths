@@ -1271,10 +1271,12 @@ inset is the nearest thing and it is a rectangle of the frame rather than a mark
   in both members at all three. `docs/frame.svg` is 1,950 bytes and `docs/frame-strip.svg` 4,406, and
   they read 25.46 and 14.60 pixels at their smallest glyph on the page with 9.1% and 9.3% of the frame
   bare. 1078 tests before, 1082 after.
-- [ ] **6. The solid demo's title and its equation are placed by the frame.** `demos/surface.ts` writes
+- [x] **6. The solid demo's title and its equation are placed by the frame.** `demos/surface.ts` writes
   its two `fractionOf` calls as frame expressions, so the kind is carried by a fixture whose subject is
   something else. **The measurement**: `demos/surface.figure.json` before and after, and the demo's
-  marks at its named times, which are the marks it drew before.
+  marks at its named times, which are the marks it drew before. **Landed 2026-09-10**: the file goes
+  from 263,847 to 266,174 bytes, and `docs/surface.svg` and `docs/surface-strip.svg` regenerate to the
+  same md5 they had before, so the demo draws the marks it drew. 1082 tests, unchanged.
 - [ ] **7. The reference, the guide, the reasoning, and 2.1.0 cut.** `docs/REFERENCE.md` names the
   widened seam and the kind, `docs/GUIDE.md` gains the section that places a mark against the frame,
   `docs/FIGURE-FORMAT.md` carries why the frame is the declared extent rather than the moved one, and
