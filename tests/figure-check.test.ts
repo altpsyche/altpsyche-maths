@@ -110,6 +110,9 @@ const EVERY_PATH: readonly Record<string, unknown>[] = [
   { kind: 'circle', centre: PLACE, radius: 1 },
   { kind: 'arc', centre: PLACE, radius: 1, from: 0, to: 1 },
   { kind: 'plot', coords: COORDS, of: { kind: 'variable', name: 'x' } },
+  { kind: 'parametric', coords: COORDS, of: { kind: 'variable', name: 't' }, closed: true },
+  { kind: 'polar', coords: COORDS, of: { kind: 'variable', name: 'angle' } },
+  { kind: 'implicit', coords: COORDS, of: { kind: 'variable', name: 'x' }, level: 1, resolution: { x: 8, y: 8 } },
   { kind: 'areaUnder', coords: COORDS, curve: { kind: 'plot', coords: COORDS, of: 1 } },
   { kind: 'tangentAt', coords: COORDS, curve: { kind: 'plot', coords: COORDS, of: 1 }, x: 0.5 },
   { kind: 'bracePath', from: PLACE, to: { x: 1, y: 0 }, depth: 0.2 },
@@ -518,8 +521,27 @@ describe('a figure held to the vocabulary', () => {
     ).toThrow('scene.children.6.camera.projection.scale is not a field of a projection of kind perspective');
   });
 
+  it('names the field inside a curve of the three new forms', () => {
+    const inside = (path: unknown) => ({
+      ...turning,
+      scene: { kind: 'group', name: 'paths', children: [{ kind: 'shape', name: 'curve', path }] },
+    });
+    expect(() => checkFigure(inside({ kind: 'parametric', coords: COORDS, of: 1, closed: 'yes' }))).toThrow(
+      'scene.children.0.path.closed is a true or false and is the text "yes"'
+    );
+    expect(() => checkFigure(inside({ kind: 'polar', coords: COORDS, of: 1, resolution: 'many' }))).toThrow(
+      'scene.children.0.path.resolution is a number and is the text "many"'
+    );
+    expect(() => checkFigure(inside({ kind: 'implicit', coords: COORDS, of: 1, resolution: { x: 8 } }))).toThrow(
+      'scene.children.0.path.resolution is a resolution'
+    );
+    expect(() => checkFigure(inside({ kind: 'implicit', coords: COORDS }))).toThrow(
+      'scene.children.0.path.of is required and is missing'
+    );
+  });
+
   it('takes a path of every form and refuses one the format has none for', () => {
-    expect(EVERY_PATH).toHaveLength(13);
+    expect(EVERY_PATH).toHaveLength(16);
     const children = EVERY_PATH.map((path, at) => ({ kind: 'shape', name: `p${at}`, path }));
     expect(checkFigure({ ...turning, scene: { kind: 'group', name: 'paths', children } })).toBeTruthy();
     expect(() =>

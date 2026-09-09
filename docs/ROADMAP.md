@@ -1233,11 +1233,16 @@ cylinder, and the count of what is dropped is a measurement rather than a silenc
   of one function as two closed runs. `x·y = 0` on nine cells puts the ambiguous pattern at the middle
   cell, and its two runs stay 0.203159 figure units apart where a cell is 0.222222 wide, which is the
   pairing the value at the middle of the cell chooses.
-- [ ] **4. The three forms are in the format.** `PathRecord` gains `parametric`, `polar` and `implicit`,
-  `resolvePath` resolves each, `checkFigure` holds each to its fields, `SPECIFICATION.md` reads sixteen
-  forms rather than thirteen and states the bound variables, and a fixture carries all three.
-  **The measurement**: each record's path against the same curve written as a call, agreeing to 0; the
-  count gate reading sixteen; and the refusal a bad field gives, naming its path from the figure down.
+- [x] **4. The three forms are in the format.** `PathRecord` gains `parametric`, `polar` and `implicit`,
+  `resolvePath` resolves each, `checkFigure` holds each to its fields, and `SPECIFICATION.md` reads
+  sixteen forms in eighteen kinds rather than thirteen in fifteen and states the bound variables `t`,
+  `angle`, and `x` with `y`. **The measurement**: each record's path is the same curve written as a call
+  under the comparison the package publishes over marks; the count gate reads sixteen out of
+  `PathRecord` and sixteen out of the specification's own sentence; the checker takes all sixteen forms
+  and refuses a bad field naming its path from the figure down, as
+  `scene.children.0.path.closed is a true or false and is the text "yes"`; and an implicit level driven
+  by a track draws radii of 0.5 and 1.5 at levels 0.25 and 2.25. **The committed fixture carrying the
+  three is step 7's demo**, since a figure file no demo draws is a fixture nothing checks.
 - [ ] **5. The four solids.** `figure/solid3.ts` holds `sphere3`, `cube3`, `cylinder3` and `torus3`, each
   over `surfaceCells`, and `NodeRecord` gains the four kinds. **The measurement**: the cell count of each
   at resolution 24, the count of degenerate cells dropped at a sphere's two poles and a cylinder's two
@@ -1284,7 +1289,8 @@ saddle cut by a plane.
 - The specification writes sixteen path forms and the count gate reads sixteen, and it writes the bound
   variables `t`, `angle`, and `x` with `y`.
 - `demos/portrait.figure.json` and `demos/solids.figure.json` are committed, and their stills and their
-  strips regenerate byte for byte.
+  strips regenerate byte for byte. The specification's fixture table names the portrait as the figure
+  that carries the three curve forms.
 - The README carries twelve images and the demo gate regenerates all of them.
 - `npm test`, `npm run type-check` and `npm run build` pass, and `package.json` reads 2.2.0.
 

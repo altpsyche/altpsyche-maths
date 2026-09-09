@@ -461,6 +461,27 @@ const SHAPES: Readonly<Record<string, Shape>> = {
         resolution: may(number),
         over: may(ref('expressionInterval')),
       },
+      parametric: {
+        coords: need(ref('coords')),
+        of: need(ref('expression')),
+        resolution: may(number),
+        over: may(ref('expressionInterval')),
+        closed: may(flag),
+      },
+      polar: {
+        coords: need(ref('coords')),
+        of: need(ref('expression')),
+        resolution: may(number),
+        over: may(ref('expressionInterval')),
+        closed: may(flag),
+      },
+      implicit: {
+        coords: need(ref('coords')),
+        of: need(ref('expression')),
+        level: may(ref('expression')),
+        resolution: may(ref('flatResolution')),
+        over: may(fields('the region an implicit curve is read over', { x: may(ref('interval')), y: may(ref('interval')) })),
+      },
       areaUnder: {
         coords: need(ref('coords')),
         curve: need(ref('carriedPath')),

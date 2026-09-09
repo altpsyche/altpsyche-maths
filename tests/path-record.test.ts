@@ -2,7 +2,11 @@ import { describe, expect, it } from 'vitest';
 import {
   arc,
   circle,
+  implicit,
+  interval,
   line,
+  parametric,
+  polar,
   pathFromData,
   pointOn,
   polygon,
@@ -11,6 +15,7 @@ import {
   resolvePath,
   sameMarks,
   vec2,
+  type Expression,
   type Mark,
   type Path,
   type PathRecord,
@@ -120,5 +125,70 @@ describe('a path written out as cubics', () => {
 describe('a form outside the set', () => {
   it('is refused with a sentence naming what was asked for', () => {
     expect(() => resolvePath({ kind: 'spiral' } as unknown as PathRecord)).toThrow('a path has no form called spiral');
+  });
+});
+
+describe('the three curves no function of x describes, as records', () => {
+  const coords = {
+    x: { graph: interval(-2, 2), units: interval(-2, 2) },
+    y: { graph: interval(-2, 2), units: interval(-2, 2) },
+  };
+  const reads = (name: string) => ({ kind: 'variable' as const, name });
+  const calls = (name: string, on: string) => ({ kind: 'call' as const, name, arguments: [reads(on)] });
+  const times = (left: Expression, right: Expression) => ({ kind: 'arithmetic' as const, operator: '*' as const, left, right });
+
+  it('reads a parametric curve from the bound variable t', () => {
+    const record: PathRecord = {
+      kind: 'parametric',
+      coords,
+      of: { kind: 'point', x: calls('cos', 't'), y: calls('sin', 't') },
+      over: { from: 0, to: 2 * Math.PI },
+      resolution: 96,
+      closed: true,
+    };
+    const called = parametric(coords, (t) => vec2(Math.cos(t), Math.sin(t)), {
+      over: interval(0, 2 * Math.PI),
+      resolution: 96,
+      closed: true,
+    });
+    expect(samePath(resolvePath(record), called)).toBe(true);
+  });
+
+  it('reads a polar curve from the bound variable angle', () => {
+    const record: PathRecord = {
+      kind: 'polar',
+      coords,
+      of: { kind: 'arithmetic', operator: '-', left: 1, right: calls('cos', 'angle') },
+      resolution: 96,
+      closed: true,
+    };
+    const called = polar(coords, (angle) => 1 - Math.cos(angle), { resolution: 96, closed: true });
+    expect(samePath(resolvePath(record), called)).toBe(true);
+  });
+
+  it('reads an implicit curve from the bound variables x and y together', () => {
+    const record: PathRecord = {
+      kind: 'implicit',
+      coords,
+      of: { kind: 'arithmetic', operator: '+', left: times(reads('x'), reads('x')), right: times(reads('y'), reads('y')) },
+      level: 1,
+      resolution: 64,
+    };
+    const called = implicit(coords, (x, y) => x * x + y * y, { level: 1, resolution: 64 });
+    expect(samePath(resolvePath(record), called)).toBe(true);
+  });
+
+  it('drives an implicit level with a track, which no other form of it could', () => {
+    const record: PathRecord = {
+      kind: 'implicit',
+      coords,
+      of: { kind: 'arithmetic', operator: '+', left: times(reads('x'), reads('x')), right: times(reads('y'), reads('y')) },
+      level: { kind: 'track', name: 'level' },
+      resolution: 64,
+    };
+    const near = radius(resolvePath(record, { tracks: { level: 0.25 } }));
+    const far = radius(resolvePath(record, { tracks: { level: 2.25 } }));
+    expect(Math.max(...near)).toBeCloseTo(0.5, 4);
+    expect(Math.max(...far)).toBeCloseTo(1.5, 4);
   });
 });

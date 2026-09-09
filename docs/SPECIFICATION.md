@@ -9,7 +9,7 @@ the animations, the timeline and the extent, and conformance last. A renderer is
 page and needs nothing else.
 
 **Five counts say how large the format is.** Twenty-three node kinds, fifteen animation kinds,
-thirteen forms of path in fifteen kinds, eleven value types, and thirty-seven functions an expression
+sixteen forms of path in eighteen kinds, eleven value types, and thirty-seven functions an expression
 may call.
 
 ## Standing refusals
@@ -263,7 +263,7 @@ the set is refused with the name in the sentence.
 ## The paths
 
 **A path is a list of subpaths, and every subpath is a run of cubic Bézier pieces.** That is what a
-renderer draws, and a figure names one of thirteen forms to say which path it means. Every form
+renderer draws, and a figure names one of sixteen forms to say which path it means. Every form
 carries a `kind` and the fields below. A form outside the set is refused with the kind in the
 sentence.
 
@@ -282,6 +282,9 @@ path a track moves is named and a path fixed for the life of the figure is eithe
 | `circle` | `centre`, `radius` | a closed circle as four cubic quarters |
 | `arc` | `centre`, `radius`, `from`, `to` | part of a circle, the angles in radians anticlockwise |
 | `plot` | `coords`, `of`, `resolution`, `over` | a curve sampled in the graph domain |
+| `parametric` | `coords`, `of`, `resolution`, `over`, `closed` | a curve sampled over a parameter rather than over x |
+| `polar` | `coords`, `of`, `resolution`, `over`, `closed` | a curve given as the radius at each angle |
+| `implicit` | `coords`, `of`, `level`, `resolution`, `over` | the curve where a function of two numbers reaches a level |
 | `areaUnder` | `coords`, `curve`, `baseline` | the region between a curve and a level |
 | `tangentAt` | `coords`, `curve`, `x`, `reach` | the straight line touching a curve at one graph x |
 | `bracePath` | `from`, `to`, `depth`, `curl` | a curly brace spanning two places |
@@ -299,6 +302,32 @@ than by a field, which keeps the form closed: a figure naming its own variable w
 look a name up rather than bind one. `resolution` is how many samples the curve is taken at and
 `over` is the `Interval` of graph x it is taken across, each a plain number and a pair of expressions
 respectively.
+
+**`parametric` reads its curve from the bound variable `t`, `polar` from `angle`, and `implicit` from
+`x` and `y` together.** The names are fixed by this rule for the reason `plot`'s is. `parametric`
+hands back a place and `polar` a radius, each over the run `over` names, which is nothing to one for a
+parameter and a whole turn for an angle. `closed` says the last place joins back to the first, which
+is also what makes the direction at the seam read across the join. A negative radius places the point
+opposite the angle rather than being refused.
+
+**A parametric curve is cut where it leaves the graph across the width as well as the height**, since
+a parameter carries a curve out either way, where a plotted curve is sampled across the width to begin
+with. A closed curve that leaves the graph is open stretches, and the stretch the run of the parameter
+cuts at its own end is one stretch rather than two.
+
+**`implicit` is the one form whose count of places the figure does not fix.** `resolution` is how many
+cells the grid has each way, one number or one per axis, and `over` is the region sampled as two plain
+`Interval`s. The curve's places are the crossings the function's own level set makes with that grid,
+which the function decides, so a renderer may hand back a different count as a track moves the level.
+Every other form here holds its count fixed so that one path can be walked into another by pairing
+their places, and a morph over an implicit curve pairs places that need not correspond.
+
+**A crossing is found by halving a cell edge and the direction at it comes from the gradient.** The
+curve crosses its own gradient at a right angle, and the region at or above the level is on the left of
+the direction a run reads in. A place where the gradient vanishes takes the direction of the chord. A
+corner whose value is not a number counts as below the level. A renderer holding a unit circle over a
+graph four radii wide closer than 2.3e-7 of the radius at 64 cells is holding it to something this form
+does not say, since the joining is the part a renderer may write its own way.
 
 **`areaUnder` and `tangentAt` take the path rather than the function.** Both carry a `curve` as a
 path record of its own, so the region and the tangent are read off the same geometry the curve draws

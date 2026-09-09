@@ -128,7 +128,7 @@ function formsOf(file: string, name: string): { kinds: string[]; fields: string[
 describe('the specification and the paths', () => {
   it('names every form of path with its fields', () => {
     const forms = formsOf('figure/path-record.ts', 'PathRecord');
-    expect(forms).toHaveLength(13);
+    expect(forms).toHaveLength(16);
     const inside = quoted(written.get('The paths') ?? '');
     const absent = forms.flatMap(({ kinds, fields }) => {
       const missing = [...kinds, ...fields].filter((each) => !inside.has(each));
@@ -290,6 +290,7 @@ const WRITTEN = new Map([
   ['twelve', 12],
   ['thirteen', 13],
   ['fifteen', 15],
+  ['sixteen', 16],
   ['twenty-three', 23],
   ['thirty-seven', 37],
 ]);
@@ -327,7 +328,7 @@ describe('the specification and the counts it writes in words', () => {
         counted(specification, /([a-z-]+) functions an expression/gi),
         EXPRESSION_FUNCTIONS.length,
       ],
-      ['path forms', counted(specification, /([a-z-]+) forms of path/gi), 13],
+      ['path forms', counted(specification, /([a-z-]+) forms of path/gi), 16],
       ['expression kinds', counted(specification, /there are ([a-z-]+)/gi), expressionKinds],
     ].filter(([, written, real]) => written !== real);
     expect(wrong).toEqual([]);

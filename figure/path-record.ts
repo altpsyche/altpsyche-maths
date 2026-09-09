@@ -26,6 +26,11 @@
  * the plotted path rather than the function behind it, so the region and the
  * curve laid over it are one piece of geometry and cannot come to disagree.
  *
+ * The three curves no function of x describes carry their own bound variables by
+ * the same rule: `parametric` reads `t`, `polar` reads `angle`, and `implicit`
+ * reads `x` and `y` together. A figure naming its own variable would be a
+ * renderer looking a name up rather than binding one.
+ *
  * `straight` has no form here. It hands back one `Cubic` rather than a path, and
  * a path written out as cubics already carries its controls, so a figure that
  * would reach for it uses `line` or writes the cubic out.
@@ -35,6 +40,8 @@ import { arc, circle, line, polygon, polyline, rect, type Path } from './path.js
 import { pathFromData } from './path-data.js';
 import { differenceOf, intersectionOf, unionOf } from './boolean.js';
 import { areaUnder, plot, tangentAt } from './plot.js';
+import { parametric, polar } from './parametric.js';
+import { implicit } from './implicit.js';
 import { bracePath } from './annotate.js';
 import { interval, type Interval } from '../values/interval.js';
 import type { Coords } from './scale.js';
@@ -80,6 +87,38 @@ export type PathRecord =
       readonly of: Expression;
       readonly resolution?: number;
       readonly over?: IntervalRecord;
+    }
+  | {
+      readonly kind: 'parametric';
+      readonly coords: Coords;
+      /** The curve, as an expression of the bound variable `t` giving a place on
+       * the graph. */
+      readonly of: Expression;
+      readonly resolution?: number;
+      readonly over?: IntervalRecord;
+      readonly closed?: boolean;
+    }
+  | {
+      readonly kind: 'polar';
+      readonly coords: Coords;
+      /** The curve, as an expression of the bound variable `angle` giving the
+       * radius at that angle. */
+      readonly of: Expression;
+      readonly resolution?: number;
+      readonly over?: IntervalRecord;
+      readonly closed?: boolean;
+    }
+  | {
+      readonly kind: 'implicit';
+      readonly coords: Coords;
+      /** The function, as an expression of the bound variables `x` and `y`, whose
+       * level set the curve is. */
+      readonly of: Expression;
+      readonly level?: Expression;
+      readonly resolution?: number | { readonly x: number; readonly y: number };
+      /** The region sampled, in plain intervals rather than expressions: a region
+       * a track drove would hand back a different count of places at every time. */
+      readonly over?: { readonly x?: Interval; readonly y?: Interval };
     }
   | {
       readonly kind: 'areaUnder';
@@ -136,6 +175,32 @@ export function curveOf(expression: Expression, bindings: Bindings): (x: number)
 }
 
 /**
+ * A curve as the function `parametric` samples, from an expression of one bound
+ * variable giving a place.
+ */
+export function placeOf(expression: Expression, bindings: Bindings): (t: number) => Vec2 {
+  return (t) => pointOf(expression, { ...bindings, variables: { ...bindings.variables, t } }, 'a parametric curve');
+}
+
+/**
+ * A curve as the function `polar` samples, from an expression of one bound
+ * variable giving the radius at that angle.
+ */
+export function radiusOf(expression: Expression, bindings: Bindings): (angle: number) => number {
+  return (angle) =>
+    numberOf(expression, { ...bindings, variables: { ...bindings.variables, angle } }, 'a polar curve');
+}
+
+/**
+ * The function `implicit` reads the level set of, from an expression of two bound
+ * variables giving the height over that place.
+ */
+export function heightOf(expression: Expression, bindings: Bindings): (x: number, y: number) => number {
+  return (x, y) =>
+    numberOf(expression, { ...bindings, variables: { ...bindings.variables, x, y } }, 'an implicit curve');
+}
+
+/**
  * The record resolved into the geometry it names.
  *
  * A form outside the set is refused with a sentence naming what was asked for,
@@ -173,6 +238,24 @@ export function resolvePath(record: PathRecord, bindings: Bindings = {}): Path {
       return plot(record.coords, curveOf(record.of, bindings), {
         resolution: record.resolution,
         over: record.over ? spanOf(record.over, bindings, 'a plot') : undefined,
+      });
+    case 'parametric':
+      return parametric(record.coords, placeOf(record.of, bindings), {
+        resolution: record.resolution,
+        over: record.over ? spanOf(record.over, bindings, 'a parametric curve') : undefined,
+        closed: record.closed,
+      });
+    case 'polar':
+      return polar(record.coords, radiusOf(record.of, bindings), {
+        resolution: record.resolution,
+        over: record.over ? spanOf(record.over, bindings, 'a polar curve') : undefined,
+        closed: record.closed,
+      });
+    case 'implicit':
+      return implicit(record.coords, heightOf(record.of, bindings), {
+        level: record.level === undefined ? undefined : numberOf(record.level, bindings, "an implicit curve's level"),
+        resolution: record.resolution,
+        over: record.over,
       });
     case 'areaUnder':
       return areaUnder(record.coords, resolvePath(record.curve, bindings), {
