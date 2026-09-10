@@ -226,8 +226,8 @@ export { FIGURE_FORMAT_VERSION, readFigure, writeFigure } from './figure/figure-
 export type { FigureFile } from './figure/figure-file.js';
 export { paintSvg, pathToData, svgElements, svgMarkup } from './paint/svg.js';
 export type { ElementMaker, PaintNode, PaintTarget, SvgColour, SvgElement, SvgMarkupOptions, SvgTheme } from './paint/svg.js';
-export { paintCanvas } from './paint/canvas.js';
-export type { CanvasGradientLike, CanvasLike } from './paint/canvas.js';
+export { paintCanvas, paintFrame } from './paint/canvas.js';
+export type { CanvasGradientLike, CanvasLike, SurfaceOptions } from './paint/canvas.js';
 export { recordFigure } from './paint/record.js';
 export type { FrameSink, RecordOptions, Recording } from './paint/record.js';
 export { arrow, brace, bracePath, callout, dot } from './figure/annotate.js';

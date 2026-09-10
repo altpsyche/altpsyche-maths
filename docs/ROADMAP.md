@@ -1365,13 +1365,17 @@ the flat and solid demos at 30 frames a second.
       frame. The recorder makes the same drawing calls over the solid demo as painting each frame on
       its own does. The suite is 1295 tests over 86 files where it was 1284 over 85, and the door is
       205 values and 237 types where it was 204 and 234.
-- [ ] **2. A frame painted whole, ground and all.** `paintFrame(context, frame, options)` fills the
-      ground a recording needs and then paints the marks through `paintCanvas`. A recorded frame opens
-      on whatever the last one left unless something fills it, where an SVG still is written onto a
-      page that already has a colour. The shape is the consumer's `figureFiller`, 77 lines in
-      `components/figure/record.ts` there, moved here so it is written once. **Measurement:** the
-      counting context takes one fill per frame more than `paintCanvas` does when a ground is given and
-      exactly as many when it is not, over both demos.
+- [x] **2. A frame painted whole, ground and all.** `paintFrame(context, frame, options)` fills the
+      ground the surface opens on and then paints the marks through `paintCanvas`, and `SurfaceOptions`
+      is the surface: its size and the colour it opens on. The name is `SurfaceOptions` because
+      `FrameOptions` is already `frameView`'s. `recordFigure` takes a `background` and paints every
+      frame through it, so a recording no longer shows each frame through the one before it.
+      **Measured:** the ground is one fill of the rectangle 0, 0, 1080, 600 in the ground's own colour
+      and it is the first call of the frame. A frame with no ground makes the same calls as
+      `paintCanvas` alone, and one with a ground makes exactly one more. A recording of the flat demo
+      at 4 frames a second is 41 frames and takes 41 more calls with a ground than without. The suite
+      is 1299 tests over 86 files where it was 1295, the door is 206 values and 238 types where it was
+      205 and 237, and `paint/canvas.ts` is 214 lines where it was 176.
 - [ ] **3. A clip longer than the figure, and a loop that wraps.** `recordFigure` gains `seconds`,
       which is the length of the recording rather than the length of the figure. A figure that declares
       itself a loop wraps by the remainder, and one that does not holds its last picture. Both rules are

@@ -11,9 +11,10 @@
  * strips are drawn from, since a floor and a round differ for every figure whose
  * duration times the rate lands above a half.
  */
-import { paintCanvas, type CanvasLike } from './canvas.js';
+import { paintFrame, type CanvasLike } from './canvas.js';
 import { framesOf, frameTimesOf } from '../figure/frames.js';
 import { durationOf, type Figure } from '../figure/figure.js';
+import type { Colour } from '../values/colour.js';
 
 /**
  * Where a recording's frames go, which is an encoder or anything shaped like
@@ -52,6 +53,10 @@ export interface RecordOptions {
    * in. */
   width: number;
   height: number;
+  /** What each frame opens on, before its marks are painted. A recording left
+   * without one shows every frame through the one before it, since a canvas keeps
+   * what was drawn on it. */
+  background?: Colour;
   /** Called once per frame taken, which is what a progress reading is built
    * from. */
   onFrame?: (index: number, count: number) => void;
@@ -79,7 +84,7 @@ export async function recordFigure<Output>(
   let frames = 0;
   try {
     for (const frame of framesOf(figure, { fps, width, height })) {
-      paintCanvas(sink.context, frame.marks, frame.view);
+      paintFrame(sink.context, frame, { width, height, background: options.background });
       await sink.add(frame.seconds, gap);
       frames += 1;
       options.onFrame?.(frame.index, count);

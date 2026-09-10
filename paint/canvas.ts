@@ -13,6 +13,8 @@
 import { mat3, type Transform2D } from '../values/mat3.js';
 import { vec2 } from '../values/vec2.js';
 import { hexOf } from '../values/colour.js';
+import type { Colour } from '../values/colour.js';
+import type { Frame } from '../figure/frames.js';
 import type { Fill, Mark, PathMark, TextMark } from '../figure/mark.js';
 import type { Path } from '../figure/path.js';
 import { outlinedMarks } from '../figure/outline.js';
@@ -173,4 +175,40 @@ export function paintCanvas(context: CanvasLike, marks: readonly Mark[], view: T
     else paintText(context, mark, view, scale);
     context.restore();
   }
+}
+
+/**
+ * The surface a frame is painted onto: how big it is, and what colour it opens
+ * on.
+ *
+ * The ground is a colour rather than a fill, since a frame opens on one colour
+ * and a mark is what carries a gradient. Leaving it out is what a figure drawn
+ * over something else wants: a figure lying over a shader has the shader's
+ * pixels underneath it, and a ground painted over them erases the picture.
+ */
+export interface SurfaceOptions {
+  width: number;
+  height: number;
+  background?: Colour;
+}
+
+/**
+ * One frame painted whole, ground and marks together.
+ *
+ * A canvas keeps what was drawn on it until something covers it, so a frame
+ * painted onto the canvas the frame before it used opens on that frame's
+ * picture. An SVG still has no such history, which is why this is the recorder's
+ * question rather than the SVG painter's.
+ */
+export function paintFrame(context: CanvasLike, frame: Frame, options: SurfaceOptions): void {
+  if (options.background) {
+    context.save();
+    context.globalAlpha = 1;
+    context.fillStyle = hexOf(options.background);
+    context.beginPath();
+    context.rect(0, 0, options.width, options.height);
+    context.fill();
+    context.restore();
+  }
+  paintCanvas(context, frame.marks, frame.view);
 }

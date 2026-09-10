@@ -1427,6 +1427,12 @@ picture in a recording are the same picture.
   colour.
 - `CanvasGradientLike` — what a canvas hands back for a gradient: anything with `addColorStop`. A
   canvas takes a gradient as an object built from the context rather than as a value written out.
+- `paintFrame(context, frame, options)` — one frame painted whole, ground and marks together. A
+  canvas keeps what was drawn on it until something covers it, so a frame with no ground opens on the
+  frame before it.
+- `SurfaceOptions` — the surface a frame is painted onto: its `width` and `height`, and the
+  `background` colour it opens on. A figure drawn over something else leaves the background out,
+  since a ground painted over those pixels erases them.
 
 ## Recording
 

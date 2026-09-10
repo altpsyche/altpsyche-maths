@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { durationOf, framesOf, paintCanvas, recordFigure } from '@altpsyche/maths';
+import { colourFrom, durationOf, framesOf, paintCanvas, paintFrame, recordFigure } from '@altpsyche/maths';
 import type { CanvasLike, Figure, FrameSink } from '@altpsyche/maths';
 import { tangent } from '../demos/tangent.js';
 import { solid } from '../demos/surface.js';
@@ -19,6 +19,10 @@ const HEIGHT = 600;
  * them, since a walk of a demo is ninety thousand marks. */
 class Counter implements CanvasLike {
   calls = 0;
+  /** The last rectangle asked for, which is how the ground is told from a clip:
+   * a clip is a rectangle followed by a clip call, and a ground is one followed
+   * by a fill. */
+  lastRect?: readonly number[];
   globalAlpha = 1;
   fillStyle: unknown = '';
   strokeStyle: unknown = '';
@@ -32,7 +36,9 @@ class Counter implements CanvasLike {
   save() {}
   restore() {}
   beginPath() {}
-  rect() {}
+  rect(x: number, y: number, width: number, height: number) {
+    this.lastRect = [x, y, width, height];
+  }
   clip() {}
   moveTo() {}
   bezierCurveTo() {}
@@ -185,3 +191,58 @@ describe('recordFigure', () => {
     expect(overlapped).toBe(false);
   });
 });
+
+/** A context that keeps the first thing it was asked to fill, so the ground can
+ * be told from the marks painted over it. */
+class Opening extends Counter {
+  first?: { style: unknown; rect?: readonly number[] };
+  override fill() {
+    super.fill();
+    this.first ??= { style: this.fillStyle, rect: this.lastRect };
+  }
+}
+
+const GROUND = colourFrom('#0b1020');
+const only = (figure: Figure) => [...framesOf(figure, { frames: 1, width: WIDTH, height: HEIGHT })][0];
+
+describe('paintFrame', () => {
+  it('fills the whole surface with the ground before it paints a mark', () => {
+    const context = new Opening();
+    paintFrame(context, only(tangent), { width: WIDTH, height: HEIGHT, background: GROUND });
+    expect(context.first?.style).toBe('#0b1020');
+    expect(context.first?.rect).toEqual([0, 0, WIDTH, HEIGHT]);
+  });
+
+  it('paints what the marks alone paint when no ground is given', () => {
+    const frame = only(tangent);
+    const whole = new Counter();
+    paintFrame(whole, frame, { width: WIDTH, height: HEIGHT });
+    const alone = new Counter();
+    paintCanvas(alone, frame.marks, frame.view);
+    expect(whole.calls).toBe(alone.calls);
+  });
+
+  it('adds one call to the frame when a ground is given', () => {
+    const frame = only(tangent);
+    const grounded = new Counter();
+    paintFrame(grounded, frame, { width: WIDTH, height: HEIGHT, background: GROUND });
+    const bare = new Counter();
+    paintFrame(bare, frame, { width: WIDTH, height: HEIGHT });
+    expect(grounded.calls).toBe(bare.calls + 1);
+  });
+
+  it('gives a recording one ground for every frame it takes', async () => {
+    const grounded = new Taken();
+    const recording = await recordFigure(tangent, grounded, {
+      fps: 4,
+      width: WIDTH,
+      height: HEIGHT,
+      background: GROUND,
+    });
+    const bare = new Taken();
+    await recordFigure(tangent, bare, { fps: 4, width: WIDTH, height: HEIGHT });
+    expect(recording.frames).toBe(41);
+    expect(grounded.context.calls).toBe(bare.context.calls + recording.frames);
+  });
+});
+
