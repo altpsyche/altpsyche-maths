@@ -2,10 +2,12 @@ import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 import {
   FIGURE_FORMAT_VERSION,
+  colourFrom,
   durationOf,
   isLoop,
   marksAt,
   readFigure,
+  resolveFigure,
   sameMarks,
   writeFigure,
   type FigureRecord,
@@ -15,6 +17,28 @@ import { TIMES as BOOLEAN_TIMES, booleans } from '../demos/boolean.js';
 import { TIMES as FLAT_TIMES, tangent, written as flat } from '../demos/tangent.js';
 import { FRAMES as SOLID_FRAMES, TIMES as SOLID_TIMES, solid, written as solidWritten } from '../demos/surface.js';
 import { operations, turning } from './figures.js';
+
+/**
+ * The flat demo with a span of each of the four kinds this version added, so a
+ * round trip is asked about them the way it is already asked about the rest.
+ */
+const indicated: FigureRecord = {
+  ...flat,
+  timeline: {
+    ...flat.timeline,
+    spans: [
+      ...(flat.timeline?.spans ?? []),
+      {
+        entry: { kind: 'showPassingFlash', target: 'tangent/curve', options: { stroke: { colour: colourFrom('#f9fafb'), width: 0.04 }, covers: 0.25 } },
+        from: 0,
+        to: 1,
+      },
+      { entry: { kind: 'wave', target: 'tangent/curve', options: { amplitude: 0.2, covers: 0.3 } }, from: 0, to: 1 },
+      { entry: { kind: 'wiggle', target: 'tangent/point', options: { factor: 1.2, angle: 0.2, rocks: 2 } }, from: 0, to: 1 },
+      { entry: { kind: 'write', target: 'tangent/reading', options: { across: 2.4 } }, from: 0, to: 1 },
+    ],
+  },
+};
 
 /** The names of every object of a written file, in the order they are written,
  * which is what says the keys are sorted throughout rather than at the top. */
@@ -298,5 +322,38 @@ describe('a figure read back from a file', () => {
   it('refuses text that is not a JSON document, and one that is not an object', () => {
     expect(() => readFigure('{ figure: }')).toThrow('a file is a JSON document and this text is not one');
     expect(() => readFigure('[]')).toThrow('a file is an object carrying a format and a figure, and this is a list');
+  });
+});
+
+describe('the four kinds this version added, through a file', () => {
+  it('reads back to the marks it was written from at every named time', () => {
+    const read = readFigure(writeFigure(indicated));
+    for (const seconds of Object.values(FLAT_TIMES)) {
+      expect(sameMarks(marksAt(read, seconds), marksAt(resolveFigure(indicated), seconds)), `at ${seconds}`).toBe(true);
+    }
+  });
+
+  it('refuses a wave whose amplitude is not a number, naming the field', () => {
+    const wrong = {
+      ...indicated,
+      timeline: {
+        ...indicated.timeline,
+        spans: [{ entry: { kind: 'wave', target: 'tangent/curve', options: { amplitude: 'far' } }, from: 0, to: 1 }],
+      },
+    };
+    expect(() => readFigure(writeFigure(wrong as unknown as FigureRecord))).toThrow(
+      'timeline.spans.0.entry.options.amplitude is a number and is the text "far"'
+    );
+  });
+
+  it('refuses a passing flash with no stroke, which it needs to be drawn at all', () => {
+    const wrong = {
+      ...indicated,
+      timeline: {
+        ...indicated.timeline,
+        spans: [{ entry: { kind: 'showPassingFlash', target: 'tangent/curve', options: {} }, from: 0, to: 1 }],
+      },
+    };
+    expect(() => readFigure(writeFigure(wrong as unknown as FigureRecord))).toThrow('stroke');
   });
 });

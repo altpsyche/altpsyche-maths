@@ -1238,12 +1238,14 @@ figure names one number and the animation derives the rest.
   mark aligned to its middle and -1 to 2 for one aligned to its end. The band left uncut is 1.5 sizes
   either side of the anchor, a clip the figure already put on the mark is kept by overlapping the
   two, and a text mark with no run named carries the opacity a fade would give it.
-- [ ] **6. The four are written forms of the format.** `AnimationRecord` gains `showPassingFlash`,
+- [x] **6. The four are written forms of the format.** `AnimationRecord` gains `showPassingFlash`,
   `wave`, `wiggle` and `write`, `resolveAnimation` hands back each one, `figure-check.ts` holds all
-  four, and each reads back to the call it was written from. **The measurement**: the members of
-  `AnimationRecord`, 16 today and 20 after; the round trip of a figure carrying all four through
-  `writeFigure` and `readFigure`, compared mark for mark by tolerance; and the checker's own message
-  on a wave whose amplitude is not a number.
+  four with an options form each, and each reads back to the call it was written from. **The
+  measurement**: the members of `AnimationRecord`, 16 before and 20 after, which is the count the
+  specification's own gate reads. The flat demo with a span of each of the four appended reads back
+  through `writeFigure` and `readFigure` to the same marks at every named time by `sameMarks`, each
+  record agrees with its call at five fractions over both demos, and the checker refuses a wave whose
+  amplitude is the text "far" and a passing flash carrying no stroke.
 - [ ] **7. Both demos gain them.** `demos/tangent.ts` writes its reading on rather than fading it in,
   writes its rule glyph by glyph, and runs a light along the tangent at the stationary point.
   `demos/surface.ts` writes its typeset equation on and runs a light along the crossing curve as the

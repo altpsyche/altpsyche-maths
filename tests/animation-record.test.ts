@@ -20,7 +20,11 @@ import {
   rotate,
   sameMarks,
   scale,
+  showPassingFlash,
   vec2,
+  wave,
+  wiggle,
+  write,
   type Animation,
   type AnimationRecord,
   type Mark,
@@ -273,5 +277,49 @@ describe('the animation that counts', () => {
     expect(written(0)).toBe('0.00');
     expect(written(0.5)).toBe(labelFor(RISE / 2, precision));
     expect(written(1)).toBe(labelFor(RISE, precision));
+  });
+});
+
+describe('the indications that run along a path, and the write, as records', () => {
+  const accent = { colour: DEEP, width: 0.035 };
+
+  it('lights the flat demo curve where its own call lights it', () => {
+    const options = { stroke: accent, covers: 0.25 };
+    for (const seconds of Object.values(FLAT_TIMES)) {
+      const marks = marksAt(tangent, seconds);
+      expect(agrees({ kind: 'showPassingFlash', target: 'tangent/curve', options }, showPassingFlash('tangent/curve', options), marks)).toBe(true);
+    }
+  });
+
+  it('waves the flat demo curve where its own call waves it', () => {
+    const options = { direction: vec2(0, 1), amplitude: 0.2, covers: 0.3 };
+    for (const seconds of Object.values(FLAT_TIMES)) {
+      const marks = marksAt(tangent, seconds);
+      expect(agrees({ kind: 'wave', target: 'tangent/curve', options }, wave('tangent/curve', options), marks)).toBe(true);
+    }
+  });
+
+  it('wiggles the solid demo axes where its own call wiggles them', () => {
+    const options = { factor: 1.2, angle: 0.2, rocks: 2 };
+    for (const seconds of Object.values(SOLID_TIMES)) {
+      const marks = marksAt(solid, seconds);
+      expect(agrees({ kind: 'wiggle', target: 'solid/axes', options }, wiggle('solid/axes', options), marks)).toBe(true);
+    }
+  });
+
+  it('writes the flat demo rule and its reading where its own call writes them', () => {
+    for (const seconds of Object.values(FLAT_TIMES)) {
+      const marks = marksAt(tangent, seconds);
+      expect(agrees({ kind: 'write', target: 'tangent/equation' }, write('tangent/equation'), marks)).toBe(true);
+      const options = { across: 2.4 };
+      expect(agrees({ kind: 'write', target: 'tangent/reading', options }, write('tangent/reading', options), marks)).toBe(true);
+    }
+  });
+
+  it('adds one light for every path it lights and none for a text mark', () => {
+    const marks = marksAt(tangent, FLAT_TIMES.braceTo);
+    const lit = resolveAnimation({ kind: 'showPassingFlash', target: 'tangent/equation', options: { stroke: accent } })(marks, 0.5);
+    const glyphs = marks.filter((mark) => mark.id.startsWith('tangent/equation/') && mark.kind === 'path');
+    expect(lit).toHaveLength(marks.length + glyphs.length);
   });
 });

@@ -729,6 +729,22 @@ const SHAPES: Readonly<Record<string, Shape>> = {
     around: may(named('a shape drawn round something', ['box', 'ellipse'])),
     padding: may(number),
   }),
+  passingFlashOptions: fields('what a passing flash takes', {
+    stroke: need(ref('stroke')),
+    covers: may(number),
+  }),
+  waveOptions: fields('what a wave takes', {
+    direction: may(ref('point')),
+    amplitude: may(number),
+    covers: may(number),
+  }),
+  wiggleOptions: fields('what a wiggle takes', {
+    pivot: may(ref('point')),
+    factor: may(number),
+    angle: may(number),
+    rocks: may(number),
+  }),
+  writeOptions: fields('what a write takes', { across: may(number), covers: may(number) }),
   followOptions: fields('what a follow takes', {
     within: may(number),
     room: may(number),
@@ -764,6 +780,10 @@ const SHAPES: Readonly<Record<string, Shape>> = {
       flash: { target: need(text), options: need(ref('flashOptions')) },
       circumscribe: { target: need(text), options: need(ref('circumscribeOptions')) },
       countTo: { target: need(text), from: need(number), to: need(number), precision: need(number) },
+      showPassingFlash: { target: need(text), options: need(ref('passingFlashOptions')) },
+      wave: { target: need(text), options: may(ref('waveOptions')) },
+      wiggle: { target: need(text), options: may(ref('wiggleOptions')) },
+      write: { target: need(text), options: may(ref('writeOptions')) },
       moveView: { to: need(fields('an extent', { width: may(number), height: may(number), centre: may(ref('point')) })) },
       followView: { target: need(text), options: may(ref('followOptions')) },
       frameView: { targets: need(list(text)), options: may(ref('frameOptions')) },

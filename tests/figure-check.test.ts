@@ -690,8 +690,8 @@ describe('a figure held to the vocabulary', () => {
 
   it('refuses an entry of a kind the format has no form for', () => {
     expect(() =>
-      checkFigure({ ...turning, timeline: { spans: [{ entry: { kind: 'wiggle', target: 'turns' }, from: 0, to: 1 }] } }),
-    ).toThrow('timeline.spans.0.entry is a timeline entry and has no kind called the text "wiggle"');
+      checkFigure({ ...turning, timeline: { spans: [{ entry: { kind: 'shimmer', target: 'turns' }, from: 0, to: 1 }] } }),
+    ).toThrow('timeline.spans.0.entry is a timeline entry and has no kind called the text "shimmer"');
   });
 
   it('holds an animation option to its own fields', () => {

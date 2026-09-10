@@ -231,7 +231,7 @@ describe('the specification and the nodes', () => {
 describe('the specification and the timeline', () => {
   it('names every animation kind and its fields', () => {
     const kinds = membersOf('figure/animation-record.ts', 'AnimationRecord');
-    expect(kinds).toHaveLength(16);
+    expect(kinds).toHaveLength(20);
     const inside = quoted(written.get('The animations') ?? '');
     const absent = kinds.flatMap((name) => {
       const missing = fieldsOf('figure/animation-record.ts', name).filter((field) => !inside.has(field));
@@ -248,6 +248,10 @@ describe('the specification and the timeline', () => {
       { name: 'IndicateOptions', file: 'figure/animation.ts' },
       { name: 'FlashOptions', file: 'figure/animation.ts' },
       { name: 'CircumscribeOptions', file: 'figure/animation.ts' },
+      { name: 'PassingFlashOptions', file: 'figure/animation.ts' },
+      { name: 'WaveOptions', file: 'figure/animation.ts' },
+      { name: 'WiggleOptions', file: 'figure/animation.ts' },
+      { name: 'WriteOptions', file: 'figure/animation.ts' },
     ].flatMap(({ name, file }) => {
       const missing = fieldsOf(file, name).filter((field) => !inside.has(field));
       return missing.length === 0 ? [] : [`${name}: ${missing.join(', ')}`];
@@ -297,6 +301,7 @@ const WRITTEN = new Map([
   ['thirteen', 13],
   ['fifteen', 15],
   ['sixteen', 16],
+  ['twenty', 20],
   ['twenty-three', 23],
   ['twenty-eight', 28],
   ['thirty', 30],

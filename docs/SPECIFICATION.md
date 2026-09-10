@@ -8,7 +8,7 @@ the value types and the expression form every kind is written in terms of, then 
 the animations, the timeline and the extent, and conformance last. A renderer is written from this
 page and needs nothing else.
 
-**Five counts say how large the format is.** Thirty node kinds, sixteen animation kinds,
+**Five counts say how large the format is.** Thirty node kinds, twenty animation kinds,
 sixteen forms of path in eighteen kinds, eleven value types, and thirty-seven functions an expression
 may call.
 
@@ -606,6 +606,10 @@ value into the scene and not into a span.
 | `flash` | `options` | rays thrown out and drawn back, by `rays`, `reach` and `inner` |
 | `circumscribe` | `options` | a box or an ellipse drawn round it, by `around` and `padding` |
 | `countTo` | `from`, `to`, `precision` | a number counted up, written to the precision named |
+| `showPassingFlash` | `options` | a light travelling the length of a path, by `covers` |
+| `wave` | `options` | a hump crossing a shape, by `direction`, `amplitude` and `covers` |
+| `wiggle` | `options` | swelled and rocked about a point, by `factor`, `angle` and `rocks` |
+| `write` | `options` | written on one mark at a time, by `across` and `covers` |
 
 **`morphEquation` carries `from` and `to` rather than a target**, since what it walks is one node
 into another and the pair is the animation.
@@ -620,6 +624,30 @@ round the marks, because a linear map is defined about the origin.
 **A flash's `options` carries a required `stroke`** and `at`, `rays`, `reach` and `inner` beside it,
 where `at` is where the rays are thrown from and the two lengths are how far out and how far in they
 reach. A circumscribe's carries a required `stroke` with `around` and `padding`.
+
+**A passing flash's `options` carries a required `stroke`** with `covers` beside it, which is how
+much of the path the light holds at once as a share of the path's own length. The light runs from
+behind the start of the path to past its end, so it enters at one end and leaves at the other, and
+it is in the list at every time with no path at both ends of its span. It carries the lit mark's own
+id with `/passing` after it, and a text mark has no path for it to run along.
+
+**A wiggle's rock count is rounded to a whole number**, because a sine of a whole number of turns is
+at nothing at both ends of the span and any other count leaves the shape at an angle when the span
+closes. Its swell is the one an indication makes and its pivot is the one a turn takes.
+
+**A wave pushes the points a path is made of and does not resample it**, so a shape drawn with few
+pieces shows a coarser wave than one drawn with many. The band travels a quarter turn clockwise off
+the push, so a shape pushed up is crossed from left to right, and the crossing is measured across
+the box round the marks as they arrive.
+
+**A write's `across` is how far the sweep runs over a text mark, in the figure's own units.** It is
+given rather than measured because a text mark is a family name a painter hands to the platform, so
+how wide the words come out is not known until they are drawn. A renderer sweeps a clip whose near
+edge is the mark's anchor for text aligned to its start, half the run back for text aligned to its
+middle and the whole run back for text aligned to its end, and whose band is 1.5 sizes either side
+of the anchor. A text mark under a write that names no `across` fades. Each mark under the target
+takes `covers` of the span, an even share unless named, and they are drawn in the order they stand
+in.
 
 **A fade is an opacity and never a removal.** A mark faded out is in the list with an opacity of
 nothing, so the list of marks at a time has the same ids whichever way the clock came.

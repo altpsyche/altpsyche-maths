@@ -36,12 +36,20 @@ import {
   moveBy,
   rotate,
   scale,
+  showPassingFlash,
+  wave,
+  wiggle,
+  write,
   type AboutOptions,
   type Animation,
   type CircumscribeOptions,
   type FlashOptions,
   type IndicateOptions,
+  type PassingFlashOptions,
   type ScaleOptions,
+  type WaveOptions,
+  type WiggleOptions,
+  type WriteOptions,
 } from './animation.js';
 import { resolvePath, type PathRecord } from './path-record.js';
 import { labelFor } from './ticks.js';
@@ -188,6 +196,40 @@ export interface CountToRecord {
   readonly precision: number;
 }
 
+/**
+ * The three indications Manim has that this did not, and the one that writes.
+ *
+ * Each names its target and its own options, and the marks a passing flash adds
+ * carry the lit mark's own name in front of theirs, so a record naming them
+ * again would be a second place the same name is written.
+ */
+export interface ShowPassingFlashRecord {
+  readonly kind: 'showPassingFlash';
+  readonly target: string;
+  readonly options: PassingFlashOptions;
+}
+
+export interface WaveRecord {
+  readonly kind: 'wave';
+  readonly target: string;
+  readonly options?: WaveOptions;
+}
+
+export interface WiggleRecord {
+  readonly kind: 'wiggle';
+  readonly target: string;
+  readonly options?: WiggleOptions;
+}
+
+/** How far a sweep runs across a string is in the options rather than measured,
+ * since nothing here measures one, and a text mark under a write that names no
+ * run fades. */
+export interface WriteRecord {
+  readonly kind: 'write';
+  readonly target: string;
+  readonly options?: WriteOptions;
+}
+
 export type AnimationRecord =
   | FadeInRecord
   | FadeOutRecord
@@ -204,7 +246,11 @@ export type AnimationRecord =
   | IndicateRecord
   | FlashRecord
   | CircumscribeRecord
-  | CountToRecord;
+  | CountToRecord
+  | ShowPassingFlashRecord
+  | WaveRecord
+  | WiggleRecord
+  | WriteRecord;
 
 /**
  * The animation a record describes.
@@ -248,6 +294,14 @@ export function resolveAnimation(record: AnimationRecord, bindings: Bindings = {
       return circumscribe(record.target, record.options);
     case 'countTo':
       return countTo(record.target, record.from, record.to, (value) => labelFor(value, record.precision));
+    case 'showPassingFlash':
+      return showPassingFlash(record.target, record.options);
+    case 'wave':
+      return wave(record.target, record.options);
+    case 'wiggle':
+      return wiggle(record.target, record.options);
+    case 'write':
+      return write(record.target, record.options);
   }
   throw new Error(`an animation has no kind called ${String((record as { kind?: unknown }).kind)}`);
 }

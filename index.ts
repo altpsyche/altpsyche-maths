@@ -204,6 +204,10 @@ export type {
   MoveByRecord,
   RotateRecord,
   ScaleRecord,
+  ShowPassingFlashRecord,
+  WaveRecord,
+  WiggleRecord,
+  WriteRecord,
 } from './figure/animation-record.js';
 export { Timeline } from './figure/timeline.js';
 export type { Entry, PlayOptions, Span, StaggerOptions } from './figure/timeline.js';

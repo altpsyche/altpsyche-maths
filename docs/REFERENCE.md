@@ -780,6 +780,13 @@ functions, which is what lets the same tree survive being written to a file and 
 - `CircumscribeRecord` — a `kind` of `circumscribe`, the `target` and its `options`. It names its
   target alone, the way a flash does: the marks each adds carry the target's own name in front of
   theirs, so a record naming them again would be a second place the same name is written.
+- `ShowPassingFlashRecord` — a `kind` of `showPassingFlash`, the `target` and its `options`. It names
+  its target alone, the way a flash does, since the light carries the lit mark's own name in front of
+  its own.
+- `WaveRecord` — a `kind` of `wave`, the `target` and its `options`.
+- `WiggleRecord` — a `kind` of `wiggle`, the `target` and its `options`.
+- `WriteRecord` — a `kind` of `write`, the `target` and its `options`. How far a sweep runs across a
+  string is in the `options` rather than measured, since nothing here measures one.
 - `resolveAnimation(record, bindings)` — the animation a record describes, as the `Animation` the timeline
   already plays. A kind outside the set is refused with a sentence naming it. A target stays an id or
   the front of one, so naming a group reaches everything inside it.
