@@ -1246,12 +1246,16 @@ answer** is a cross-fade of the two, which costs that ghost.
   nothing with the group arrived at unchanged mark for mark; a paired string reads `one` at 0.49 and
   `two` at 0.5 while its anchor reads 1 at a quarter and 3 at three quarters; and a name matching
   nothing changes nothing. 1263 tests over 84 files before, 1271 over 85 after.
-- [ ] **3. A paired mark's style walks.** The fill colour, the stroke colour and the stroke width walk
-  to the partner's, a width given as a number walks against a taper entry by entry, and a gradient is
-  the leaving mark's until half the span. **The measurement**: the fill colour at half against
-  `lerpColour` at half, channel by channel; the stroke width at half against the mean of the two; and
-  the style at one against the arriving mark's own style, which is what says the handover moves
-  nothing.
+- [x] **3. A paired mark's style walks.** The fill colour, the stroke colour, the stroke width, the
+  opacity and the clip all reach the partner's, a width given as a number walks against a taper entry
+  by entry, and what cannot be walked swaps at half: a gradient, a winding rule, a dash, and a clip
+  only one of the pair carries. **The measurement**: ink at 0.02 wide walked onto peach at 0.06 gives
+  every channel of the fill and the stroke at half as `lerpColour` at half to 1e-12, a width of 0.03
+  at a quarter and 0.04 at half, and every channel and the width the partner's own at one to 1e-12,
+  which is what says the swap shows nothing; an opacity of 1 onto one of 0.4 reads 0.7 at half; a fill
+  only one of the pair carries reads 0.75 and 0.25 of its alpha at a quarter and three quarters and 0
+  at one; 0.1 onto a taper of 0.2 to 0.4 reads 0.15 to 0.25 at half; and clips of -1..1 onto 3..5 read
+  1..3 at half. 1271 tests over 85 files before, 1278 after.
 - [ ] **4. `morphGroup` is a written form of the format.** `AnimationRecord` gains `MorphGroupRecord`
   carrying `from` and `to`, `resolveAnimation` hands back the animation, `figure-check.ts` holds the
   kind, and a figure carrying it reads back to the call it was written from. **The measurement**: the
