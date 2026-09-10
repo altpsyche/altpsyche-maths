@@ -1428,6 +1428,21 @@ picture in a recording are the same picture.
 - `CanvasGradientLike` — what a canvas hands back for a gradient: anything with `addColorStop`. A
   canvas takes a gradient as an object built from the context rather than as a value written out.
 
+## Recording
+
+- `recordFigure(figure, sink, options)` — a figure painted frame by frame into a sink, which hands
+  back whatever it was collecting. The walk is `frameTimesOf`, so a recording holds the frames the
+  rest of this package counts. A frame that fails cancels the sink rather than finishing it.
+- `FrameSink` — where a recording's frames go, which is an encoder or anything shaped like one. It
+  owns the `context` each frame is painted onto, takes each painted frame with `add(seconds,
+  duration)`, hands back its own answer from `finish()`, and may offer a `cancel()` for a recording
+  that failed part way. `add` may answer a promise, which is how a recorder waits for an encoder that
+  has fallen behind.
+- `RecordOptions` — the `fps` the recording plays at, the `width` and `height` of the surface, and an
+  optional `onFrame(index, count)` called once per frame taken.
+- `Recording` — what a finished recording is: the `frames` taken, the `seconds` it runs for, and the
+  `output` the sink handed back.
+
 ## Annotations
 
 - `arrow(name, from, to, options)` — a line with a head at the far end. The shaft stops where the

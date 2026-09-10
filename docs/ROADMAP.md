@@ -1353,13 +1353,18 @@ become one in step 1: `frameTimesOf` rounds where the consumer's recorder floors
 are 1284 tests over 85 files, a door of 204 values and 234 types, and walks of 308 and 399 frames for
 the flat and solid demos at 30 frames a second.
 
-- [ ] **1. The walk and the sink.** `figure/record.ts` holds `recordFigure(figure, sink, options)` and
-      the `FrameSink` it takes: a `context` the frames are painted onto, an `add(seconds, duration)`
-      that takes the painted frame, and a `finish()` that hands back whatever the sink was collecting.
-      The walk is `frameTimesOf` and nothing else, so there is one frame count in this tree.
-      **Measurement:** a counting sink over both demos gives 308 and 399 frames at 30 frames a second
-      and 615 and 798 at 60, every timestamp is its index over the rate to within 1e-12, and the last
-      one is strictly under the figure's duration.
+- [x] **1. The walk and the sink.** `recordFigure(figure, sink, options)` walks a figure, paints each
+      frame onto the sink's own context and hands it over, and `FrameSink` is that sink: a `context`,
+      an `add(seconds, duration)` that may answer a promise, a `finish()` that hands back whatever it
+      collected, and an optional `cancel()` for a recording that failed part way. The walk is
+      `frameTimesOf` and there is no second frame count. It is `paint/record.ts` rather than
+      `figure/record.ts`, since a recorder that paints belongs beside the painter it drives.
+      **Measured:** 92 lines and 11 tests. A counting sink takes 308 and 399 frames of the two demos at
+      30 frames a second and 615 and 798 at 60, every time is its index over the rate within 1e-12,
+      every frame lasts one over the rate, and the last time is under the duration by less than one
+      frame. The recorder makes the same drawing calls over the solid demo as painting each frame on
+      its own does. The suite is 1295 tests over 86 files where it was 1284 over 85, and the door is
+      205 values and 237 types where it was 204 and 234.
 - [ ] **2. A frame painted whole, ground and all.** `paintFrame(context, frame, options)` fills the
       ground a recording needs and then paints the marks through `paintCanvas`. A recorded frame opens
       on whatever the last one left unless something fills it, where an SVG still is written onto a

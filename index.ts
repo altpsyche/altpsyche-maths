@@ -228,6 +228,8 @@ export { paintSvg, pathToData, svgElements, svgMarkup } from './paint/svg.js';
 export type { ElementMaker, PaintNode, PaintTarget, SvgColour, SvgElement, SvgMarkupOptions, SvgTheme } from './paint/svg.js';
 export { paintCanvas } from './paint/canvas.js';
 export type { CanvasGradientLike, CanvasLike } from './paint/canvas.js';
+export { recordFigure } from './paint/record.js';
+export type { FrameSink, RecordOptions, Recording } from './paint/record.js';
 export { arrow, brace, bracePath, callout, dot } from './figure/annotate.js';
 export type { ArrowOptions, BraceOptions, BracedOptions, CalloutOptions } from './figure/annotate.js';
 export { matrix } from './figure/matrix.js';
