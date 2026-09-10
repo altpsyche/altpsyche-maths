@@ -573,9 +573,13 @@ gives and a cell is placed against its own column edge. A matrix does the same b
 This is the rule `brace` already holds its label to, written down for the two kinds that make a reader
 expect otherwise.
 
-**What would change the answer** is glyph outlines for plain text, which 2.4.0 is the version of. A
-figure holding the outlines holds the width with them, and a column measured from outlines measures
-the same on every machine.
+**What would change the answer** is glyph outlines for plain text, and 2.4.0 refused them rather
+than adding them. Outlines mean a font file inside the figure and a parser to read it, which is a
+new value type in the format, where that version adds a kind an old figure survives. So a write
+sweeps a rectangle across a label and takes how far it runs as a number the figure gives, which is
+the same answer a column width takes and for the same reason. A figure holding the outlines would
+hold the width with them, and a column measured from outlines would measure the same on every
+machine.
 
 **A map is reached entry by entry, and that is not a turn.** `applyMatrix` interpolates from the
 identity entry by entry, so the numbers a figure writes beside a mapped grid are the numbers the

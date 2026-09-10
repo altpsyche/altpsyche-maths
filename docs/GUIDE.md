@@ -398,8 +398,9 @@ is produced by the same walk a recorder uses.
 A span that has not started applies at zero and a span already finished applies in full. That makes
 a figure's output a function of the time asked for and of nothing else.
 
-The animations are `fadeIn`, `fadeOut`, `fadeTo`, `draw`, `morph`, `morphEquation`, `countTo`,
-`moveBy`, `rotate`, `scale`, `growFrom`, `moveAlong`, `indicate`, `flash` and `circumscribe`.
+The animations are `fadeIn`, `fadeOut`, `fadeTo`, `draw`, `write`, `morph`, `morphEquation`,
+`countTo`, `moveBy`, `rotate`, `scale`, `growFrom`, `moveAlong`, `indicate`, `flash`,
+`circumscribe`, `showPassingFlash`, `wave` and `wiggle`.
 
 An **easing curve** maps the fraction of a span to the fraction of the change. The four are
 `linear`, `easeIn`, `easeOut` and `smoothstep`, the last being Perlin's cubic, flat at both ends.
@@ -422,6 +423,64 @@ which for a rotation is one.
 
 The quarters of the turn. The full turn is omitted, since this figure declares itself a loop and its
 frame at the duration is its frame at zero.
+
+## Writing something on
+
+`draw` cuts a path short, so a shape is drawn on from its start. It has nothing to cut on a text
+mark, which is a string a painter lays out, so it fades one instead.
+
+`write` draws the marks a name reaches one after another, each over its own share of the span. A
+typeset rule is one path per glyph, so a rule under a write is written glyph by glyph where the same
+rule under a draw has every glyph appearing at once.
+
+```ts
+import { Timeline, write } from '@altpsyche/maths';
+
+const writing = Timeline.empty()
+  .play(write('figure/rule'), 1.4)
+  .play(write('figure/reading', { across: 3.4 }), 0.8);
+```
+
+A text mark under a write is uncovered behind a rectangle that sweeps across it. How far the sweep
+runs is given in `across`, in figure units, because nothing in this package measures a string: a
+text mark carries a family name that a painter hands to the platform, so how wide the words come out
+is not known until they are drawn. A run short of the words leaves their tail clipped for the rest
+of the figure, so the number is taken at the widest the words get. A text mark under a write that
+names no `across` fades, which is what `draw` does.
+
+Where the sweep starts is read off the mark. The near edge is the anchor for text aligned to its
+start, half the run back for text aligned to its middle and the whole run back for text aligned to
+its end.
+
+## The indications that run along a path
+
+`showPassingFlash` adds a light that travels the length of a path. The light is a window of the
+path's own geometry, and it runs from behind the start to past the end, so it enters at one end and
+leaves at the other rather than appearing whole. `covers` is how much of the path it holds at once,
+as a share of the path's length.
+
+```ts
+import { Timeline, colourFrom, showPassingFlash, wave, wiggle } from '@altpsyche/maths';
+
+const pointed = Timeline.empty()
+  .play(showPassingFlash('figure/curve', { stroke: { colour: colourFrom('#f59e0b'), width: 0.05 }, covers: 0.25 }), 1.6)
+  .play(wave('figure/curve', { amplitude: 0.2, covers: 0.3 }), 1.2)
+  .play(wiggle('figure/dot', { factor: 1.2, angle: 0.2, rocks: 3 }), 0.8);
+```
+
+`wave` pushes the points of a shape along a direction, by a hump of the band's own width travelling
+across the shape. It moves the control points a path is made of rather than resampling it, so a
+shape drawn with few pieces shows a coarser wave than one drawn with many. The band travels a
+quarter turn clockwise off the push, so a shape pushed up is crossed from left to right.
+
+`wiggle` swells a shape the way `indicate` does and rocks it about the same point. Its rock count is
+rounded to a whole number, because a sine of a whole number of turns is at nothing at both ends of
+the span and any other count leaves the shape at an angle when the span closes.
+
+Each of the three leaves the marks exactly as it found them at both ends of its span. A light is in
+the list at every time and holds no path outside its own span, rather than arriving part way
+through: a mark that appears between one frame and the next reads, in a comparison between two
+frames, as something that changed.
 
 ## Tracks
 
