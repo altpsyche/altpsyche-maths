@@ -182,17 +182,26 @@ for its own maths, a module with no device code, which this package imports for 
 `Mat3` and then deletes its copies of. Its cost is the engine's rule that no export moves out from
 behind its one door.
 
-**A second entry point rather than the main door, and the sizes are why.** Walking static imports
-from the engine's `index.ts` and its `host/surface.ts`, which are the two eager roots its own import
-graph gate uses, reaches 27 source files whose built JavaScript is 207,090 bytes, and the arithmetic
-is 7,520 of that. So a static import through the main door pulls 202k into every consumer of this
-package including one that only ever draws SVG, to reach 7.3k of vectors and matrices. **The 600k this
-session first wrote was wrong**: it came from the built directory's own total, which counts both
-backends and every type declaration, where the walk counts what a static import actually reaches. The
-value types are worth importing at 7.5k and are not worth importing at 202k, which is what makes this
-a second entry point rather than a line off the door that already exists. **That entry point is filed
-in the engine's own roadmap as its item 3**, argued there on that package's merits, and it changes a
-standing refusal there rather than a line here. The
+**The second entry point exists and is published: `@altpsyche/engine/maths` at 0.4.0**, which the
+registry answers with both entries in its `exports`. That package worked, cut and released it as its
+own item 3 on 2026-09-10, argued on its own merits, and it settled the standing refusal there in the
+same batch: no export moves out from behind a door that package declares, with every name behind a
+second door still exported by the first.
+
+**Two numbers this file wrote about it were wrong, and the engine's own re-take is the one to read.**
+The first was 600k, taken from that package's built directory total, which counts both backends and
+every type declaration rather than what a static import reaches. The second was a walk that missed a
+module: 27 files and 207,090 bytes here against 28 files and 220,709 bytes there, the gap being one
+file reached eagerly through the renderer. **And the framing was wrong under both numbers.** Packed,
+installed and bundled, a consumer reaching the arithmetic through either door carries about 2,116
+bytes raw and the second door saves it two gzipped bytes, because a bundler already shakes the rest
+off. What the door buys is the consumer with no bundler: 1 file and 7,520 bytes against 28 files and
+220,709.
+
+**That consumer is this package on the way to a page.** The website prerenders its figure routes,
+which is Node importing the built artefact with nothing shaking anything off, so the door earns its
+keep on the path this package's own consumer already runs. What it costs is a promise for as long as
+that package exists, which is what a declared entry is. The
 second is a third package both import, which costs the engine's zero runtime dependencies, a third
 release to keep in step, and a third version in the consumer's tree. The third is the engine importing
 this package's values, which is a cycle and is refused by that package's own standing refusal.
