@@ -1180,12 +1180,15 @@ pivot, where `rotate` and `scale` take the middle of the box round the marks, be
 defined about the origin and a grid whose box centre sits elsewhere would be mapped about the wrong
 point.
 
-- [ ] **1. `matrix` is a node.** `figure/matrix.ts` holds a matrix of entries between two brackets,
+- [x] **1. `matrix` is a node.** `figure/matrix.ts` holds a matrix of entries between two brackets,
   each row a group and each entry a text node inside it, so `m/rows/1/0` reaches one entry and
   `m/rows/1` reaches a row. Each bracket is a path of three straight pieces. **The measurement**: the
   mark count of a 2 by 2, which is four entries and two brackets; the id of every mark it writes; the
   box round the whole against the width and the height it is given; and the places of the entries of a
-  3 by 2 against the row and column pitch.
+  3 by 2 against the row and column pitch. **Measured**: a 2 by 2 is 6 marks, 2 paths and 4 text, with
+  the ids `m/left`, `m/right` and `m/rows/0/0` through `m/rows/1/1`; the box round the two brackets is
+  the given box exactly, x from -5 to 5 and y from -4 to 4 for a 10 by 8; every entry of a 3 by 2 sits
+  on its cell centre to 1e-12; and the suite runs 1173 tests over 74 files, up from 1164 over 73.
 - [ ] **2. `table` is a node.** `figure/table.ts` holds rows of cells with a rule between rows and
   between columns, a heavier rule under a header row when the figure asks for one, and column widths
   the caller gives. **The measurement**: the mark count of a 3 by 3 with both sets of rules and a
@@ -1211,12 +1214,17 @@ point.
   and the sheet. **The measurement**: the demo's marks at three named times; the area of the drawn
   square against the determinant of the interpolated matrix at each of them; and the bytes of the
   committed still and strip, which regenerate byte for byte.
-- [ ] **6. The reference, the guide, the specification, and 2.3.0 cut.** `docs/REFERENCE.md` gains
-  every new door name, `docs/SPECIFICATION.md` writes the two node kinds and the one animation kind
-  with their fields, `docs/GUIDE.md` gains the section that maps a grid, `docs/FIGURE-FORMAT.md`
-  carries why a column width is given rather than measured, and the version is bumped in that commit.
-  **The measurement**: the reference gate over the door, the guide's blocks compiled, the
-  specification's count gates at their new numbers, and the done-criteria below verified line by line.
+- [ ] **6. The guide, the specification, the reasoning, and 2.3.0 cut.** `docs/SPECIFICATION.md`
+  writes the two node kinds and the one animation kind with their fields, `docs/GUIDE.md` gains the
+  section that maps a grid, `docs/FIGURE-FORMAT.md` carries why a column width is given rather than
+  measured, and the version is bumped in that commit. **The measurement**: the guide's blocks
+  compiled, the specification's count gates at their new numbers, and the done-criteria below verified
+  line by line.
+
+**Step 1 corrected step 6, and the reference gate is why.** `tests/reference.test.ts` holds the door
+and `docs/REFERENCE.md` equal in both directions, so a door name landing without its entry fails
+`npm test` in the commit that adds it. The reference is written in the step that opens the name rather
+than collected at the end, and step 6 keeps the guide, the specification and the reasoning.
 
 **Which step the demos gain from: 5.** It is the picture the version is named against and the only one
 of the six that draws. Steps 1 through 4 are what it is written from, which is the order both demos

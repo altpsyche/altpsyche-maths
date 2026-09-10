@@ -220,6 +220,8 @@ export { paintCanvas } from './paint/canvas.js';
 export type { CanvasGradientLike, CanvasLike } from './paint/canvas.js';
 export { arrow, brace, bracePath, callout, dot } from './figure/annotate.js';
 export type { ArrowOptions, BraceOptions, BracedOptions, CalloutOptions } from './figure/annotate.js';
+export { matrix } from './figure/matrix.js';
+export type { MatrixOptions } from './figure/matrix.js';
 export { typesetElement } from './figure/typeset.js';
 export type { EquationElement } from './figure/typeset.js';
 export { equationFromTex, equationNode, equationOf } from './figure/equation.js';

@@ -1395,6 +1395,24 @@ picture in a recording are the same picture.
   - `marker` — the disc left on the thing being named. Nothing is drawn where this is zero, which is
     what a callout pointing at a moving thing wants.
 
+## Matrices
+
+A matrix is drawn from the strings its entries are written as, so a matrix of numbers loads no
+typesetter. Each row is a group and each entry is a text node inside it, so `m/rows/1/0` names one
+entry and `m/rows/1` names the row it sits in.
+
+- `matrix(name, entries, options)` — a matrix placed in a figure: two brackets round a grid of
+  entries, each entry centred in a cell of its own. Rows of different lengths are refused, since a
+  matrix that is not rectangular has no grid to lay out. An entry is never measured, so a cell is a
+  share of the box rather than a width read off the text.
+- `MatrixOptions` — the `at` it is centred on, the `width` and `height` of the box it fills, the
+  `size` an entry is drawn at, the `fill` and `stroke` it is drawn with, and its `family`, `weight`,
+  `align` and `baseline`.
+  - `padding` — how far the entries sit inside the box on every side, a tenth of the shorter side
+    unless the figure names it.
+  - `serif` — how far each bracket's arms reach in across the top and the bottom, the padding
+    unless the figure names it.
+
 ## Equations
 
 Typesetting is the one call that loads MathJax, so a figure with no equations in it never reaches
