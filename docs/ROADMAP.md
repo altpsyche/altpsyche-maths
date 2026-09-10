@@ -152,6 +152,53 @@ as JSON with independent renderers on several platforms, and its known trouble i
 will meet: renderers drifting apart on the semantics the format left loose, text metrics worst of
 all.
 
+**A sixth decision is answered and it sets what the end of the 2.x band is for.** Siva's, taken on
+2026-09-10 after a reading of what this package, the engine and the website each hold twice.
+
+**Nothing is published until the 2.x band closes, and the release moves the consumer with it.** 2.1.0
+through 2.5.1 are cut and unpublished, and they stay that way. The band ends with one release: this
+package published, the engine published to whatever version this one installs, and `altpsyche.dev`
+moved onto both in the same sitting. **Why the release waits** is that the dependency architecture is
+part of what is being released, and publishing a version whose dependencies are about to be rearranged
+spends a version number on a shape that is not the shape.
+
+**The band ends with this package importing the engine rather than copying it.** The third decision
+above already says `@altpsyche/engine` is a dependency and the GPU painter loads it with
+`await import()`. What that decision did not say is where the value types live, and today they live in
+both packages: six `vec3` functions identical character for character, nine `mat4` functions
+overlapping, and until 2.5.1 two projections writing depth into different ranges. The found list below
+carries the reading. **So the duplication is closed inside the 2.x band rather than gated inside it.**
+
+**Three shapes close it and the third is refused.** The first is a second entry point in the engine
+for its own maths, a module with no device code, which this package imports for `Vec3`, `Mat4` and
+`Mat3` and then deletes its copies of. Its cost is the engine's rule that no export moves out from
+behind its one door, and a few kilobytes of arithmetic loaded by every consumer of this package. The
+second is a third package both import, which costs the engine's zero runtime dependencies, a third
+release to keep in step, and a third version in the consumer's tree. The third is the engine importing
+this package's values, which is a cycle and is refused by that package's own standing refusal.
+**The first is what this session recommends** and the call is Siva's, because it changes a rule in the
+engine rather than a line in this tree.
+
+**What is imported is `Vec3` and `Mat4`, and the flat transform stays this package's own.** `Mat3`
+here is a 2D affine transform with its translation in the third column, and `Mat3` there is the
+upper-left three by three of a `Mat4`. Both are nine readonly numbers, so importing one name for the
+two meanings makes the collision worse rather than closing it: one type would then be accepted
+everywhere the other is wanted with no second door to blame. So the flat transform keeps its own type
+in this tree and one of the two names has to change.
+
+**How the consumer holds one engine.** This package takes the engine as a dependency rather than a
+peer, since a peer is a second install and one install is the goal. The website also uses the engine
+directly for its shader work, so it keeps its own direct dependency and the two ranges have to resolve
+to one copy. **What holds that** is a test in the consumer that the version it resolves and the version
+this package resolves are the same, which is the guard that stops two engines from ever being on the
+page. The consumer's own duplicates go in the same crossing: a recorder that this package will own, a
+clock that reimplements what `duration` and `loop` mean, and three scalar helpers nothing calls.
+
+**The engine is opened, worked, cut and published whenever its half is needed.** That package has its
+own rules, its own gates and its own queue, and a finding written here is not queued there. So the
+`Mat3` brand, the second entry point and anything else this band needs from it are raised in that tree
+in its own terms, and this package installs the version that comes out.
+
 ## The eight gaps the GPU spike found, which are what it leaves behind
 
 **The spike is done and it was not a version.** It ran on 2026-09-09, drew a figure's marks as filled
@@ -1378,20 +1425,6 @@ written.
   other is wanted with nothing reported. The consumer already holds one file importing both packages.
   **What closes it** is a brand on one of the two, which is a change to a published type and wants the
   engine's agreement rather than a session's.
-
-- **The value types are held twice and nothing holds the copies equal.** `vec3`'s `add`, `sub`,
-  `scale`, `dot`, `cross` and `normalize` are identical character for character in both packages, both
-  files carry the same note about naming a magnitude around `Function.length`, and `mat4` overlaps
-  nine functions of which only `multiply` is byte for byte the same. Roughly 200 lines are held twice
-  across 390 here and 240 there. **The duplication is forced rather than careless**: the engine has
-  zero runtime dependencies and never imports this package, and this package draws without an engine
-  installed, so it cannot reach those values outside the GPU painter's dynamic import. A third leaf
-  package or the engine as a peer would close it and both move a published surface, so neither belongs
-  in the 2.x band. **What belongs in 2.x is a parity gate**: a test here, over a dev-only copy of the
-  engine, holding the shared functions equal on random inputs to a tolerance, so drift fails a gate
-  instead of waiting for a painter. **What drift already cost** is the two projections writing depth
-  into different ranges, which stood until 2.5.1 wrote the range WebGPU reads and which nothing here
-  would have caught before a painter met it.
 
 - **The recorder's seam is written already, in the consumer, and 2.6.0 should take it rather than
   invent one.** `lib/video/VideoRecorder.ts` is 232 lines and `components/figure/record.ts` is 77.
