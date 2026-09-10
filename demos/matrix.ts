@@ -35,7 +35,7 @@ import {
   type Figure,
   type FigureRecord,
   type Mark,
-  type Mat3,
+  type Transform2D,
   type NodeRecord,
 } from '../index.js';
 import { EMBER, FROST, INK, PEACH, STEEL } from './palette.js';
@@ -81,7 +81,7 @@ export const coords: Coords = {
  * which is the reading the square is drawn for. The two columns are where the
  * two sides of that square land.
  */
-export const MAP: Mat3 = [2, 1, 0, 1, 1.5, 0, 0, 0, 1];
+export const MAP: Transform2D = [2, 1, 0, 1, 1.5, 0, 0, 0, 1];
 
 /** The entries in the order the matrix draws them, which is by row, against the
  * identity they are counted from. */

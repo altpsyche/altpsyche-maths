@@ -15,7 +15,7 @@ import { outlinedMarks } from './outline.js';
 import { Timeline } from './timeline.js';
 import { insetMarks, type Inset } from './inset.js';
 import { resolveExtent, viewMatrix, type Extent, type ExtentChoice, type Fit } from './extent.js';
-import type { Mat3 } from '../values/mat3.js';
+import type { Transform2D } from '../values/mat3.js';
 import type { Mark } from './mark.js';
 
 /** The values a scene is rebuilt from, sampled out of the figure's tracks. This
@@ -138,7 +138,7 @@ export function extentAt(figure: Figure, seconds: number, aspect: number): Exten
  * to pass different times. What the painter is handed is the matrix, so the
  * extent and the centring stay in here.
  */
-export function viewAt(figure: Figure, seconds: number, width: number, height: number): Mat3 {
+export function viewAt(figure: Figure, seconds: number, width: number, height: number): Transform2D {
   return viewMatrix(extentAt(figure, seconds, width / height), figure.fit ?? 'contain', width, height);
 }
 

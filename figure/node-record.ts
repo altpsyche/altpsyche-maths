@@ -27,7 +27,7 @@
  * demo animates a tick length, and widening a number to an expression later costs
  * a minor rather than a major, since a bare number is a literal already.
  */
-import type { Mat3 } from '../values/mat3.js';
+import type { Transform2D } from '../values/mat3.js';
 import type { Vec2 } from '../values/vec2.js';
 import type { Vec3 } from '../values/vec3.js';
 import { interval, type Interval } from '../values/interval.js';
@@ -97,7 +97,7 @@ export interface GroupRecord {
   readonly kind: 'group';
   readonly name: string;
   readonly children: readonly NodeRecord[];
-  readonly transform?: Mat3;
+  readonly transform?: Transform2D;
   readonly style?: Style;
 }
 

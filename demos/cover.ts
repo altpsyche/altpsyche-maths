@@ -21,7 +21,7 @@ import {
   widestWidth,
   windingAt,
   type Mark,
-  type Mat3,
+  type Transform2D,
   type Vec2,
 } from '../index.js';
 import type { Drawn } from './render.js';
@@ -104,7 +104,7 @@ function along(grid: Grid, from: Vec2, to: Vec2, radius: number): void {
  * extra segment would draw a line the figure never asked for straight back
  * across the picture.
  */
-function loopsOf(mark: Mark & { kind: 'path' }, matrix: Mat3, closing: boolean): Vec2[][] {
+function loopsOf(mark: Mark & { kind: 'path' }, matrix: Transform2D, closing: boolean): Vec2[][] {
   const moved = transformPath(mark.path, matrix);
   const loops: Vec2[][] = [];
   for (let at = 0; at < moved.length; at++) {
@@ -117,7 +117,7 @@ function loopsOf(mark: Mark & { kind: 'path' }, matrix: Mat3, closing: boolean):
   return loops;
 }
 
-function stampText(grid: Grid, mark: Mark & { kind: 'text' }, matrix: Mat3): void {
+function stampText(grid: Grid, mark: Mark & { kind: 'text' }, matrix: Transform2D): void {
   const at = mat3.transformPoint(matrix, mark.at);
   const size = mark.size * mat3.scaleFactor(matrix);
   const width = ADVANCE * size * mark.text.length;
@@ -129,7 +129,7 @@ function stampText(grid: Grid, mark: Mark & { kind: 'text' }, matrix: Mat3): voi
   }
 }
 
-function stampFill(grid: Grid, mark: Mark & { kind: 'path' }, matrix: Mat3): void {
+function stampFill(grid: Grid, mark: Mark & { kind: 'path' }, matrix: Transform2D): void {
   const loops = loopsOf(mark, matrix, true);
   const rule = mark.fill?.rule ?? 'nonzero';
   for (let row = 0; row < grid.down; row++) {
@@ -146,7 +146,7 @@ function stampFill(grid: Grid, mark: Mark & { kind: 'path' }, matrix: Mat3): voi
   for (const loop of loops) for (let at = 1; at < loop.length; at++) along(grid, loop[at - 1], loop[at], 0);
 }
 
-function stampStroke(grid: Grid, mark: Mark & { kind: 'path' }, matrix: Mat3): void {
+function stampStroke(grid: Grid, mark: Mark & { kind: 'path' }, matrix: Transform2D): void {
   const half = (widestWidth(mark.stroke!.width) * mat3.scaleFactor(matrix)) / 2;
   for (const loop of loopsOf(mark, matrix, false)) {
     for (let at = 1; at < loop.length; at++) along(grid, loop[at - 1], loop[at], half);

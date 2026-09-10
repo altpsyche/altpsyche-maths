@@ -13,7 +13,7 @@
  * group transform would be shorter markup and it flips text: the view turns the
  * y axis over, and a mirrored transform mirrors the letters with it.
  */
-import { mat3, type Mat3 } from '../values/mat3.js';
+import { mat3, type Transform2D } from '../values/mat3.js';
 import { vec2 } from '../values/vec2.js';
 import type { Bounds } from '../figure/bounds.js';
 import { hexOf, type Colour } from '../values/colour.js';
@@ -85,7 +85,7 @@ export interface SvgMarkupOptions {
 
 /** The `d` attribute: a move to the start, a cubic per segment, and a close
  * where the subpath joins back. */
-export function pathToData(path: Path, view: Mat3): string {
+export function pathToData(path: Path, view: Transform2D): string {
   const parts: string[] = [];
   for (const subpath of path) {
     const start = mat3.transformPoint(view, subpath.start);
@@ -140,7 +140,7 @@ function fillPaint(fill: Fill, mark: string, prefix: string): string {
  * of the box in figure units is the smaller number on the surface and a width
  * worked out before the flip would come out negative.
  */
-function clipRect(clip: Bounds, view: Mat3): Record<string, string> {
+function clipRect(clip: Bounds, view: Transform2D): Record<string, string> {
   const one = mat3.transformPoint(view, vec2(clip.x.from, clip.y.from));
   const other = mat3.transformPoint(view, vec2(clip.x.to, clip.y.to));
   return {
@@ -176,7 +176,7 @@ function clipId(prefix: string, rect: Record<string, string>): string {
  * is what `userSpaceOnUse` means, so the same view that moved the geometry moves
  * them with it.
  */
-function defsElement(marks: readonly Mark[], view: Mat3, prefix: string): SvgElement | null {
+function defsElement(marks: readonly Mark[], view: Transform2D, prefix: string): SvgElement | null {
   const named: SvgElement[] = [];
   const clips = new Set<string>();
   for (const mark of marks) {
@@ -215,7 +215,7 @@ function defsElement(marks: readonly Mark[], view: Mat3, prefix: string): SvgEle
   return named.length > 0 ? { tag: 'defs', attributes: {}, children: named } : null;
 }
 
-function pathElement(mark: PathMark, view: Mat3, scale: number, prefix: string): SvgElement {
+function pathElement(mark: PathMark, view: Transform2D, scale: number, prefix: string): SvgElement {
   const attributes: Record<string, string> = {
     'data-mark': mark.id,
     d: pathToData(mark.path, view),
@@ -235,7 +235,7 @@ function pathElement(mark: PathMark, view: Mat3, scale: number, prefix: string):
   return { tag: 'path', attributes };
 }
 
-function textElement(mark: TextMark, view: Mat3, scale: number, lift: number, prefix: string): SvgElement {
+function textElement(mark: TextMark, view: Transform2D, scale: number, lift: number, prefix: string): SvgElement {
   const at = mat3.transformPoint(view, mark.at);
   const attributes: Record<string, string> = {
     'data-mark': mark.id,
@@ -267,7 +267,7 @@ function textLift(marks: readonly Mark[], scale: number, floor: number): number 
 
 /** Every mark described as an element, in the order they are drawn, behind the
  * one `<defs>` holding whatever gradients and clips they name. */
-export function svgElements(marks: readonly Mark[], view: Mat3, options: SvgMarkupOptions = {}): SvgElement[] {
+export function svgElements(marks: readonly Mark[], view: Transform2D, options: SvgMarkupOptions = {}): SvgElement[] {
   const scale = mat3.scaleFactor(view);
   // A stroke of two widths is no attribute an element carries, so it arrives here
   // as the filled outline it is drawn as before any of it is written out.
@@ -327,7 +327,7 @@ function themeStyle(theme: SvgTheme | undefined, ground: SvgColour | undefined):
  */
 export function svgMarkup(
   marks: readonly Mark[],
-  view: Mat3,
+  view: Transform2D,
   width: number,
   height: number,
   options: SvgMarkupOptions = {}
@@ -395,7 +395,7 @@ export function paintSvg<Made extends PaintNode>(
   // would offer the whole union its own call accepts, which is not one this painter can write to.
   into: PaintTarget<NoInfer<Made>>,
   marks: readonly Mark[],
-  view: Mat3,
+  view: Transform2D,
   maker: ElementMaker<Made>,
   options: SvgMarkupOptions = {}
 ): void {

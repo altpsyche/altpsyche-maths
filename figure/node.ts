@@ -6,7 +6,7 @@
  * how a picture is drawn, compared and hit tested, with nothing left to inherit
  * and nothing left to walk.
  */
-import { mat3, type Mat3 } from '../values/mat3.js';
+import { mat3, type Transform2D } from '../values/mat3.js';
 import { transformPath } from './path.js';
 import type { Path } from './path.js';
 import { vec2, type Vec2 } from '../values/vec2.js';
@@ -55,7 +55,7 @@ export interface TextNode extends Named, Style {
 
 export interface GroupNode extends Named {
   kind: 'group';
-  transform?: Mat3;
+  transform?: Transform2D;
   style?: Style;
   children: readonly Node[];
 }
@@ -74,7 +74,7 @@ export function text(name: string, at: Vec2, content: string, size: number, opti
   return { kind: 'text', name, at, text: content, size, ...options };
 }
 
-export function group(name: string, children: readonly Node[], options: { transform?: Mat3; style?: Style } = {}): GroupNode {
+export function group(name: string, children: readonly Node[], options: { transform?: Transform2D; style?: Style } = {}): GroupNode {
   return { kind: 'group', name, children, transform: options.transform, style: options.style };
 }
 
@@ -134,7 +134,7 @@ function uniqueNames(children: readonly Node[]): string[] {
 function walk(
   node: Node,
   prefix: string,
-  transform: Mat3,
+  transform: Transform2D,
   style: Style,
   clip: Bounds | null | undefined,
   into: Mark[]
@@ -216,7 +216,7 @@ function walk(
  * anchor here, and dropping one on an anchor outside the clip would cut a line
  * whose letters run back inside on the machine that has the font.
  */
-export function flatten(root: Node, transform: Mat3 = mat3.IDENTITY, style: Style = {}): readonly Mark[] {
+export function flatten(root: Node, transform: Transform2D = mat3.IDENTITY, style: Style = {}): readonly Mark[] {
   const marks: Mark[] = [];
   walk(root, '', transform, style, style.clip, marks);
   return marks;

@@ -5,7 +5,7 @@
  * at 640 across in a chapter and at 2160 by 3840 in a recording with no second
  * version of the picture and no coordinates rewritten.
  */
-import { mat3, type Mat3 } from '../values/mat3.js';
+import { mat3, type Transform2D } from '../values/mat3.js';
 import { vec2, type Vec2 } from '../values/vec2.js';
 import type { Mark } from './mark.js';
 
@@ -109,7 +109,7 @@ export function fractionOf(extent: Extent, across: number, up: number): Vec2 {
  * than in each painter is what keeps the two from disagreeing about which way up
  * a picture is.
  */
-export function viewMatrix(extent: Extent, fit: Fit, surfaceWidth: number, surfaceHeight: number): Mat3 {
+export function viewMatrix(extent: Extent, fit: Fit, surfaceWidth: number, surfaceHeight: number): Transform2D {
   const byWidth = surfaceWidth / extent.width;
   const byHeight = surfaceHeight / extent.height;
   const scale = fit === 'cover' ? Math.max(byWidth, byHeight) : Math.min(byWidth, byHeight);

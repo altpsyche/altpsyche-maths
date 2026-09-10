@@ -139,9 +139,11 @@ An interval is the numbers from one bound to another. Either bound may be the la
 
 ## Matrices
 
-- `Mat3` — nine numbers, column-major, which is the transform a group of marks carries and the one
-  that maps figure units onto a surface. The entry at flat index `col * 3 + row` is the one in that
-  column and row.
+- `Transform2D` — nine numbers, column-major, which is the transform a group of marks carries and
+  the one that maps figure units onto a surface. The entry at flat index `col * 3 + row` is the one
+  in that column and row. It is named for what it is rather than for its shape, since a general three
+  by three of the same nine numbers is published elsewhere and one name for two meanings is a type
+  that passes where the other is wanted.
 - `mat3` — the flat transform family.
   - `mat3.IDENTITY` — the transform that changes nothing.
   - `mat3.multiply(a, b)` — the product, applying `b` to a point first and then `a`, which is the

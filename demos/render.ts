@@ -17,7 +17,7 @@ import {
   type Extent,
   type Figure,
   type Mark,
-  type Mat3,
+  type Transform2D,
 } from '../index.js';
 import { readFileSync } from 'node:fs';
 import { GROUND, SHADE_THEME, THEME } from './palette.js';
@@ -92,7 +92,7 @@ export function stillMarkup(figure: Figure, seconds: number, width = WIDTH, heig
  * be measuring the painter rather than the picture. */
 export interface Drawn {
   marks: readonly Mark[];
-  matrix: Mat3;
+  matrix: Transform2D;
   width: number;
   height: number;
   /** The width the page shows it at, which is what turns a written size into a

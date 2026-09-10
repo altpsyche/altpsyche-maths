@@ -2,7 +2,7 @@
  * The transform a point in space carries: how a figure's camera turns a place in
  * the world into a place on the page.
  *
- * Sixteen numbers, column-major, matching the engine's layout the way `Mat3`
+ * Sixteen numbers, column-major, matching the engine's layout the way `Transform2D`
  * does: the first four are the first column rather than the first row, and the
  * entry at flat index `col * 4 + row` is the one in that column and row. The
  * fourth row exists so that a translation is a multiplication like every other
@@ -103,7 +103,7 @@ function rotationY(radians: number): Mat4 {
   ];
 }
 
-/** Turns x towards y, which is the flat rotation `Mat3` gives with a z left
+/** Turns x towards y, which is the flat rotation `Transform2D` gives with a z left
  * alone. */
 function rotationZ(radians: number): Mat4 {
   const c = Math.cos(radians);

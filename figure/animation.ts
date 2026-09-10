@@ -10,7 +10,7 @@
  * Each one is given how far through its own span the clock is, already eased, and
  * hands back the marks as they stand at that fraction.
  */
-import { mat3, type Mat3 } from '../values/mat3.js';
+import { mat3, type Transform2D } from '../values/mat3.js';
 import { vec2, type Vec2 } from '../values/vec2.js';
 import { lerp } from '../values/scalar.js';
 import { thereAndBack } from '../values/ease.js';
@@ -303,7 +303,7 @@ export function fadeTo(target: string, opacity: number): Animation {
  * The clip is left where the figure put it, so a mark an animation moves slides
  * through its own clip rather than carrying the window along with it.
  */
-export function carried(mark: Mark, through: Mat3): Mark {
+export function carried(mark: Mark, through: Transform2D): Mark {
   const scale = mat3.scaleFactor(through);
   if (mark.kind === 'text') {
     return {
@@ -338,7 +338,7 @@ export interface AboutOptions {
 function about(
   target: string,
   options: AboutOptions,
-  step: (along: number, pivot: Vec2) => Mat3 | null
+  step: (along: number, pivot: Vec2) => Transform2D | null
 ): Animation {
   return (marks, along) => {
     const touched = marks.filter((mark) => touches(mark.id, target));
@@ -353,7 +353,7 @@ function about(
 
 /** The transform for a change about a point: back to the origin, the change,
  * then back where it was. */
-function around(pivot: Vec2, change: Mat3): Mat3 {
+function around(pivot: Vec2, change: Transform2D): Transform2D {
   return mat3.multiply(mat3.multiply(mat3.translation(pivot), change), mat3.translation(vec2.scale(pivot, -1)));
 }
 
@@ -390,9 +390,9 @@ export function scale(target: string, to: number, options: ScaleOptions = {}): A
 /** The matrix a map has reached partway along, taken entry by entry from the
  * identity, which is what makes the entries beside the picture the numbers it is
  * counting to. */
-function blended(m: Mat3, along: number): Mat3 {
+function blended(m: Transform2D, along: number): Transform2D {
   const from = mat3.IDENTITY;
-  return from.map((entry, at) => lerp(entry, m[at], along)) as unknown as Mat3;
+  return from.map((entry, at) => lerp(entry, m[at], along)) as unknown as Transform2D;
 }
 
 /**
@@ -409,7 +409,7 @@ function blended(m: Mat3, along: number): Mat3 {
  * onto one line. A figure that wants the turn itself asks `rotate`, which
  * interpolates the angle and holds the area at 1.
  */
-export function applyMatrix(target: string, m: Mat3, options: AboutOptions = {}): Animation {
+export function applyMatrix(target: string, m: Transform2D, options: AboutOptions = {}): Animation {
   const pivot = options.pivot ?? vec2(0, 0);
   return (marks, along) => {
     if (along === 0) return marks;

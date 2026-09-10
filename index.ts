@@ -20,7 +20,7 @@ export type { Vec3 } from './values/vec3.js';
 export { interval } from './values/interval.js';
 export type { Interval } from './values/interval.js';
 export { mat3 } from './values/mat3.js';
-export type { Mat3 } from './values/mat3.js';
+export type { Transform2D } from './values/mat3.js';
 export { mat4 } from './values/mat4.js';
 export type { Mat4 } from './values/mat4.js';
 export { SAME_TIME, keyAt, sampleTrack, sampleTracks, withKey, withoutKey } from './timing/track.js';

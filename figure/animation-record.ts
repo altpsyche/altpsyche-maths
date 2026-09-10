@@ -17,7 +17,7 @@
  * already take. It is read off the marks as they arrive where a record names
  * none, which is what keeps a turn of a whole circle ending where it began.
  */
-import type { Mat3 } from '../values/mat3.js';
+import type { Transform2D } from '../values/mat3.js';
 import type { Vec2 } from '../values/vec2.js';
 import {
   applyMatrix,
@@ -119,7 +119,7 @@ export interface ScaleRecord {
 export interface ApplyMatrixRecord {
   readonly kind: 'applyMatrix';
   readonly target: string;
-  readonly matrix: Mat3;
+  readonly matrix: Transform2D;
   readonly options?: AboutOptions;
 }
 

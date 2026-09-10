@@ -10,7 +10,7 @@
  * painter, rather than set on the context. Setting it would flip the text, since
  * the view turns the y axis over.
  */
-import { mat3, type Mat3 } from '../values/mat3.js';
+import { mat3, type Transform2D } from '../values/mat3.js';
 import { vec2 } from '../values/vec2.js';
 import { hexOf } from '../values/colour.js';
 import type { Fill, Mark, PathMark, TextMark } from '../figure/mark.js';
@@ -67,7 +67,7 @@ export interface CanvasLike {
 /** SVG says middle where a canvas says center, and the two mean the same place. */
 const ALIGNMENT = { start: 'start', middle: 'center', end: 'end' } as const;
 
-function tracePath(context: CanvasLike, path: Path, view: Mat3): void {
+function tracePath(context: CanvasLike, path: Path, view: Transform2D): void {
   context.beginPath();
   for (const subpath of path) {
     const start = mat3.transformPoint(view, subpath.start);
@@ -94,7 +94,7 @@ function tracePath(context: CanvasLike, path: Path, view: Mat3): void {
  * geometry it belongs to is painted through the same view, and a canvas gradient
  * is placed in the units it is painted in.
  */
-function fillPaint(context: CanvasLike, fill: Fill, view: Mat3): unknown {
+function fillPaint(context: CanvasLike, fill: Fill, view: Transform2D): unknown {
   if (!fill.gradient || !context.createLinearGradient) return hexOf(fill.colour);
   const from = mat3.transformPoint(view, fill.gradient.from);
   const to = mat3.transformPoint(view, fill.gradient.to);
@@ -110,7 +110,7 @@ function fillPaint(context: CanvasLike, fill: Fill, view: Mat3): unknown {
  * are taken lowest first afterwards: the view turns the y axis over, so a width
  * worked out before the flip would come out negative.
  */
-function clipTo(context: CanvasLike, mark: Mark, view: Mat3): void {
+function clipTo(context: CanvasLike, mark: Mark, view: Transform2D): void {
   if (!mark.clip) return;
   const one = mat3.transformPoint(view, vec2(mark.clip.x.from, mark.clip.y.from));
   const other = mat3.transformPoint(view, vec2(mark.clip.x.to, mark.clip.y.to));
@@ -124,7 +124,7 @@ function clipTo(context: CanvasLike, mark: Mark, view: Mat3): void {
   context.clip();
 }
 
-function paintPath(context: CanvasLike, mark: PathMark, view: Mat3, scale: number): void {
+function paintPath(context: CanvasLike, mark: PathMark, view: Transform2D, scale: number): void {
   tracePath(context, mark.path, view);
   if (mark.fill) {
     context.fillStyle = fillPaint(context, mark.fill, view);
@@ -143,7 +143,7 @@ function paintPath(context: CanvasLike, mark: PathMark, view: Mat3, scale: numbe
   }
 }
 
-function paintText(context: CanvasLike, mark: TextMark, view: Mat3, scale: number): void {
+function paintText(context: CanvasLike, mark: TextMark, view: Transform2D, scale: number): void {
   const at = mat3.transformPoint(view, mark.at);
   const weight = mark.weight === undefined ? '' : `${mark.weight} `;
   context.font = `${weight}${mark.size * scale}px ${mark.family}`;
@@ -161,7 +161,7 @@ function paintText(context: CanvasLike, mark: TextMark, view: Mat3, scale: numbe
  * context that has been used before therefore looks the same as one drawn on a
  * fresh context.
  */
-export function paintCanvas(context: CanvasLike, marks: readonly Mark[], view: Mat3): void {
+export function paintCanvas(context: CanvasLike, marks: readonly Mark[], view: Transform2D): void {
   const scale = mat3.scaleFactor(view);
   // A stroke of two widths is no setting a context holds, so it arrives here as
   // the filled outline it is drawn as before any of it is traced.

@@ -296,7 +296,7 @@ other seven run inside an animation or inside the resolver, so a figure never ca
 | `lerpPath` | two paths and a fraction | `morph` |
 | `alignPaths` | two paths, and it returns two | `morph` |
 | `outlinePath` | a path and a width | the resolver, on every tapered stroke |
-| `transformPath` | a path and a `Mat3` | the resolver, on a group's transform |
+| `transformPath` | a path and a `Transform2D` | the resolver, on a group's transform |
 | `cutPath` | a path and a rectangle | `unionOf` and its two siblings |
 | `splitCurve` | one `Cubic` and a fraction | `cutPath` and `alignPaths` |
 
@@ -359,7 +359,7 @@ in the same paragraph: 1.5.0 measured the bound at 2.14, corrected step 7 and le
 ### The value types, eleven of them
 
 A parameter is often not a number. `Coords`, `Scale`, `Interval`, `Extent`, `Camera3Choice`,
-`Mat3`, `Style` with its `Stroke`, its `Fill` and the `Bounds` it carries as a clip, `Equation`, a
+`Transform2D`, `Style` with its `Stroke`, its `Fill` and the `Bounds` it carries as a clip, `Equation`, a
 `Track`, a `Curve`, and an `Inset`. Each needs a written form, and each is small, and there are eleven
 of them. The choice is in this list rather than the `Camera3` it builds, because the built one carries
 closures. `Bounds` is inside `Style` rather than beside it, since 1.6.0 put the clip there and the

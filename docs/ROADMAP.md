@@ -162,6 +162,14 @@ moved onto both in the same sitting. **Why the release waits** is that the depen
 part of what is being released, and publishing a version whose dependencies are about to be rearranged
 spends a version number on a shape that is not the shape.
 
+**The closing release carries the number the door has earned, and that is Siva's at release time.**
+The band has already taken a name off the door: the flat transform type published at 2.0.0 as `Mat3`
+is `Transform2D` now. Nothing imports it, since what a caller reaches for is the `mat3` family and
+that name did not move, but a name that left the door is a break whatever imports it. The versions
+inside the band are bookkeeping while nothing is published, and the ladder's own 3.0.0 is a major of
+the format rather than of the door, so the two are different axes and the release decides which
+number the break takes.
+
 **The band ends with this package importing the engine rather than copying it.** The third decision
 above already says `@altpsyche/engine` is a dependency and the GPU painter loads it with
 `await import()`. What that decision did not say is where the value types live, and today they live in
@@ -191,18 +199,18 @@ this package's values, which is a cycle and is refused by that package's own sta
 **The first is what this session recommends** and the call is Siva's, because it changes a rule in the
 engine rather than a line in this tree.
 
-**The `Mat3` name is this tree's to change and was not filed in the engine.** Its `Mat3` is a general
-three by three with a family of two functions, `fromMat4` and `pack`, which is the standard name for
-the standard thing. The special-purpose one is here: a transform of the plane written as nine numbers.
-An item filed there would have amounted to this package needing it, which that package's first rule
-throws out.
+**The name collision is closed here rather than there, and the flat transform is now
+`Transform2D`.** The engine's `Mat3` is a general three by three with a family of two functions,
+`fromMat4` and `pack`, which is the standard name for the standard thing. The special-purpose type
+was the one here, a transform of the plane written as nine numbers, so it took the name that says
+what it is. An item filed in that tree would have amounted to this package needing it, which that
+package's first rule throws out.
 
-**What is imported is `Vec3` and `Mat4`, and the flat transform stays this package's own.** `Mat3`
-here is a 2D affine transform with its translation in the third column, and `Mat3` there is the
-upper-left three by three of a `Mat4`. Both are nine readonly numbers, so importing one name for the
-two meanings makes the collision worse rather than closing it: one type would then be accepted
-everywhere the other is wanted with no second door to blame. So the flat transform keeps its own type
-in this tree and one of the two names has to change.
+**What is imported is `Vec3` and `Mat4`, and the flat transform stays this package's own.**
+`Transform2D` here is an affine transform of the plane with its translation in the third column, and
+`Mat3` there is the upper-left three by three of a `Mat4`. Both are nine readonly numbers, so
+importing one name for the two meanings would make the collision worse rather than closing it: one
+type would then be accepted everywhere the other is wanted with no second door to blame.
 
 **How the consumer holds one engine: a peer dependency, which is the engine's own reading and not
 this one's.** This session first wrote a plain dependency, on the argument that a peer is a second

@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { applyMatrix, colourFrom, flatten, line, mat3, polygon, rotate, shape, vec2 } from '@altpsyche/maths';
-import type { Mark, Mat3, PathMark } from '@altpsyche/maths';
+import type { Mark, Transform2D, PathMark } from '@altpsyche/maths';
 
 /**
  * The linear map over a list of marks, and the price of reaching it entry by
@@ -22,14 +22,14 @@ function areaOf(mark: PathMark): number {
   return Math.abs(twice) / 2;
 }
 
-const determinant = (m: Mat3) => m[0] * m[4] - m[3] * m[1];
+const determinant = (m: Transform2D) => m[0] * m[4] - m[3] * m[1];
 const reached = (turn: number, along: number) => {
   const marks = applyMatrix('s', mat3.rotation(turn))(square, along);
   return areaOf(paths(marks)[0]);
 };
 
 describe('applyMatrix', () => {
-  const shear: Mat3 = [1, 0, 0, 1, 1, 0, 0, 0, 1];
+  const shear: Transform2D = [1, 0, 0, 1, 1, 0, 0, 0, 1];
 
   it('leaves the marks where they were at the start of its span', () => {
     expect(paths(applyMatrix('s', shear)(square, 0))[0].path[0].start).toEqual({ x: 0, y: 0 });
@@ -41,7 +41,7 @@ describe('applyMatrix', () => {
   });
 
   it('takes a straight line to a straight line, so its two ends are the whole of it', () => {
-    const through: Mat3 = [1, 0, 0, 0.37, 1, 0, 0, 0, 1];
+    const through: Transform2D = [1, 0, 0, 0.37, 1, 0, 0, 0, 1];
     const corners = [vec2(1, 0), vec2(1, 1), vec2(0, 1), vec2(0, 0)];
     const mapped = paths(applyMatrix('s', shear)(square, 0.37))[0];
     for (const [at, curve] of mapped.path[0].curves.entries()) {
@@ -60,7 +60,7 @@ describe('applyMatrix', () => {
 
   it('holds the area to the determinant it has reached, all the way along', () => {
     for (const along of [0, 0.25, 0.5, 0.75, 1]) {
-      const through: Mat3 = mat3.IDENTITY.map((entry, at) => entry + (shear[at] - entry) * along) as unknown as Mat3;
+      const through: Transform2D = mat3.IDENTITY.map((entry, at) => entry + (shear[at] - entry) * along) as unknown as Transform2D;
       expect(areaOf(paths(applyMatrix('s', shear)(square, along))[0])).toBeCloseTo(Math.abs(determinant(through)), 12);
     }
   });

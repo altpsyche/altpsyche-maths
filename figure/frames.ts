@@ -12,7 +12,7 @@
  */
 import { marksAt, durationOf, viewAt, type Figure } from './figure.js';
 import type { Mark } from './mark.js';
-import type { Mat3 } from '../values/mat3.js';
+import type { Transform2D } from '../values/mat3.js';
 
 export interface Frame {
   /** Its place in the walk, counting from nothing. */
@@ -22,7 +22,7 @@ export interface Frame {
   marks: readonly Mark[];
   /** The matrix a painter needs for these marks, built at this frame's own
    * time. */
-  view: Mat3;
+  view: Transform2D;
 }
 
 /**

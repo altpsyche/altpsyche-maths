@@ -123,7 +123,7 @@ An `Interval` in `x` and one in `y`, both required, which is a rectangle in the 
 clip is one of these, and a clip inside a clip is the rectangle both of them hold, since a group
 cannot show what the group above it has already cut away.
 
-### `Mat3`
+### `Transform2D`
 
 Nine numbers as a list, column-major, which is the order a group's transform sits outside its
 child's: `multiply(a, b)` applies `b` to a point and then `a`.
@@ -398,7 +398,7 @@ nodes above it joined by `/`. So a name is unique among its siblings and stable 
 
 | kind | fields |
 | --- | --- |
-| `group` | `children` as nodes, `transform` as a `Mat3`, `style` |
+| `group` | `children` as nodes, `transform` as a `Transform2D`, `style` |
 | `shape` | `path` as a path record, `style` |
 | `text` | `at`, `content`, `size` as a plain number, `options` |
 

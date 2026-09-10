@@ -13,7 +13,7 @@ import {
   vec2,
   type AnimationRecord,
   type FigureRecord,
-  type Mat3,
+  type Transform2D,
   type NodeRecord,
 } from '../index.js';
 import { turning } from './figures.js';
@@ -80,7 +80,7 @@ describe('a table as a record', () => {
 });
 
 describe('a linear map as a record', () => {
-  const shear: Mat3 = [1, 0, 0, 0.5, 1, 0, 0, 0, 1];
+  const shear: Transform2D = [1, 0, 0, 0.5, 1, 0, 0, 0, 1];
   const marks = flatten(matrix('m', cells, options));
 
   it('reads back to the call it was written from', () => {

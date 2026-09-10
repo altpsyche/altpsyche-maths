@@ -25,7 +25,7 @@
  * found: a TeX error, a character the font has no outline for, and a macro the
  * typesetter does not know.
  */
-import { mat3, type Mat3 } from '../values/mat3.js';
+import { mat3, type Transform2D } from '../values/mat3.js';
 import { vec2, type Vec2 } from '../values/vec2.js';
 import { rect, transformPath, type Path } from './path.js';
 import { group, shape, type GroupNode } from './node.js';
@@ -49,7 +49,7 @@ export interface Equation {
 
 /** Both transforms a typeset expression uses. Anything else refuses rather than
  * being ignored, which would leave a glyph sitting at the origin. */
-function transformOf(text: string): Mat3 {
+function transformOf(text: string): Transform2D {
   let matrix = mat3.IDENTITY;
   for (const match of text.matchAll(/([A-Za-z]+)\s*\(([^)]*)\)/g)) {
     const name = match[1] ?? '';
@@ -145,11 +145,11 @@ export function equationOf(root: EquationElement): Equation {
   const svg = svgOf(root);
   const marks: PathMark[] = [];
 
-  const mark = (path: Path, stack: Mat3, suffix: string) => {
+  const mark = (path: Path, stack: Transform2D, suffix: string) => {
     marks.push({ kind: 'path', id: `${marks.length}-${suffix}`, path: transformPath(path, stack) });
   };
 
-  const walk = (element: EquationElement, stack: Mat3) => {
+  const walk = (element: EquationElement, stack: Transform2D) => {
     for (const child of element.children) {
       refuse(child);
       const written = child.attributes.transform;

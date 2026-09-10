@@ -12,7 +12,7 @@
  * behind one is the figure's own marks, since a frame round a picture is a shape
  * and this package already has shapes.
  */
-import { mat3, type Mat3 } from '../values/mat3.js';
+import { mat3, type Transform2D } from '../values/mat3.js';
 import { vec2 } from '../values/vec2.js';
 import { carried, touches } from './animation.js';
 import { boundsOf, centreOf, grownBy, overlapOf, type Bounds } from './bounds.js';
@@ -62,7 +62,7 @@ export interface Inset {
  * figure's own units and count upward the same way, so this is a scale about the
  * middle of what is shown followed by a move to the middle of the rectangle.
  */
-export function insetMatrix(shows: Extent, into: Bounds, fit: Fit = 'contain'): Mat3 {
+export function insetMatrix(shows: Extent, into: Bounds, fit: Fit = 'contain'): Transform2D {
   const across = Math.abs(into.x.to - into.x.from);
   const up = Math.abs(into.y.to - into.y.from);
   const byWidth = across / shows.width;
@@ -78,7 +78,7 @@ export function insetMatrix(shows: Extent, into: Bounds, fit: Fit = 'contain'): 
 /** A rectangle through a transform that keeps it one, which is every transform
  * an inset applies: the corners are taken lowest first afterwards, since a scale
  * of either sign is allowed and would otherwise give a box the wrong way round. */
-function movedBounds(box: Bounds, through: Mat3): Bounds {
+function movedBounds(box: Bounds, through: Transform2D): Bounds {
   const one = mat3.transformPoint(through, vec2(box.x.from, box.y.from));
   const other = mat3.transformPoint(through, vec2(box.x.to, box.y.to));
   return {

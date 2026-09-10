@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { marksAt, type Mark, type Mat3, type PathMark } from '../index.js';
+import { marksAt, type Mark, type Transform2D, type PathMark } from '../index.js';
 import { ENTRIES, MAP, TIMES, mapped } from '../demos/matrix.js';
 
 /**
@@ -32,8 +32,8 @@ const along = (seconds: number) => {
   return fraction <= 0.5 ? fraction * 2 : 2 - fraction * 2;
 };
 
-const reached = (at: number): Mat3 =>
-  [1, 0, 0, 0, 1, 0, 0, 0, 1].map((entry, index) => entry + (MAP[index] - entry) * at) as unknown as Mat3;
+const reached = (at: number): Transform2D =>
+  [1, 0, 0, 0, 1, 0, 0, 0, 1].map((entry, index) => entry + (MAP[index] - entry) * at) as unknown as Transform2D;
 
 describe('the matrix demo', () => {
   it('draws twelve marks besides its grid at every named time', () => {

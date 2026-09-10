@@ -9,7 +9,7 @@
  * into an arc needs no special case.
  */
 import { vec2, type Vec2 } from '../values/vec2.js';
-import { mat3, type Mat3 } from '../values/mat3.js';
+import { mat3, type Transform2D } from '../values/mat3.js';
 
 /** One cubic segment, carrying its two controls and where it ends. Where it
  * begins is wherever the segment before it ended. */
@@ -184,7 +184,7 @@ export function splitCurve(from: Vec2, curve: Cubic, along: number): [Cubic, Cub
 
 /** Every point of a path moved by a transform, which is how a group's transform
  * reaches the geometry rather than being carried alongside it. */
-export function transformPath(path: Path, m: Mat3): Path {
+export function transformPath(path: Path, m: Transform2D): Path {
   const point = (v: Vec2) => mat3.transformPoint(m, v);
   return path.map((subpath) => ({
     start: point(subpath.start),
