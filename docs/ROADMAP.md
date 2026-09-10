@@ -172,7 +172,15 @@ carries the reading. **So the duplication is closed inside the 2.x band rather t
 **Three shapes close it and the third is refused.** The first is a second entry point in the engine
 for its own maths, a module with no device code, which this package imports for `Vec3`, `Mat4` and
 `Mat3` and then deletes its copies of. Its cost is the engine's rule that no export moves out from
-behind its one door, and a few kilobytes of arithmetic loaded by every consumer of this package. The
+behind its one door.
+
+**A second entry point rather than the main door, and the sizes are why.** The engine's built package
+holds 772k of JavaScript, of which 176k is the WebGPU backend that the renderer reaches by
+`await import()` and that a gate there proves is unreachable statically from `index.ts`. So a static
+import through the main door pulls the rest of the eager closure, roughly 600k, into every consumer of
+this package including one that only ever draws SVG. `scene/maths.js` is 8k of it. The value types are
+worth importing at 8k and are not worth importing at 600k, which is what makes this a second entry
+point rather than a line off the door that already exists. The
 second is a third package both import, which costs the engine's zero runtime dependencies, a third
 release to keep in step, and a third version in the consumer's tree. The third is the engine importing
 this package's values, which is a cycle and is refused by that package's own standing refusal.
