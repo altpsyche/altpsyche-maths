@@ -416,6 +416,37 @@ export function flash(target: string, options: FlashOptions): Animation {
   };
 }
 
+export interface WiggleOptions extends AboutOptions {
+  /** How big it gets at the widest of the swell. */
+  factor?: number;
+  /** How far it rocks either way, in radians. */
+  angle?: number;
+  /** How many times it rocks over the span. */
+  rocks?: number;
+}
+
+/**
+ * A swell and a rock about a point, for a figure that wants something noticed
+ * without moving it.
+ *
+ * The swell is `indicate`'s, out and back over the span, and the rock is a sine
+ * of a whole number of turns, so both are at nothing at both ends and the marks
+ * come back the geometry they went in as. A whole number of rocks is what makes
+ * that true of the turn: half a rock would leave the shape at an angle when the
+ * span ended.
+ */
+export function wiggle(target: string, options: WiggleOptions = {}): Animation {
+  const peak = options.factor ?? 1.1;
+  const angle = options.angle ?? 0.1;
+  const rocks = Math.max(1, Math.round(options.rocks ?? 3));
+  return about(target, options, (along, pivot) => {
+    const factor = lerp(1, peak, thereAndBack(along));
+    const turned = angle * Math.sin(2 * Math.PI * rocks * along);
+    if (factor === 1 && turned === 0) return null;
+    return around(pivot, mat3.multiply(mat3.rotation(turned), mat3.scaling(vec2(factor, factor))));
+  });
+}
+
 export interface WaveOptions {
   /** Which way a point is pushed. Up unless named. */
   direction?: Vec2;

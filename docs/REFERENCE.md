@@ -1176,6 +1176,14 @@ a group of that name.
     distance from the middle of the box to its corner unless named, so the rays sit outside the
     thing they point at.
   - `inner` — where the near end of a ray sits, as a share of the reach.
+- `wiggle(target, options)` — a swell and a rock about a point, for a figure that wants something
+  noticed without moving it. Both are at nothing at both ends of the span, so the marks come back
+  the geometry they went in as.
+- `WiggleOptions` — `AboutOptions`, plus:
+  - `factor` — how big it gets at the widest of the swell.
+  - `angle` — how far it rocks either way, in radians.
+  - `rocks` — how many times it rocks over the span, rounded to a whole number so the turn ends
+    where it began.
 - `wave(target, options)` — a hump travelling across a shape, pushing the points it reaches. It
   moves the control points a path is made of rather than resampling it, so a shape drawn with few
   pieces shows a coarser wave than one drawn with many.

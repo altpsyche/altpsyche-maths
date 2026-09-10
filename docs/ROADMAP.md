@@ -1222,11 +1222,13 @@ figure names one number and the animation derives the rest.
   reading 0.000000, 0.270579, 0.299994, 0.300000, 0.299994, 0.287032 and 0.000000 against an
   amplitude of 0.3. The marks at 0 and at 1 are the ones handed in, by `sameMarks`, and a push along
   x leaves every y where it was to twelve places.
-- [ ] **4. `wiggle` is an animation.** A swell and a rock about a point, the point being the middle of
-  the box round the marks unless the figure names one, back where it started at both ends.
-  **The measurement**: the factor and the angle at the middle of the span against the ones asked for;
-  the marks identical at 0 and at 1 by tolerance; and a wiggle of a whole number of rocks landing on
-  the geometry it started from.
+- [x] **4. `wiggle` is an animation.** A swell and a rock about a point, the point being the middle of
+  the box round the marks unless the figure names one, back where it started at both ends. **The
+  measurement**: at a factor of 1.3, an angle of 0.3 and three rocks, the turn reads 0.000000,
+  0.300000, -0.300000, 0.000000, 0.300000, -0.300000 and -0.000000 at seven fractions of the span
+  with the box round it at 1.000000, 1.127610, 1.268561, 1.300000, 1.268561, 1.127610 and 1.000000,
+  so the swell is `indicate`'s and the rock is a sine of a whole number of turns. `sameMarks` holds
+  at 0 and at 1 for one, two and five rocks and for a rock count of 2.6, which is rounded.
 - [ ] **5. `write` is an animation.** Path marks under the target drawn on one after another over
   their own slices of the span, and a text mark under it swept behind a clip that crosses the run the
   animation names. **The measurement**: which glyphs of a two-glyph rule are drawn at a third and at
