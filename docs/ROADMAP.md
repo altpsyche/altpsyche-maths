@@ -1235,13 +1235,17 @@ answer** is a cross-fade of the two, which costs that ghost.
   glyphs into 8 giving 6 pairs, 1 leaving and 2 arriving, which is what `matchGlyphs` gave before the
   key was a parameter; and a path and a text mark carrying one relative id pair with nothing, by name
   and by order alike. 1258 tests over 83 files before, 1263 over 84 after.
-- [ ] **2. `morphGroup` is an animation.** `figure/animation.ts` gains `morphGroup(from, to)`: a paired
-  path mark walked by `lerpPath`, a paired text mark walked by its anchor and its size with the string
-  swapping at half, an unpaired leaving mark fading out, a partner dimming as the walk lands on it, and
-  the handover at one. **The measurement**: the marks at nothing against the marks handed in, compared
-  by tolerance; the marks at one against the arriving group's own marks, with every leaving mark at
-  nothing; the walked point at half of the span against the midpoint of the two paired paths; and a
-  name matching nothing changing nothing.
+- [x] **2. `morphGroup` is an animation.** `figure/animation.ts` gained `morphGroup(from, to)`: a
+  paired path mark walked by `lerpPath`, a paired text mark walked by its anchor and its size with the
+  string swapping at half, an unpaired leaving mark fading out, a partner dimming as the walk lands on
+  it, and the handover at one. **The measurement**: at nothing the marks handed in come back by
+  identity; a disc walked 4 units onto another disc reads the midpoint circle at half, sampled at five
+  fractions of the length to 1e-9, and the disc it lands on at one, sampled at six fractions to 1e-9,
+  which is what says the handover shows nothing; the mark being walked onto reads 0.75, 0.5 and 0.25
+  of its own opacity at a quarter, a half and three quarters, and at one every walking mark is at
+  nothing with the group arrived at unchanged mark for mark; a paired string reads `one` at 0.49 and
+  `two` at 0.5 while its anchor reads 1 at a quarter and 3 at three quarters; and a name matching
+  nothing changes nothing. 1263 tests over 84 files before, 1271 over 85 after.
 - [ ] **3. A paired mark's style walks.** The fill colour, the stroke colour and the stroke width walk
   to the partner's, a width given as a number walks against a taper entry by entry, and a gradient is
   the leaving mark's until half the span. **The measurement**: the fill colour at half against
