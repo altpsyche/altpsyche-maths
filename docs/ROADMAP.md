@@ -366,12 +366,11 @@ because every one would have been written against an API the format is going to 
 went on in front of the format, because each changes something the format freezes a written form for,
 and freezing first costs a major of the format's own version to change it afterwards. Eight went on
 behind, because each adds a kind or a painter, which is a format minor an old figure survives, and
-three more are written past those because a session should not rediscover them. Two of those eight
-are left, since 2.1.0 through 2.6.0 are cut.
+three more are written past those because a session should not rediscover them. One of those eight
+is left, since 2.1.0 through 2.7.0 are cut.
 
 | version | what lands | what it changes | steps | cut against | depends on | plan |
 | --- | --- | --- | --- | --- | --- | --- |
-| 2.7.0 | the GPU painter | nothing in the format, and a name at the door | 6 | both demos through a third painter in a browser gate, pixel for pixel against the SVG painter | `@altpsyche/engine` 0.4.0 as it stands, declared as a peer, and `playwright` for the gate | below |
 | 2.8.0 | dashes and quadratics drawn on a GPU | nothing; `Stroke.dash` is already in the mark and no painter draws it | to plan | a dashed figure, and the strip that shows it moving | `@altpsyche/engine` | to plan |
 | 2.9.0 | text on a GPU, and the recorder running without a page | nothing in the format | to plan | every demo recorded off a card | `@altpsyche/engine`, a source of glyph outlines, 2.6.0, and a canvas with no page behind it if `mediabunny` takes nothing else | to plan |
 | 3.0.0 | depth, so a figure in space keeps it | what a `Mark` may ask for, which breaks the format's own version | to plan | the solid demo, whose crossing curve is drawn in the right order rather than the tree's | `@altpsyche/engine`, and the fourth decision above | blocked on a decision |
@@ -422,16 +421,17 @@ the format's value types.
 **What is cut is not here.** A version that is cut leaves this table, its entry is deleted, and the
 Now section and `git log` are what keep it.
 
-**Four things wait off the ladder, and each waits on something named.**
+**Three things wait off the ladder, and each waits on something named.** The GPU painter was the
+fourth and it is cut, and it did not wait for the engine's stencil in the end: the fills are
+triangulated here by ear clipping, which needs no device.
 
 | off the ladder | what it waits on |
 | --- | --- |
-| quadratics and dashes | the GPU painter, since a demo drawing quadratics as SVG checks the arithmetic and only a painter says whether the output is the shape a shader wants |
-| the GPU painter | the format, and the engine's stencil, which cannot count a winding number and is filed in that repository as its item 2 |
+| quadratics and dashes | nothing now but a session, since the painter that says whether the output is the shape a shader wants is cut |
 | a figure in space keeping its depth | the fourth decision above, which is whether a figure may be undrawable in SVG |
-| text on a GPU with a recorder | the GPU painter, and 2.6.0 |
+| text on a GPU with a recorder | a source of glyph outlines, which is the one dependency the painter did not answer |
 
-**The reading behind each of the four is below and in `git log`**, so none of them is rediscovered
+**The reading behind each of the three is below and in `git log`**, so none of them is rediscovered
 from nothing when it returns.
 
 **What queues work is the table above, the spike's eight gaps in front of it, the found list below,
@@ -522,6 +522,27 @@ README that plays a video on load is a README nobody can read.
 **The 2.x band publishes once, at its end**, which is Siva's call of 2026-09-11 and is now a rule in
 `CLAUDE.md`. 2.0.0 is what `npm view @altpsyche/maths version` answers, six versions are cut behind
 it, and a session cuts the next one and stops rather than asking to release it.
+
+**2.7.0 is cut and unpublished, and its nine done-criteria are verified line by line in the cut's own
+commit.** A figure draws on a graphics card, which is the third painter. `trianglesOf` and
+`strokeTrianglesOf` turn a fill and a stroke into triangles, `clipTriangles` cuts a rectangle into
+them by Sutherland and Hodgman's algorithm, `triangleArea` is what a triangulation is held to,
+`gpuFrame` answers `@altpsyche/engine`'s own `FrameGraph`, and `gpuSurface`, `paintGpu` and
+`pixelsGpu` are the painter, with the engine behind a dynamic import. The door is 216 values and 247
+types.
+
+**The fills are triangulated here rather than counted on the card, and that is what took the version
+off the engine's roadmap.** A winding number counted by front and back faces cancelling is Loop and
+Blinn's technique and it is what that package's item 2 exists for, unstarted there. Ear clipping over
+a path flattened to a tolerance needs no device at all, so a whole frame of fills takes 1.31
+milliseconds for the flat demo against the 33 a frame has at 30 frames a second, and the cost the
+plan named as what would change the answer came in under it.
+
+**The gate found three things in the engine and the third shaped the version.** Its WebGL 2 backend
+refuses a WGSL frame that `resolve` says it can draw, so the painter translates through the engine's
+own `glslFrameOf`. Disposing a renderer loses a canvas for good, so the gate makes a fresh one per
+figure. And that backend applies no blend at all, which nothing here can work around, so the painter
+names every mark under partial opacity as refused there. All three are in the found list below.
 
 **2.6.0 is cut and unpublished, and its nine done-criteria are verified line by line in the cut's own
 commit.** A figure goes out as a video file. `recordFigure` walks a figure and paints each frame onto
@@ -1292,196 +1313,6 @@ and `difference = A less the overlap` to 1.776e-15. Two circles crossed at every
 1e4 answer 4.11e-4 of the closed form, the same share at every one, so nothing there turns on the
 tolerance being an absolute distance. Two 400-piece paths unite in 48ms, so the crossing search needs
 no box test in front of it and the quadratic over piece pairs is not worth removing.
-
-## The items
-
-### 2.7.0 The GPU painter
-
-**A GPU painter is a third painter: it takes the same marks and the same view the other two take and
-draws them on a card.** It changes nothing in the format and puts a name at the door. Its step list
-is below, written on 2026-09-10.
-
-**What the engine gives today, read off `@altpsyche/engine` 0.4.0 and its own roadmap.** 69 run-time
-names and 84 types on the main door, several passes, several colour attachments, depth and stencil,
-vertex geometry of the shader's own, resident texture content, a mip ladder, multisampled attachments
-resolved through a blit, per-draw uniform slices, and per-instance records as a uniform block. Its
-`resolve` and `cost` are pure readings of a frame description, so a description is checkable in
-`npm test` with no device anywhere.
-
-**What it does not give, and each of these was measured rather than assumed.** The stencil is a
-boolean mask and cannot count, which is that package's item 2 and unstarted. `FrameGraph`, `PassSpec`
-and `DrawSpec` name no scissor and no viewport, which is its finding D. Nothing at its door joins a
-backend selection to a renderer, which is its finding A, and `probe()` leaves a canvas on the page,
-which is its finding C. All four are open there.
-
-**What the two demos ask a painter for**, counted after `outlinedMarks` at a named time. The flat
-demo at 5 seconds is 186 marks: 48 filled, 115 stroked, 23 text, 40 carrying a clip, 67 under full
-opacity, 7 fills of more than one subpath and 2 gradient fills over 166 subpaths. The solid demo at 6
-seconds is 320 marks: 249 filled, 72 stroked, 21 text, 72 carrying a clip, 22 gradient fills and 1
-fill of more than one subpath over 296 subpaths.
-
-**The fills are triangulated here rather than counted on the card, and that is what unblocks this
-version.** A winding number counted by front and back faces cancelling is Loop and Blinn's technique
-and it is what the engine's item 2 exists for, so a painter written that way cannot start until that
-package moves. Ear clipping over a path flattened to a tolerance needs nothing from any device, and
-this package already carries the pieces around it: `flattenPath` turns a path into polylines,
-`windingAt` answers the nonzero rule, and the boolean operations hold themselves to 1.776e-15. **What
-would change the answer** is the cost of triangulating a frame measured too high to record at 30
-frames a second, and the flat demo's 166 subpaths a frame is the number that says.
-
-**A clip is cut into the geometry for the same reason.** A rectangle clip was chosen at 1.6.0 because
-a box is the scissor test every device already has, and the engine names no scissor, so the triangles
-are clipped against the box before they are handed over. Sutherland and Hodgman's algorithm is the
-named one and a rectangle is its easy case.
-
-**The blend and the smooth edge come from the painter's own attachment.** A pass drawing the frame
-the reader sees keeps one sample of each pixel and can name no blend, which is the engine's
-documented rule rather than a gap, and 67 of the flat demo's 186 marks at 5 seconds sit under full
-opacity. So the painter draws into a multisampled colour attachment of its own, where a blend and
-four samples are both expressible, and presents that texture to the frame. The engine resolves a
-multisampled attachment through a blit already.
-
-**What this version still refuses is a plain text label.** 44 text marks across the two demos name a
-CSS font stack and carry no outline, and a card has no text vocabulary. An equation is already 8
-filled paths of 333 curves and draws like any other fill once the triangulation handles a hole. A
-label waits on a source of glyph outlines, which is 2.9.0.
-
-**The decision this version carries is in the found list below and it is Siva's**, which is whether
-to pin an exact `@altpsyche/engine` and take the churn by hand or wait for that package to reach
-1.0.0. Nothing in the steps below answers it.
-
-**The steps.** Each is one commit and each names the measurement its commit quotes. Today's numbers
-are 1310 tests over 87 files and a door of 208 values and 240 types.
-
-- [x] **1. A filled path becomes triangles.** `trianglesOf(path, options)` flattens each subpath and
-      ear-clips it, bridging a hole into the ring around it by the shortest join that crosses no
-      edge, with the inside decided by the rule the mark's fill carries. `triangleArea` is at the door
-      beside it, since area is what a triangulation is held to. Two things the demos' own glyphs
-      forced: the point a ring is tested at is taken close to its own edge rather than at its middle,
-      because the middle of a ring with a hole in it falls in the hole, and a ring's spurs are pruned
-      first, because a glyph that walks out along a line and back has a corner the shape does not
-      have, and a ring inside a filled ring is dropped, because its area is
-      already covered and cutting it as well draws it twice. **Measured:** 341 lines and 11 tests. Every fill of the flat demo at 5 seconds and of the
-      solid demo at 6 covers its own area to within 1e-10 of a figure unit squared, 48 fills into 1056
-      triangles and 249 into 1193. An annulus of radii 1 and 0.5 covers 2.35306 units squared where
-      π(1 − ¼) is 2.35619, the whole of the gap being the flattening at a tolerance of 0.002, and no
-      triangle reaches its hole. The same two rings wound alike cover 2.35306 under the even-odd rule
-      and 3.13742 under the nonzero rule, which is the outer disc alone rather than the 3.92177 the
-      two rings cut separately would come to. None of the flat demo's 55 filled loops and none of the
-      solid demo's 250 cross themselves, so the ear clipping's one refusal costs those two demos
-      nothing. A whole frame
-      of fills takes 1.31 milliseconds for the flat demo and 0.87 for the solid, against the 33 a
-      frame has at 30 frames a second. The suite is 1321 tests over 88 files where it was 1310 over
-      87, and the door is 210 values and 241 types where it was 208 and 240.
-- [x] **2. A stroked path becomes triangles.** Both other painters hand a stroke to the platform and a
-      card has no such platform, so the outline is built here. `outlinePath` already widens a stroke of
-      two widths and takes a uniform one as it stands, so `strokeTrianglesOf(path, stroke, options)`
-      widens the stroke and cuts the outline under the nonzero rule, which is what reads the two loops
-      of a closed subpath as a ring rather than as a disc. The outline's own tolerance is the one that
-      counts, since cutting a polyline is exact and the outline is where the curve is approximated.
-      One defect the measurement forced: a ring's own winding was read at a point a hair inside its own
-      edge, where a winding number is undefined, so the rule is now read off the other rings plus the
-      ring's own signed area, which answers for itself exactly. **Measured:** a stroked circle of
-      radius 1 at width 0.1 covers 0.62834711 against 2πrw of 0.62831853, 4.55 parts in a hundred
-      thousand, the whole of the gap being the flattening at a tolerance of 1e-3. The flat demo's 115
-      strokes at 5 seconds cut into 498 triangles in 7.21 milliseconds and the solid demo's 72 at 6
-      seconds into 558 in 1.82, against the 33 a frame has at 30 frames a second, and every one covers
-      the area its own outline encloses to within 4.4e-14 of a figure unit squared. 32 of the 187 draw
-      nothing: 8 carry an empty path and 24 a subpath with no length under a butt cap, which is the
-      SVG specification's rule and what both other painters draw there. Before the winding fix a
-      stroke of width 0.05 round a circle of radius 0.2 covered 0.158870 rather than 0.062820, the
-      whole disc rather than the band, since the inner loop's bevelled corners were read as filled.
-      The suite is 1331 tests over 88 files where it was 1321, and the door is 211 values and 241
-      types where it was 210 and 241.
-- [x] **3. A clip is cut into the geometry.** `clipTriangles(corners, box)` clips each triangle
-      against the mark's rectangle by Sutherland and Hodgman's algorithm, since the engine names no
-      scissor. A triangle cut against four half planes leaves a convex polygon of up to seven corners,
-      which is a fan of triangles. The reference the clipped area is held to is the package's own
-      boolean intersection of the same triangles with the box, since a triangle and a rectangle are
-      both straight-sided and the exact curve would compare a flattening against a cubic: that
-      reference read 4.1e-1 out on the solid demo and 1.4e-15 on the same marks once the triangles
-      rather than the path were what it intersected. **Measured:** the flat demo at 5 seconds carries
-      40 clipped marks, 28 paths and 12 text, whose 317 triangles become 244, and the solid demo at 6
-      carries 72, 61 paths and 11 text, whose 296 become 190 with 2 marks falling wholly outside their
-      box. The worst area difference against the boolean intersection is 1.36e-15 on the flat demo and
-      1.05e-15 on the solid, against the 1e-9 this step named and at the 1.776e-15 the boolean
-      operations hold themselves to. Clipping a whole frame takes 19.43 milliseconds for the flat demo
-      and 10.30 for the solid with the reference included, and 4.49 and 0.82 without it. The suite is
-      1339 tests over 88 files where it was 1331, and the door is 212 values and 241 types where it was
-      211 and 241.
-- [x] **4. Marks become a frame description, and nothing draws it.** `gpuFrame(marks, view, options)`
-      answers the engine's own `FrameGraph`: one multisampled colour attachment of the painter's own
-      with a blend named, resolved into the texture the frame presents, and one pass. The colour is a
-      number per channel per vertex rather than four numbers per draw, which is what collapses the
-      marks into one draw: a mark's opacity is already in its alpha and its clip is already in its
-      triangles, so nothing of a mark survives as state a draw would carry, and the triangles sit in
-      the order the marks were painted in, which is the depth a figure has. Every gradient in both
-      demos has exactly two stops, and a colour changing affinely with position is interpolated
-      exactly across a triangle, so reading the axis at each vertex draws those gradients rather than
-      approximating them. A handle is the index of the thing it names and the engine's own builders are
-      erased to that index, so the description is built with no run-time import of the engine at all.
-      **Measured:** the flat demo at 5 seconds is 1481 triangles and 106632 bytes of vertex data with
-      23 marks refused, and the solid demo at 6 is 1637 triangles and 117864 bytes with 21 refused,
-      every refusal being a text mark. `cost` answers 1 pass, 1 draw, 0 dispatches, 1 pipeline switch,
-      1 bind switch, 0 attachment loads, 1 attachment store and 12960000 transient bytes for both,
-      which is 1080 by 600 at four bytes a pixel over four samples plus the resolve. `resolve` answers
-      webgpu where both are offered, webgl2 where only it is, and the refusal `no backend can draw a
-      wgsl frame: WebGPU returned no adapter on this device` where neither is, all inside `npm test`
-      with no device. `dist/figure/gpu-frame.js` names the engine nowhere and only its declaration
-      file does, in a type position that is erased at run time, so step 5's measurement is over the
-      built JavaScript rather than over every file. The suite is 1352 tests over 89 files where it was
-      1339 over 88, and the door is 213 values and 243 types where it was 212 and 241.
-- [x] **5. The painter at the door.** The plan wrote this as one call and it is three, because a
-      renderer compiles shaders and owns card memory, so making one is asked for once and drawing per
-      frame where the other two painters are one call each. `gpuSurface(canvas, options)` loads the
-      engine with `await import()` and answers a card or nothing; `paintGpu(surface, marks, view)`
-      draws one frame; `pixelsGpu(surface, marks, view)` draws one and reads it back, which is what
-      step 6's comparison needs. The backend choosing is here rather than in the engine, which is that
-      package's finding A: its door hands out a renderer for a backend already chosen, so a device is
-      asked for, the two backends' capabilities are read off what came back, and the engine's own
-      `resolve` answers which draws. **Measured:** `dist/paint/gpu.js`, `dist/figure/gpu-frame.js` and
-      `dist/index.js` carry no static import of `@altpsyche/engine` and the painter carries `await
-      import('@altpsyche/engine')`, which a test in the suite reads off the built files. The engine is
-      already a peer at `^0.4.0`. The suite is 1357 tests over 90 files where it was 1352 over 89, and
-      the door is 216 values and 247 types where it was 213 and 243.
-- [x] **6. The gate that draws it.** `gates/gpu.mjs` opens Chromium through `playwright` and draws
-      every committed figure at its own still time, through the painter and through the SVG painter,
-      and compares the two pictures pixel by pixel. It reads each figure twice: the whole figure, and
-      the figure with the marks the painter named as refused taken out, which is what measures this
-      painter rather than the backend under it. The floor is 97% of pixels within 8 of 255 against the
-      second reading. Three things the gate found are below in the found list, and the third is why
-      the two readings exist: the WebGL 2 backend applies no blend at all. **Measured:** all 8 figures
-      agree, on webgl2, since headless Chromium offers no WebGPU adapter and reports `MAX_SAMPLES` of
-      4. The flat demo at 7.86 seconds draws 159 of 182 marks into 1340 triangles in 27 milliseconds,
-      63 refused, and agrees over 95.08% of its pixels whole and 98.62% over its 96 drawable marks.
-      The solid demo at 5.24 seconds draws 301 of 322 into 1684 triangles in 28 milliseconds, none
-      refused, and agrees over 97.90%. `solids` is the largest at 1060 marks and 11117 triangles in 53
-      milliseconds and agrees over 98.70%. Doubling the frame to 2160 by 1200 lifted the flat demo's
-      whole reading from 95.08% to 96.18% rather than halving its disagreement, which is what said the
-      shortfall was a wrong colour over an area rather than an edge, and the probe that followed read
-      an interior pixel of a stroke at opacity 0.5 as 0,0,255,128 on the card against 127,127,255,255
-      on the page: the source written straight through, unblended.
-
-**Which step the demos gain from.** Step 6 is where both demos draw through a third painter, which is
-the row's cut-against, and steps 1 through 3 are measured against those demos' own marks at named
-times.
-
-**Done-criteria for 2.7.0**, each checkable on its own.
-
-1. `trianglesOf`, `gpuFrame` and `paintGpu` are at the door and `index.ts` is the only file reaching
-   their modules by path.
-2. Every fill of both demos at a named time triangulates to within 1e-9 of its own area, holes
-   included.
-3. A stroked circle's outline area is within a part in ten thousand of 2πrw.
-4. A clipped mark's triangles cover the intersection of the mark with its box to within 1e-9.
-5. The engine's `resolve` answers a backend and `cost` answers a pass and draw count for both demos'
-   descriptions, inside `npm test` and with no device.
-6. No file under `dist` names `@altpsyche/engine` outside a dynamic import and the maths door.
-7. The browser gate draws both demos and the share of pixels agreeing with the SVG painter is
-   recorded, along with every kind of mark the painter refused.
-8. `npm test`, `npm run type-check` and `npm run build` are green, and the recording gate still writes
-   8 of 8 figures.
-9. The version in `package.json` is 2.7.0 and the cut's commit states the door count.
 
 ## Found while working, not yet queued
 
