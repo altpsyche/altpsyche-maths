@@ -1214,12 +1214,14 @@ figure names one number and the animation derives the rest.
   seven fractions of the span, so it enters at one end and leaves at the other rather than appearing
   whole. Both edges of the light sit on `pointAlong` at the fraction the window was cut at to six
   places, the list holds the same two marks at every fraction, and a text mark is passed over.
-- [ ] **3. `wave` is an animation.** The points of the target displaced along a direction, the
-  displacement a sine of how far across the shape a point sits, gated by a band travelling across it,
-  and every point back where it started at both ends of the span. **The measurement**: the furthest
-  any point moves against the amplitude asked for; the marks identical to the ones handed in at 0 and
-  at 1, compared by tolerance; and the place of the crest at three fractions of the span against the
-  band's own position.
+- [x] **3. `wave` is an animation.** The points of the target pushed along a direction by a raised
+  cosine hump of the band's own width, the band travelling across the shape from behind one edge to
+  past the other, and every point back where it started at both ends of the span. **The
+  measurement**: the crest's place across the shape at seven fractions of the span, 0.010417,
+  0.010417, 0.239583, 0.500000, 0.760417, 1.000000 and 0.010417, with the furthest any point moves
+  reading 0.000000, 0.270579, 0.299994, 0.300000, 0.299994, 0.287032 and 0.000000 against an
+  amplitude of 0.3. The marks at 0 and at 1 are the ones handed in, by `sameMarks`, and a push along
+  x leaves every y where it was to twelve places.
 - [ ] **4. `wiggle` is an animation.** A swell and a rock about a point, the point being the middle of
   the box round the marks unless the figure names one, back where it started at both ends.
   **The measurement**: the factor and the angle at the middle of the span against the ones asked for;

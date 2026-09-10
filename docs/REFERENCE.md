@@ -1176,6 +1176,13 @@ a group of that name.
     distance from the middle of the box to its corner unless named, so the rays sit outside the
     thing they point at.
   - `inner` — where the near end of a ray sits, as a share of the reach.
+- `wave(target, options)` — a hump travelling across a shape, pushing the points it reaches. It
+  moves the control points a path is made of rather than resampling it, so a shape drawn with few
+  pieces shows a coarser wave than one drawn with many.
+- `WaveOptions` — what a wave takes.
+  - `direction` — which way a point is pushed, up unless named.
+  - `amplitude` — how far the furthest point is pushed, in figure units.
+  - `covers` — how much of the crossing the band covers at once, as a share of it.
 - `showPassingFlash(target, options)` — a light travelling the length of a path and gone. A text mark
   carries no path for it to run along and is passed over.
 - `PassingFlashOptions` — what a passing flash takes.

@@ -416,6 +416,84 @@ export function flash(target: string, options: FlashOptions): Animation {
   };
 }
 
+export interface WaveOptions {
+  /** Which way a point is pushed. Up unless named. */
+  direction?: Vec2;
+  /** How far the furthest point is pushed, in figure units. */
+  amplitude?: number;
+  /** How much of the crossing the band covers at once, as a share of it. */
+  covers?: number;
+}
+
+/** Every point a path is made of, moved by a function of where it stands. */
+function displacedPath(path: Path, push: (point: Vec2) => Vec2): Path {
+  return path.map((subpath) => ({
+    start: push(subpath.start),
+    curves: subpath.curves.map((curve) => ({
+      control1: push(curve.control1),
+      control2: push(curve.control2),
+      to: push(curve.to),
+    })),
+    closed: subpath.closed,
+  }));
+}
+
+/**
+ * A hump travelling across a shape, pushing the points it reaches.
+ *
+ * The hump is a raised cosine of the band's own width, so a point enters and
+ * leaves the push smoothly and the shape is exactly the one it started as at
+ * both ends of the span. The band runs from behind one edge of the shape to past
+ * the other, which is what makes the wave cross rather than swell in place.
+ *
+ * The push moves the control points a path is made of rather than resampling it,
+ * so a piece whose two ends the band has not both reached bends at one end. A
+ * shape drawn with few pieces therefore shows a coarser wave than one drawn with
+ * many, and a plotted curve carries enough points for the difference not to
+ * show.
+ *
+ * The box the crossing is measured across is read off the marks as they arrive,
+ * which is before this has moved them, for the reason a turn reads its pivot
+ * once.
+ */
+export function wave(target: string, options: WaveOptions = {}): Animation {
+  const direction = options.direction ?? vec2(0, 1);
+  const amplitude = options.amplitude ?? 0.2;
+  const covers = Math.min(1, Math.max(1e-6, options.covers ?? 0.3));
+  // Turned a quarter clockwise off the push, so a shape pushed up is crossed
+  // from left to right.
+  const across = vec2(direction.y, -direction.x);
+  return (marks, along) => {
+    const touched = marks.filter((mark) => touches(mark.id, target));
+    if (touched.length === 0) return marks;
+    const box = boundsOfMarks(touched);
+    if (box === null) return marks;
+
+    const corners = [
+      vec2(box.x.from, box.y.from),
+      vec2(box.x.to, box.y.from),
+      vec2(box.x.from, box.y.to),
+      vec2(box.x.to, box.y.to),
+    ].map((corner) => vec2.dot(corner, across));
+    const low = Math.min(...corners);
+    const reach = Math.max(...corners) - low;
+    const centre = along * (1 + covers) - covers / 2;
+
+    const push = (point: Vec2): Vec2 => {
+      const u = reach > 0 ? (vec2.dot(point, across) - low) / reach : 0;
+      const off = (u - centre) / covers;
+      if (off <= -0.5 || off >= 0.5) return point;
+      return vec2.add(point, vec2.scale(direction, amplitude * (1 + Math.cos(2 * Math.PI * off)) / 2));
+    };
+
+    return marks.map((mark) => {
+      if (!touches(mark.id, target)) return mark;
+      if (mark.kind === 'text') return { ...mark, at: push(mark.at) };
+      return { ...mark, path: displacedPath(mark.path, push) };
+    });
+  };
+}
+
 export interface PassingFlashOptions {
   stroke: Stroke;
   /** How much of the path the light covers at once, as a share of the path's own
