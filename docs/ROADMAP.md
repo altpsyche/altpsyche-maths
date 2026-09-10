@@ -371,7 +371,7 @@ are left, since 2.1.0 through 2.6.0 are cut.
 
 | version | what lands | what it changes | steps | cut against | depends on | plan |
 | --- | --- | --- | --- | --- | --- | --- |
-| 2.7.0 | the GPU painter | nothing in the format, and a name at the door | to plan | both demos through a third painter, mark for mark against the SVG painter | `@altpsyche/engine`, with its item 2 landed, declared as a peer | to plan |
+| 2.7.0 | the GPU painter | nothing in the format, and a name at the door | 6 | both demos through a third painter in a browser gate, pixel for pixel against the SVG painter | `@altpsyche/engine` 0.4.0 as it stands, declared as a peer, and `playwright` for the gate | below |
 | 2.8.0 | dashes and quadratics drawn on a GPU | nothing; `Stroke.dash` is already in the mark and no painter draws it | to plan | a dashed figure, and the strip that shows it moving | `@altpsyche/engine` | to plan |
 | 2.9.0 | text on a GPU, and the recorder running without a page | nothing in the format | to plan | every demo recorded off a card | `@altpsyche/engine`, a source of glyph outlines, 2.6.0, and a canvas with no page behind it if `mediabunny` takes nothing else | to plan |
 | 3.0.0 | depth, so a figure in space keeps it | what a `Mark` may ask for, which breaks the format's own version | to plan | the solid demo, whose crossing curve is drawn in the right order rather than the tree's | `@altpsyche/engine`, and the fourth decision above | blocked on a decision |
@@ -1291,8 +1291,116 @@ no box test in front of it and the quadratic over piece pairs is not worth remov
 
 ## The items
 
-Nothing is written under this heading. The 2.x band's last item was the recorder and it is cut, and
-every version left on the ladder is described by the ladder itself and by the sections above it.
+### 2.7.0 The GPU painter
+
+**A GPU painter is a third painter: it takes the same marks and the same view the other two take and
+draws them on a card.** It changes nothing in the format and puts a name at the door. Its step list
+is below, written on 2026-09-10.
+
+**What the engine gives today, read off `@altpsyche/engine` 0.4.0 and its own roadmap.** 69 run-time
+names and 84 types on the main door, several passes, several colour attachments, depth and stencil,
+vertex geometry of the shader's own, resident texture content, a mip ladder, multisampled attachments
+resolved through a blit, per-draw uniform slices, and per-instance records as a uniform block. Its
+`resolve` and `cost` are pure readings of a frame description, so a description is checkable in
+`npm test` with no device anywhere.
+
+**What it does not give, and each of these was measured rather than assumed.** The stencil is a
+boolean mask and cannot count, which is that package's item 2 and unstarted. `FrameGraph`, `PassSpec`
+and `DrawSpec` name no scissor and no viewport, which is its finding D. Nothing at its door joins a
+backend selection to a renderer, which is its finding A, and `probe()` leaves a canvas on the page,
+which is its finding C. All four are open there.
+
+**What the two demos ask a painter for**, counted after `outlinedMarks` at a named time. The flat
+demo at 5 seconds is 186 marks: 48 filled, 115 stroked, 23 text, 40 carrying a clip, 67 under full
+opacity, 7 fills of more than one subpath and 2 gradient fills over 166 subpaths. The solid demo at 6
+seconds is 320 marks: 249 filled, 72 stroked, 21 text, 72 carrying a clip, 22 gradient fills and 1
+fill of more than one subpath over 296 subpaths.
+
+**The fills are triangulated here rather than counted on the card, and that is what unblocks this
+version.** A winding number counted by front and back faces cancelling is Loop and Blinn's technique
+and it is what the engine's item 2 exists for, so a painter written that way cannot start until that
+package moves. Ear clipping over a path flattened to a tolerance needs nothing from any device, and
+this package already carries the pieces around it: `flattenPath` turns a path into polylines,
+`windingAt` answers the nonzero rule, and the boolean operations hold themselves to 1.776e-15. **What
+would change the answer** is the cost of triangulating a frame measured too high to record at 30
+frames a second, and the flat demo's 166 subpaths a frame is the number that says.
+
+**A clip is cut into the geometry for the same reason.** A rectangle clip was chosen at 1.6.0 because
+a box is the scissor test every device already has, and the engine names no scissor, so the triangles
+are clipped against the box before they are handed over. Sutherland and Hodgman's algorithm is the
+named one and a rectangle is its easy case.
+
+**The blend and the smooth edge come from the painter's own attachment.** A pass drawing the frame
+the reader sees keeps one sample of each pixel and can name no blend, which is the engine's
+documented rule rather than a gap, and 67 of the flat demo's 186 marks at 5 seconds sit under full
+opacity. So the painter draws into a multisampled colour attachment of its own, where a blend and
+four samples are both expressible, and presents that texture to the frame. The engine resolves a
+multisampled attachment through a blit already.
+
+**What this version still refuses is a plain text label.** 44 text marks across the two demos name a
+CSS font stack and carry no outline, and a card has no text vocabulary. An equation is already 8
+filled paths of 333 curves and draws like any other fill once the triangulation handles a hole. A
+label waits on a source of glyph outlines, which is 2.9.0.
+
+**The decision this version carries is in the found list below and it is Siva's**, which is whether
+to pin an exact `@altpsyche/engine` and take the churn by hand or wait for that package to reach
+1.0.0. Nothing in the steps below answers it.
+
+**The steps.** Each is one commit and each names the measurement its commit quotes. Today's numbers
+are 1310 tests over 87 files and a door of 208 values and 240 types.
+
+- [ ] **1. A filled path becomes triangles.** `trianglesOf(path, tolerance)` flattens each subpath and
+      ear-clips it, bridging a hole into its outer ring so a fill with a hole is one polygon, with the
+      interior decided by the nonzero rule the format already names. **Measurement:** the summed area
+      of the triangles against the area of the polygon within 1e-9 of a figure unit squared, an
+      annulus of radii 1 and 0.5 coming out at 2.35619 units squared rather than 3.14159, and the
+      triangle count of every fill of both demos at a named time.
+- [ ] **2. A stroked path becomes triangles.** Both other painters hand a stroke to the platform and a
+      card has no such platform, so the outline is built here: a quad per segment with the join and
+      the cap the mark names. `outlinedMarks` already does this for a stroke of two widths, so what is
+      new is the uniform case. **Measurement:** a stroked circle's outline area against 2πrw within a
+      part in ten thousand, and the triangle count of the flat demo's 115 strokes and the solid demo's
+      72 at their named times.
+- [ ] **3. A clip is cut into the geometry.** Sutherland and Hodgman's algorithm clips each triangle
+      against the mark's rectangle, since the engine names no scissor. **Measurement:** the 40 clipped
+      marks of the flat demo at 5 seconds and the 72 of the solid at 6, each one's clipped area against
+      the area of its intersection with the box within 1e-9, and the triangle count before and after.
+- [ ] **4. Marks become a frame description, and nothing draws it.** `gpuFrame(marks, view, options)`
+      answers the engine's own frame description: one multisampled colour attachment of the painter's
+      own with a blend named, one pass, and the draws the marks batch into, with each colour as four
+      numbers. **Measurement:** the engine's own `resolve` and `cost`, which are pure, answering for
+      both demos, with the pass count, the draw count, the triangle count and the bytes of vertex data
+      quoted for each. This step needs no device and its whole claim is in `npm test`.
+- [ ] **5. The painter at the door.** `paintGpu(surface, marks, view)` loads the engine with `await
+      import()`, builds the description of step 4 and submits it, the way `videoSink` loads the
+      encoder. **Measurement:** the door count, and no file under `dist` naming `@altpsyche/engine`
+      outside a dynamic import except the maths door the arithmetic already uses.
+- [ ] **6. The gate that draws it.** `gates/gpu.mjs` opens Chromium through `playwright`, draws both
+      demos at a named time through the painter and through the SVG painter, and compares the two
+      pictures pixel by pixel. It is not part of `npm test`, and a card gate stands behind it the way
+      the engine's own does. **Measurement:** the share of pixels agreeing within a channel, the marks
+      the painter refused, and the time a frame takes to triangulate and draw.
+
+**Which step the demos gain from.** Step 6 is where both demos draw through a third painter, which is
+the row's cut-against, and steps 1 through 3 are measured against those demos' own marks at named
+times.
+
+**Done-criteria for 2.7.0**, each checkable on its own.
+
+1. `trianglesOf`, `gpuFrame` and `paintGpu` are at the door and `index.ts` is the only file reaching
+   their modules by path.
+2. Every fill of both demos at a named time triangulates to within 1e-9 of its own area, holes
+   included.
+3. A stroked circle's outline area is within a part in ten thousand of 2πrw.
+4. A clipped mark's triangles cover the intersection of the mark with its box to within 1e-9.
+5. The engine's `resolve` answers a backend and `cost` answers a pass and draw count for both demos'
+   descriptions, inside `npm test` and with no device.
+6. No file under `dist` names `@altpsyche/engine` outside a dynamic import and the maths door.
+7. The browser gate draws both demos and the share of pixels agreeing with the SVG painter is
+   recorded, along with every kind of mark the painter refused.
+8. `npm test`, `npm run type-check` and `npm run build` are green, and the recording gate still writes
+   8 of 8 figures.
+9. The version in `package.json` is 2.7.0 and the cut's commit states the door count.
 
 ## Found while working, not yet queued
 
