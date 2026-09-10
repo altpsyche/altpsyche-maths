@@ -1413,15 +1413,13 @@ the flat and solid demos at 30 frames a second.
       flat demo at 10.2667, all 1080x600 avc. The last frame of each is drawn rather than blank,
       between 3.7 and 81.9 per cent of its pixels off the ground, and the eight take between 81 and
       3822 milliseconds each to record.
-- [ ] **6. The door and the README.** The recorder's names go in `index.ts`, and the README gains the
-      call that turns a figure into a file. The strips stay, because a README that plays a video on load
-      is a README nobody can read. **Measurement:** the door count after the step, and the README's own
-      bytes before and after.
-
-**What this closes on the found list below.** Step 1 leaves one frame count in the tree, and step 3
-puts the mapping from a recording's own time to a figure's time at this door, which is the half of the
-elapsed-time item a recorder needs. The clamp that item names is about a tab left open rather than a
-recording, so it stays with the consumer and stays on the list.
+- [x] **6. The door and the README.** The recorder's names went to the door as each step landed, so
+      what was left is the reference and the README. `README.md` gains a Recording section with the
+      call that turns a figure into bytes, and its Restrictions section names the one gate a browser
+      is needed for. The strips stay, since a README that plays a video on load is a README nobody
+      can read. **Measured:** the README is 19,668 bytes where it was 17,784, the reference carries an
+      entry for each of the ten names the version added, and the suite is 1310 tests over 87 files
+      with the door at 208 values and 240 types.
 
 **Which step the demos gain from.** Step 5 is where every committed figure becomes a file on disk,
 which is the row's cut-against, and step 2 is what gives each of those files a ground rather than

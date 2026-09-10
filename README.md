@@ -183,6 +183,44 @@ screen or encoder resolves, and coarse enough that the last bits of a double nev
 One test paints a single mark list both ways and holds the two to the same geometry within a
 thousandth of a pixel, and to the same style exactly.
 
+## Recording
+
+A recording is a figure walked at a fixed rate and encoded into a video file. `recordFigure` walks
+the figure, paints each frame onto the sink's own canvas and hands the frame over. `videoSink` is a
+sink that encodes: it loads `mediabunny` inside the call, so a consumer who never records never loads
+an encoder.
+
+```ts
+const canvas = document.createElement('canvas');
+canvas.width = 1080;
+canvas.height = 600;
+
+const sink = await videoSink(canvas, { fps: 30, format: 'mp4', codec: 'avc' });
+const { frames, seconds, output } = await recordFigure(figure, sink, {
+  fps: 30,
+  width: 1080,
+  height: 600,
+  background: colourFrom('#ffffff'),
+});
+```
+
+`output` is the finished file as bytes. The walk is `frameTimesOf`, the same one the strips are drawn
+from, so a recording holds the frames the rest of the package counts. A frame lasts exactly one over
+the rate, and the walk stops strictly before the end, since the frame at the duration of a figure
+that loops is its own first frame.
+
+A recording runs for the figure's own length unless `seconds` asks for another. Past the end, a
+figure that declares itself a loop is read at the remainder and a figure that does not holds its last
+picture, which is `figureTime`.
+
+`FrameSink` is the parameter that makes the encoder replaceable: it owns the canvas each frame is
+painted onto, takes each painted frame, and hands back whatever it collected. A sink that counts the
+frames it is given is how the walk is checked without a device.
+
+Encoding needs a WebCodecs `VideoEncoder`. A browser has one and Node does not, so the bytes are a
+gate with a browser in it: `npm run gate:record` records every committed figure in Chromium, reads
+each file back, and says how many pictures the file holds.
+
 ## Restrictions
 
 A mark may request only what both painters implement: no filters and no blend modes. A figure using
@@ -206,8 +244,10 @@ form rather than guessing. Nothing reads the page, and `getComputedStyle` appear
 tree.
 
 No screenshot gates this package. Every assertion reads a mark list or a number, so the suite of
-1,065 tests over 67 files runs in Node without a browser. Comparisons are by tolerance rather than by hash, because
-`Math.sin`, `Math.cos` and `Math.pow` are not specified to the last bit and differ between engines.
+1,310 tests over 87 files runs in Node without a browser. Comparisons are by tolerance rather than by
+hash, because `Math.sin`, `Math.cos` and `Math.pow` are not specified to the last bit and differ
+between engines. The one claim a browser is needed for is that a recording plays, and that is
+`npm run gate:record` rather than part of the suite.
 
 ## Moving from 1.6.0
 
