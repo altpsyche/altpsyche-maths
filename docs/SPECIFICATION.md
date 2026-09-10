@@ -8,7 +8,7 @@ the value types and the expression form every kind is written in terms of, then 
 the animations, the timeline and the extent, and conformance last. A renderer is written from this
 page and needs nothing else.
 
-**Five counts say how large the format is.** Thirty node kinds, twenty animation kinds,
+**Five counts say how large the format is.** Thirty node kinds, twenty-one animation kinds,
 sixteen forms of path in eighteen kinds, eleven value types, and thirty-seven functions an expression
 may call.
 
@@ -602,6 +602,7 @@ value into the scene and not into a span.
 | `growFrom` | `from` | grown out of a place, the middle of its own box unless named |
 | `morph` | `into` | walked point by point into another path |
 | `morphEquation` | `from`, `to` | one typeset rule walked into another, glyph by glyph |
+| `morphGroup` | `from`, `to` | one group of marks walked into another, mark by mark |
 | `indicate` | `options` | swelled and returned, by a `factor` and to a `colour` |
 | `flash` | `options` | rays thrown out and drawn back, by `rays`, `reach` and `inner` |
 | `circumscribe` | `options` | a box or an ellipse drawn round it, by `around` and `padding` |
@@ -611,8 +612,29 @@ value into the scene and not into a span.
 | `wiggle` | `options` | swelled and rocked about a point, by `factor`, `angle` and `rocks` |
 | `write` | `options` | written on one mark at a time, by `across` and `covers` |
 
-**`morphEquation` carries `from` and `to` rather than a target**, since what it walks is one node
-into another and the pair is the animation.
+**`morphEquation` and `morphGroup` carry `from` and `to` rather than a target**, since what each of
+them walks is one node into another and the pair is the animation.
+
+**A group morph pairs the two groups by name, in three rules applied in this order.** The first is
+the longest common subsequence of the marks' relative ids, which is the part of a mark's id after the
+target it sits under, so a run of names both groups carry pairs in the order the marks stand in and a
+repeated name pairs each of its occurrences once. The second pairs what the first left over, in the
+order it stands in, within its own kind. The third is that a path never pairs with a text mark, since
+a path cannot be walked into a string.
+
+**A group morph touches nothing at the start of its span and swaps the two groups at the end.**
+Through the span each paired mark walks toward the mark it becomes, in geometry and in style alike,
+and the mark it is walking onto carries its own opacity times what is left of the span. A mark that no
+rule pairs fades over the span where it is in the group being left and stands unchanged where it is in
+the group being arrived at. At the end of the span every mark of the group being left is at nothing
+and the group arrived at stands at its own opacity, which draws the same picture because a walked mark
+is coincident with the mark it walked onto by then. That is what lets one span's destination be the
+next span's origin, so three groups walk into one another in two spans.
+
+**What a paired mark cannot walk it swaps at half of the span**: a gradient, since a run of stops
+cannot walk into a run of a different length, a winding rule, a dash, a clip that only one of the pair
+carries, and the string of a text mark. A fill or a stroke that only one of the pair carries walks its
+own alpha instead, so it arrives or leaves over the span rather than in one frame.
 
 **`applyMatrix` reaches its matrix entry by entry from the identity**, so the numbers a figure writes
 beside a mapped grid are the numbers the picture is at. That is not a turn: the determinant halfway

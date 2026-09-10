@@ -746,7 +746,7 @@ functions, which is what lets the same tree survive being written to a file and 
   as. A kind outside the set is refused with a sentence naming it.
 - `AnimationRecord` — one animation written as data: a `FadeInRecord`, a `FadeOutRecord`, a
   `FadeToRecord`, a `DrawRecord`, a `MoveByRecord`, a `MoveAlongRecord`, a `RotateRecord`, a
-  `ScaleRecord`, a `GrowFromRecord`, a `MorphRecord`, a `MorphEquationRecord`, an `IndicateRecord`, a
+  `ScaleRecord`, a `GrowFromRecord`, a `MorphRecord`, a `MorphEquationRecord`, a `MorphGroupRecord`, an `IndicateRecord`, a
   `FlashRecord`, a `CircumscribeRecord` or a `CountToRecord`. A parameter is a plain value rather than an expression, since
   an animation is built once and then asked what the marks are at a fraction of its own span. A path
   is the exception, since a path record is the only form a path has and its own parameters are
@@ -771,6 +771,8 @@ functions, which is what lets the same tree survive being written to a file and 
   `PathRecord`.
 - `MorphEquationRecord` — a `kind` of `morphEquation` and the two targets `from` and `to`. It names no
   geometry, since both expressions are already in the scene and the glyphs are paired at play time.
+- `MorphGroupRecord` — a `kind` of `morphGroup` and the two targets `from` and `to`. It names no
+  geometry, since both groups are already in the scene and their marks are paired at play time.
 - `CountToRecord` — a `kind` of `countTo`, the `target`, the `from` and `to` values and the
   `precision` the number is written to. The call keeps its writer, since a count of a population wants
   a form no precision spells, and a figure that needs one writes the count as a text hole following a

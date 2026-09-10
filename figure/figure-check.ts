@@ -776,6 +776,7 @@ const SHAPES: Readonly<Record<string, Shape>> = {
       growFrom: { target: need(text), from: may(ref('point')) },
       morph: { target: need(text), into: need(ref('carriedPath')) },
       morphEquation: { from: need(text), to: need(text) },
+      morphGroup: { from: need(text), to: need(text) },
       indicate: { target: need(text), options: may(ref('indicateOptions')) },
       flash: { target: need(text), options: need(ref('flashOptions')) },
       circumscribe: { target: need(text), options: need(ref('circumscribeOptions')) },

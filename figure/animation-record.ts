@@ -32,6 +32,7 @@ import {
   indicate,
   morph,
   morphEquation,
+  morphGroup,
   moveAlong,
   moveBy,
   rotate,
@@ -154,6 +155,18 @@ export interface MorphEquationRecord {
 }
 
 /**
+ * One group of marks walked into another, mark by mark, paired by name.
+ *
+ * This names two targets and no geometry, since both groups are already in the
+ * scene and the pairing is read off their marks at play time.
+ */
+export interface MorphGroupRecord {
+  readonly kind: 'morphGroup';
+  readonly from: string;
+  readonly to: string;
+}
+
+/**
  * The three that add marks rather than change them.
  *
  * Each names its target alone, since the marks it adds are named from that
@@ -243,6 +256,7 @@ export type AnimationRecord =
   | GrowFromRecord
   | MorphRecord
   | MorphEquationRecord
+  | MorphGroupRecord
   | IndicateRecord
   | FlashRecord
   | CircumscribeRecord
@@ -286,6 +300,8 @@ export function resolveAnimation(record: AnimationRecord, bindings: Bindings = {
       return morph(record.target, resolvePath(record.into, bindings));
     case 'morphEquation':
       return morphEquation(record.from, record.to);
+    case 'morphGroup':
+      return morphGroup(record.from, record.to);
     case 'indicate':
       return indicate(record.target, record.options);
     case 'flash':

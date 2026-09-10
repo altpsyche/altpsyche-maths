@@ -161,7 +161,7 @@ const EVERY_PATH: readonly Record<string, unknown>[] = [
   { kind: 'union', first: { kind: 'circle', centre: PLACE, radius: 1 }, second: { kind: 'circle', centre: PLACE, radius: 0.5 } },
 ];
 
-/** One entry of every kind a span may carry: the fifteen animations and the
+/** One entry of every kind a span may carry: the sixteen animations and the
  * three view moves, which are one list because a timeline holds both. */
 const EVERY_ENTRY: readonly Record<string, unknown>[] = [
   { kind: 'fadeIn', target: 'turns' },
@@ -175,6 +175,7 @@ const EVERY_ENTRY: readonly Record<string, unknown>[] = [
   { kind: 'growFrom', target: 'turns', from: PLACE },
   { kind: 'morph', target: 'turns', into: { kind: 'circle', centre: PLACE, radius: 1 } },
   { kind: 'morphEquation', from: 'first', to: 'second' },
+  { kind: 'morphGroup', from: 'first', to: 'second' },
   { kind: 'indicate', target: 'turns', options: { factor: 1.2, colour: colourFrom('#101010'), pivot: PLACE } },
   { kind: 'flash', target: 'turns', options: { stroke: STROKE, at: PLACE, rays: 8, reach: 1, inner: 0.4 } },
   { kind: 'circumscribe', target: 'turns', options: { stroke: STROKE, around: 'ellipse', padding: 0.1 } },
@@ -673,7 +674,7 @@ describe('a figure held to the vocabulary', () => {
   });
 
   it('takes an entry of every kind a span may carry', () => {
-    expect(EVERY_ENTRY).toHaveLength(18);
+    expect(EVERY_ENTRY).toHaveLength(19);
     const spans = EVERY_ENTRY.map((entry, at) => ({ entry, from: at, to: at + 1 }));
     expect(checkFigure({ ...turning, timeline: { spans, duration: EVERY_ENTRY.length } })).toBeTruthy();
   });
@@ -692,6 +693,13 @@ describe('a figure held to the vocabulary', () => {
     expect(() =>
       checkFigure({ ...turning, timeline: { spans: [{ entry: { kind: 'shimmer', target: 'turns' }, from: 0, to: 1 }] } }),
     ).toThrow('timeline.spans.0.entry is a timeline entry and has no kind called the text "shimmer"');
+  });
+
+  it('holds a group morph to the two names it walks between', () => {
+    const spans = [{ entry: { kind: 'morphGroup', from: 'turns', to: 4 }, from: 0, to: 1 }];
+    expect(() => checkFigure({ ...turning, timeline: { spans } })).toThrow(
+      'timeline.spans.0.entry.to is text and is 4',
+    );
   });
 
   it('holds an animation option to its own fields', () => {

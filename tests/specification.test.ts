@@ -231,7 +231,7 @@ describe('the specification and the nodes', () => {
 describe('the specification and the timeline', () => {
   it('names every animation kind and its fields', () => {
     const kinds = membersOf('figure/animation-record.ts', 'AnimationRecord');
-    expect(kinds).toHaveLength(20);
+    expect(kinds).toHaveLength(21);
     const inside = quoted(written.get('The animations') ?? '');
     const absent = kinds.flatMap((name) => {
       const missing = fieldsOf('figure/animation-record.ts', name).filter((field) => !inside.has(field));
@@ -302,6 +302,7 @@ const WRITTEN = new Map([
   ['fifteen', 15],
   ['sixteen', 16],
   ['twenty', 20],
+  ['twenty-one', 21],
   ['twenty-three', 23],
   ['twenty-eight', 28],
   ['thirty', 30],

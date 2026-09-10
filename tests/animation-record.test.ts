@@ -13,6 +13,7 @@ import {
   marksAt,
   morph,
   morphEquation,
+  morphGroup,
   moveAlong,
   moveBy,
   resolveAnimation,
@@ -194,6 +195,17 @@ describe('the animations that put one shape in place of another', () => {
     const still = resolveAnimation({ kind: 'morphEquation', from, to })(marks, 0);
     const leaving = (list: readonly Mark[]) => list.filter((mark) => mark.id.startsWith(`${from}/`));
     expect(sameMarks(leaving(still), leaving(marks))).toBe(true);
+  });
+
+  it('walks the boolean demo union panel onto its intersection panel where its own call walks it', () => {
+    const record = { kind: 'morphGroup', from: 'booleans/union', to: 'booleans/intersection' } as const;
+    for (const seconds of Object.values(BOOLEAN_TIMES)) {
+      const marks = marksAt(booleans, seconds);
+      expect(
+        agrees(record, morphGroup('booleans/union', 'booleans/intersection'), marks),
+        `the panels at ${seconds}`
+      ).toBe(true);
+    }
   });
 
   it('walks one shape into another where its own call walks it, which no demo plays', () => {

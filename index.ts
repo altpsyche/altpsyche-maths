@@ -199,6 +199,7 @@ export type {
   GrowFromRecord,
   IndicateRecord,
   MorphEquationRecord,
+  MorphGroupRecord,
   MorphRecord,
   MoveAlongRecord,
   MoveByRecord,
