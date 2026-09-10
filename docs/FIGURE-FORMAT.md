@@ -593,6 +593,33 @@ two answers differ everywhere except the ends of the span.
 and `scale` take. A linear map is defined about the origin, and a grid whose box centre sits elsewhere
 would be mapped about the wrong point and slide across the frame as it deformed.
 
+## Why a group morph pairs by name rather than by shape
+
+**Manim pairs two groups of shapes by a key built from their points.** A Manim submobject carries no
+name, so a key from the geometry is the only key there is: two shapes whose rounded point lists hash
+alike are taken to be the same shape and are matched.
+
+**Every mark in this format carries a name already.** An id is built from the names on the way down
+the tree, which hit testing needs and which comparing one frame against another needs, so the part of
+a mark's id after the target it sits under is a key that costs nothing to read. Two panels a figure
+builds by one function carry the same names under different parents, and that is the case a group
+morph exists for.
+
+**A key from points would be a hash of floating point numbers.** `Math.sin`, `Math.cos` and
+`Math.pow` are not specified to the last bit in JavaScript and differ between engines, so a hash of
+what they produce pairs one way on one machine and another way on the next, with nothing in the
+picture to say why. Every comparison in this repository is by tolerance for that reason.
+
+**And over the picture this landed against, a shape key pairs the wrong marks.** The boolean demo's
+three panels each draw the same two discs and a different answer over them. A shape key pairs the
+outlined discs, which are identical in all three, and leaves the three answers unpaired, since a
+union, an intersection and a difference of one pair of discs are three different shapes. The answer is
+the mark a reader is watching.
+
+**What the name rule costs** is a pair of groups written by two different hands, whose marks carry
+unrelated names. Those pair by the order they stand in, which is the second rule, and a figure that
+wants a particular pairing gets it by naming the marks alike.
+
 ## The precedent
 
 **Lottie.** Vector animation as JSON, with independent renderers on the web, on two mobile platforms

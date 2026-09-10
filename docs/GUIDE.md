@@ -399,7 +399,7 @@ A span that has not started applies at zero and a span already finished applies 
 a figure's output a function of the time asked for and of nothing else.
 
 The animations are `fadeIn`, `fadeOut`, `fadeTo`, `draw`, `write`, `morph`, `morphEquation`,
-`countTo`, `moveBy`, `rotate`, `scale`, `growFrom`, `moveAlong`, `indicate`, `flash`,
+`morphGroup`, `countTo`, `moveBy`, `rotate`, `scale`, `growFrom`, `moveAlong`, `indicate`, `flash`,
 `circumscribe`, `showPassingFlash`, `wave` and `wiggle`.
 
 An **easing curve** maps the fraction of a span to the fraction of the change. The four are
@@ -481,6 +481,42 @@ Each of the three leaves the marks exactly as it found them at both ends of its 
 the list at every time and holds no path outside its own span, rather than arriving part way
 through: a mark that appears between one frame and the next reads, in a comparison between two
 frames, as something that changed.
+
+## One group walked into another
+
+`morphGroup` walks every mark of one group into a mark of another. `morph` takes one target and one
+path, so a group of four marks becoming another group of four is four spans and four target paths
+written out. A group morph is one span and names no geometry, because both groups are in the scene
+already.
+
+```ts
+import { Timeline, morphGroup } from '@altpsyche/maths';
+
+const walking = Timeline.empty()
+  .play(morphGroup('booleans/union', 'booleans/intersection'), 1.4)
+  .play(morphGroup('booleans/intersection', 'booleans/difference'), 1.4);
+```
+
+The marks are paired by name. A mark's key is the part of its id after the target it sits under, so
+`booleans/union/discs/first` and `booleans/intersection/discs/first` both key on `discs/first` and
+pair with each other. Two groups a figure builds by one function therefore pair mark for mark with
+nothing written down. What the names leave over pairs by the order the marks stand in, within its own
+kind, and a path never pairs with a text mark, since a path cannot be walked into a string. A mark no
+rule pairs fades over the span where it is in the group being left, and stands where it is in the
+group being arrived at.
+
+A paired mark walks in style as well as in geometry: its fill colour, its stroke colour, its stroke
+width, its opacity and its clip all reach the ones its partner carries. What cannot be walked swaps
+at half the span, which is where a run of gradient stops, a winding rule, a dash and the string of a
+text mark change. A fill or a stroke that only one of the pair carries walks its own alpha instead,
+so it arrives or leaves over the span rather than in one frame.
+
+At the start of its span a group morph touches nothing, so a group waiting to be walked onto is the
+picture it already is. At the end the group being left is at nothing and the group arrived at stands
+at its own opacity, which draws the same picture because a walked mark is coincident with the mark it
+walked onto by then. That is what makes a chain work: the destination of one span is the origin of the
+next, where a span walking a group another span had already left at nothing would move nothing anybody
+can see.
 
 ## Tracks
 
@@ -777,10 +813,11 @@ fraction of a length. When the kept pieces fail to close into a loop, the operat
 message states the piece count and the distance between the two open ends. A shape drawn with a gap
 and nothing reporting it is the one failure a caller cannot see.
 
-<img src="boolean-strip.svg" width="820" alt="Four moments in two rows, each showing the three panels, as the small disc walks from clear of the large one, through touching it at one point, through overlapping it, to sitting wholly inside it.">
+<img src="boolean-strip.svg" width="820" alt="Six moments in three rows, each showing the three panels, as the small disc walks from clear of the large one, through touching it at one point, through overlapping it, to sitting wholly inside it, and then as one panel walks across the row onto the next.">
 
 A small disc traverses a larger one: disjoint, tangent at one point, crossing at two, and contained.
-Those are the four configurations this class of code fails at silently.
+Those are the four configurations this class of code fails at silently. The last two moments are the
+panels walking into one another, which is `morphGroup` and is written up below.
 
 ## Fields
 

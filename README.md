@@ -154,9 +154,10 @@ points where a plane cuts a parametric surface, closing a run whose ends meet.
 
 <img src="https://raw.githubusercontent.com/altpsyche/altpsyche-maths/master/docs/matrix.svg" width="720" alt="A square panel of grid lines sheared over by a linear map, with the two axes through the origin carried with them and the unit square drawn as a filled parallelogram. Beside the panel the map is written as a two by two matrix in brackets, its four numbers at the values the grid has reached.">
 
-An **animation** maps marks and a fraction of a span to marks. Sixteen of them are supplied, among
-them `draw`, `fadeIn`, `moveAlong`, `rotate`, `applyMatrix`, `morph` and `morphEquation`, which pairs
-the glyphs of two typeset expressions and moves only the difference. Every animation is the identity at the start
+An **animation** maps marks and a fraction of a span to marks. Twenty-one of them are supplied, among
+them `draw`, `fadeIn`, `moveAlong`, `rotate`, `applyMatrix`, `morph`, `morphEquation`, which pairs the
+glyphs of two typeset expressions and moves only the difference, and `morphGroup`, which pairs two
+groups of marks by name and walks each pair in geometry and in style. Every animation is the identity at the start
 of its span. Every mark it introduces exists at every fraction, at zero opacity where it is not yet
 visible, so a frame-to-frame comparison never reports an arrival.
 
