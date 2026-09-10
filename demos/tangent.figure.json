@@ -10499,7 +10499,10 @@
         },
         {
           "entry": {
-            "kind": "fadeIn",
+            "kind": "write",
+            "options": {
+              "across": 3.8720000000000008
+            },
             "target": "tangent/reading"
           },
           "from": 3.1,
@@ -10507,8 +10510,16 @@
         },
         {
           "entry": {
+            "kind": "write",
+            "target": "tangent/equation/at-rest"
+          },
+          "from": 3.1,
+          "to": 3.6
+        },
+        {
+          "entry": {
             "kind": "fadeIn",
-            "target": "tangent/equation"
+            "target": "tangent/equation/moving"
           },
           "from": 3.1,
           "to": 3.6
@@ -10528,6 +10539,28 @@
               "factor": 2
             },
             "target": "tangent/point"
+          },
+          "from": 3.8,
+          "to": 4.8
+        },
+        {
+          "curve": "linear",
+          "entry": {
+            "kind": "showPassingFlash",
+            "options": {
+              "covers": 0.3,
+              "stroke": {
+                "colour": {
+                  "a": 1,
+                  "b": 161,
+                  "g": 105,
+                  "name": "deep",
+                  "r": 3
+                },
+                "width": 0.035
+              }
+            },
+            "target": "tangent/tangent"
           },
           "from": 3.8,
           "to": 4.8

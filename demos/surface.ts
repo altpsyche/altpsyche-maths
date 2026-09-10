@@ -52,15 +52,17 @@ import {
   type Stroke,
   type Track,
 } from '../index.js';
-import { DEEP, EMBER, FROST, GLAZE, INK, MOSS, PANEL, SHADE_THEME, SKY, shadeOf } from './palette.js';
+import { AMBER, DEEP, EMBER, FROST, GLAZE, INK, MOSS, PANEL, SHADE_THEME, SKY, shadeOf } from './palette.js';
 import { stripOf } from './strip.js';
 import { atFraction } from './place.js';
+import { ADVANCE } from './cover.js';
 import { TYPE } from './typeface.js';
 
 const ink = { colour: INK };
 const pen = { colour: INK, width: 0.014 };
 const cut = { colour: EMBER, width: 0.05 };
 const glass = { colour: SKY, width: 0.008 };
+const light = { colour: AMBER, width: 0.06 };
 const flow = { colour: DEEP, width: 0.022 };
 /**
  * The weight of a run of steepest descent, full at the seed it starts from and
@@ -428,10 +430,22 @@ export const ORBIT = 8;
 const AXES = { from: 0, to: 0.6 };
 const HILL = { from: 0.3, to: 1 };
 const RULE = { from: 0.7, to: 1.2 };
+const TITLE = { from: 0.2, to: 0.9 };
+
+/**
+ * How far the sweep runs across the title, in figure units.
+ *
+ * Nothing in the package measures a string, so a write is given the run. It is
+ * the average advance these sheets estimate with, over the eight characters of
+ * the title. A run short of the words would clip their tail for the rest of the
+ * figure.
+ */
+const TITLE_WIDTH = ADVANCE * TEXT.title * 'a saddle'.length;
 const PANE = { from: 1.3, to: 2 };
 const CUT = { from: 1.8, to: 2.7 };
 const FLOW_IN = { from: 2.5, to: 3 };
 const DESCENT = { from: 2.9, to: 3.8 };
+
 
 const ORBIT_FROM = DESCENT.to;
 
@@ -441,6 +455,15 @@ export const BEAT_AT = 0.25;
 export const BEAT = 1.5;
 
 const BEAT_FROM = ORBIT_FROM + ORBIT * BEAT_AT;
+
+/**
+ * The light travelling the crossing, run over the first quarter of the turn.
+ *
+ * It closes where the beat opens, so the eye's stop at the face of the saddle is
+ * a picture that does not move at all rather than one where only the camera
+ * stands still.
+ */
+const TRACE = { from: ORBIT_FROM + 0.1, to: BEAT_FROM };
 
 /**
  * The eye goes round at one pace and stops once, at the face of the saddle.
@@ -511,11 +534,17 @@ const DURATION = LABELS_BACK.to;
 const spans: readonly SpanRecord[] = [
   { entry: { kind: 'fadeIn', target: 'solid/axes' }, ...AXES },
   { entry: { kind: 'fadeIn', target: 'solid/body/hill' }, ...HILL },
-  { entry: { kind: 'fadeIn', target: 'solid/rule' }, ...RULE },
+  { entry: { kind: 'write', target: 'solid/rule' }, ...RULE },
+  { entry: { kind: 'write', target: 'solid/title', options: { across: TITLE_WIDTH } }, ...TITLE },
   { entry: { kind: 'fadeIn', target: 'solid/body/pane' }, ...PANE },
   { entry: { kind: 'draw', target: 'solid/cut' }, ...CUT },
   { entry: { kind: 'fadeIn', target: 'solid/body/flow' }, ...FLOW_IN },
   { entry: { kind: 'draw', target: 'solid/descent' }, ...DESCENT },
+  {
+    entry: { kind: 'showPassingFlash', target: 'solid/cut', options: { stroke: light, covers: 0.25 } },
+    ...TRACE,
+    curve: 'linear',
+  },
   { entry: { kind: 'fadeTo', target: 'solid/rule', opacity: 0 }, ...LABELS_OUT },
   { entry: { kind: 'fadeTo', target: 'solid/title', opacity: 0 }, ...LABELS_OUT },
   { entry: { kind: 'moveView', to: pushed }, ...PUSH_IN },

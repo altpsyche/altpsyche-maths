@@ -65,6 +65,7 @@ import {
 import { AMBER, CREAM, DEEP, EMBER, HAZE, INK, MIST, PANEL, PEACH, STEEL } from './palette.js';
 import { stripOf } from './strip.js';
 import { TYPE } from './typeface.js';
+import { ADVANCE } from './cover.js';
 
 const ink = { colour: INK };
 const pen = { colour: INK, width: 0.02 };
@@ -353,6 +354,17 @@ export const TEXT = textScale(0.32);
  * what keeps the reading the same width as it moves. */
 const PRECISION = 0.01;
 
+/**
+ * How far the sweep runs across the reading, in figure units.
+ *
+ * Nothing in the package measures a string, so a write is given the run. It is
+ * the average advance these sheets estimate with, over the ten characters the
+ * reading writes at its widest. A run short of the words would clip their tail
+ * for the rest of the figure, so the estimate is taken at the longest the
+ * reading gets rather than at what it says when the sweep runs.
+ */
+const READING_WIDTH = ADVANCE * TEXT.note * 'slope -0.00'.length;
+
 /** Every label along the x axis, named after the number it shows, which is what
  * lets them arrive one after another. */
 const acrossLabels = ['-1', '0', '1', '2', '3', '4'].map((label) => `tangent/axes/x/labels/${label}`);
@@ -548,9 +560,15 @@ const spans: readonly SpanRecord[] = [
   { entry: { kind: 'fadeIn', target: 'tangent/area' }, ...PARTS },
   { entry: { kind: 'fadeIn', target: 'tangent/field' }, ...PARTS },
   { entry: { kind: 'fadeIn', target: 'tangent/tangent' }, ...PARTS },
-  { entry: { kind: 'fadeIn', target: 'tangent/reading' }, ...PARTS },
-  { entry: { kind: 'fadeIn', target: 'tangent/equation' }, ...PARTS },
+  { entry: { kind: 'write', target: 'tangent/reading', options: { across: READING_WIDTH } }, ...PARTS },
+  { entry: { kind: 'write', target: 'tangent/equation/at-rest' }, ...PARTS },
+  { entry: { kind: 'fadeIn', target: 'tangent/equation/moving' }, ...PARTS },
   { entry: { kind: 'indicate', target: 'tangent/point', options: { factor: 2, colour: lit } }, ...BEAT, curve: 'linear' },
+  {
+    entry: { kind: 'showPassingFlash', target: 'tangent/tangent', options: { stroke: accent, covers: 0.3 } },
+    ...BEAT,
+    curve: 'linear',
+  },
   {
     entry: { kind: 'circumscribe', target: 'tangent/reading', options: { stroke: accent, padding: 0.14 } },
     ...BEAT,

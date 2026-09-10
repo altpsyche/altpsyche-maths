@@ -7066,11 +7066,22 @@
         },
         {
           "entry": {
-            "kind": "fadeIn",
+            "kind": "write",
             "target": "solid/rule"
           },
           "from": 0.7,
           "to": 1.2
+        },
+        {
+          "entry": {
+            "kind": "write",
+            "options": {
+              "across": 2.737917456754313
+            },
+            "target": "solid/title"
+          },
+          "from": 0.2,
+          "to": 0.9
         },
         {
           "entry": {
@@ -7103,6 +7114,28 @@
           },
           "from": 2.9,
           "to": 3.8
+        },
+        {
+          "curve": "linear",
+          "entry": {
+            "kind": "showPassingFlash",
+            "options": {
+              "covers": 0.25,
+              "stroke": {
+                "colour": {
+                  "a": 1,
+                  "b": 9,
+                  "g": 83,
+                  "name": "amber",
+                  "r": 180
+                },
+                "width": 0.06
+              }
+            },
+            "target": "solid/cut"
+          },
+          "from": 3.9,
+          "to": 5.8
         },
         {
           "entry": {

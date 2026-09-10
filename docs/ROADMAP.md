@@ -1246,12 +1246,16 @@ figure names one number and the animation derives the rest.
   through `writeFigure` and `readFigure` to the same marks at every named time by `sameMarks`, each
   record agrees with its call at five fractions over both demos, and the checker refuses a wave whose
   amplitude is the text "far" and a passing flash carrying no stroke.
-- [ ] **7. Both demos gain them.** `demos/tangent.ts` writes its reading on rather than fading it in,
+- [x] **7. Both demos gain them.** `demos/tangent.ts` writes its reading on rather than fading it in,
   writes its rule glyph by glyph, and runs a light along the tangent at the stationary point.
-  `demos/surface.ts` writes its typeset equation on and runs a light along the crossing curve as the
-  eye comes round. **The measurement**: each demo's marks at three named times; the clip edges on the
-  reading at the fractions the sweep passes; and the bytes of the four committed sheets, which
-  regenerate byte for byte.
+  `demos/surface.ts` writes its rule and its title on and runs a light along both branches of the
+  crossing over the first quarter of the turn. **The measurement**: the flat demo draws 147 own marks
+  at every time against 146, and 182 with its inset at its still time against 181, with its seven
+  named times reading 187, 186, 186, 183, 179, 179 and 179. The solid demo draws 249 against 247, and
+  322 at its still time against 321, with its four named times reading 319, 320, 319 and 319. The
+  reading's sweep is 0 units wide at the start of the figure and past 3 at the end of the entrance,
+  the solid demo's beat still holds `sameMarks` across its whole 1.5 seconds, and the four committed
+  sheets and both figure files regenerate byte for byte.
 - [ ] **8. The reference, the guide, the specification, and 2.4.0 cut.** `docs/REFERENCE.md` gains
   every new door name, `docs/SPECIFICATION.md` writes the four animation kinds with their fields and
   says where the sweep's run comes from, `docs/GUIDE.md` gains the section that writes a label on,

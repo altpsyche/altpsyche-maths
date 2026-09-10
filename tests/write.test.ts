@@ -67,16 +67,21 @@ describe('written on', () => {
     expect(swept(1, { ...label, align: 'end' }).x).toEqual({ from: -1, to: 2 });
   });
 
-  it('leaves a band tall enough to clear an ascender and a descender', () => {
-    expect(swept(0.5).y.from).toBeCloseTo(0.4, 12);
-    expect(swept(0.5).y.to).toBeCloseTo(1.6, 12);
+  it('leaves the box a line of type stands in, a fifth of it under the baseline', () => {
+    expect(swept(0.5).y.from).toBeCloseTo(1 - 0.08, 12);
+    expect(swept(0.5).y.to).toBeCloseTo(1 + 0.32, 12);
+  });
+
+  it('puts the box where the baseline the mark names puts it', () => {
+    expect(swept(0.5, { ...label, baseline: 'middle' }).y.from).toBeCloseTo(0.8, 12);
+    expect(swept(0.5, { ...label, baseline: 'hanging' }).y.from).toBeCloseTo(0.6, 12);
   });
 
   it('keeps a clip the figure already put on the mark', () => {
     const clipped: TextMark = { ...label, clip: { x: { from: 0, to: 3 }, y: { from: 0, to: 2 } } };
     expect(swept(1, clipped).x).toEqual({ from: 2, to: 3 });
-    expect(swept(1, clipped).y.from).toBeCloseTo(0.4, 12);
-    expect(swept(1, clipped).y.to).toBeCloseTo(1.6, 12);
+    expect(swept(1, clipped).y.from).toBeCloseTo(0.92, 12);
+    expect(swept(1, clipped).y.to).toBeCloseTo(1.32, 12);
   });
 
   it('fades a text mark where no run is named, which is what draw already does', () => {

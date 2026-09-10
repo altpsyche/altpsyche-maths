@@ -433,14 +433,14 @@ export interface WriteOptions {
 }
 
 /**
- * How tall a band the sweep leaves uncut, against the size of the text.
+ * How much of a line of type stands below its baseline, against its size.
  *
- * The sweep cuts across the words and never along them, so this only has to
- * clear the tallest ascender and the deepest descender of whatever face the
- * platform found. Three sizes about the anchor clears both at every face a
- * system stack holds.
+ * A line of type stands one size tall with a fifth of it under the baseline,
+ * which is the box a text mark occupies. The sweep cuts across the words and
+ * never along them, so a band any taller than that box would only reach outside
+ * the frame for a label written near its edge.
  */
-const WRITTEN_BAND = 1.5;
+const WRITTEN_BELOW = 0.2;
 
 /** Where the near edge of a sweep sits, which is the anchor for text that starts
  * there and the whole run back for text that ends there. */
@@ -448,6 +448,14 @@ function sweepFrom(mark: TextMark, across: number): number {
   if (mark.align === 'middle') return mark.at.x - across / 2;
   if (mark.align === 'end') return mark.at.x - across;
   return mark.at.x;
+}
+
+/** The bottom of the box a line of type stands in, which the anchor sits on the
+ * baseline of unless the mark says otherwise. */
+function writtenFoot(mark: TextMark): number {
+  if (mark.baseline === 'middle') return mark.at.y - mark.size / 2;
+  if (mark.baseline === 'hanging') return mark.at.y - mark.size;
+  return mark.at.y - WRITTEN_BELOW * mark.size;
 }
 
 /**
@@ -485,9 +493,10 @@ export function write(target: string, options: WriteOptions = {}): Animation {
       if (mark.kind !== 'text') return { ...mark, path: trimPath(mark.path, reached) };
       if (across === undefined) return { ...mark, opacity: (mark.opacity ?? 1) * reached };
       const from = sweepFrom(mark, across);
+      const foot = writtenFoot(mark);
       const band = {
         x: interval(from, from + across * reached),
-        y: interval(mark.at.y - WRITTEN_BAND * mark.size, mark.at.y + WRITTEN_BAND * mark.size),
+        y: interval(foot, foot + mark.size),
       };
       return { ...mark, clip: mark.clip ? (overlapOf(mark.clip, band) ?? band) : band };
     });

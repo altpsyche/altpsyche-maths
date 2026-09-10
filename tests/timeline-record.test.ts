@@ -54,13 +54,13 @@ describe('the timeline as data', () => {
     expect(resolveTimeline({ spans: [{ entry: entries[0], from: 0, to: 2 }] }).duration).toBe(2);
   });
 
-  it('reads the flat demo thirty spans as numbers rather than as the calls that made them', () => {
+  it('reads the flat demo thirty-two spans as numbers rather than as the calls that made them', () => {
     const spans = tangent.timeline!.spans;
-    expect(spans).toHaveLength(30);
+    expect(spans).toHaveLength(32);
     // Its entrance is everything up to the walk, which is where the first span
     // that starts after the entrance has finished begins.
     const entrance = spans.filter((span) => span.from < 3.5);
-    expect(entrance).toHaveLength(23);
+    expect(entrance).toHaveLength(24);
   });
 
   it('shows a negative offset as a span that starts before the one before it ends', () => {
