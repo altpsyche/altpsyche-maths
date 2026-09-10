@@ -38,7 +38,7 @@ export { transformFill, transformGradient } from './figure/gradient.js';
 export { differenceOf, intersectionOf, unionOf } from './figure/boolean.js';
 export type { BooleanOptions } from './figure/boolean.js';
 export { containsPoint, flattenPath, nearestEdge, windingAt } from './figure/inside.js';
-export { strokeTrianglesOf, triangleArea, trianglesOf } from './figure/triangles.js';
+export { clipTriangles, strokeTrianglesOf, triangleArea, trianglesOf } from './figure/triangles.js';
 export type { TriangleOptions } from './figure/triangles.js';
 export type { FlatEdge, FlattenOptions } from './figure/inside.js';
 export { cutPath } from './figure/cut.js';

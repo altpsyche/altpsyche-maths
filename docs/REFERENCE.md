@@ -1399,6 +1399,11 @@ frame round a picture is a shape.
   triangles, which is the SVG specification's rule.
 - `TriangleOptions` — the `tolerance` a curve is flattened to, in the picture's own units, and the
   `rule`, `nonzero` or `evenodd`, which is the one the mark's own fill carries.
+- `clipTriangles(corners, box)` — a list of triangles cut back to a rectangle. A clip is a rectangle
+  and a card's renderer may name no scissor test, so the rectangle is cut into the geometry by
+  Sutherland and Hodgman's algorithm, which clips a convex polygon against four half planes in turn.
+  A triangle cut against them leaves a convex polygon of up to seven corners, which is a fan of
+  triangles. A rectangle given either way round on either axis names the same box.
 - `triangleArea(corners)` — how much area a list of triangles covers, which is what a triangulation
   is held to.
 

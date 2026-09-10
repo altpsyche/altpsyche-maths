@@ -1393,10 +1393,22 @@ are 1310 tests over 87 files and a door of 208 values and 240 types.
       whole disc rather than the band, since the inner loop's bevelled corners were read as filled.
       The suite is 1331 tests over 88 files where it was 1321, and the door is 211 values and 241
       types where it was 210 and 241.
-- [ ] **3. A clip is cut into the geometry.** Sutherland and Hodgman's algorithm clips each triangle
-      against the mark's rectangle, since the engine names no scissor. **Measurement:** the 40 clipped
-      marks of the flat demo at 5 seconds and the 72 of the solid at 6, each one's clipped area against
-      the area of its intersection with the box within 1e-9, and the triangle count before and after.
+- [x] **3. A clip is cut into the geometry.** `clipTriangles(corners, box)` clips each triangle
+      against the mark's rectangle by Sutherland and Hodgman's algorithm, since the engine names no
+      scissor. A triangle cut against four half planes leaves a convex polygon of up to seven corners,
+      which is a fan of triangles. The reference the clipped area is held to is the package's own
+      boolean intersection of the same triangles with the box, since a triangle and a rectangle are
+      both straight-sided and the exact curve would compare a flattening against a cubic: that
+      reference read 4.1e-1 out on the solid demo and 1.4e-15 on the same marks once the triangles
+      rather than the path were what it intersected. **Measured:** the flat demo at 5 seconds carries
+      40 clipped marks, 28 paths and 12 text, whose 317 triangles become 244, and the solid demo at 6
+      carries 72, 61 paths and 11 text, whose 296 become 190 with 2 marks falling wholly outside their
+      box. The worst area difference against the boolean intersection is 1.36e-15 on the flat demo and
+      1.05e-15 on the solid, against the 1e-9 this step named and at the 1.776e-15 the boolean
+      operations hold themselves to. Clipping a whole frame takes 19.43 milliseconds for the flat demo
+      and 10.30 for the solid with the reference included, and 4.49 and 0.82 without it. The suite is
+      1339 tests over 88 files where it was 1331, and the door is 212 values and 241 types where it was
+      211 and 241.
 - [ ] **4. Marks become a frame description, and nothing draws it.** `gpuFrame(marks, view, options)`
       answers the engine's own frame description: one multisampled colour attachment of the painter's
       own with a blend named, one pass, and the draws the marks batch into, with each colour as four

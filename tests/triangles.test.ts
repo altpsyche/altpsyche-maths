@@ -1,8 +1,12 @@
 import { describe, expect, it } from 'vitest';
 import {
+  areaOf,
   circle,
+  clipTriangles,
   colourFrom,
   flattenPath,
+  intersectionOf,
+  interval,
   line,
   marksAt,
   outlinedMarks,
@@ -15,7 +19,7 @@ import {
   vec2,
   windingAt,
 } from '@altpsyche/maths';
-import type { Mark, Path, Vec2 } from '@altpsyche/maths';
+import type { Bounds, Mark, Path, Stroke, Vec2 } from '@altpsyche/maths';
 import { tangent } from '../demos/tangent.js';
 import { solid } from '../demos/surface.js';
 
@@ -356,5 +360,123 @@ describe('the demos stroked into triangles', () => {
     expect(cut.triangles).toBe(558);
     expect(cut.empty).toBe(8);
     expect(cut.worst).toBeLessThan(1e-10);
+  });
+});
+
+/** The rectangle a clip names, as a path, so a clipped area can be read off the
+ * package's own boolean intersection. */
+function boxPath(box: Bounds): Path {
+  const across = interval.ordered(box.x);
+  const up = interval.ordered(box.y);
+  return rect(vec2(across.from, up.from), across.to - across.from, up.to - up.from);
+}
+
+/**
+ * How much of a list of triangles falls inside a box, by the boolean
+ * intersection rather than by the clipping under test.
+ *
+ * A triangle and a rectangle are both straight-sided, so the two answers are
+ * held to the 1.776e-15 the boolean operations hold themselves to rather than to
+ * a flattening.
+ */
+function intersectedArea(corners: readonly Vec2[], box: Bounds): number {
+  const against = boxPath(box);
+  let sum = 0;
+  for (let at = 0; at + 2 < corners.length; at += 3) {
+    sum += areaOf(intersectionOf(polygon([corners[at], corners[at + 1], corners[at + 2]]), against));
+  }
+  return sum;
+}
+
+/** Every clipped mark of a figure at a time, cut to its box and measured against
+ * the intersection of the same triangles with that box. */
+function clipping(marks: readonly Mark[]) {
+  let clipped = 0;
+  let paths = 0;
+  let before = 0;
+  let after = 0;
+  let emptied = 0;
+  let worst = 0;
+  for (const mark of outlinedMarks(marks)) {
+    if (!mark.clip) continue;
+    clipped += 1;
+    if (mark.kind !== 'path') continue;
+    paths += 1;
+    const corners = mark.fill
+      ? trianglesOf(mark.path, { tolerance: TOLERANCE, rule: mark.fill.rule })
+      : strokeTrianglesOf(mark.path, mark.stroke as Stroke);
+    const cut = clipTriangles(corners, mark.clip);
+    before += corners.length / 3;
+    after += cut.length / 3;
+    if (corners.length > 0 && cut.length === 0) emptied += 1;
+    worst = Math.max(worst, Math.abs(triangleArea(cut) - intersectedArea(corners, mark.clip)));
+  }
+  return { clipped, paths, before, after, emptied, worst };
+}
+
+const unitBox: Bounds = { x: interval(0, 1), y: interval(0, 1) };
+
+describe('clipTriangles', () => {
+  it('leaves a triangle inside the box alone', () => {
+    const inside = [vec2(0.1, 0.1), vec2(0.9, 0.1), vec2(0.5, 0.9)];
+    const cut = clipTriangles(inside, unitBox);
+    expect(cut).toEqual(inside);
+  });
+
+  it('drops a triangle outside the box', () => {
+    const outside = [vec2(2, 2), vec2(3, 2), vec2(2.5, 3)];
+    expect(clipTriangles(outside, unitBox)).toHaveLength(0);
+  });
+
+  it('cuts a triangle back to the box where it crosses one side', () => {
+    // The triangle's slope leaves the box at half its height, so what stays is
+    // the box less the corner triangle of a half by a half.
+    const across = [vec2(0, 0), vec2(2, 0), vec2(0, 1)];
+    const cut = clipTriangles(across, unitBox);
+    expect(triangleArea(cut)).toBeCloseTo(intersectedArea(across, unitBox), 14);
+    expect(triangleArea(cut)).toBeCloseTo(0.75, 14);
+  });
+
+  it('cuts a triangle covering the whole box back to the box', () => {
+    const over = [vec2(-5, -1), vec2(5, -1), vec2(0, 6)];
+    const cut = clipTriangles(over, unitBox);
+    // Four corners are a fan of two triangles, and their area is the box's.
+    expect(cut).toHaveLength(6);
+    expect(triangleArea(cut)).toBeCloseTo(1, 14);
+  });
+
+  it('reads a box given either way round as the same box', () => {
+    const across = [vec2(0, 0), vec2(2, 0), vec2(0, 1)];
+    const backwards: Bounds = { x: interval(1, 0), y: interval(1, 0) };
+    expect(triangleArea(clipTriangles(across, backwards))).toBeCloseTo(0.75, 14);
+  });
+
+  it('keeps a corner sitting on the boundary without adding one', () => {
+    const touching = [vec2(0, 0), vec2(1, 0), vec2(0, 1)];
+    expect(clipTriangles(touching, unitBox)).toHaveLength(3);
+  });
+});
+
+describe('the demos clipped', () => {
+  it('cuts every clipped mark of the flat demo to its own box', () => {
+    const cut = clipping(marksAt(tangent, 5));
+    // Twelve of the forty carry text, which has no outline until a card has a
+    // source of glyphs.
+    expect(cut.clipped).toBe(40);
+    expect(cut.paths).toBe(28);
+    expect(cut.before).toBe(317);
+    expect(cut.after).toBe(244);
+    expect(cut.worst).toBeLessThan(1e-9);
+  });
+
+  it('cuts every clipped mark of the solid demo to its own box', () => {
+    const cut = clipping(marksAt(solid, 6));
+    expect(cut.clipped).toBe(72);
+    expect(cut.paths).toBe(61);
+    expect(cut.before).toBe(296);
+    expect(cut.after).toBe(190);
+    // Two marks fall wholly outside the box they carry.
+    expect(cut.emptied).toBe(2);
+    expect(cut.worst).toBeLessThan(1e-9);
   });
 });

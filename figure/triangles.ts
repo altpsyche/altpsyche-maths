@@ -15,7 +15,9 @@
  * Nothing here needs a device, so how many triangles a figure is and how much
  * area they cover are held by the suite rather than by a gate.
  */
+import { interval } from '../values/interval.js';
 import { vec2, type Vec2 } from '../values/vec2.js';
+import type { Bounds } from './bounds.js';
 import { flattenPath, windingAt } from './inside.js';
 import { outlinePath } from './outline.js';
 import type { Stroke } from './mark.js';
@@ -364,6 +366,68 @@ export function strokeTrianglesOf(path: Path, stroke: Stroke, options: TriangleO
     tolerance: options.tolerance,
   });
   return trianglesOf(outline, { tolerance: options.tolerance, rule: 'nonzero' });
+}
+
+/**
+ * One convex polygon cut back to the inside of one half plane, which is one pass
+ * of Sutherland and Hodgman's algorithm.
+ *
+ * How far inside a corner sits is the number `inside` hands back, positive
+ * within the half plane, so the crossing along an edge leaving the half plane is
+ * the fraction that number falls to nothing at. A corner on the boundary is
+ * kept and starts no crossing, which is what keeps a polygon lying along the
+ * boundary from gaining a corner per pass.
+ */
+function halfPlane(polygon: readonly Vec2[], inside: (point: Vec2) => number): Vec2[] {
+  const kept: Vec2[] = [];
+  for (let at = 0; at < polygon.length; at += 1) {
+    const here = polygon[at];
+    const next = polygon[(at + 1) % polygon.length];
+    const depth = inside(here);
+    const beyond = inside(next);
+    if (depth >= 0) kept.push(here);
+    if ((depth > 0 && beyond < 0) || (depth < 0 && beyond > 0)) {
+      kept.push(vec2.lerp(here, next, depth / (depth - beyond)));
+    }
+  }
+  return kept;
+}
+
+/**
+ * A list of triangles cut back to a rectangle, three corners to a triangle.
+ *
+ * A clip is a rectangle and the engine names no scissor test, so the rectangle
+ * is cut into the geometry before it is handed over. Sutherland and Hodgman's
+ * algorithm clips a convex polygon against a convex boundary, and a rectangle is
+ * four half planes taken in turn. A triangle cut against them leaves a convex
+ * polygon of up to seven corners, which is a fan of triangles from any one of
+ * them.
+ *
+ * A rectangle given either way round on either axis names the same box, which is
+ * what an axis counting down the screen leaves.
+ */
+export function clipTriangles(corners: readonly Vec2[], box: Bounds): Vec2[] {
+  const across = interval.ordered(box.x);
+  const up = interval.ordered(box.y);
+  const sides: ((point: Vec2) => number)[] = [
+    (point) => point.x - across.from,
+    (point) => across.to - point.x,
+    (point) => point.y - up.from,
+    (point) => up.to - point.y,
+  ];
+
+  const clipped: Vec2[] = [];
+  for (let at = 0; at + 2 < corners.length; at += 3) {
+    let polygon: Vec2[] = [corners[at], corners[at + 1], corners[at + 2]];
+    for (const inside of sides) {
+      polygon = halfPlane(polygon, inside);
+      if (polygon.length < 3) break;
+    }
+    for (let corner = 1; corner + 1 < polygon.length; corner += 1) {
+      clipped.push(polygon[0], polygon[corner], polygon[corner + 1]);
+    }
+  }
+  return clipped;
 }
 
 /** How much area a list of triangles covers, which is what a triangulation is
