@@ -371,7 +371,7 @@ are left, since 2.1.0 through 2.5.0 are cut.
 
 | version | what lands | what it changes | steps | cut against | depends on | plan |
 | --- | --- | --- | --- | --- | --- | --- |
-| 2.6.0 | the recorder: a figure out as a video file | nothing in the format, and a name at the door | to plan | every demo as a file on disk rather than a strip of frames | `mediabunny`, which the consumer already records with | to plan |
+| 2.6.0 | the recorder: a figure out as a video file | nothing in the format, and a name at the door | 6 | every committed figure as a file on disk, written by a browser gate rather than by `npm test` | `mediabunny`, which the consumer already records with, and `playwright` for the gate | below |
 | 2.7.0 | the GPU painter | nothing in the format, and a name at the door | to plan | both demos through a third painter, mark for mark against the SVG painter | `@altpsyche/engine`, with its item 2 landed, declared as a peer | to plan |
 | 2.8.0 | dashes and quadratics drawn on a GPU | nothing; `Stroke.dash` is already in the mark and no painter draws it | to plan | a dashed figure, and the strip that shows it moving | `@altpsyche/engine` | to plan |
 | 2.9.0 | text on a GPU, and the recorder running without a page | nothing in the format | to plan | every demo recorded off a card | `@altpsyche/engine`, a source of glyph outlines, 2.6.0, and a canvas with no page behind it if `mediabunny` takes nothing else | to plan |
@@ -1277,14 +1277,13 @@ no box test in front of it and the quadratic over piece pairs is not worth remov
 
 ## The items
 
-Each is a version above. What follows is what each one covers. 2.6.0 carries no step list, because
-writing one is a session of its own.
+Each is a version above. What follows is what each one covers.
 
 ### The 2.x band, which is what Manim has and this does not
 
 **One item of this band is left and it adds no kind.** The recorder reads a figure and writes a file,
-so it changes nothing in the format and puts a name at the door. **It carries no step list**, and
-writing one is a session of its own, which is the rule this file holds every item to.
+so it changes nothing in the format and puts a name at the door. Its step list is below, written on
+2026-09-10.
 
 **2.6.0 The recorder.** `framesOf` hands back a frame at a time and there is no encoder anywhere in
 this tree, so what a consumer gets is frames and what the goal at the top of this file asks for is an
@@ -1320,12 +1319,106 @@ reading.** `FrameFiller` there is `fill(target, seconds, index, clipSeconds)` wi
 `dispose`, and its walk counts frames by a floor where `frameTimesOf` counts by a round. So the shape
 is taken rather than designed, and the two frame counts become one.
 
-**What a planning session settles first is whether `mediabunny` takes a frame that is not a canvas.**
-A raw sample path makes the sink independent of a page, and 2.9.0 then needs only a rasteriser that
-runs without one. A `CanvasSource` and nothing else makes that class the browser tie, and 2.9.0 gains a
-canvas shim as a named dependency on the ladder rather than discovering one. **What would change the
-answer** is nothing in this package, so it is read off that library's own surface before a step is
-written.
+**`mediabunny` takes a frame that is not a canvas, and that was the first question this plan had to
+settle.** `VideoSampleSource` takes a `VideoSample`, and one of that class's three constructors takes
+an `AllowSharedBufferSource` with `format`, `codedWidth`, `codedHeight` and `timestamp`, so raw pixels
+with no canvas anywhere satisfy it. `CanvasSource` is a wrapper over that source and the library says
+so. Read off `mediabunny` 1.29.1 on 2026-09-10. **What it means for 2.9.0** is that the missing piece
+there is a rasteriser that hands over bytes, and a canvas shim is one way of getting one rather than a
+dependency the ladder has to name.
+
+**Node cannot encode, and that is the second thing the reading found.** `getEncodableVideoCodecs()`
+answers `[]` on Node 26.8.1, because mediabunny reaches for the WebCodecs `VideoEncoder` and that
+global is undefined there. Its five video codecs are avc, hevc, vp9, av1 and vp8, and none of them is
+an uncompressed one a pure encoder could write. The writing half does run in Node, since
+`FilePathTarget` is one of its four targets, and `registerEncoder` with a `CustomVideoEncoder` is the
+door a WebAssembly encoder would come through. This tree has no rasteriser either: `paintCanvas` takes
+a `CanvasLike` and the only implementation of it anywhere here counts the calls it is handed.
+
+**So the bytes are gated in a browser, which is what both sibling repositories already do.**
+`@altpsyche/engine` and `altpsyche.dev` each hold `playwright` as a development dependency, and a
+browser supplies the rasteriser and the encoder together. This is the rule this repository already
+holds a claim about pixels to, and it is why the cut-against column above now names a gate rather than
+`npm test`. **What would change the answer** is a WebAssembly encoder registered through
+`registerEncoder`, which would let `npm run demos` write the files in Node and is not worth a
+dependency until something asks for one.
+
+**The recorder's own arithmetic is held by `npm test` and none of it needs a browser.** A sink that
+counts what it is handed is pure, so the frame count, the step of exactly one over the rate, and the
+walk stopping strictly before the end are all in the suite. The two frame counts that have drifted
+become one in step 1: `frameTimesOf` rounds where the consumer's recorder floors, and a figure of
+1.999 seconds at 30 frames a second is 60 frames here and 59 there.
+
+**The steps.** Each is one commit, and each names the measurement its commit quotes. Today's numbers
+are 1284 tests over 85 files, a door of 204 values and 234 types, and walks of 308 and 399 frames for
+the flat and solid demos at 30 frames a second.
+
+- [ ] **1. The walk and the sink.** `figure/record.ts` holds `recordFigure(figure, sink, options)` and
+      the `FrameSink` it takes: a `context` the frames are painted onto, an `add(seconds, duration)`
+      that takes the painted frame, and a `finish()` that hands back whatever the sink was collecting.
+      The walk is `frameTimesOf` and nothing else, so there is one frame count in this tree.
+      **Measurement:** a counting sink over both demos gives 308 and 399 frames at 30 frames a second
+      and 615 and 798 at 60, every timestamp is its index over the rate to within 1e-12, and the last
+      one is strictly under the figure's duration.
+- [ ] **2. A frame painted whole, ground and all.** `paintFrame(context, frame, options)` fills the
+      ground a recording needs and then paints the marks through `paintCanvas`. A recorded frame opens
+      on whatever the last one left unless something fills it, where an SVG still is written onto a
+      page that already has a colour. The shape is the consumer's `figureFiller`, 77 lines in
+      `components/figure/record.ts` there, moved here so it is written once. **Measurement:** the
+      counting context takes one fill per frame more than `paintCanvas` does when a ground is given and
+      exactly as many when it is not, over both demos.
+- [ ] **3. A clip longer than the figure, and a loop that wraps.** `recordFigure` gains `seconds`,
+      which is the length of the recording rather than the length of the figure. A figure that declares
+      itself a loop wraps by the remainder, and one that does not holds its last picture. Both rules are
+      `duration` and `loop`, which are fields of the format, so they belong at this door rather than in
+      a third consumer. **Measurement:** `demos/rotate.ts` declares itself a loop and lasts 6
+      seconds, which is 180 frames at 30 frames a second, so recorded over 12 seconds it is 360 frames
+      and its marks at t and at t + 6 agree within 1e-9 at every named time. The flat demo lasts 10.25
+      seconds and does not loop, so recorded over 20.5 it draws its last picture for the whole second
+      half.
+- [ ] **4. The encoder, behind a dynamic import.** `videoSink(canvas, options)` builds mediabunny's
+      `Output`, `CanvasSource` and target inside an `await import('mediabunny')`, which is how the
+      typesetting call already loads MathJax. `mediabunny` is a dependency rather than a peer, since one
+      install is the goal and the import is what keeps a consumer who never records from paying for it.
+      **Measurement:** no file under `dist` names mediabunny outside an `await import()`, the door goes
+      from 204 values to what the sink adds, and `npm run build` stays clean with no browser library
+      declared.
+- [ ] **5. The gate that writes the bytes.** A script under `gates/` drives Chromium through
+      `playwright`, reads each committed figure file with `readFigure`, records it through
+      `recordFigure` and `videoSink`, and writes one file per figure. It is not part of `npm test`, the
+      way the engine's own device gates are not part of its suite. **Measurement:** one file per
+      committed figure with its size, and the frames the encoder took equal to `frameTimesOf` for that
+      figure at the rate the gate names.
+- [ ] **6. The door and the README.** The recorder's names go in `index.ts`, and the README gains the
+      call that turns a figure into a file. The strips stay, because a README that plays a video on load
+      is a README nobody can read. **Measurement:** the door count after the step, and the README's own
+      bytes before and after.
+
+**What this closes on the found list below.** Step 1 leaves one frame count in the tree, and step 3
+puts the mapping from a recording's own time to a figure's time at this door, which is the half of the
+elapsed-time item a recorder needs. The clamp that item names is about a tab left open rather than a
+recording, so it stays with the consumer and stays on the list.
+
+**Which step the demos gain from.** Step 5 is where every committed figure becomes a file on disk,
+which is the row's cut-against, and step 2 is what gives each of those files a ground rather than
+whatever the encoder's canvas opened on.
+
+**Done-criteria for 2.6.0**, each checkable on its own.
+
+1. `recordFigure`, `FrameSink`, `paintFrame` and `videoSink` are at the door and `index.ts` is the only
+   file naming them.
+2. `npm test` holds the frame count of both demos at 30 and at 60 frames a second, and the suite needs
+   no browser.
+3. Every timestamp a sink is handed is its index over the rate to within 1e-12, and the last one is
+   strictly under the recorded span.
+4. A figure that loops, recorded over two of its durations, hands the same marks at t and at t + D to
+   within 1e-9. One that does not loop holds its last picture.
+5. `paintFrame` adds one fill per frame when a ground is given and none when it is not.
+6. No file under `dist` names mediabunny outside an `await import()`.
+7. The browser gate writes one file per committed figure, and each holds the frames `frameTimesOf`
+   counts for that figure.
+8. There is one frame count in this tree, and it is `frameTimesOf`.
+9. The version in `package.json` is 2.6.0 and the cut's commit states the door count.
 
 ## Found while working, not yet queued
 
