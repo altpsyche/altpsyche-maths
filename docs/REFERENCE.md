@@ -1164,6 +1164,11 @@ a group of that name.
 - `morphEquation(from, to)` — one typeset expression walked into another, the shared glyphs staying
   put and only the difference moving. A paired glyph is drawn once rather than cross-faded, since
   two copies of one letter at half opacity through the middle of a span is a ghost.
+- `morphGroup(from, to)` — one group of marks walked into another, mark by mark, paired by the part
+  of each mark's id under the target it sits under. At nothing the marks are the marks handed in, and
+  at one the walking group is at nothing with the group arrived at standing at its own opacity, which
+  shows nothing because the two are coincident there. A paired text mark walks its anchor and its
+  size and its string changes once, at half the span.
 - `countTo(target, from, to, write)` — a number ticking from one value to another, written into a
   text mark. How the value is written is the caller's, so a count of a length and a count of a
   population can round differently.

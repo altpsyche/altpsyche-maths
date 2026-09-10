@@ -18,7 +18,7 @@ import { lerpColour } from '../values/colour.js';
 import { circle, line, polygon, transformPath, type Path } from './path.js';
 import { pathWindow, trimPath } from './trim.js';
 import { lerpPath } from './morph.js';
-import { matchGlyphs } from './equation-match.js';
+import { matchGlyphs, matchMarks } from './equation-match.js';
 import { pointAlong } from './length.js';
 import { scaledWidth } from './width.js';
 import { transformFill } from './gradient.js';
@@ -123,6 +123,77 @@ export function morphEquation(from: string, to: string): Animation {
     const faded = (mark: Mark, to: number) => ({ ...mark, opacity: (mark.opacity ?? 1) * to });
     for (const mark of leaving) if (!changed.has(mark.id)) changed.set(mark.id, faded(mark, 1 - along));
     for (const mark of arriving) if (!changed.has(mark.id)) changed.set(mark.id, faded(mark, along));
+
+    return marks.map((mark) => changed.get(mark.id) ?? mark);
+  };
+}
+
+/** The part of a mark's id under a target, which is the key two groups pair on.
+ * A mark that is the target itself carries no part after it and keys on nothing,
+ * so two single shapes pair with each other. */
+function relativeTo(id: string, target: string): string | undefined {
+  if (id === target) return '';
+  return id.startsWith(`${target}/`) ? id.slice(target.length + 1) : undefined;
+}
+
+/**
+ * One paired mark part way to the mark it becomes.
+ *
+ * A string cannot be walked into another string, so a text mark walks its anchor
+ * and its size and its text changes once, at half the span. Two strings drawn
+ * over each other at half opacity is the ghost a paired glyph is drawn once to
+ * avoid.
+ */
+function walked(from: Mark, to: Mark, along: number): Mark {
+  if (from.kind === 'text' && to.kind === 'text') {
+    return {
+      ...from,
+      at: vec2.lerp(from.at, to.at, along),
+      size: lerp(from.size, to.size, along),
+      text: along < 0.5 ? from.text : to.text,
+    };
+  }
+  if (from.kind === 'path' && to.kind === 'path') return { ...from, path: lerpPath(from.path, to.path, along) };
+  return from;
+}
+
+/**
+ * One group of marks walked into another, mark by mark.
+ *
+ * The pairing is by name: the part of a mark's id under the target it sits under
+ * is the key, so two groups built by one function pair mark for mark, and what no
+ * name answers pairs by the order it stands in. Manim matches two shapes by a key
+ * built from their points, which a mark here needs no more than a mark needs an
+ * id built for it.
+ *
+ * At nothing the marks are the marks handed in, so a group waiting to be walked
+ * onto is the picture it already was rather than an empty slot. Through the span
+ * the walking mark carries the change and its partner's own opacity is multiplied
+ * by what is left of the span, so the destination dims as the shape arriving lands
+ * on it.
+ *
+ * At one the walking group is at nothing and the group arrived at stands at its
+ * own opacity. That swap shows nothing at that instant, because a walked mark is
+ * then coincident with the mark it walked onto, and it is what lets one span's
+ * destination be the next span's origin.
+ */
+export function morphGroup(from: string, to: string): Animation {
+  return (marks, along) => {
+    if (along <= 0) return marks;
+    const leaving = marks.filter((mark) => touches(mark.id, from));
+    const arriving = marks.filter((mark) => touches(mark.id, to));
+    if (leaving.length === 0 || arriving.length === 0) return marks;
+
+    const match = matchMarks(leaving, arriving, (mark) => relativeTo(mark.id, from) ?? relativeTo(mark.id, to));
+    const landed = along >= 1;
+    const dimmed = (mark: Mark, by: number) => ({ ...mark, opacity: (mark.opacity ?? 1) * by });
+    const changed = new Map<string, Mark>();
+    for (const [left, right] of match.pairs) {
+      const at = walked(left, right, along);
+      changed.set(left.id, landed ? dimmed(at, 0) : at);
+      if (!landed) changed.set(right.id, dimmed(right, 1 - along));
+    }
+    for (const mark of match.leaving) changed.set(mark.id, dimmed(mark, landed ? 0 : 1 - along));
 
     return marks.map((mark) => changed.get(mark.id) ?? mark);
   };

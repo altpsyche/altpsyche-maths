@@ -183,7 +183,7 @@ export { TEXT_RATIO, textScale } from './figure/type-scale.js';
 export type { TextRole, TextScale } from './figure/type-scale.js';
 export { LEADING, flatten, group, shape, text } from './figure/node.js';
 export type { GroupNode, Node, ShapeNode, Style, TextNode, TextOptions } from './figure/node.js';
-export { applyMatrix, circumscribe, countTo, fadeIn, fadeOut, fadeTo, draw, flash, growFrom, indicate, morph, morphEquation, moveAlong, moveBy, rotate, scale, showPassingFlash, wave, wiggle, write } from './figure/animation.js';
+export { applyMatrix, circumscribe, countTo, fadeIn, fadeOut, fadeTo, draw, flash, growFrom, indicate, morph, morphEquation, morphGroup, moveAlong, moveBy, rotate, scale, showPassingFlash, wave, wiggle, write } from './figure/animation.js';
 export type { AboutOptions, Animation, CircumscribeOptions, FlashOptions, IndicateOptions, PassingFlashOptions, ScaleOptions, WaveOptions, WiggleOptions, WriteOptions } from './figure/animation.js';
 export { resolveAnimation } from './figure/animation-record.js';
 export type {
