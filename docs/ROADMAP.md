@@ -1189,12 +1189,17 @@ point.
   the ids `m/left`, `m/right` and `m/rows/0/0` through `m/rows/1/1`; the box round the two brackets is
   the given box exactly, x from -5 to 5 and y from -4 to 4 for a 10 by 8; every entry of a 3 by 2 sits
   on its cell centre to 1e-12; and the suite runs 1173 tests over 74 files, up from 1164 over 73.
-- [ ] **2. `table` is a node.** `figure/table.ts` holds rows of cells with a rule between rows and
+- [x] **2. `table` is a node.** `figure/table.ts` holds rows of cells with a rule between rows and
   between columns, a heavier rule under a header row when the figure asks for one, and column widths
   the caller gives. **The measurement**: the mark count of a 3 by 3 with both sets of rules and a
   header, which the suite states as a number; the y of each row rule against the row edges to within
   1e-12; the count a table drawn with neither set of rules falls to; and the x of a cell of each
-  alignment against its column edges.
+  alignment against its column edges. **Measured**: a 3 by 3 with both sets and a header is 13 marks,
+  9 cells and 4 rules, falling to 11 with one set and to 9 with neither; the two row rules of a table
+  3 by 2 units stand at y 1 and -1 to 1e-12 and the two column rules on widths 2, 3 and 5 stand at
+  x -3 and 0; the header rule is 0.2 wide against the 0.1 of the rule it stands in place of; and a row
+  aligned start, middle and end places its cells at -4.75, -1.5 and 4.75. The suite runs 1185 tests
+  over 75 files, up from 1173 over 74.
 - [ ] **3. `applyMatrix` is an animation.** `figure/animation.ts` gains the linear map carried over the
   marks it names, interpolated entry by entry from the identity, about the origin of the figure's
   units unless the figure names a pivot. **The measurement**: the determinant halfway through a

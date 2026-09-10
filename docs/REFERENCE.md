@@ -1413,6 +1413,26 @@ entry and `m/rows/1` names the row it sits in.
   - `serif` — how far each bracket's arms reach in across the top and the bottom, the padding
     unless the figure names it.
 
+A table is laid out on column widths the figure gives, for the same reason: nothing here measures a
+string. The rules are drawn before the cells, so a word crossing one is the thing a reader sees.
+
+- `table(name, cells, options)` — a table placed in a figure: one text node per cell, a rule between
+  rows, a rule between columns, and a heavier rule under a header row in place of the row rule that
+  would sit there. Rows of different lengths are refused, and so is a row longer than the column
+  widths the figure gave, since a cell with no column has nowhere to sit.
+- `TableOptions` — the `at` it is centred on, the `columns` it is laid out on, the `rowHeight` every
+  row is given, the `size` a cell is drawn at, the `fill` and `stroke` it is drawn with, and its
+  `family` and `weight`.
+  - `rules` — which rules are drawn: `both`, `rows`, `columns` or `none`, and both unless the figure
+    says otherwise.
+  - `header` — whether the first row is a header. A table of one row has none.
+  - `headerWidth` — how wide the header's rule is against an ordinary one, twice unless the figure
+    names it.
+  - `padding` — how far a cell sits inside its column, half the size unless the figure names it. A
+    middled cell ignores it.
+  - `align` — how a cell sits in its column, one value for the whole table or one for each column,
+    and `start` unless the figure names it.
+
 ## Equations
 
 Typesetting is the one call that loads MathJax, so a figure with no equations in it never reaches
