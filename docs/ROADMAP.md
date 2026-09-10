@@ -275,7 +275,7 @@ are left, since 2.1.0, 2.2.0, 2.3.0 and 2.4.0 are cut.
 
 | version | what lands | what it changes | steps | cut against | depends on | plan |
 | --- | --- | --- | --- | --- | --- | --- |
-| 2.5.0 | a group morphing into a group | adds a kind | to plan | the boolean demo's three panels, morphing into one another | nothing outside this package | to plan |
+| 2.5.0 | a group morphing into a group | adds a kind | six | the boolean demo's three panels, morphing into one another | nothing outside this package | planned |
 | 2.6.0 | the recorder: a figure out as a video file | nothing in the format, and a name at the door | to plan | every demo as a file on disk rather than a strip of frames | `mediabunny`, which the consumer already records with | to plan |
 | 2.7.0 | the GPU painter | nothing in the format, and a name at the door | to plan | both demos through a third painter, mark for mark against the SVG painter | `@altpsyche/engine`, with its item 2 landed, declared as a peer | to plan |
 | 2.8.0 | dashes and quadratics drawn on a GPU | nothing; `Stroke.dash` is already in the mark and no painter draws it | to plan | a dashed figure, and the strip that shows it moving | `@altpsyche/engine` | to plan |
@@ -1168,19 +1168,131 @@ no box test in front of it and the quadratic over piece pairs is not worth remov
 
 ## The items
 
-Each is a version above. What follows is what each one covers. Neither of the two carries a step
-list, because writing one is a session of its own.
+Each is a version above. What follows is what each one covers. 2.5.0 carries a step list and 2.6.0
+does not, because writing one is a session of its own.
 
 ### The 2.x band, which is what Manim has and this does not
 
 **Both of these add a kind rather than changing a value type**, so each is a format minor an old
-figure survives. **Neither carries a step list**, and writing one is a session of its own, which is
-the rule this file holds every item to.
+figure survives. **2.5.0 carries a step list and 2.6.0 does not**, and writing one is a session of its
+own, which is the rule this file holds every item to.
 
-**2.5.0 A group morphing into a group.** `morph` takes one target and one path. Matching many shapes
-to many is `TransformMatchingShapes`, and the matching machinery is already here: `morphEquation`
-matches glyphs and `alignPaths` matches subpaths. **The picture waiting** is the boolean demo's three
-panels morphing into one another, which no animation there can express today.
+**2.5.0 A group morphing into a group.** `morph` takes one target and one path, so a figure wanting a
+group of shapes to become another group of shapes has no animation to name. Matching many shapes to
+many is `TransformMatchingShapes`, and the matching machinery is already here: `matchGlyphs` pairs two
+typeset expressions by the longest common subsequence of their glyph tokens, and `alignPaths`
+subdivides two paths until both hold the same points. **The picture waiting** is the boolean demo's
+three panels morphing into one another, which no animation there can express today.
+
+**The pairing is by name rather than by shape.** Manim builds its key from a submobject's own points,
+because a Manim submobject carries no name to match on. Every mark here carries an id built from the
+names on the way down the tree, so the part of a mark's id after the target it sits under is a key
+already: the union panel's `discs/first` and the intersection panel's `discs/first` are the same mark
+of two panels built by one function. A key built from points is a hash of floating point numbers,
+which this repository refuses for comparison anywhere, and over the picture waiting it would pair the
+two panels' still discs and leave their results unpaired, since a union and an intersection of the
+same two discs are different shapes. **What the name rule costs** is a pair of groups written by two
+different hands, whose marks carry unrelated names, and those fall to the second rule below.
+
+**Three rules pair the marks, in this order.** The first is the longest common subsequence of the
+relative ids, which is `matchGlyphs`' own machinery with its key changed, and it keeps the marks in
+the order they stand in. The second pairs what the first left over, in the order it stands in, so a
+group of three shapes into a group of two pairs two of them and leaves one. The third refuses a pair
+whose two marks are of different kinds, since a path cannot walk into a string, and hands both back to
+the unpaired.
+
+**The span touches nothing at its start and hands over at its end.** At nothing the marks are exactly
+the marks handed in, which is what keeps the boolean demo's strip the picture it is today: a span that
+hid its arriving group before that span began would empty two of the three panels from the first
+frame. Through the span each leaving mark walks toward its partner and the partner's own opacity is
+multiplied by what is left of the span, so the destination dims out as the shape arriving lands on it.
+At one the leaving group is at nothing and the arriving group stands at its own opacity, which shows
+nothing at that instant because the two are coincident in geometry and in style by then. **What the
+handover buys** is a chain: the union panel walks onto the intersection panel and the intersection
+panel then walks onto the difference panel, where without it the second span would walk a group the
+first span had already hidden.
+
+**A paired mark's style walks, which is what makes the handover invisible.** The swap at the end shows
+nothing only if the leaving mark wears its partner's style by then, so the fill colour, the stroke
+colour and the stroke width all walk. A fill carrying a gradient takes the leaving mark's until half
+the span and the arriving mark's after, which is the rule `lerpPath` already follows for whether a
+subpath is closed. `morph` and `morphEquation` walk geometry alone and are not changed here, since
+neither of them hands over.
+
+**A paired text mark walks its anchor and swaps its string at half.** A string cannot be walked into
+another string, and two strings drawn over each other at half opacity is the ghost `morphEquation`
+refuses, so the anchor, the size and the fill colour walk and the text changes once. **The other
+answer** is a cross-fade of the two, which costs that ghost.
+
+- [ ] **1. Marks matched by name, which is the glyph matcher with its key made a parameter.**
+  `figure/equation-match.ts` gains `matchMarks(from, to, keyOf)`, `matchGlyphs` becomes the case where
+  the key is the glyph token, and the two rules a group needs land with it: the leftovers paired in the
+  order they stand in, and a pair of two different kinds refused. **The measurement**: the pairs, the
+  leaving and the arriving over two panels of the boolean demo, which is 4 pairs and nothing either
+  side; over a group of three shapes into a group of two, which is 2 pairs and 1 leaving; the pairs
+  `matchGlyphs` gives over the tangent demo's two equations, unchanged by the parameter; and a path
+  and a text mark carrying one relative id, which pairs with nothing.
+- [ ] **2. `morphGroup` is an animation.** `figure/animation.ts` gains `morphGroup(from, to)`: a paired
+  path mark walked by `lerpPath`, a paired text mark walked by its anchor and its size with the string
+  swapping at half, an unpaired leaving mark fading out, a partner dimming as the walk lands on it, and
+  the handover at one. **The measurement**: the marks at nothing against the marks handed in, compared
+  by tolerance; the marks at one against the arriving group's own marks, with every leaving mark at
+  nothing; the walked point at half of the span against the midpoint of the two paired paths; and a
+  name matching nothing changing nothing.
+- [ ] **3. A paired mark's style walks.** The fill colour, the stroke colour and the stroke width walk
+  to the partner's, a width given as a number walks against a taper entry by entry, and a gradient is
+  the leaving mark's until half the span. **The measurement**: the fill colour at half against
+  `lerpColour` at half, channel by channel; the stroke width at half against the mean of the two; and
+  the style at one against the arriving mark's own style, which is what says the handover moves
+  nothing.
+- [ ] **4. `morphGroup` is a written form of the format.** `AnimationRecord` gains `MorphGroupRecord`
+  carrying `from` and `to`, `resolveAnimation` hands back the animation, `figure-check.ts` holds the
+  kind, and a figure carrying it reads back to the call it was written from. **The measurement**: the
+  members of `AnimationRecord`, 20 today and 21 after; the round trip of a figure carrying one through
+  `writeFigure` and `readFigure`, compared mark for mark by tolerance; and the checker's own message on
+  a `morphGroup` whose `to` is not a string.
+- [ ] **5. The boolean demo's three panels morph into one another.** `demos/boolean.ts` gains two spans
+  after the walk, the union panel onto the intersection panel and then the intersection panel onto the
+  difference panel, and `TIMES` gains the middle of each morph and the handover between them. **The
+  measurement**: the demo's marks at those three times; the four cases the strip already shows, whose
+  marks are unchanged because every new span is at nothing over the whole of the walk; and the strip's
+  six frames over three rows, with `docs/boolean.svg` regenerating byte for byte and
+  `demos/boolean.figure.json` carrying two more spans.
+- [ ] **6. The reference, the guide, the specification, and 2.5.0 cut.** `docs/REFERENCE.md` gains
+  `morphGroup` and `matchMarks`, `docs/SPECIFICATION.md` writes the kind with its two fields and the
+  three pairing rules in the order a renderer applies them, `docs/GUIDE.md` gains the section that
+  morphs one group into another, `docs/FIGURE-FORMAT.md` carries why the pairing is by name rather than
+  by shape, and the version is bumped in that commit. **The measurement**: the reference gate over the
+  door, the guide's blocks compiled, the specification's animation count gate at 21, and the
+  done-criteria below verified line by line.
+
+**Which step the demos gain from: 5.** It is the picture the version is named against, and steps 1
+through 4 are what it is written from.
+
+**Done-criteria, checkable line by line.**
+
+- `matchMarks` is at the door, `matchGlyphs` is the case where the key is the glyph token, and every
+  pairing the suite held before this version holds after it.
+- The leftovers of the first rule pair in the order they stand in, and a pair of two different kinds is
+  refused with both marks going to the unpaired.
+- `morphGroup` is at the door and hands back an `Animation`, and a target matching nothing changes
+  nothing.
+- The marks at nothing are the marks handed in, compared by tolerance, so the boolean demo's four cases
+  read what they read today.
+- The marks at one are the arriving group's own marks with every leaving mark at nothing, and the
+  arriving mark's geometry and style at one are what the leaving mark wears at one, both by tolerance,
+  which is what says the handover shows nothing.
+- A paired text mark's anchor walks to its partner's and its string changes once, at half of the span.
+- `AnimationRecord` carries `morphGroup`, `checkFigure` refuses a bad field with a sentence naming it,
+  and the specification's animation count gate reads 21.
+- `demos/boolean.figure.json` carries the two morph spans, `docs/boolean.svg` regenerates byte for
+  byte, and `docs/boolean-strip.svg` shows six frames over three rows.
+- The reference gives every new door name an entry, and the guide compiles its new block.
+- `npm test`, `npm run type-check` and `npm run build` pass, and `package.json` reads 2.5.0.
+
+**The before-state the steps measure against**: 1258 tests over 83 files, 20 members of
+`AnimationRecord`, the specification's animation count gate at twenty, and the boolean strip at four
+frames over two rows.
 
 **2.6.0 The recorder.** `framesOf` hands back a frame at a time and there is no encoder anywhere in
 this tree, so what a consumer gets is frames and what the goal at the top of this file asks for is an
