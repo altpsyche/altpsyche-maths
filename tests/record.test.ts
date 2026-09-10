@@ -86,26 +86,23 @@ const recorded = (figure: Figure, fps: number) => {
 };
 
 describe('recordFigure', () => {
-  // A walk of a demo paints every mark of every frame, which is seconds of work
-  // rather than milliseconds, so each of these carries the time it needs rather
-  // than sitting inside the five a test is given when it names none.
   it('takes the frames the flat demo walks', async () => {
     expect((await recorded(tangent, 30)).recording.frames).toBe(308);
-  }, 20000);
+  });
 
   it('takes the frames the solid demo walks', async () => {
     expect((await recorded(solid, 30)).recording.frames).toBe(399);
-  }, 20000);
+  });
 
   it('takes 615 frames of the flat demo at twice the rate, rather than 616', async () => {
     // The walk rounds the duration times the rate, so 10.25 seconds at sixty is
     // 615 frames and doubling the count given at thirty would be one too many.
     expect((await recorded(tangent, 60)).recording.frames).toBe(615);
-  }, 20000);
+  });
 
   it('takes 798 frames of the solid demo at twice the rate', async () => {
     expect((await recorded(solid, 60)).recording.frames).toBe(798);
-  }, 20000);
+  });
 
   it('hands each frame the time its index gives, and the length one frame lasts', async () => {
     const { sink, recording } = await recorded(tangent, 30);
@@ -129,7 +126,7 @@ describe('recordFigure', () => {
       paintCanvas(alone, frame.marks, frame.view);
     }
     expect(sink.context.calls).toBe(alone.calls);
-  }, 20000);
+  });
 
   it('finishes the sink once and hands back what it answered', async () => {
     const { sink, recording } = await recorded(tangent, 30);
@@ -169,7 +166,7 @@ describe('recordFigure', () => {
     expect(recording.frames).toBe(360);
     expect(recording.seconds).toBe(12);
     expect(sink.times[sink.times.length - 1]).toBeCloseTo(11 + 29 / 30, 12);
-  }, 20000);
+  });
 
   it('throws the sink away rather than finishing it when a frame fails', async () => {
     const sink = new Taken();
