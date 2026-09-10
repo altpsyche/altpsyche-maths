@@ -134,7 +134,7 @@ describe('the boolean demo as a committed file', () => {
   it('draws the demo mark for mark at each of its named times and at its still time', () => {
     const read = readFigure(committed);
     const times = Object.values(BOOLEAN_TIMES);
-    expect(times).toHaveLength(7);
+    expect(times).toHaveLength(11);
     for (const seconds of [...times, booleans.still]) {
       const drawn = marksAt(booleans, seconds);
       expect(drawn).toHaveLength(12);
@@ -142,8 +142,8 @@ describe('the boolean demo as a committed file', () => {
     }
   });
 
-  it('carries the nine fades of its entrance', () => {
-    expect(JSON.parse(committed).figure.timeline.spans).toHaveLength(9);
+  it('carries the nine fades of its entrance and the two panels walking onto the next', () => {
+    expect(JSON.parse(committed).figure.timeline.spans).toHaveLength(11);
   });
 
   it('is read as the version this package writes', () => {

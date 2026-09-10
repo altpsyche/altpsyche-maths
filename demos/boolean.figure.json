@@ -1,7 +1,7 @@
 {
   "format": 0,
   "figure": {
-    "duration": 7.74,
+    "duration": 12.64,
     "extent": {
       "height": 3,
       "width": 10.8
@@ -420,7 +420,7 @@
     },
     "still": 2.7608333333333337,
     "timeline": {
-      "duration": 7.74,
+      "duration": 12.64,
       "spans": [
         {
           "curve": "easeOut",
@@ -496,6 +496,24 @@
           },
           "from": 0.8400000000000001,
           "to": 1.34
+        },
+        {
+          "entry": {
+            "from": "booleans/union",
+            "kind": "morphGroup",
+            "to": "booleans/intersection"
+          },
+          "from": 9.24,
+          "to": 10.64
+        },
+        {
+          "entry": {
+            "from": "booleans/intersection",
+            "kind": "morphGroup",
+            "to": "booleans/difference"
+          },
+          "from": 10.64,
+          "to": 12.040000000000001
         }
       ]
     },
@@ -512,6 +530,10 @@
         {
           "time": 7.74,
           "value": 1.44
+        },
+        {
+          "time": 8.94,
+          "value": 0
         }
       ]
     }

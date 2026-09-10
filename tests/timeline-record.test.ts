@@ -11,18 +11,21 @@ import {
 import { PANELS, TIMES as BOOLEAN_TIMES, booleans } from '../demos/boolean.js';
 import { TIMES as FLAT_TIMES, tangent } from '../demos/tangent.js';
 
-/** The nine fades of the boolean demo's entrance, in the order its calls make
- * them: the outlines one panel after another, then the words, then the results. */
+/** The nine fades of the boolean demo's entrance and the two panels walking onto
+ * the next, in the order its calls make them: the outlines one panel after
+ * another, then the words, then the results, then the morphs. */
 const entries: readonly EntryRecord[] = [
   ...PANELS.map((panel): EntryRecord => ({ kind: 'fadeIn', target: `booleans/${panel.name}/discs` })),
   ...PANELS.map((panel): EntryRecord => ({ kind: 'fadeIn', target: `booleans/${panel.name}/label` })),
   ...PANELS.map((panel): EntryRecord => ({ kind: 'fadeIn', target: `booleans/${panel.name}/result` })),
+  { kind: 'morphGroup', from: 'booleans/union', to: 'booleans/intersection' },
+  { kind: 'morphGroup', from: 'booleans/intersection', to: 'booleans/difference' },
 ];
 
 describe('the timeline as data', () => {
   it('carries the curve of each of the boolean demo spans by name', () => {
     const spans = booleans.timeline!.spans;
-    expect(spans).toHaveLength(9);
+    expect(spans).toHaveLength(11);
     // The three outlines leave at speed and settle, and the words and the
     // results are still at both ends, which is the default a play takes.
     for (const span of spans.slice(0, 3)) expect(span.curve).toBe(curveNamed('easeOut'));

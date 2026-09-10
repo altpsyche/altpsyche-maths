@@ -192,9 +192,28 @@ const WALK = 6;
 const WALK_FROM = ENTRANCE + 0.4;
 const WALK_TO = WALK_FROM + WALK;
 
-/** How long the figure runs, which is past its last span: the walk is a track
- * rather than a span, so nothing on the timeline says when it ends. */
-const DURATION = WALK_TO;
+/** How long the walker takes to come back to the middle of the still disc, and
+ * how long it stands there before the panels start moving. The morphs happen
+ * with the walker wholly inside, which is the one distance at which all three
+ * answers are shapes: clear of each other the intersection is empty, and a shape
+ * walking into an empty one has nowhere to walk to. */
+const RETURN = 1.2;
+const RETURN_TO = WALK_TO + RETURN;
+const SETTLE = 0.3;
+
+/** How long one panel takes to walk onto the next. The second starts where the
+ * first ends, which is the moment the first hands its picture over. */
+const MORPH = 1.4;
+const FIRST_FROM = RETURN_TO + SETTLE;
+const FIRST_TO = FIRST_FROM + MORPH;
+const SECOND_TO = FIRST_TO + MORPH;
+
+/** How long the last panel stands with nothing moving, so the shape the three
+ * walked into is a picture rather than the instant a movement stopped. */
+const WAIT = 0.6;
+
+/** How long the figure runs, which is past its last span. */
+const DURATION = SECOND_TO + WAIT;
 
 /**
  * The walker's centre against the still one's, straight across at one pace.
@@ -208,6 +227,7 @@ export const walk: Track = [
   { time: 0, value: -REACH },
   { time: WALK_FROM, value: -REACH },
   { time: WALK_TO, value: REACH },
+  { time: RETURN_TO, value: 0 },
 ];
 
 /** The time the walker's centre is this far from the still one's. */
@@ -215,11 +235,33 @@ export function timeApart(apart: number): number {
   return WALK_FROM + ((apart + REACH) / (2 * REACH)) * WALK;
 }
 
+/**
+ * The three panels walked into one another, one after the other.
+ *
+ * Each panel is four marks under one name, and the two panels of any pair carry
+ * the same four names, so the pairing is the shaded answer onto the shaded
+ * answer, each outlined disc onto its own and the caption onto the caption. What
+ * moves is the answer: a disc becomes the smaller disc it contains and then the
+ * ring left when that smaller disc is taken out of it.
+ *
+ * The second span starts at the moment the first ends, which is where the first
+ * hands its picture to the panel it landed on. A span holding a panel that
+ * another span had already left at nothing would move nothing anybody can see.
+ */
+const morphs: readonly SpanRecord[] = [
+  { entry: { kind: 'morphGroup', from: 'booleans/union', to: 'booleans/intersection' }, from: FIRST_FROM, to: FIRST_TO },
+  {
+    entry: { kind: 'morphGroup', from: 'booleans/intersection', to: 'booleans/difference' },
+    from: FIRST_TO,
+    to: SECOND_TO,
+  },
+];
+
 export const written: FigureRecord = {
   extent,
   scene,
   tracks: { apart: walk },
-  timeline: { spans: entrance, duration: DURATION },
+  timeline: { spans: [...entrance, ...morphs], duration: DURATION },
   duration: DURATION,
   still: timeApart(-0.95),
 };
@@ -260,8 +302,19 @@ export const TIMES = {
   slipping: timeApart(-TOUCH_INSIDE),
   inside: timeApart(0),
   walkTo: WALK_TO,
+  morphing: FIRST_FROM + MORPH / 2,
+  handover: FIRST_TO,
+  morphed: FIRST_TO + MORPH / 2,
+  end: SECOND_TO,
 };
 
 /** The times the strip shows: clear, the outside touch, crossing, and wholly
- * inside. */
-export const FRAMES = [TIMES.clear, TIMES.touching, TIMES.crossing, TIMES.inside];
+ * inside, then the middle of each panel walking onto the next. */
+export const FRAMES = [
+  TIMES.clear,
+  TIMES.touching,
+  TIMES.crossing,
+  TIMES.inside,
+  TIMES.morphing,
+  TIMES.morphed,
+];

@@ -115,6 +115,7 @@ import {
 import {
   BIG,
   FRAMES as BOOLEAN_FRAMES,
+  PANEL,
   REACH,
   SMALL,
   TIMES as BOOLEAN_TIMES,
@@ -1020,6 +1021,48 @@ describe('the boolean demo', () => {
     }
   });
 
+  it('walks each panel onto the one beside it, and hands the picture over at the seam', () => {
+    const markOf = (seconds: number, id: string) => {
+      const found = marksAt(booleans, seconds).find((mark) => mark.id === id);
+      if (found === undefined) throw new Error(`${id} is not in the list at ${seconds}`);
+      return found;
+    };
+    const resultOf = (seconds: number, name: string) => {
+      const found = markOf(seconds, `booleans/${name}/result`);
+      if (found.kind !== 'path') throw new Error('a result is a path');
+      return found;
+    };
+
+    // Half way through the first span the union panel's answer stands between the
+    // panel it left and the panel it is walking onto, and its caption changes over
+    // that same middle rather than at either end of the span.
+    const walking = resultOf(BOOLEAN_TIMES.morphing, 'union');
+    expect(centreOf(boundsOf(walking.path)!).x).toBeCloseTo(-PANEL / 2, 6);
+    const caption = (seconds: number) => (markOf(seconds, 'booleans/union/label') as { text: string }).text;
+    expect(caption(BOOLEAN_TIMES.morphing - 0.2)).toBe('union');
+    expect(caption(BOOLEAN_TIMES.morphing + 0.2)).toBe('intersection');
+
+    // At the seam the union panel is at nothing and the intersection panel stands
+    // at its own opacity, which draws the same picture because the two are
+    // coincident there.
+    for (const part of ['result', 'discs/first', 'discs/second', 'label']) {
+      expect(markOf(BOOLEAN_TIMES.handover, `booleans/union/${part}`).opacity, part).toBe(0);
+      expect(markOf(BOOLEAN_TIMES.handover, `booleans/intersection/${part}`).opacity ?? 1, part).toBeCloseTo(1, 12);
+    }
+    const landed = resultOf(BOOLEAN_TIMES.handover, 'union');
+    const standing = resultOf(BOOLEAN_TIMES.handover, 'intersection');
+    for (const share of [0, 0.25, 0.5, 0.75, 1]) {
+      expect(pointAlong(landed.path, share)!.x).toBeCloseTo(pointAlong(standing.path, share)!.x, 9);
+      expect(pointAlong(landed.path, share)!.y).toBeCloseTo(pointAlong(standing.path, share)!.y, 9);
+    }
+
+    // The second span walks the panel the first handed over to, and what it walks
+    // onto is a ring, so the shape carries the two loops a ring is made of.
+    const second = resultOf(BOOLEAN_TIMES.morphed, 'intersection');
+    expect(second.path).toHaveLength(2);
+    expect(centreOf(boundsOf(second.path)!).x).toBeCloseTo(PANEL / 2, 6);
+  });
+
   it('brings each panel of outlines in at speed, since the gap is what paces the row', () => {
     const opacityAt = (seconds: number) =>
       marksAt(booleans, seconds).find((mark) => mark.id === 'booleans/union/discs/first')?.opacity ?? 1;
@@ -1041,12 +1084,15 @@ describe('the boolean strip', () => {
     expect(new Set(marks.map((mark) => mark.id)).size).toBe(marks.length);
   });
 
-  it('shows the walk from clear of the disc to wholly inside it', () => {
+  it('shows the walk from clear of the disc to wholly inside it, then the panels walking', () => {
     const loops = BOOLEAN_FRAMES.map((seconds) => {
       const mark = booleanStripMarks([seconds]).marks.find((each) => each.id.endsWith('/intersection/result'));
       return mark?.kind === 'path' ? mark.path.length : -1;
     });
-    expect(loops).toEqual([0, 0, 1, 1]);
+    // The overlap is empty until the discs meet and one loop once they do. In the
+    // last frame it is the shape walking onto the ring the difference draws, so it
+    // carries the two loops that ring is made of.
+    expect(loops).toEqual([0, 0, 1, 1, 1, 2]);
   });
 });
 

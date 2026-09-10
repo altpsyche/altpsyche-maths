@@ -31,7 +31,7 @@ describe('a figure built from one record', () => {
   it('draws the boolean demo mark for mark at each of its named times', () => {
     const built = resolveFigure(operations);
     const times = Object.values(BOOLEAN_TIMES);
-    expect(times).toHaveLength(7);
+    expect(times).toHaveLength(11);
     for (const seconds of times) {
       const drawn = marksAt(booleans, seconds);
       expect(drawn).toHaveLength(12);
