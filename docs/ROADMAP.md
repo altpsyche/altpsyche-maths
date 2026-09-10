@@ -174,18 +174,28 @@ for its own maths, a module with no device code, which this package imports for 
 `Mat3` and then deletes its copies of. Its cost is the engine's rule that no export moves out from
 behind its one door.
 
-**A second entry point rather than the main door, and the sizes are why.** The engine's built package
-holds 772k of JavaScript, of which 176k is the WebGPU backend that the renderer reaches by
-`await import()` and that a gate there proves is unreachable statically from `index.ts`. So a static
-import through the main door pulls the rest of the eager closure, roughly 600k, into every consumer of
-this package including one that only ever draws SVG. `scene/maths.js` is 8k of it. The value types are
-worth importing at 8k and are not worth importing at 600k, which is what makes this a second entry
-point rather than a line off the door that already exists. The
+**A second entry point rather than the main door, and the sizes are why.** Walking static imports
+from the engine's `index.ts` and its `host/surface.ts`, which are the two eager roots its own import
+graph gate uses, reaches 27 source files whose built JavaScript is 207,090 bytes, and the arithmetic
+is 7,520 of that. So a static import through the main door pulls 202k into every consumer of this
+package including one that only ever draws SVG, to reach 7.3k of vectors and matrices. **The 600k this
+session first wrote was wrong**: it came from the built directory's own total, which counts both
+backends and every type declaration, where the walk counts what a static import actually reaches. The
+value types are worth importing at 7.5k and are not worth importing at 202k, which is what makes this
+a second entry point rather than a line off the door that already exists. **That entry point is filed
+in the engine's own roadmap as its item 3**, argued there on that package's merits, and it changes a
+standing refusal there rather than a line here. The
 second is a third package both import, which costs the engine's zero runtime dependencies, a third
 release to keep in step, and a third version in the consumer's tree. The third is the engine importing
 this package's values, which is a cycle and is refused by that package's own standing refusal.
 **The first is what this session recommends** and the call is Siva's, because it changes a rule in the
 engine rather than a line in this tree.
+
+**The `Mat3` name is this tree's to change and was not filed in the engine.** Its `Mat3` is a general
+three by three with a family of two functions, `fromMat4` and `pack`, which is the standard name for
+the standard thing. The special-purpose one is here: a transform of the plane written as nine numbers.
+An item filed there would have amounted to this package needing it, which that package's first rule
+throws out.
 
 **What is imported is `Vec3` and `Mat4`, and the flat transform stays this package's own.** `Mat3`
 here is a 2D affine transform with its translation in the third column, and `Mat3` there is the
@@ -194,12 +204,19 @@ two meanings makes the collision worse rather than closing it: one type would th
 everywhere the other is wanted with no second door to blame. So the flat transform keeps its own type
 in this tree and one of the two names has to change.
 
-**How the consumer holds one engine.** This package takes the engine as a dependency rather than a
-peer, since a peer is a second install and one install is the goal. The website also uses the engine
-directly for its shader work, so it keeps its own direct dependency and the two ranges have to resolve
-to one copy. **What holds that** is a test in the consumer that the version it resolves and the version
-this package resolves are the same, which is the guard that stops two engines from ever being on the
-page. The consumer's own duplicates go in the same crossing: a recorder that this package will own, a
+**How the consumer holds one engine: a peer dependency, which is the engine's own reading and not
+this one's.** This session first wrote a plain dependency, on the argument that a peer is a second
+install where one install is the goal. That argument is wrong twice. A package manager installs a
+peer dependency by itself, so a peer is still one install for anyone who asks for this package. And
+the engine's roadmap already states the cost the plain dependency carries: the website depends on that
+package directly in nineteen files, none of which draws a figure, so it would hold the engine twice,
+once directly and once through this one, and both ranges read a caret on a `0.x`, which tracks the
+last number alone and splits the moment either side moves a minor. Two copies put that renderer twice
+in a page's bundle and leave its tracer blind to every resource made through the other copy, and being
+able to describe, cost and refuse a frame is that package's distinguishing claim. **So the declaration
+is a peer**, and it lands at whatever version first imports a name from there, which is now earlier
+than the painter. **What still holds it** is a test in the consumer that the version it resolves and
+the version this package resolves are the same. The consumer's own duplicates go in the same crossing: a recorder that this package will own, a
 clock that reimplements what `duration` and `loop` mean, and three scalar helpers nothing calls.
 
 **The engine is opened, worked, cut and published whenever its half is needed.** That package has its
