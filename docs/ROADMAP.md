@@ -1353,12 +1353,26 @@ to pin an exact `@altpsyche/engine` and take the churn by hand or wait for that 
 **The steps.** Each is one commit and each names the measurement its commit quotes. Today's numbers
 are 1310 tests over 87 files and a door of 208 values and 240 types.
 
-- [ ] **1. A filled path becomes triangles.** `trianglesOf(path, tolerance)` flattens each subpath and
-      ear-clips it, bridging a hole into its outer ring so a fill with a hole is one polygon, with the
-      interior decided by the nonzero rule the format already names. **Measurement:** the summed area
-      of the triangles against the area of the polygon within 1e-9 of a figure unit squared, an
-      annulus of radii 1 and 0.5 coming out at 2.35619 units squared rather than 3.14159, and the
-      triangle count of every fill of both demos at a named time.
+- [x] **1. A filled path becomes triangles.** `trianglesOf(path, options)` flattens each subpath and
+      ear-clips it, bridging a hole into the ring around it by the shortest join that crosses no
+      edge, with the inside decided by the rule the mark's fill carries. `triangleArea` is at the door
+      beside it, since area is what a triangulation is held to. Two things the demos' own glyphs
+      forced: the point a ring is tested at is taken close to its own edge rather than at its middle,
+      because the middle of a ring with a hole in it falls in the hole, and a ring's spurs are pruned
+      first, because a glyph that walks out along a line and back has a corner the shape does not
+      have, and a ring inside a filled ring is dropped, because its area is
+      already covered and cutting it as well draws it twice. **Measured:** 341 lines and 11 tests. Every fill of the flat demo at 5 seconds and of the
+      solid demo at 6 covers its own area to within 1e-10 of a figure unit squared, 48 fills into 1056
+      triangles and 249 into 1193. An annulus of radii 1 and 0.5 covers 2.35306 units squared where
+      π(1 − ¼) is 2.35619, the whole of the gap being the flattening at a tolerance of 0.002, and no
+      triangle reaches its hole. The same two rings wound alike cover 2.35306 under the even-odd rule
+      and 3.13742 under the nonzero rule, which is the outer disc alone rather than the 3.92177 the
+      two rings cut separately would come to. None of the flat demo's 55 filled loops and none of the
+      solid demo's 250 cross themselves, so the ear clipping's one refusal costs those two demos
+      nothing. A whole frame
+      of fills takes 1.31 milliseconds for the flat demo and 0.87 for the solid, against the 33 a
+      frame has at 30 frames a second. The suite is 1321 tests over 88 files where it was 1310 over
+      87, and the door is 210 values and 241 types where it was 208 and 240.
 - [ ] **2. A stroked path becomes triangles.** Both other painters hand a stroke to the platform and a
       card has no such platform, so the outline is built here: a quad per segment with the join and
       the cap the mark names. `outlinedMarks` already does this for a stroke of two widths, so what is

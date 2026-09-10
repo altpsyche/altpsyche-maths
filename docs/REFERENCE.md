@@ -1385,6 +1385,18 @@ frame round a picture is a shape.
 - `Frame` — one moment read whole: its `index` in the walk, the `seconds` it was read at, its
   `marks`, and the `view` built at that same time.
 
+## Triangles
+
+- `trianglesOf(path, options)` — a filled path as triangles, three corners to a triangle, in the
+  picture's own units. The path is flattened to a tolerance and each ring is cut by ear clipping, the
+  published technique for a simple polygon. A ring whose inside the rule calls empty is a hole, and a
+  hole is joined into the ring around it by the shortest bridge that crosses no edge. A ring that
+  crosses itself has no ear to cut at some point in the walk, and what is left of it is dropped.
+- `TriangleOptions` — the `tolerance` a curve is flattened to, in the picture's own units, and the
+  `rule`, `nonzero` or `evenodd`, which is the one the mark's own fill carries.
+- `triangleArea(corners)` — how much area a list of triangles covers, which is what a triangulation
+  is held to.
+
 ## Painters
 
 Both painters read the same list of marks and the same view matrix, so a picture on a page and a
