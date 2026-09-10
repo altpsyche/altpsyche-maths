@@ -142,6 +142,24 @@ export function viewAt(figure: Figure, seconds: number, width: number, height: n
   return viewMatrix(extentAt(figure, seconds, width / height), figure.fit ?? 'contain', width, height);
 }
 
+/**
+ * The figure's own time at a moment of a recording or a playback.
+ *
+ * The two are different questions once the moment is past the end. A figure that
+ * declares itself a loop wraps by the remainder, so a recording twice its length
+ * plays it twice. One that does not hold its last picture, since a figure that
+ * simply stops has nothing after its end to show. A moment before nothing is
+ * read at nothing, and a figure with no duration is read at nothing whatever the
+ * moment.
+ */
+export function figureTime(figure: Figure, seconds: number): number {
+  const duration = durationOf(figure);
+  if (duration <= 0 || seconds <= 0) return 0;
+  if (!figure.loop) return Math.min(seconds, duration);
+  const wrapped = seconds % duration;
+  return wrapped;
+}
+
 /** Whether a figure declaring itself a loop actually is one, which is the gate
  * behind that flag. The comparison is by tolerance rather than exactly, because
  * the sine and cosine a figure is built from are not specified to the last bit

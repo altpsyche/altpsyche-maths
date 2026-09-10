@@ -215,7 +215,7 @@ export type { Entry, PlayOptions, Span, StaggerOptions } from './figure/timeline
 export { lengthOf, pointAlong } from './figure/length.js';
 export { pathWindow, trimPath } from './figure/trim.js';
 export { alignPaths, lerpPath } from './figure/morph.js';
-export { durationOf, extentAt, isLoop, marksAt, sameMarks, viewAt } from './figure/figure.js';
+export { durationOf, extentAt, figureTime, isLoop, marksAt, sameMarks, viewAt } from './figure/figure.js';
 export { frameTimesOf, framesOf } from './figure/frames.js';
 export type { Frame, FrameStep, FramesOptions } from './figure/frames.js';
 export type { Figure, TrackValues } from './figure/figure.js';

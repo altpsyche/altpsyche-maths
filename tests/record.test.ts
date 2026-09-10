@@ -3,6 +3,7 @@ import { colourFrom, durationOf, framesOf, paintCanvas, paintFrame, recordFigure
 import type { CanvasLike, Figure, FrameSink } from '@altpsyche/maths';
 import { tangent } from '../demos/tangent.js';
 import { solid } from '../demos/surface.js';
+import { turns } from '../demos/rotate.js';
 
 /**
  * A figure recorded into a sink that counts what it was handed.
@@ -155,6 +156,20 @@ describe('recordFigure', () => {
     expect(seen[seen.length - 1]).toBe(307);
     expect(total).toBe(308);
   });
+
+  it('records the span it was given rather than the figure it was handed', async () => {
+    const sink = new Taken();
+    const recording = await recordFigure(turns, sink, {
+      fps: 30,
+      width: WIDTH,
+      height: HEIGHT,
+      seconds: durationOf(turns) * 2,
+    });
+    expect(durationOf(turns)).toBe(6);
+    expect(recording.frames).toBe(360);
+    expect(recording.seconds).toBe(12);
+    expect(sink.times[sink.times.length - 1]).toBeCloseTo(11 + 29 / 30, 12);
+  }, 20000);
 
   it('throws the sink away rather than finishing it when a frame fails', async () => {
     const sink = new Taken();

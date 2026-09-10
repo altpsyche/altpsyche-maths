@@ -3,6 +3,7 @@ import * as door from '@altpsyche/maths';
 import {
   marksAt,
   durationOf,
+  figureTime,
   frameTimesOf,
   framesOf,
   group,
@@ -124,5 +125,60 @@ describe('framesOf', () => {
     expect(built).toBe(1);
     walk.next();
     expect(built).toBe(2);
+  });
+});
+
+describe('figureTime', () => {
+  it('reads a moment inside the figure at that same moment', () => {
+    expect(figureTime(turns, 2.5)).toBe(2.5);
+    expect(figureTime(tangent, 2.5)).toBe(2.5);
+  });
+
+  it('holds a figure that is not a loop at its last picture', () => {
+    expect(figureTime(tangent, durationOf(tangent) + 4)).toBe(durationOf(tangent));
+  });
+
+  it('wraps a figure that declares itself a loop', () => {
+    expect(turns.loop).toBe(true);
+    expect(figureTime(turns, durationOf(turns) + 1.5)).toBeCloseTo(1.5, 12);
+    expect(figureTime(turns, durationOf(turns) * 3)).toBeCloseTo(0, 12);
+  });
+
+  it('reads nothing before the start and nothing from a figure with no length', () => {
+    expect(figureTime(turns, -2)).toBe(0);
+    expect(figureTime(still, 7)).toBe(0);
+  });
+});
+
+describe('a walk longer than the figure', () => {
+  it('counts the frames of the span it was given rather than of the figure', () => {
+    expect(frameTimesOf(turns, { fps: 30, seconds: durationOf(turns) * 2 })).toHaveLength(360);
+    expect(frameTimesOf(turns, { fps: 30, seconds: 2 })).toHaveLength(60);
+  });
+
+  it('draws a loop a second time rather than holding it', () => {
+    const frames = [
+      ...framesOf(turns, { fps: 30, width: WIDTH, height: HEIGHT, seconds: durationOf(turns) * 2 }),
+    ];
+    expect(frames).toHaveLength(360);
+    for (let index = 0; index < 180; index += 1) {
+      expect(sameMarks(frames[index].marks, frames[index + 180].marks, 1e-9), `frame ${index}`).toBe(
+        true
+      );
+    }
+  });
+
+  it('holds the last picture of a figure that is not a loop', () => {
+    const span = durationOf(tangent) * 2;
+    const frames = [...framesOf(tangent, { fps: 4, width: WIDTH, height: HEIGHT, seconds: span })];
+    expect(frames).toHaveLength(82);
+    const last = marksAt(tangent, durationOf(tangent), WIDTH / HEIGHT);
+    // The frame at 10.25 seconds is the end of the figure rather than past it,
+    // so 41 of the 82 come before the end and 40 after it.
+    const after = frames.filter((frame) => frame.seconds > durationOf(tangent));
+    expect(after).toHaveLength(40);
+    for (const frame of after) {
+      expect(sameMarks(frame.marks, last, 1e-9), `${frame.seconds}s`).toBe(true);
+    }
   });
 });

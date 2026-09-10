@@ -1329,6 +1329,9 @@ a group of that name.
   Writing that as two calls has two chances to pass different times.
 - `durationOf(figure)` — how long a figure runs, which is its own duration where it names one and
   its timeline's otherwise.
+- `figureTime(figure, seconds)` — the figure's own time at a moment of a recording or a playback. A
+  figure that declares itself a loop wraps by the remainder, so a recording twice its length plays it
+  twice, and one that does not holds its last picture.
 - `isLoop(figure, tolerance, aspect)` — whether a figure declaring itself a loop actually is one.
   The comparison is by tolerance, because the sine and cosine a figure is built from are not
   specified to the last bit and differ between engines. The aspect is passed to both readings, so a
@@ -1369,7 +1372,8 @@ frame round a picture is a shape.
 
 - `FrameStep` — how far apart the frames are: `fps`, a rate, or `frames`, a count spread over the
   whole figure. A recorder knows the rate it plays at; a strip knows how many pictures fit across a
-  page.
+  page. Its optional `seconds` is how long the walk runs where that is not the figure's own length,
+  and a walk past the end reads the figure through `figureTime`.
 - `FramesOptions` — a `FrameStep`, plus the `width` and `height` of the surface the view is built
   for.
 - `frameTimesOf(figure, step)` — the times a walk reads, which a recorder needs before it has drawn
@@ -1444,8 +1448,9 @@ picture in a recording are the same picture.
   duration)`, hands back its own answer from `finish()`, and may offer a `cancel()` for a recording
   that failed part way. `add` may answer a promise, which is how a recorder waits for an encoder that
   has fallen behind.
-- `RecordOptions` — the `fps` the recording plays at, the `width` and `height` of the surface, and an
-  optional `onFrame(index, count)` called once per frame taken.
+- `RecordOptions` — the `fps` the recording plays at, the `width` and `height` of the surface, the
+  `background` each frame opens on, the `seconds` the recording runs for where that is not the
+  figure's own length, and an optional `onFrame(index, count)` called once per frame taken.
 - `Recording` — what a finished recording is: the `frames` taken, the `seconds` it runs for, and the
   `output` the sink handed back.
 

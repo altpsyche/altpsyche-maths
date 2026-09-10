@@ -1376,15 +1376,18 @@ the flat and solid demos at 30 frames a second.
       at 4 frames a second is 41 frames and takes 41 more calls with a ground than without. The suite
       is 1299 tests over 86 files where it was 1295, the door is 206 values and 238 types where it was
       205 and 237, and `paint/canvas.ts` is 214 lines where it was 176.
-- [ ] **3. A clip longer than the figure, and a loop that wraps.** `recordFigure` gains `seconds`,
-      which is the length of the recording rather than the length of the figure. A figure that declares
-      itself a loop wraps by the remainder, and one that does not holds its last picture. Both rules are
-      `duration` and `loop`, which are fields of the format, so they belong at this door rather than in
-      a third consumer. **Measurement:** `demos/rotate.ts` declares itself a loop and lasts 6
-      seconds, which is 180 frames at 30 frames a second, so recorded over 12 seconds it is 360 frames
-      and its marks at t and at t + 6 agree within 1e-9 at every named time. The flat demo lasts 10.25
-      seconds and does not loop, so recorded over 20.5 it draws its last picture for the whole second
-      half.
+- [x] **3. A clip longer than the figure, and a loop that wraps.** `figureTime(figure, seconds)` is
+      the figure's own time at a moment of a recording, wrapped by the remainder for a figure that
+      declares itself a loop and held at the duration for one that does not. `FrameStep` gains
+      `seconds`, so the walk and the recorder both run for a span rather than for the figure's length,
+      and the rule is written once at this door rather than in every consumer. The specification states
+      it too, since a renderer in another language reads a figure past its end the same way.
+      **Measured:** `demos/rotate.ts` declares itself a loop and lasts 6 seconds, and recorded over 12
+      it is 360 frames whose last is at 11.9667 seconds, with the marks at frame k and frame k + 180
+      equal within 1e-9 for all 180. The flat demo lasts 10.25 seconds and does not loop, so walked
+      over 20.5 at 4 frames a second it is 82 frames of which the 40 past the end all hold the picture
+      at 10.25 within 1e-9. The suite is 1307 tests over 86 files where it was 1299, and the door is
+      207 values and 238 types where it was 206 and 238.
 - [ ] **4. The encoder, behind a dynamic import.** `videoSink(canvas, options)` builds mediabunny's
       `Output`, `CanvasSource` and target inside an `await import('mediabunny')`, which is how the
       typesetting call already loads MathJax. `mediabunny` is a dependency rather than a peer, since one

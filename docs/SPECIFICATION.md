@@ -729,6 +729,11 @@ expression in that node, which is what keeps a figure a file.
 figure ends where it began. A renderer holding a figure to its `loop` compares the marks at nothing
 and at the duration by tolerance.
 
+**A moment past the duration is read at the figure's own time.** A figure that declares itself a
+loop is read at the remainder of that moment over the duration, so a recording twice its length
+plays it twice. A figure that does not is read at its duration, since a figure that simply stops has
+nothing after its end to show.
+
 ## Conformance
 
 **Two renderers agree if they draw the same marks at the same times.** A mark carries an id, a kind

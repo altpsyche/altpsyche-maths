@@ -10,7 +10,7 @@
  * sixty frames a second is six hundred frames of every mark it draws, and a
  * recorder encodes a frame and throws it away.
  */
-import { marksAt, durationOf, viewAt, type Figure } from './figure.js';
+import { marksAt, durationOf, figureTime, viewAt, type Figure } from './figure.js';
 import type { Mark } from './mark.js';
 import type { Transform2D } from '../values/mat3.js';
 
@@ -33,7 +33,12 @@ export interface Frame {
  * figure's own clock. A strip knows how many pictures fit across a page and wants
  * them spread over the whole figure.
  */
-export type FrameStep = { fps: number; frames?: never } | { frames: number; fps?: never };
+export type FrameStep = ({ fps: number; frames?: never } | { frames: number; fps?: never }) & {
+  /** How long the walk runs for, where that is not the figure's own length. A
+   * walk past the end of a figure that declares itself a loop goes round again,
+   * and one past the end of a figure that does not holds its last picture. */
+  seconds?: number;
+};
 
 export type FramesOptions = FrameStep & {
   /** The surface the view is built for, in whatever units a painter counts in. */
@@ -45,18 +50,18 @@ export type FramesOptions = FrameStep & {
  * The times a walk reads, which a recorder needs before it has drawn anything to
  * say how far along it is.
  *
- * A walk stops strictly before the duration. The frame at the duration of a
- * figure that loops is its own first frame, and a recording would show it twice.
- * A figure with no duration is one frame, since a picture that never moves still
- * has a picture.
+ * A walk stops strictly before the end of its span. The frame at the duration of
+ * a figure that loops is its own first frame, and a recording would show it
+ * twice. A figure with no duration is one frame, since a picture that never moves
+ * still has a picture.
  */
 export function frameTimesOf(figure: Figure, step: FrameStep): number[] {
-  const duration = durationOf(figure);
+  const span = step.seconds ?? durationOf(figure);
   const count =
     step.fps === undefined
       ? Math.max(1, Math.round(step.frames))
-      : Math.max(1, Math.round(duration * step.fps));
-  const gap = step.fps === undefined ? duration / count : 1 / step.fps;
+      : Math.max(1, Math.round(span * step.fps));
+  const gap = step.fps === undefined ? span / count : 1 / step.fps;
   return Array.from({ length: count }, (_, index) => index * gap);
 }
 
@@ -65,11 +70,14 @@ export function* framesOf(figure: Figure, options: FramesOptions): Generator<Fra
   const times = frameTimesOf(figure, options as FrameStep);
   for (let index = 0; index < times.length; index += 1) {
     const seconds = times[index];
+    // A walk no longer than the figure reads the time it is at, since the figure's
+    // own time and the walk's are the same number before the end.
+    const inside = figureTime(figure, seconds);
     yield {
       index,
       seconds,
-      marks: marksAt(figure, seconds, options.width / options.height),
-      view: viewAt(figure, seconds, options.width, options.height),
+      marks: marksAt(figure, inside, options.width / options.height),
+      view: viewAt(figure, inside, options.width, options.height),
     };
   }
 }

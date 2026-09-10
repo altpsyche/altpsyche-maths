@@ -53,6 +53,10 @@ export interface RecordOptions {
    * in. */
   width: number;
   height: number;
+  /** How long the recording runs, where that is not the figure's own length. A
+   * figure that declares itself a loop goes round again and one that does not
+   * holds its last picture. */
+  seconds?: number;
   /** What each frame opens on, before its marks are painted. A recording left
    * without one shows every frame through the one before it, since a canvas keeps
    * what was drawn on it. */
@@ -65,7 +69,8 @@ export interface RecordOptions {
 export interface Recording<Output> {
   /** How many frames were taken. */
   frames: number;
-  /** How long the recording runs, in seconds. */
+  /** How long the recording runs, in seconds, which is the figure's own length
+   * where nothing else was asked for. */
   seconds: number;
   /** What the sink handed back when it was finished. */
   output: Output;
@@ -79,11 +84,12 @@ export async function recordFigure<Output>(
   options: RecordOptions
 ): Promise<Recording<Output>> {
   const { fps, width, height } = options;
-  const count = frameTimesOf(figure, { fps }).length;
+  const span = options.seconds ?? durationOf(figure);
+  const count = frameTimesOf(figure, { fps, seconds: span }).length;
   const gap = 1 / fps;
   let frames = 0;
   try {
-    for (const frame of framesOf(figure, { fps, width, height })) {
+    for (const frame of framesOf(figure, { fps, width, height, seconds: span })) {
       paintFrame(sink.context, frame, { width, height, background: options.background });
       await sink.add(frame.seconds, gap);
       frames += 1;
@@ -93,5 +99,5 @@ export async function recordFigure<Output>(
     await sink.cancel?.();
     throw failure;
   }
-  return { frames, seconds: durationOf(figure), output: await sink.finish() };
+  return { frames, seconds: span, output: await sink.finish() };
 }
