@@ -1224,14 +1224,17 @@ another string, and two strings drawn over each other at half opacity is the gho
 refuses, so the anchor, the size and the fill colour walk and the text changes once. **The other
 answer** is a cross-fade of the two, which costs that ghost.
 
-- [ ] **1. Marks matched by name, which is the glyph matcher with its key made a parameter.**
-  `figure/equation-match.ts` gains `matchMarks(from, to, keyOf)`, `matchGlyphs` becomes the case where
-  the key is the glyph token, and the two rules a group needs land with it: the leftovers paired in the
-  order they stand in, and a pair of two different kinds refused. **The measurement**: the pairs, the
-  leaving and the arriving over two panels of the boolean demo, which is 4 pairs and nothing either
-  side; over a group of three shapes into a group of two, which is 2 pairs and 1 leaving; the pairs
-  `matchGlyphs` gives over the tangent demo's two equations, unchanged by the parameter; and a path
-  and a text mark carrying one relative id, which pairs with nothing.
+- [x] **1. Marks matched by name, which is the glyph matcher with its key made a parameter.**
+  `figure/equation-match.ts` gains `matchMarks(from, to, keyOf)`, `matchGlyphs` is the case where the
+  key is the glyph token, and the two rules a group needs landed with it: the leftovers paired in the
+  order they stand in, and a pair of two different kinds refused by the kind being part of the key
+  rather than by a check after the pairing, which would let a refused pair block the two marks that
+  could have paired. **The measurement**: the boolean demo's union panel into its intersection panel
+  is 4 pairs with nothing leaving and nothing arriving, each pair's two ids differing in the panel's
+  name alone; three shapes into two is 2 pairs and 1 leaving; the tangent demo's two equations are 7
+  glyphs into 8 giving 6 pairs, 1 leaving and 2 arriving, which is what `matchGlyphs` gave before the
+  key was a parameter; and a path and a text mark carrying one relative id pair with nothing, by name
+  and by order alike. 1258 tests over 83 files before, 1263 over 84 after.
 - [ ] **2. `morphGroup` is an animation.** `figure/animation.ts` gains `morphGroup(from, to)`: a paired
   path mark walked by `lerpPath`, a paired text mark walked by its anchor and its size with the string
   swapping at half, an unpaired leaving mark fading out, a partner dimming as the walk lands on it, and
