@@ -224,8 +224,9 @@ vocabulary of its own, so a painter would build that atlas by rasterising with a
 sampling it. That is the shape this step refuses to build. What the reading says instead is where the
 line falls today: 46 text marks across the two demos name a CSS font stack and carry no outline, and
 an equation arrives from `typesetElement` as 8 filled paths that read as 333 curves. **So the GPU
-painter's text is two problems and not one.** A label waits on 2.4.0's outlines for plain text, and an
-equation waits on the same counted winding an annulus waits on, since 4 of the 8 glyphs of
+painter's text is two problems and not one.** A label waits on a source of glyph outlines, which
+2.4.0's plan recommends refusing for the animation it needed them for, and an equation waits on the
+same counted winding an annulus waits on, since 4 of the 8 glyphs of
 `a^2 + b^2 = e^0` carry a hole.
 
 **Gap 7: the frame description names no scissor and no viewport.** `FrameGraph`, `PassSpec` and
@@ -274,12 +275,12 @@ are left, since 2.1.0, 2.2.0 and 2.3.0 are cut.
 
 | version | what lands | what it changes | steps | cut against | depends on | plan |
 | --- | --- | --- | --- | --- | --- | --- |
-| 2.4.0 | the indications that run along a path, and text written on rather than faded in | adds kinds, and outlines for plain text | to plan | the flat demo's reading, written on | a source of glyph outlines for plain text | to plan |
+| 2.4.0 | the indications that run along a path, and text written on rather than faded in | adds kinds | eight, and one call is Siva's | the flat demo's reading, written on | nothing outside this package, under the answer the plan recommends | planned |
 | 2.5.0 | a group morphing into a group | adds a kind | to plan | the boolean demo's three panels, morphing into one another | nothing outside this package | to plan |
 | 2.6.0 | the recorder: a figure out as a video file | nothing in the format, and a name at the door | to plan | every demo as a file on disk rather than a strip of frames | `mediabunny`, which the consumer already records with | to plan |
 | 2.7.0 | the GPU painter | nothing in the format, and a name at the door | to plan | both demos through a third painter, mark for mark against the SVG painter | `@altpsyche/engine`, with its item 2 landed, declared as a peer | to plan |
 | 2.8.0 | dashes and quadratics drawn on a GPU | nothing; `Stroke.dash` is already in the mark and no painter draws it | to plan | a dashed figure, and the strip that shows it moving | `@altpsyche/engine` | to plan |
-| 2.9.0 | text on a GPU, and the recorder running without a page | nothing in the format | to plan | every demo recorded off a card | `@altpsyche/engine`, 2.4.0's outlines, and 2.6.0 | to plan |
+| 2.9.0 | text on a GPU, and the recorder running without a page | nothing in the format | to plan | every demo recorded off a card | `@altpsyche/engine`, a source of glyph outlines, and 2.6.0 | to plan |
 | 3.0.0 | depth, so a figure in space keeps it | what a `Mark` may ask for, which breaks the format's own version | to plan | the solid demo, whose crossing curve is drawn in the right order rather than the tree's | `@altpsyche/engine`, and the fourth decision above | blocked on a decision |
 | 3.1.0 | a clip that is a path rather than a rectangle | what a `Mark` may ask for | to plan | nothing yet, which is why it is last of the marks | `@altpsyche/engine`'s counting stencil, its item 2 | to plan |
 | 4.0.0 | a figure a reader can act on | the shape of `Figure`, which gains input | to plan | nothing yet | nothing outside this package | to plan |
@@ -300,9 +301,12 @@ shape this package loads MathJax with. So 2.6.0 moves that dependency here rathe
 one, and the consumer drops it in the same release. **What would change the answer** is a recording
 that has to run with no browser, since a canvas source needs one.
 
-**2.4.0's outlines for plain text are the other dependency and are not chosen.** The typesetter
-already hands back outlines for an equation, so the question is whether the same path serves a plain
-label.
+**2.4.0's outlines for plain text are the other dependency and the planning session recommends
+refusing them.** The typesetter hands back outlines for an equation in its own font, and a plain label
+is written in a family the painter hands to the platform, so the two are different shapes. True
+outlines need font bytes inside the figure, which is a value type this band of the ladder is in front
+of. The plan under 2.4.0 sweeps a rectangular clip across the label instead and takes how far it runs
+as a number. **The call is Siva's and it is stated in that entry.**
 
 **The engine's roadmap carries the other half of this table**, as a record of which version above
 needs what from it, so neither side rediscovers the dependency by reading the other's plan. It is a
@@ -481,7 +485,7 @@ is the question the spike existed to settle.
 **What the spike found.** Eight gaps, in the section in front of the ladder with the reading that
 found each. Four went to the engine's roadmap as one batch. One is documented behaviour there. **Two
 are this package's own and are on the ladder already**: a plain `TextMark` cannot be drawn at all,
-which is 2.4.0, and a mark's colour is a CSS colour string rather than four numbers, which is 2.0.0.
+which waits on a source of glyph outlines, and a mark's colour is a CSS colour string rather than four numbers, which is 2.0.0.
 **And one gap decides how much of 2.7.0 can be built at all**, which is the counted winding number: an
 annulus, a letter with a counter and every glyph of an equation all want it, and it is the engine's
 item 2.
@@ -1146,21 +1150,129 @@ no box test in front of it and the quadratic over piece pairs is not worth remov
 
 ## The items
 
-Each is a version above. What follows is what each one covers. None of the 2.x band carries a step
-list, because writing one is a session of its own.
+Each is a version above. What follows is what each one covers. 2.4.0 carries a step list and the
+other two do not, because writing one is a session of its own.
 
 ### The 2.x band, which is what Manim has and this does not
 
 **Every one of these three adds a kind rather than changing a value type**, so each is a format minor
-an old figure survives. **None of the three carries a step list**, and writing one is a session of its
-own, which is the rule this file holds every item to.
+an old figure survives. **2.4.0 carries a step list and the other two do not**, and writing one is a
+session of its own, which is the rule this file holds every item to.
 
 **2.4.0 The indications that run along a path, and text written on.** A light running along a path, a
-wave, and a wiggle are each a moving window over `trimPath`, which exists and is what `draw` already
-uses. Text is the other half: `draw` fades a text mark rather than drawing it, because a text mark is
-a string a painter lays out, so a typeset equation draws on and a plain label cannot. Closing that
-means outlines for plain text, the way MathJax already hands back outlines for an equation. **The
-picture waiting** is the flat demo's reading written on rather than faded in.
+wave, and a wiggle are the three indications Manim has and this does not, and text written on is the
+other half: `draw` fades a text mark rather than drawing it, because a text mark is a string a painter
+lays out. **The picture waiting** is the flat demo's reading written on rather than faded in, and the
+solid demo's crossing curve with a light running along it.
+
+**A wave and a wiggle are not windows over `trimPath`, and this file said they were.** The planning
+session read Manim. `ShowPassingFlash` shows a moving window of the path, which is a window and needs
+a trim between two fractions rather than the trim from the start that `trimPath` gives. `ApplyWave`
+displaces the points of a shape along a direction, the displacement gated by a band that travels
+across the shape, and nothing is trimmed. `Wiggle` swells and rocks about a point and touches no
+path at all: it is `indicate` with a turn added. So one of the three is a window and the other two
+are point motion.
+
+**Outlines for plain text need font bytes, which is a value type this version is in front of.** The
+package holds no font: a family is a platform name a painter hands on, `sans-serif` is the whole of
+the default, and `boundsOfMarks` gives a text mark the reach of its own anchor because nothing here
+measures a string. Getting true outlines means a font file inside the figure and a parser to read it,
+which is a new value type in the format and a new runtime dependency, where the ladder puts 2.4.0
+among the versions that add a kind an old figure survives. **So the call is Siva's**, and the plan
+below is written for the answer this session recommends: a plain label is written on behind a
+rectangular clip that sweeps across it, which both painters already draw, and how far the sweep runs
+is a number the animation takes because nothing here can measure it. What the sweep costs is that a
+label is uncovered rather than drawn stroke by stroke. What it saves is the dependency, the format
+change and the screen reader, since the SVG painter keeps writing the label as text. **The other
+answer** is a font at the door, which is an item of its own in front of this one.
+
+**`write` is one kind over both halves, which is the name Manim gives it.** A path mark under the
+target is drawn on over its own slice of the span, in the order the marks stand in, so a typeset rule
+writes glyph by glyph rather than every glyph at once, which is what `draw` over an equation does
+today. A text mark under the target is swept where the animation names how far the sweep runs and
+fades where it does not. One kind rather than two because an author reaching for this reaches for one
+name, and because a group holding a label beside a rule is written on by one span.
+
+**Where the sweep starts is read off the mark and only its width is given.** A text mark carries its
+anchor, its alignment and its size, so the near edge is the anchor for `start`, half the run back for
+`middle` and the whole run back for `end`, and the band the clip spans is measured off the size. A
+figure names one number and the animation derives the rest.
+
+- [ ] **1. A window of a path between two fractions.** `figure/trim.ts` gains `pathWindow(path, from,
+  to)`, the piece between two fractions of the path's own length, with `trimPath` staying the case
+  where `from` is nothing. **The measurement**: the length of the window against the fractions asked
+  for, to within 1e-9 of a figure unit, over a path whose segments differ in size by a factor of ten;
+  the window at 0 to 1 being the path itself untouched; and the point at each end of the window
+  against `pointAlong` at the same fraction.
+- [ ] **2. `showPassingFlash` is an animation.** `figure/animation.ts` gains a light travelling the
+  target's path: a mark that is a window of that path, its near edge running from the start to the
+  end over the span, at no width at both ends so the list of marks has the same ids whichever way the
+  clock came. **The measurement**: the midpoint of the window at five fractions of the span against
+  the point at the matching fraction of the path's length; the window's length against the share of
+  the path asked for; and the mark count at 0 and at 1, which is the count the target already had.
+- [ ] **3. `wave` is an animation.** The points of the target displaced along a direction, the
+  displacement a sine of how far across the shape a point sits, gated by a band travelling across it,
+  and every point back where it started at both ends of the span. **The measurement**: the furthest
+  any point moves against the amplitude asked for; the marks identical to the ones handed in at 0 and
+  at 1, compared by tolerance; and the place of the crest at three fractions of the span against the
+  band's own position.
+- [ ] **4. `wiggle` is an animation.** A swell and a rock about a point, the point being the middle of
+  the box round the marks unless the figure names one, back where it started at both ends.
+  **The measurement**: the factor and the angle at the middle of the span against the ones asked for;
+  the marks identical at 0 and at 1 by tolerance; and a wiggle of a whole number of rocks landing on
+  the geometry it started from.
+- [ ] **5. `write` is an animation.** Path marks under the target drawn on one after another over
+  their own slices of the span, and a text mark under it swept behind a clip that crosses the run the
+  animation names. **The measurement**: which glyphs of a two-glyph rule are drawn at a third and at
+  two thirds of the span, and the length each carries; the clip's near and far edges at three
+  fractions against the run asked for, at each of the three alignments; and a text mark with no run
+  named carrying the opacity a fade would give it.
+- [ ] **6. The four are written forms of the format.** `AnimationRecord` gains `showPassingFlash`,
+  `wave`, `wiggle` and `write`, `resolveAnimation` hands back each one, `figure-check.ts` holds all
+  four, and each reads back to the call it was written from. **The measurement**: the members of
+  `AnimationRecord`, 16 today and 20 after; the round trip of a figure carrying all four through
+  `writeFigure` and `readFigure`, compared mark for mark by tolerance; and the checker's own message
+  on a wave whose amplitude is not a number.
+- [ ] **7. Both demos gain them.** `demos/tangent.ts` writes its reading on rather than fading it in,
+  writes its rule glyph by glyph, and runs a light along the tangent at the stationary point.
+  `demos/surface.ts` writes its typeset equation on and runs a light along the crossing curve as the
+  eye comes round. **The measurement**: each demo's marks at three named times; the clip edges on the
+  reading at the fractions the sweep passes; and the bytes of the four committed sheets, which
+  regenerate byte for byte.
+- [ ] **8. The reference, the guide, the specification, and 2.4.0 cut.** `docs/REFERENCE.md` gains
+  every new door name, `docs/SPECIFICATION.md` writes the four animation kinds with their fields and
+  says where the sweep's run comes from, `docs/GUIDE.md` gains the section that writes a label on,
+  `docs/FIGURE-FORMAT.md` carries why a plain label is swept rather than outlined, and the version is
+  bumped in that commit. **The measurement**: the reference gate over the door, the guide's blocks
+  compiled, the specification's animation count gate at 20, and the done-criteria below verified line
+  by line.
+
+**Which step the demos gain from: 7.** It is the picture the version is named against, and it is the
+first of the eight that draws. Steps 1 through 6 are what it is written from, which is the order
+2.3.0 and both demos above were built in.
+
+**Done-criteria, checkable line by line.**
+
+- `pathWindow` is in the tree, `trimPath` is the case where `from` is nothing, and the window's length
+  matches the fractions asked for to within 1e-9 of a figure unit.
+- `showPassingFlash`, `wave`, `wiggle` and `write` are at the door with their options types, and each
+  hands back an `Animation`.
+- Each of the four leaves the marks it was handed at 0 and at 1, compared by tolerance, so the same
+  ids stand at both ends of every span.
+- A typeset rule under `write` draws one glyph after another, which the suite shows by the lengths two
+  glyphs carry at a third of the span.
+- A plain text mark under `write` is swept behind a clip whose near edge is read off the mark's own
+  alignment, at all three alignments.
+- `AnimationRecord` carries all four, `checkFigure` refuses each one's bad field with a sentence
+  naming it, and the specification's animation count gate reads 20.
+- `demos/tangent.figure.json` and `demos/surface.figure.json` are committed, and their stills and
+  strips regenerate byte for byte.
+- The reference gives every new door name an entry, and the guide compiles its new block.
+- `npm test`, `npm run type-check` and `npm run build` pass, and `package.json` reads 2.4.0.
+
+**The before-state the steps measure against**: 1212 tests over 78 files, 16 members of
+`AnimationRecord`, and the specification's five counts at thirty node kinds and sixteen animation
+kinds.
 
 **2.5.0 A group morphing into a group.** `morph` takes one target and one path. Matching many shapes
 to many is `TransformMatchingShapes`, and the matching machinery is already here: `morphEquation`
