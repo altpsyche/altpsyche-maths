@@ -423,7 +423,7 @@ describe('the committed pictures', () => {
     }
   });
 
-  it('are all fourteen there', () => {
+  it('are all sixteen there', () => {
     expect(sheets.map((sheet) => sheet.file)).toEqual([
       'docs/tangent.svg',
       'docs/tangent-strip.svg',
@@ -431,6 +431,8 @@ describe('the committed pictures', () => {
       'docs/boolean-strip.svg',
       'docs/rotate.svg',
       'docs/rotate-strip.svg',
+      'docs/matrix.svg',
+      'docs/matrix-strip.svg',
       'docs/surface.svg',
       'docs/surface-strip.svg',
       'docs/portrait.svg',

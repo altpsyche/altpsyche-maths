@@ -28,6 +28,7 @@ import {
   written as booleansWritten,
 } from './boolean.js';
 import { FRAMES as TURN_FRAMES, stripMarks as turnStripMarks, written as turnsWritten } from './rotate.js';
+import { FRAMES as MAP_FRAMES, stripMarks as mapStripMarks, written as mapWritten } from './matrix.js';
 import {
   FRAMES as PORTRAIT_FRAMES,
   stripMarks as portraitStripMarks,
@@ -175,6 +176,10 @@ export const sheets: readonly Sheet[] = [
   sheetOf('docs/rotate-strip.svg', () =>
     stripDrawn(turnStripMarks(TURN_FRAMES, 2, fileFor('demos/rotate.figure.json')))
   ),
+  sheetOf('docs/matrix.svg', () => stillDrawn(fileFor('demos/matrix.figure.json'))),
+  sheetOf('docs/matrix-strip.svg', () =>
+    stripDrawn(mapStripMarks(MAP_FRAMES, 2, fileFor('demos/matrix.figure.json')))
+  ),
   sheetOf('docs/surface.svg', () => stillDrawn(fileFor('demos/surface.figure.json'))),
   sheetOf('docs/surface-strip.svg', () =>
     stripDrawn(solidStripMarks(SOLID_FRAMES, 2, fileFor('demos/surface.figure.json')))
@@ -204,6 +209,7 @@ export const figures: readonly { file: string; text: () => string }[] = [
   { file: 'demos/boolean.figure.json', text: () => writeFigure(booleansWritten) },
   { file: 'demos/tangent.figure.json', text: () => writeFigure(tangentWritten) },
   { file: 'demos/rotate.figure.json', text: () => writeFigure(turnsWritten) },
+  { file: 'demos/matrix.figure.json', text: () => writeFigure(mapWritten) },
   { file: 'demos/surface.figure.json', text: () => writeFigure(solidWritten) },
   { file: 'demos/portrait.figure.json', text: () => writeFigure(portraitWritten) },
   { file: 'demos/solids.figure.json', text: () => writeFigure(solidsWritten) },

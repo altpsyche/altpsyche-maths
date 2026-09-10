@@ -1,0 +1,368 @@
+{
+  "format": 0,
+  "figure": {
+    "duration": 6,
+    "extent": {
+      "centre": {
+        "x": 2.2,
+        "y": -0.35
+      },
+      "height": 7,
+      "width": 10.8
+    },
+    "loop": true,
+    "scene": {
+      "children": [
+        {
+          "kind": "shape",
+          "name": "panel",
+          "path": {
+            "corner": {
+              "x": -3,
+              "y": -3
+            },
+            "height": 6,
+            "kind": "rect",
+            "width": 6
+          },
+          "style": {
+            "fill": {
+              "colour": {
+                "a": 1,
+                "b": 254,
+                "g": 242,
+                "name": "frost",
+                "r": 224
+              }
+            }
+          }
+        },
+        {
+          "children": [
+            {
+              "coords": {
+                "x": {
+                  "graph": {
+                    "from": -8,
+                    "to": 8
+                  },
+                  "units": {
+                    "from": -8,
+                    "to": 8
+                  }
+                },
+                "y": {
+                  "graph": {
+                    "from": -8,
+                    "to": 8
+                  },
+                  "units": {
+                    "from": -8,
+                    "to": 8
+                  }
+                }
+              },
+              "kind": "numberPlane",
+              "name": "grid",
+              "options": {
+                "minors": 2,
+                "stroke": {
+                  "colour": {
+                    "a": 1,
+                    "b": 179,
+                    "g": 143,
+                    "name": "steel",
+                    "r": 90
+                  },
+                  "width": 0.02
+                },
+                "ticks": 17
+              }
+            },
+            {
+              "kind": "shape",
+              "name": "across",
+              "path": {
+                "from": {
+                  "x": -8,
+                  "y": 0
+                },
+                "kind": "line",
+                "to": {
+                  "x": 8,
+                  "y": 0
+                }
+              },
+              "style": {
+                "stroke": {
+                  "colour": {
+                    "a": 1,
+                    "b": 27,
+                    "g": 27,
+                    "name": "ink",
+                    "r": 27
+                  },
+                  "width": 0.045
+                }
+              }
+            },
+            {
+              "kind": "shape",
+              "name": "up",
+              "path": {
+                "from": {
+                  "x": 0,
+                  "y": -8
+                },
+                "kind": "line",
+                "to": {
+                  "x": 0,
+                  "y": 8
+                }
+              },
+              "style": {
+                "stroke": {
+                  "colour": {
+                    "a": 1,
+                    "b": 27,
+                    "g": 27,
+                    "name": "ink",
+                    "r": 27
+                  },
+                  "width": 0.045
+                }
+              }
+            },
+            {
+              "kind": "shape",
+              "name": "square",
+              "path": {
+                "kind": "polygon",
+                "points": [
+                  {
+                    "x": 0,
+                    "y": 0
+                  },
+                  {
+                    "x": 1,
+                    "y": 0
+                  },
+                  {
+                    "x": 1,
+                    "y": 1
+                  },
+                  {
+                    "x": 0,
+                    "y": 1
+                  }
+                ]
+              },
+              "style": {
+                "fill": {
+                  "colour": {
+                    "a": 1,
+                    "b": 116,
+                    "g": 186,
+                    "name": "peach",
+                    "r": 253
+                  }
+                },
+                "stroke": {
+                  "colour": {
+                    "a": 1,
+                    "b": 12,
+                    "g": 65,
+                    "name": "ember",
+                    "r": 194
+                  },
+                  "width": 0.055
+                }
+              }
+            }
+          ],
+          "kind": "group",
+          "name": "plane",
+          "style": {
+            "clip": {
+              "x": {
+                "from": -3,
+                "to": 3
+              },
+              "y": {
+                "from": -3,
+                "to": 3
+              }
+            }
+          }
+        },
+        {
+          "entries": [
+            [
+              "1.0",
+              "0.0"
+            ],
+            [
+              "0.0",
+              "1.0"
+            ]
+          ],
+          "kind": "matrix",
+          "name": "map",
+          "options": {
+            "align": "middle",
+            "at": {
+              "x": 5.9,
+              "y": 0.5
+            },
+            "fill": {
+              "colour": {
+                "a": 1,
+                "b": 27,
+                "g": 27,
+                "name": "ink",
+                "r": 27
+              }
+            },
+            "height": 2.3,
+            "size": 0.4242640687119285,
+            "stroke": {
+              "colour": {
+                "a": 1,
+                "b": 27,
+                "g": 27,
+                "name": "ink",
+                "r": 27
+              },
+              "width": 0.04
+            },
+            "width": 2.9
+          }
+        },
+        {
+          "at": {
+            "x": 0,
+            "y": -3.5
+          },
+          "content": "the unit square and its area",
+          "kind": "text",
+          "name": "underPanel",
+          "options": {
+            "align": "middle",
+            "fill": {
+              "colour": {
+                "a": 1,
+                "b": 27,
+                "g": 27,
+                "name": "ink",
+                "r": 27
+              }
+            }
+          },
+          "size": 0.3
+        },
+        {
+          "at": {
+            "x": 5.9,
+            "y": -3.5
+          },
+          "content": "the map",
+          "kind": "text",
+          "name": "underMatrix",
+          "options": {
+            "align": "middle",
+            "fill": {
+              "colour": {
+                "a": 1,
+                "b": 27,
+                "g": 27,
+                "name": "ink",
+                "r": 27
+              }
+            }
+          },
+          "size": 0.3
+        }
+      ],
+      "kind": "group",
+      "name": "map",
+      "style": {
+        "family": "system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif",
+        "weight": 400
+      }
+    },
+    "still": 1.5,
+    "timeline": {
+      "duration": 6,
+      "spans": [
+        {
+          "curve": "thereAndBack",
+          "entry": {
+            "kind": "applyMatrix",
+            "matrix": [
+              2,
+              1,
+              0,
+              1,
+              1.5,
+              0,
+              0,
+              0,
+              1
+            ],
+            "target": "map/plane"
+          },
+          "from": 0,
+          "to": 6
+        },
+        {
+          "curve": "thereAndBack",
+          "entry": {
+            "from": 1,
+            "kind": "countTo",
+            "precision": 0.1,
+            "target": "map/map/rows/0/0",
+            "to": 2
+          },
+          "from": 0,
+          "to": 6
+        },
+        {
+          "curve": "thereAndBack",
+          "entry": {
+            "from": 0,
+            "kind": "countTo",
+            "precision": 0.1,
+            "target": "map/map/rows/0/1",
+            "to": 1
+          },
+          "from": 0,
+          "to": 6
+        },
+        {
+          "curve": "thereAndBack",
+          "entry": {
+            "from": 0,
+            "kind": "countTo",
+            "precision": 0.1,
+            "target": "map/map/rows/1/0",
+            "to": 1
+          },
+          "from": 0,
+          "to": 6
+        },
+        {
+          "curve": "thereAndBack",
+          "entry": {
+            "from": 1,
+            "kind": "countTo",
+            "precision": 0.1,
+            "target": "map/map/rows/1/1",
+            "to": 1.5
+          },
+          "from": 0,
+          "to": 6
+        }
+      ]
+    }
+  }
+}

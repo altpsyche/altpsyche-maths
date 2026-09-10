@@ -1227,12 +1227,18 @@ point.
 equal to them, so a kind landing without its section fails `npm test` in the commit that adds it. The
 specification is written in the step that opens the kind, and step 6 keeps the guide and the
 reasoning.
-- [ ] **5. The matrix demo.** `demos/matrix.ts` draws a number plane under a linear map, with the
+- [x] **5. The matrix demo.** `demos/matrix.ts` draws a number plane under a linear map, with the
   matrix written beside it and its four entries counting to the numbers of the map, and a unit square
   carried with the grid so the determinant is an area a reader sees. `demos/render.ts` gains the figure
   and the sheet. **The measurement**: the demo's marks at three named times; the area of the drawn
   square against the determinant of the interpolated matrix at each of them; and the bytes of the
-  committed still and strip, which regenerate byte for byte.
+  committed still and strip, which regenerate byte for byte. **Measured**: the figure draws 38 marks at
+  each of its four named times, 26 of them grid lines and 12 besides; the square encloses the
+  determinant of the matrix the map has reached to 1e-12 at every one of them, 1 at the identity and 2
+  at the whole map; the four written entries are the entries of that same matrix at every named time,
+  since the map and the four counts are spans over one interval with one curve; and
+  `demos/matrix.figure.json` at 8,352 bytes, `docs/matrix.svg` at 9,239 and `docs/matrix-strip.svg` at
+  38,982 regenerate byte for byte. The suite runs 1211 tests over 78 files, up from 1205 over 77.
 - [ ] **6. The guide, the reasoning, and 2.3.0 cut.** `docs/GUIDE.md` gains the section that maps a
   grid, `docs/FIGURE-FORMAT.md` carries why a column width is given rather than measured, and the
   version is bumped in that commit. **The measurement**: the guide's blocks compiled, and the
@@ -1282,6 +1288,15 @@ import. **It goes after 2.0.0 rather than before** because a recorder reads a fi
 format a recorder reads a file, which is also what lets one run without a page around it.
 
 ## Found while working, not yet queued
+
+- **The specification writes `ticks` as a step and the code reads it as a count.** `SPECIFICATION.md`
+  says `ticks` is the step between two ticks in graph units for a number line, and the major step for
+  a number plane. `tickStep(bounds, about)` divides the span by one less than that number and rounds
+  the result to a round number, so it is about how many ticks are wanted, which is what `axis.ts` and
+  `REFERENCE.md` both say. A renderer written from the specification would draw a grid at a step of 20
+  where a figure asking for `ticks` of 1 over a span of 16 wants a step of 1, which is what the matrix
+  demo hit while it was being written. Two sentences of the specification are wrong and nothing in the
+  code is.
 
 - **A plotted curve is cut on the height alone, so a run of x wider than the graph draws off it.**
   `plot` takes `over` as the run of x it samples and its `drawable` test reads only `coords.y.graph`,
