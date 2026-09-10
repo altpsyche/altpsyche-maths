@@ -1176,6 +1176,15 @@ a group of that name.
     distance from the middle of the box to its corner unless named, so the rays sit outside the
     thing they point at.
   - `inner` — where the near end of a ray sits, as a share of the reach.
+- `write(target, options)` — written on: a path drawn from its start and a string uncovered from its
+  near edge, one mark under the target after another. A typeset rule therefore writes glyph by glyph
+  where `draw` writes every glyph at once.
+- `WriteOptions` — what a write takes.
+  - `across` — how far the sweep runs across a text mark, in figure units. It is given rather than
+    measured because nothing here measures a string, and a text mark under a write that names no run
+    fades instead.
+  - `covers` — how much of the span each mark's own drawing takes, as a share of it. An even share
+    unless named, so the marks abut rather than overlap.
 - `wiggle(target, options)` — a swell and a rock about a point, for a figure that wants something
   noticed without moving it. Both are at nothing at both ends of the span, so the marks come back
   the geometry they went in as.

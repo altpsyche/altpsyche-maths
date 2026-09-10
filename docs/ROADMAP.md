@@ -1229,12 +1229,15 @@ figure names one number and the animation derives the rest.
   with the box round it at 1.000000, 1.127610, 1.268561, 1.300000, 1.268561, 1.127610 and 1.000000,
   so the swell is `indicate`'s and the rock is a sine of a whole number of turns. `sameMarks` holds
   at 0 and at 1 for one, two and five rocks and for a rock count of 2.6, which is rounded.
-- [ ] **5. `write` is an animation.** Path marks under the target drawn on one after another over
+- [x] **5. `write` is an animation.** Path marks under the target drawn on one after another over
   their own slices of the span, and a text mark under it swept behind a clip that crosses the run the
-  animation names. **The measurement**: which glyphs of a two-glyph rule are drawn at a third and at
-  two thirds of the span, and the length each carries; the clip's near and far edges at three
-  fractions against the run asked for, at each of the three alignments; and a text mark with no run
-  named carrying the opacity a fade would give it.
+  animation names. **The measurement**: three strokes of unit length read 0, 0, 0 at the start of the
+  span, 1, 0, 0 at a third, 1, 0.5, 0 at the middle, 1, 1, 0 at two thirds and 1, 1, 1 at the end, so
+  the shares abut. A sweep of 3 units across a mark anchored at x of 2 leaves a window of 2 to 2 at
+  the start, 2 to 3.5 at the middle and 2 to 5 at the end, and the same run reads 0.5 to 3.5 for a
+  mark aligned to its middle and -1 to 2 for one aligned to its end. The band left uncut is 1.5 sizes
+  either side of the anchor, a clip the figure already put on the mark is kept by overlapping the
+  two, and a text mark with no run named carries the opacity a fade would give it.
 - [ ] **6. The four are written forms of the format.** `AnimationRecord` gains `showPassingFlash`,
   `wave`, `wiggle` and `write`, `resolveAnimation` hands back each one, `figure-check.ts` holds all
   four, and each reads back to the call it was written from. **The measurement**: the members of

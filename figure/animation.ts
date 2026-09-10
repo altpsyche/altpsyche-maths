@@ -22,9 +22,9 @@ import { matchGlyphs } from './equation-match.js';
 import { pointAlong } from './length.js';
 import { scaledWidth } from './width.js';
 import { transformFill } from './gradient.js';
-import { boundsOfMarks, centreOf } from './bounds.js';
+import { boundsOfMarks, centreOf, overlapOf } from './bounds.js';
 import { interval } from '../values/interval.js';
-import type { Colour, Mark, Stroke } from './mark.js';
+import type { Colour, Mark, Stroke, TextMark } from './mark.js';
 
 export type Animation = (marks: readonly Mark[], along: number) => readonly Mark[];
 
@@ -413,6 +413,84 @@ export function flash(target: string, options: FlashOptions): Animation {
       });
     }
     return [...marks, ...rays];
+  };
+}
+
+export interface WriteOptions {
+  /**
+   * How far the sweep runs across a text mark, in figure units.
+   *
+   * It is given rather than measured because nothing here measures a string: a
+   * text mark is a family name a painter hands to the platform, so how wide the
+   * words come out is not known until they are drawn. A text mark under a write
+   * that names no run fades instead.
+   */
+  across?: number;
+  /** How much of the span each mark's own drawing takes, as a share of it. An
+   * even share unless a figure names one, so the marks abut rather than
+   * overlap. */
+  covers?: number;
+}
+
+/**
+ * How tall a band the sweep leaves uncut, against the size of the text.
+ *
+ * The sweep cuts across the words and never along them, so this only has to
+ * clear the tallest ascender and the deepest descender of whatever face the
+ * platform found. Three sizes about the anchor clears both at every face a
+ * system stack holds.
+ */
+const WRITTEN_BAND = 1.5;
+
+/** Where the near edge of a sweep sits, which is the anchor for text that starts
+ * there and the whole run back for text that ends there. */
+function sweepFrom(mark: TextMark, across: number): number {
+  if (mark.align === 'middle') return mark.at.x - across / 2;
+  if (mark.align === 'end') return mark.at.x - across;
+  return mark.at.x;
+}
+
+/**
+ * Written on: a path drawn from its start and a string uncovered from its near
+ * edge, one mark after another.
+ *
+ * The marks under the target take an even share of the span each and are drawn
+ * in the order they stand in, so a typeset rule writes glyph by glyph where
+ * `draw` writes every glyph at once. That order is the one the equation walk
+ * wrote them in, which is the order the expression reads.
+ *
+ * A string is uncovered behind a rectangle rather than drawn stroke by stroke.
+ * Drawing the strokes needs the outlines of the face, and a text mark carries a
+ * family name rather than a font, so the outlines are not here to draw. What the
+ * sweep costs is that a letter arrives whole from its left edge; what it saves is
+ * that the painter still writes the string as text.
+ */
+export function write(target: string, options: WriteOptions = {}): Animation {
+  const across = options.across;
+  return (marks, along) => {
+    const written = marks.filter((mark) => touches(mark.id, target));
+    if (written.length === 0) return marks;
+    const covers = Math.min(1, Math.max(1e-6, options.covers ?? 1 / written.length));
+    const step = written.length > 1 ? (1 - covers) / (written.length - 1) : 0;
+
+    const share = new Map<string, number>();
+    written.forEach((mark, at) => {
+      const raw = (along - at * step) / covers;
+      share.set(mark.id, raw <= 0 ? 0 : raw >= 1 ? 1 : raw);
+    });
+
+    return marks.map((mark) => {
+      const reached = share.get(mark.id);
+      if (reached === undefined) return mark;
+      if (mark.kind !== 'text') return { ...mark, path: trimPath(mark.path, reached) };
+      if (across === undefined) return { ...mark, opacity: (mark.opacity ?? 1) * reached };
+      const from = sweepFrom(mark, across);
+      const band = {
+        x: interval(from, from + across * reached),
+        y: interval(mark.at.y - WRITTEN_BAND * mark.size, mark.at.y + WRITTEN_BAND * mark.size),
+      };
+      return { ...mark, clip: mark.clip ? (overlapOf(mark.clip, band) ?? band) : band };
+    });
   };
 }
 
