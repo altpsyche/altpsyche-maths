@@ -18,6 +18,11 @@
  * it stores is a path and the id it belongs to. A code point kept elsewhere
  * would have to be stored elsewhere too, and the matching would fail on
  * everything read back from a cache that did not.
+ *
+ * Two groups of marks are paired by the same subsequence with the key changed,
+ * which is the pairing a group morphing into a group reads. Its key is a mark's
+ * name rather than a glyph's code point, and what the key leaves over it pairs by
+ * order.
  */
 import type { Mark, PathMark } from './mark.js';
 
@@ -75,20 +80,83 @@ function pairedPlaces(from: readonly (string | undefined)[], to: readonly (strin
 const glyphsOf = (marks: readonly Mark[]): PathMark[] =>
   marks.filter((mark): mark is PathMark => mark.kind === 'path');
 
-/** Two typeset expressions paired glyph by glyph, with what neither answers kept
- * apart. Marks that are not paths are left out, since a glyph is an outline. */
-export function matchGlyphs(from: readonly Mark[], to: readonly Mark[]): GlyphMatch {
-  const left = glyphsOf(from);
-  const right = glyphsOf(to);
-  const places = pairedPlaces(
-    left.map((mark) => glyphToken(mark.id)),
-    right.map((mark) => glyphToken(mark.id))
-  );
+interface Match<T> {
+  readonly pairs: readonly (readonly [T, T])[];
+  readonly leaving: readonly T[];
+  readonly arriving: readonly T[];
+}
+
+/** Two lists paired by key, in order, with what no key answers kept apart. An
+ * item whose key is nothing pairs with nothing rather than with every other item
+ * that also has none. */
+function pairedByKey<T>(
+  from: readonly T[],
+  to: readonly T[],
+  keyOf: (item: T) => string | undefined
+): Match<T> {
+  const places = pairedPlaces(from.map(keyOf), to.map(keyOf));
   const takenLeft = new Set(places.map(([row]) => row));
   const takenRight = new Set(places.map(([, column]) => column));
   return {
-    pairs: places.map(([row, column]) => [left[row], right[column]] as const),
-    leaving: left.filter((_, at) => !takenLeft.has(at)),
-    arriving: right.filter((_, at) => !takenRight.has(at)),
+    pairs: places.map(([row, column]) => [from[row], to[column]] as const),
+    leaving: from.filter((_, at) => !takenLeft.has(at)),
+    arriving: to.filter((_, at) => !takenRight.has(at)),
   };
+}
+
+/** Two typeset expressions paired glyph by glyph, with what neither answers kept
+ * apart. Marks that are not paths are left out, since a glyph is an outline. */
+export function matchGlyphs(from: readonly Mark[], to: readonly Mark[]): GlyphMatch {
+  return pairedByKey(glyphsOf(from), glyphsOf(to), (mark) => glyphToken(mark.id));
+}
+
+export interface MarkMatch {
+  /** Each mark of the group being left beside the mark it becomes. */
+  readonly pairs: readonly (readonly [Mark, Mark])[];
+  /** Marks of the group being left that nothing in the other answers. */
+  readonly leaving: readonly Mark[];
+  /** Marks of the group being arrived at that nothing in the first answers. */
+  readonly arriving: readonly Mark[];
+}
+
+/**
+ * Two groups of marks paired one to one, by key first and by order after.
+ *
+ * The key is paired as a longest common subsequence, so a key both groups carry
+ * pairs in the order the marks stand in and a repeated key pairs each of its
+ * occurrences once. The kind is part of what is matched on, since a path cannot
+ * walk into a string, so a path and a text mark carrying one key pair with
+ * nothing.
+ *
+ * What the key left over pairs by order within its own kind, which is what makes
+ * a group written by one hand walk into a group written by another: three shapes
+ * into two pairs the first two and leaves the third.
+ */
+export function matchMarks(
+  from: readonly Mark[],
+  to: readonly Mark[],
+  keyOf: (mark: Mark) => string | undefined
+): MarkMatch {
+  const named = pairedByKey(from, to, (mark) => {
+    const key = keyOf(mark);
+    return key === undefined ? undefined : `${mark.kind} ${key}`;
+  });
+  const spare = new Map<Mark['kind'], Mark[]>();
+  for (const mark of named.arriving) {
+    const queue = spare.get(mark.kind);
+    if (queue) queue.push(mark);
+    else spare.set(mark.kind, [mark]);
+  }
+  const pairs = [...named.pairs];
+  const leaving: Mark[] = [];
+  const taken = new Set<Mark>();
+  for (const mark of named.leaving) {
+    const partner = spare.get(mark.kind)?.shift();
+    if (partner === undefined) leaving.push(mark);
+    else {
+      pairs.push([mark, partner] as const);
+      taken.add(partner);
+    }
+  }
+  return { pairs, leaving, arriving: named.arriving.filter((mark) => !taken.has(mark)) };
 }

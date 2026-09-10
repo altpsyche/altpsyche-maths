@@ -1518,3 +1518,11 @@ that code. It runs at build time, and what a reader downloads is the outlines it
   - `pairs` — each glyph of the first expression beside the glyph of the second it becomes.
   - `leaving` — glyphs of the first expression that no glyph of the second matches.
   - `arriving` — glyphs of the second expression that no glyph of the first matches.
+- `matchMarks(from, to, keyOf)` — two groups of marks paired one to one, by key first and by order
+  after, where the key is read off each mark. The kind is part of what is matched on, so a path and a
+  text mark carrying one key pair with nothing, and what the key leaves over pairs by order within its
+  own kind.
+- `MarkMatch` — what that pairing found.
+  - `pairs` — each mark of the first group beside the mark of the second it becomes.
+  - `leaving` — marks of the first group that no mark of the second answers.
+  - `arriving` — marks of the second group that no mark of the first answers.

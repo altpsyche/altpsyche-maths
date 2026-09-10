@@ -237,5 +237,5 @@ export { typesetElement } from './figure/typeset.js';
 export type { EquationElement } from './figure/typeset.js';
 export { equationFromTex, equationNode, equationOf } from './figure/equation.js';
 export type { Equation, EquationBox, EquationOptions } from './figure/equation.js';
-export { glyphToken, matchGlyphs } from './figure/equation-match.js';
-export type { GlyphMatch } from './figure/equation-match.js';
+export { glyphToken, matchGlyphs, matchMarks } from './figure/equation-match.js';
+export type { GlyphMatch, MarkMatch } from './figure/equation-match.js';
