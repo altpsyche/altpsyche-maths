@@ -1,5 +1,16 @@
 import { describe, expect, it } from 'vitest';
-import { circle, colourFrom, morphGroup, pointAlong, vec2, type Mark, type PathMark, type TextMark } from '../index.js';
+import {
+  circle,
+  colourFrom,
+  interval,
+  lerpColour,
+  morphGroup,
+  pointAlong,
+  vec2,
+  type Mark,
+  type PathMark,
+  type TextMark,
+} from '../index.js';
 
 /**
  * One group of marks walked into another.
@@ -118,5 +129,109 @@ describe('a group morphing into a group', () => {
   it('changes nothing for a name matching nothing', () => {
     expect(morphGroup('fig/one', 'fig/nowhere')(marks, 0.5)).toEqual(marks);
     expect(morphGroup('fig/nowhere', 'fig/two')(marks, 0.5)).toEqual(marks);
+  });
+});
+
+const INK = colourFrom('#101820');
+const PEACH = colourFrom('#f4b183');
+
+/**
+ * The style of a paired mark walked with its geometry.
+ *
+ * What earns this is the swap at the end of the span: a mark that landed on its
+ * partner while still wearing its own colour would change colour in one frame.
+ */
+
+const painted = (id: string, at: number, colour: ReturnType<typeof colourFrom>, width: number): PathMark => ({
+  kind: 'path',
+  id,
+  path: circle(vec2(at, 0), 1),
+  fill: { colour },
+  stroke: { colour, width },
+});
+
+const styled: readonly Mark[] = [painted('fig/one/disc', 0, INK, 0.02), painted('fig/two/disc', 4, PEACH, 0.06)];
+
+const discAt = (along: number, marks: readonly Mark[] = styled): PathMark => {
+  const found = morphGroup('fig/one', 'fig/two')(marks, along).find((mark) => mark.id === 'fig/one/disc');
+  if (found === undefined || found.kind !== 'path') throw new Error('the disc is not a path in the list');
+  return found;
+};
+
+describe('a paired mark style walking', () => {
+  it('walks the fill and the stroke colour channel by channel', () => {
+    const half = discAt(0.5);
+    const middle = lerpColour(INK, PEACH, 0.5);
+    for (const channel of ['r', 'g', 'b', 'a'] as const) {
+      expect(half.fill?.colour[channel]).toBeCloseTo(middle[channel], 12);
+      expect(half.stroke?.colour[channel]).toBeCloseTo(middle[channel], 12);
+    }
+  });
+
+  it('walks the stroke width', () => {
+    expect(discAt(0.5).stroke?.width).toBeCloseTo(0.04, 12);
+    expect(discAt(0.25).stroke?.width).toBeCloseTo(0.03, 12);
+  });
+
+  it('wears its partner style at the end of the span, which is what the swap needs', () => {
+    const landed = discAt(1);
+    for (const channel of ['r', 'g', 'b', 'a'] as const) {
+      expect(landed.fill?.colour[channel]).toBeCloseTo(PEACH[channel], 12);
+      expect(landed.stroke?.colour[channel]).toBeCloseTo(PEACH[channel], 12);
+    }
+    expect(landed.stroke?.width).toBeCloseTo(0.06, 12);
+  });
+
+  it('walks a width given as a number against a taper entry by entry', () => {
+    const tapered: readonly Mark[] = [
+      { kind: 'path', id: 'fig/one/disc', path: circle(vec2(0, 0), 1), stroke: { colour: INK, width: 0.1 } },
+      {
+        kind: 'path',
+        id: 'fig/two/disc',
+        path: circle(vec2(4, 0), 1),
+        stroke: { colour: INK, width: { from: 0.2, to: 0.4, curve: 'easeIn' } },
+      },
+    ];
+    const width = discAt(0.5, tapered).stroke?.width;
+    if (typeof width !== 'object') throw new Error('the walked width is not a taper');
+    expect(width.from).toBeCloseTo(0.15, 12);
+    expect(width.to).toBeCloseTo(0.25, 12);
+    expect(width.curve).toBe('easeIn');
+  });
+
+  it('fades a fill only one of the pair carries', () => {
+    const alone: readonly Mark[] = [
+      painted('fig/one/disc', 0, INK, 0.02),
+      { kind: 'path', id: 'fig/two/disc', path: circle(vec2(4, 0), 1), stroke: { colour: INK, width: 0.02 } },
+    ];
+    expect(discAt(0.25, alone).fill?.colour.a).toBeCloseTo(0.75, 12);
+    expect(discAt(0.75, alone).fill?.colour.a).toBeCloseTo(0.25, 12);
+    expect(discAt(1, alone).fill?.colour.a).toBe(0);
+  });
+
+  it('walks its own opacity to the one its partner carries', () => {
+    const dimmer: readonly Mark[] = [
+      { ...painted('fig/one/disc', 0, INK, 0.02) },
+      { ...painted('fig/two/disc', 4, INK, 0.02), opacity: 0.4 },
+    ];
+    expect(discAt(0.5, dimmer).opacity).toBeCloseTo(0.7, 12);
+    expect(discAt(1, dimmer).opacity).toBe(0);
+  });
+
+  it('takes the winding rule and the clip of the mark it is walking onto after half', () => {
+    const cut: readonly Mark[] = [
+      { ...painted('fig/one/disc', 0, INK, 0.02), clip: { x: interval(-1, 1), y: interval(-1, 1) } },
+      {
+        ...painted('fig/two/disc', 4, INK, 0.02),
+        fill: { colour: PEACH, rule: 'evenodd' },
+        clip: { x: interval(3, 5), y: interval(-1, 1) },
+      },
+    ];
+    expect(discAt(0.4, cut).fill?.rule).toBeUndefined();
+    expect(discAt(0.6, cut).fill?.rule).toBe('evenodd');
+    expect(discAt(0.5, cut).clip?.x.from).toBeCloseTo(1, 12);
+    expect(discAt(0.5, cut).clip?.x.to).toBeCloseTo(3, 12);
+    expect(discAt(1, cut).clip?.x.from).toBeCloseTo(3, 12);
+    expect(discAt(1, cut).clip?.x.to).toBeCloseTo(5, 12);
   });
 });

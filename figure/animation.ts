@@ -22,9 +22,9 @@ import { matchGlyphs, matchMarks } from './equation-match.js';
 import { pointAlong } from './length.js';
 import { scaledWidth } from './width.js';
 import { transformFill } from './gradient.js';
-import { boundsOfMarks, centreOf, overlapOf } from './bounds.js';
+import { boundsOfMarks, centreOf, overlapOf, type Bounds } from './bounds.js';
 import { interval } from '../values/interval.js';
-import type { Colour, Mark, Stroke, TextMark } from './mark.js';
+import type { Colour, Fill, Mark, Stroke, TextMark, Width } from './mark.js';
 
 export type Animation = (marks: readonly Mark[], along: number) => readonly Mark[];
 
@@ -136,8 +136,67 @@ function relativeTo(id: string, target: string): string | undefined {
   return id.startsWith(`${target}/`) ? id.slice(target.length + 1) : undefined;
 }
 
+/** A width part way to another, where a number counts as a taper of one width
+ * the whole way, so a plain width and a taper walk entry by entry rather than
+ * one of them being refused. */
+function walkedWidth(from: Width, to: Width, along: number): Width {
+  if (typeof from === 'number' && typeof to === 'number') return lerp(from, to, along);
+  const ends = (width: Width) => (typeof width === 'number' ? { from: width, to: width } : width);
+  const one = ends(from);
+  const other = ends(to);
+  const curve = (along < 0.5 ? one : other).curve;
+  return { from: lerp(one.from, other.from, along), to: lerp(one.to, other.to, along), curve };
+}
+
+/** A fill part way to another. The colour walks channel by channel, and the
+ * gradient and the winding rule are the first fill's until half the span and the
+ * second's after, since a run of stops cannot be walked into a run of a different
+ * length. */
+function walkedPaint(from: Fill, to: Fill, along: number): Fill {
+  return { ...(along < 0.5 ? from : to), colour: lerpColour(from.colour, to.colour, along) };
+}
+
+/** A colour whose alpha is a share of what it was, which is how a fill or a
+ * stroke that only one of a pair carries arrives and leaves. Dropping it at half
+ * instead would make the paint appear or vanish in one frame. */
+function faded(colour: Colour, by: number): Colour {
+  return { ...colour, a: colour.a * by };
+}
+
+function walkedFill(from: Fill | undefined, to: Fill | undefined, along: number): Fill | undefined {
+  if (from === undefined) return to === undefined ? undefined : { ...to, colour: faded(to.colour, along) };
+  if (to === undefined) return { ...from, colour: faded(from.colour, 1 - along) };
+  return walkedPaint(from, to, along);
+}
+
+function walkedStroke(from: Stroke | undefined, to: Stroke | undefined, along: number): Stroke | undefined {
+  if (from === undefined) return to === undefined ? undefined : { ...to, colour: faded(to.colour, along) };
+  if (to === undefined) return { ...from, colour: faded(from.colour, 1 - along) };
+  return {
+    ...(along < 0.5 ? from : to),
+    colour: lerpColour(from.colour, to.colour, along),
+    width: walkedWidth(from.width, to.width, along),
+  };
+}
+
+/** The rectangle a paired mark is drawn inside part way to its partner's. A
+ * rectangle only one of the pair has is a rectangle the other has no wider
+ * answer to, since a mark with no clip is cut by nothing, so that one swaps at
+ * half. */
+function walkedClip(from: Bounds | undefined, to: Bounds | undefined, along: number): Bounds | undefined {
+  if (from === undefined || to === undefined) return along < 0.5 ? from : to;
+  return {
+    x: interval(lerp(from.x.from, to.x.from, along), lerp(from.x.to, to.x.to, along)),
+    y: interval(lerp(from.y.from, to.y.from, along), lerp(from.y.to, to.y.to, along)),
+  };
+}
+
 /**
  * One paired mark part way to the mark it becomes.
+ *
+ * The style walks with the geometry, which is what makes the swap at the end of
+ * a group morph show nothing: a mark that landed on its partner while still
+ * wearing its own colour would change colour in one frame at the handover.
  *
  * A string cannot be walked into another string, so a text mark walks its anchor
  * and its size and its text changes once, at half the span. Two strings drawn
@@ -145,15 +204,29 @@ function relativeTo(id: string, target: string): string | undefined {
  * avoid.
  */
 function walked(from: Mark, to: Mark, along: number): Mark {
+  const shared = {
+    opacity: lerp(from.opacity ?? 1, to.opacity ?? 1, along),
+    clip: walkedClip(from.clip, to.clip, along),
+  };
   if (from.kind === 'text' && to.kind === 'text') {
     return {
       ...from,
+      ...shared,
       at: vec2.lerp(from.at, to.at, along),
       size: lerp(from.size, to.size, along),
       text: along < 0.5 ? from.text : to.text,
+      fill: walkedPaint(from.fill, to.fill, along),
     };
   }
-  if (from.kind === 'path' && to.kind === 'path') return { ...from, path: lerpPath(from.path, to.path, along) };
+  if (from.kind === 'path' && to.kind === 'path') {
+    return {
+      ...from,
+      ...shared,
+      path: lerpPath(from.path, to.path, along),
+      fill: walkedFill(from.fill, to.fill, along),
+      stroke: walkedStroke(from.stroke, to.stroke, along),
+    };
+  }
   return from;
 }
 

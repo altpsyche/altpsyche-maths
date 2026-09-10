@@ -1167,8 +1167,11 @@ a group of that name.
 - `morphGroup(from, to)` — one group of marks walked into another, mark by mark, paired by the part
   of each mark's id under the target it sits under. At nothing the marks are the marks handed in, and
   at one the walking group is at nothing with the group arrived at standing at its own opacity, which
-  shows nothing because the two are coincident there. A paired text mark walks its anchor and its
-  size and its string changes once, at half the span.
+  shows nothing because the two are coincident there. A paired mark's style walks with its geometry:
+  the fill colour, the stroke colour, the stroke width, the opacity and the clip all reach the
+  partner's, a fill or a stroke only one of the pair carries walks its own alpha, and a gradient, a
+  winding rule and a dash are the first mark's until half the span and the second's after. A paired
+  text mark walks its anchor and its size and its string changes once, at half the span.
 - `countTo(target, from, to, write)` — a number ticking from one value to another, written into a
   text mark. How the value is written is the caller's, so a count of a length and a count of a
   population can round differently.
