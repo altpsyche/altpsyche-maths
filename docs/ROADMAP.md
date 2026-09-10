@@ -1219,6 +1219,11 @@ and cannot draw 4 of the 8 glyphs of `a^2 + b^2 = e^0`. A recording taken off a 
 is a recording with the holes filled in. The order of 2.6.0 and 2.7.0 is forced by that rather than
 chosen.
 
+**The seam this describes is written already, in the consumer, and the found list below carries the
+reading.** `FrameFiller` there is `fill(target, seconds, index, clipSeconds)` with `settle` and
+`dispose`, and its walk counts frames by a floor where `frameTimesOf` counts by a round. So the shape
+is taken rather than designed, and the two frame counts become one.
+
 **What a planning session settles first is whether `mediabunny` takes a frame that is not a canvas.**
 A raw sample path makes the sink independent of a page, and 2.9.0 then needs only a rasteriser that
 runs without one. A `CanvasSource` and nothing else makes that class the browser tie, and 2.9.0 gains a
@@ -1365,6 +1370,55 @@ written.
 - **A run of descent shows a short hook where it meets the region's edge.** The run seeded at
   `(-1.3, 0.3)` draws a bracket a few points long at its start on both solid sheets, which reads as a
   kink rather than as the run leaving the region. Found while cutting 0.13.0's step 10.
+
+- **The two packages disagree on which depth a projection writes, and 2.7.0 is where that lands.**
+  `values/mat4.ts` builds `perspective` with `(far + near) / (near - far)` and
+  `2 * far * near / (near - far)`, which puts clip-space depth between minus one and one. The engine
+  builds the same matrix with `far / (near - far)` and `near * far / (near - far)`, which puts it
+  between nothing and one, and that module says why: it is what WebGPU reads. Nothing measures the
+  difference today, because `figure/camera.ts` builds the matrix at an aspect of one, reads its x and
+  y alone, and takes depth from view space as a distance, where `transformPoint` divides by a `w` that
+  is the negated view depth under either convention. **What closes it** is this package writing the
+  range WebGPU reads, which moves no number any gate holds today and is a commit rather than a
+  version. **What it costs to leave** is a painter handing a projection to a card at 2.7.0 and a
+  figure keeping its depth at 3.0.0, both against a matrix built for the other convention.
+
+- **`Mat3` is one name and one shape with two meanings, and no compiler can tell them apart.** Here it
+  is a 2D affine transform, nine numbers column-major with the translation in the third column. In the
+  engine it is the upper-left three by three of a `Mat4`. Both are `readonly [number, number, number,
+  number, number, number, number, number, number]` behind two doors, so either is accepted where the
+  other is wanted with nothing reported. The consumer already holds one file importing both packages.
+  **What closes it** is a brand on one of the two, which is a change to a published type and wants the
+  engine's agreement rather than a session's.
+
+- **The value types are held twice and nothing holds the copies equal.** `vec3`'s `add`, `sub`,
+  `scale`, `dot`, `cross` and `normalize` are identical character for character in both packages, both
+  files carry the same note about naming a magnitude around `Function.length`, and `mat4` overlaps
+  nine functions of which only `multiply` is byte for byte the same. Roughly 200 lines are held twice
+  across 390 here and 240 there. **The duplication is forced rather than careless**: the engine has
+  zero runtime dependencies and never imports this package, and this package draws without an engine
+  installed, so it cannot reach those values outside the GPU painter's dynamic import. A third leaf
+  package or the engine as a peer would close it and both move a published surface, so neither belongs
+  in the 2.x band. **What belongs in 2.x is a parity gate**: a test here, over a dev-only copy of the
+  engine, holding the shared functions equal on random inputs to a tolerance, so drift fails a gate
+  instead of waiting for a painter. The finding above is what drift looks like when nothing gates it.
+
+- **The recorder's seam is written already, in the consumer, and 2.6.0 should take it rather than
+  invent one.** `lib/video/VideoRecorder.ts` is 232 lines and `components/figure/record.ts` is 77.
+  `FrameFiller` there is `fill(target, seconds, index, clipSeconds)` with `settle` and `dispose`,
+  which is the parameterised sink the 2.6.0 entry above argues for, in a tree that ships. Taking it
+  means `CanvasLike` in place of `CanvasRenderingContext2D`, which is what lets a canvas with no page
+  behind it satisfy the same seam at 2.9.0. **The walk has already drifted**: that file counts
+  `Math.floor(duration * fps)` frames where `frameTimesOf` counts `Math.max(1, Math.round(duration *
+  fps))`, so a figure of 1.999 seconds at 30 frames a second is 59 frames there and 60 here.
+
+- **Elapsed time becoming figure time is format semantics implemented in the consumer.**
+  `components/figure/clock.ts` holds a figure at its duration when it does not declare itself a loop
+  and wraps with a remainder when it does, and clamps a frame's delta to 0.1 seconds so a tab restored
+  after a minute away does not jump a lap. Both rules are about `duration` and `loop`, which are
+  fields of the format, and this package ships `durationOf` and `isLoop` and nothing that maps one
+  time to the other. 2.6.0's recorder needs the same rule, so writing it twice more is the thing to
+  avoid. **What closes it** is one function at this door, with the clamp named rather than inlined.
 
 
 ## Someday
