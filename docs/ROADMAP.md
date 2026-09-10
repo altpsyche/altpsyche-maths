@@ -1409,12 +1409,28 @@ are 1310 tests over 87 files and a door of 208 values and 240 types.
       and 10.30 for the solid with the reference included, and 4.49 and 0.82 without it. The suite is
       1339 tests over 88 files where it was 1331, and the door is 212 values and 241 types where it was
       211 and 241.
-- [ ] **4. Marks become a frame description, and nothing draws it.** `gpuFrame(marks, view, options)`
-      answers the engine's own frame description: one multisampled colour attachment of the painter's
-      own with a blend named, one pass, and the draws the marks batch into, with each colour as four
-      numbers. **Measurement:** the engine's own `resolve` and `cost`, which are pure, answering for
-      both demos, with the pass count, the draw count, the triangle count and the bytes of vertex data
-      quoted for each. This step needs no device and its whole claim is in `npm test`.
+- [x] **4. Marks become a frame description, and nothing draws it.** `gpuFrame(marks, view, options)`
+      answers the engine's own `FrameGraph`: one multisampled colour attachment of the painter's own
+      with a blend named, resolved into the texture the frame presents, and one pass. The colour is a
+      number per channel per vertex rather than four numbers per draw, which is what collapses the
+      marks into one draw: a mark's opacity is already in its alpha and its clip is already in its
+      triangles, so nothing of a mark survives as state a draw would carry, and the triangles sit in
+      the order the marks were painted in, which is the depth a figure has. Every gradient in both
+      demos has exactly two stops, and a colour changing affinely with position is interpolated
+      exactly across a triangle, so reading the axis at each vertex draws those gradients rather than
+      approximating them. A handle is the index of the thing it names and the engine's own builders are
+      erased to that index, so the description is built with no run-time import of the engine at all.
+      **Measured:** the flat demo at 5 seconds is 1481 triangles and 106632 bytes of vertex data with
+      23 marks refused, and the solid demo at 6 is 1637 triangles and 117864 bytes with 21 refused,
+      every refusal being a text mark. `cost` answers 1 pass, 1 draw, 0 dispatches, 1 pipeline switch,
+      1 bind switch, 0 attachment loads, 1 attachment store and 12960000 transient bytes for both,
+      which is 1080 by 600 at four bytes a pixel over four samples plus the resolve. `resolve` answers
+      webgpu where both are offered, webgl2 where only it is, and the refusal `no backend can draw a
+      wgsl frame: WebGPU returned no adapter on this device` where neither is, all inside `npm test`
+      with no device. `dist/figure/gpu-frame.js` names the engine nowhere and only its declaration
+      file does, in a type position that is erased at run time, so step 5's measurement is over the
+      built JavaScript rather than over every file. The suite is 1352 tests over 89 files where it was
+      1339 over 88, and the door is 213 values and 243 types where it was 212 and 241.
 - [ ] **5. The painter at the door.** `paintGpu(surface, marks, view)` loads the engine with `await
       import()`, builds the description of step 4 and submits it, the way `videoSink` loads the
       encoder. **Measurement:** the door count, and no file under `dist` naming `@altpsyche/engine`

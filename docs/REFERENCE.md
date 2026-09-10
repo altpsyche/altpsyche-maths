@@ -1406,6 +1406,21 @@ frame round a picture is a shape.
   triangles. A rectangle given either way round on either axis names the same box.
 - `triangleArea(corners)` — how much area a list of triangles covers, which is what a triangulation
   is held to.
+- `gpuFrame(marks, view, options)` — a list of marks as `@altpsyche/engine`'s own `FrameGraph`, which
+  is a value rather than a drawing. The geometry is triangles in clip space and the shade is a colour
+  per vertex, so a mark's opacity is in its alpha and its clip is in its triangles, and the whole
+  frame is one draw whose triangles sit in the order the marks were painted in. That order is what
+  carries depth, since a figure has none. The picture is drawn into a colour attachment of the
+  painter's own at four samples to the pixel and resolved into the texture the frame presents, because
+  a pass drawing straight into the frame the reader sees keeps one sample and may name no blend. The
+  WGSL is the authored truth and a baked GLSL pair sits beside it, so `resolve` answers WebGPU where
+  it is offered and WebGL 2 otherwise. Nothing here touches a device and nothing imports the engine at
+  run time.
+- `GpuFrameOptions` — the `width` and `height` in pixels that clip space is worked out against, the
+  four channels the frame `clear`s to, and the `tolerance` and `rule` of `TriangleOptions`.
+- `GpuFrame` — the `frame` the engine draws, how many `triangles` it is, how many `bytes` of vertex
+  data it carries, and the id of every mark it `refused`: a text mark, which a card has no vocabulary
+  for, and a dashed stroke, which is widened solid.
 
 ## Painters
 
