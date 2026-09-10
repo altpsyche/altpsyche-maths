@@ -22,7 +22,7 @@ import { gpuFrame, type GpuFrameOptions } from '../figure/gpu-frame.js';
 import { mat3, type Transform2D } from '../values/mat3.js';
 import { vec2 } from '../values/vec2.js';
 import type { Mark } from '../figure/mark.js';
-import type { FrameRenderer } from '@altpsyche/engine';
+import type { FrameGraph, FrameRenderer, WgslFrameGraph } from '@altpsyche/engine';
 
 /**
  * A canvas, named by the parts a renderer reads rather than taken from the DOM
@@ -77,6 +77,9 @@ export interface GpuPainting {
 interface Held extends GpuSurface {
   readonly renderer: FrameRenderer;
   readonly options: GpuSurfaceOptions;
+  /** The frame as the chosen backend takes it, which is the WGSL as written for
+   * WebGPU and the baked GLSL for WebGL 2. */
+  readonly asDrawn: (frame: FrameGraph) => FrameGraph;
 }
 
 /** Frame options for a canvas at the size it is now, since a canvas resized
@@ -141,11 +144,24 @@ export async function gpuSurface(
     return null;
   }
 
+  // The engine's `resolve` says WebGL 2 draws a WGSL frame that carries a baked
+  // translation, and its WebGL 2 backend refuses one by name: the translating is
+  // the caller's, through the engine's own `glslFrameOf`.
+  const asDrawn =
+    renderer.backend === 'webgl2'
+      ? (frame: FrameGraph) => {
+          const glsl = engine.glslFrameOf(frame as WgslFrameGraph);
+          if (!glsl) throw new Error('the frame carries no GLSL translation for WebGL 2 to draw');
+          return glsl;
+        }
+      : (frame: FrameGraph) => frame;
+
   const held: Held = {
     backend: renderer.backend,
     canvas,
     renderer,
     options,
+    asDrawn,
     dispose: () => renderer.dispose(),
   };
   return held;
@@ -160,18 +176,34 @@ function heldBy(surface: GpuSurface): Held {
 }
 
 /**
+ * What one backend cannot draw of a list of marks, beyond what the description
+ * itself leaves out.
+ *
+ * The WebGL 2 backend applies no blend: its whole module names `blend` nowhere,
+ * where the WebGPU one carries a pipeline's `targets[].blend` through. So a mark
+ * under partial opacity is written straight through there rather than mixed with
+ * what is behind it, and naming it is what keeps the difference from being
+ * silent.
+ */
+function unblended(surface: Held, marks: readonly Mark[]): string[] {
+  if (surface.backend !== 'webgl2') return [];
+  return marks.filter((mark) => mark.opacity !== undefined && mark.opacity < 1).map((mark) => mark.id);
+}
+
+/**
  * One list of marks drawn on a card, at the size the surface's canvas is now.
  *
  * What comes back is what the frame left out rather than the picture, since the
  * picture is on the canvas. A text mark is left out because a card has no text
- * vocabulary, and a dashed stroke is drawn solid.
+ * vocabulary, a dashed stroke is drawn solid, and on WebGL 2 a mark under partial
+ * opacity is drawn without its blend.
  */
 export function paintGpu(surface: GpuSurface, marks: readonly Mark[], view: Transform2D): GpuPainting {
   const held = heldBy(surface);
   const built = gpuFrame(marks, view, sizedFor(held.canvas, held.options));
   held.renderer.resize(held.canvas.width, held.canvas.height);
-  held.renderer.draw(built.frame, {});
-  return { refused: built.refused, triangles: built.triangles };
+  held.renderer.draw(held.asDrawn(built.frame), {});
+  return { refused: [...built.refused, ...unblended(held, marks)], triangles: built.triangles };
 }
 
 /**
@@ -190,6 +222,9 @@ export async function pixelsGpu(
   const held = heldBy(surface);
   const built = gpuFrame(marks, view, sizedFor(held.canvas, held.options));
   held.renderer.resize(held.canvas.width, held.canvas.height);
-  const pixels = await held.renderer.frame(built.frame, {});
-  return { pixels, painting: { refused: built.refused, triangles: built.triangles } };
+  const pixels = await held.renderer.frame(held.asDrawn(built.frame), {});
+  return {
+    pixels,
+    painting: { refused: [...built.refused, ...unblended(held, marks)], triangles: built.triangles },
+  };
 }

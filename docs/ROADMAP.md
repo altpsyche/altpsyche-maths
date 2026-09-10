@@ -1444,11 +1444,23 @@ are 1310 tests over 87 files and a door of 208 values and 240 types.
       import('@altpsyche/engine')`, which a test in the suite reads off the built files. The engine is
       already a peer at `^0.4.0`. The suite is 1357 tests over 90 files where it was 1352 over 89, and
       the door is 216 values and 247 types where it was 213 and 243.
-- [ ] **6. The gate that draws it.** `gates/gpu.mjs` opens Chromium through `playwright`, draws both
-      demos at a named time through the painter and through the SVG painter, and compares the two
-      pictures pixel by pixel. It is not part of `npm test`, and a card gate stands behind it the way
-      the engine's own does. **Measurement:** the share of pixels agreeing within a channel, the marks
-      the painter refused, and the time a frame takes to triangulate and draw.
+- [x] **6. The gate that draws it.** `gates/gpu.mjs` opens Chromium through `playwright` and draws
+      every committed figure at its own still time, through the painter and through the SVG painter,
+      and compares the two pictures pixel by pixel. It reads each figure twice: the whole figure, and
+      the figure with the marks the painter named as refused taken out, which is what measures this
+      painter rather than the backend under it. The floor is 97% of pixels within 8 of 255 against the
+      second reading. Three things the gate found are below in the found list, and the third is why
+      the two readings exist: the WebGL 2 backend applies no blend at all. **Measured:** all 8 figures
+      agree, on webgl2, since headless Chromium offers no WebGPU adapter and reports `MAX_SAMPLES` of
+      4. The flat demo at 7.86 seconds draws 159 of 182 marks into 1340 triangles in 27 milliseconds,
+      63 refused, and agrees over 95.08% of its pixels whole and 98.62% over its 96 drawable marks.
+      The solid demo at 5.24 seconds draws 301 of 322 into 1684 triangles in 28 milliseconds, none
+      refused, and agrees over 97.90%. `solids` is the largest at 1060 marks and 11117 triangles in 53
+      milliseconds and agrees over 98.70%. Doubling the frame to 2160 by 1200 lifted the flat demo's
+      whole reading from 95.08% to 96.18% rather than halving its disagreement, which is what said the
+      shortfall was a wrong colour over an area rather than an edge, and the probe that followed read
+      an interior pixel of a stroke at opacity 0.5 as 0,0,255,128 on the card against 127,127,255,255
+      on the page: the source written straight through, unblended.
 
 **Which step the demos gain from.** Step 6 is where both demos draw through a third painter, which is
 the row's cut-against, and steps 1 through 3 are measured against those demos' own marks at named
@@ -1472,6 +1484,26 @@ times.
 9. The version in `package.json` is 2.7.0 and the cut's commit states the door count.
 
 ## Found while working, not yet queued
+
+- **The WebGL 2 backend applies no blend, and `resolve` does not say so.** `gpu/webgl2.js` names
+  `blend` nowhere in the whole module, where `gpu/webgpu.js` carries a pipeline's `targets[].blend`
+  through, and `glslFrameOf` keeps `targets` on the pipelines it translates. So a frame naming a
+  source-over blend draws unblended there with no refusal: an interior pixel of a stroke at opacity
+  0.5 read 0,0,255,128 on the card against 127,127,255,255 on the page. Nothing in this package can
+  work around it, since the backend does no blending whatever factors are named and WebGL 2 has no
+  framebuffer fetch to blend in a shader. `paint/gpu.ts` names every mark under partial opacity as
+  refused on that backend so the difference is not silent. This belongs in the engine's own list, and
+  it is what a `blend` capability at its door would answer.
+- **The WebGL 2 backend refuses a WGSL frame that `resolve` says it can draw.** `selectBackend`
+  answers `webgl2` for a frame whose `authored` is `wgsl` when `translated` is true, and
+  `gpu/webgl2.js` then throws `WebGL 2 was handed a wgsl frame to draw`. The translating is the
+  caller's, through the engine's own `glslFrameOf`, and nothing at the door says so. `paint/gpu.ts`
+  calls it for that backend.
+- **Disposing a renderer loses a canvas for good.** The WebGL 2 backend's `dispose` calls
+  `WEBGL_lose_context.loseContext()`, and a canvas hands the same lost context back to the next
+  caller that asks it for one, where every `getParameter` then answers null. `gates/gpu.mjs` makes a
+  fresh canvas per figure. Whether a renderer should lose the context it was handed is the engine's
+  call.
 
 - **The engine's program cache is keyed on the vertex bytes, so a moving figure recompiles every
   frame.** `frameKey(frame)` in `pipeline/cache.js` serialises `frame.resources`, and a GPU painter

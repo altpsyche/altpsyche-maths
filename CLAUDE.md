@@ -187,12 +187,19 @@ nothing else.
 
 ```
 npm run gate:record   every committed figure recorded to a video file, in Chromium
+npm run gate:gpu      every committed figure drawn on a card and compared with the SVG painter
 ```
 
 **The recording gate needs a browser and writes into `recordings/`**, which is not committed.
 Encoding needs a WebCodecs `VideoEncoder` and rasterising needs a canvas, and Node has neither. The
 gate reads each file back afterwards in Node, since taking a container apart needs no encoder, so
 what it prints is how many pictures the file holds rather than how many the recorder handed over.
+
+**The GPU gate reads each figure twice and the floor is against the second reading.** The whole
+figure is one reading and the figure with the marks the painter named as refused taken out is the
+other, which is what measures this painter rather than the backend under it. An SVG rasteriser
+computes an edge pixel's coverage exactly where a card resolves four samples to five levels, so an
+edge differs by construction and a thin diagonal stroke is nearly all edge.
 
 **The comparison between two lists of marks is by tolerance and never by hash.** `Math.sin`,
 `Math.cos` and `Math.pow` are not specified to the last bit in JavaScript and differ between engines,

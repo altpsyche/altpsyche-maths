@@ -295,7 +295,10 @@ export function gpuFrame(marks: readonly Mark[], view: Transform2D, options: Gpu
     passes: [
       {
         pipeline,
-        draws: [{ vertices: count }],
+        // A pipeline naming its own geometry reads how many corners to draw off
+        // that vertex buffer, so a draw beside it names instances rather than a
+        // corner count of its own, which the backend refuses in a geometry pass.
+        draws: [{ instances: 1 }],
         colour: [
           {
             resource: multisampled,
