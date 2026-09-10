@@ -1424,9 +1424,28 @@ frame round a picture is a shape.
 
 ## Painters
 
-Both painters read the same list of marks and the same view matrix, so a picture on a page and a
-picture in a recording are the same picture.
+All three painters read the same list of marks and the same view matrix, so a picture on a page, a
+picture in a recording and a picture on a card are the same picture.
 
+- `gpuSurface(canvas, options?)` — a card with a renderer on it, or nothing where no backend can
+  draw one. It loads `@altpsyche/engine` with `await import()`, so a consumer who never draws on a
+  card never loads a renderer. The engine's door hands out a renderer for a backend the caller has
+  already chosen, so the choosing is here: a device is asked for, the two backends' capabilities are
+  read off what came back, and the engine's own `resolve` answers which one draws. Making a renderer
+  is asked for once and drawing per frame, since a renderer compiles shaders and owns card memory.
+- `GpuSurfaceOptions` — the four channels each frame `clear`s to, the `tolerance` a curve is flattened
+  to, a `backend` where the caller has already chosen one, and `onRefused` for the engine's own words
+  when it turns a frame down.
+- `GpuCanvas` — a canvas named by the parts a renderer reads, its `width`, its `height` and its
+  `getContext`, so this package declares no browser library.
+- `GpuSurface` — the `backend` the frames go through, the `canvas` they land on, and `dispose`.
+- `paintGpu(surface, marks, view)` — one list of marks drawn on a card, at the size the surface's
+  canvas is now. What comes back is a `GpuPainting` rather than a picture, since the picture is on the
+  canvas.
+- `pixelsGpu(surface, marks, view)` — the same frame drawn and read back as `pixels`, four bytes to a
+  pixel, which is what lets a claim about what a device draws be checked against what the SVG painter
+  draws.
+- `GpuPainting` — how many `triangles` the frame was, and the id of every mark it `refused`.
 - `svgMarkup(marks, view, width, height, options?)` — a whole `<svg>` as text, for a page that has
   not run any script yet. It carries no width or height of its own and only a view box, so the
   element around it decides how big it is.

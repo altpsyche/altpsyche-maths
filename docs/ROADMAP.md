@@ -1431,10 +1431,19 @@ are 1310 tests over 87 files and a door of 208 values and 240 types.
       file does, in a type position that is erased at run time, so step 5's measurement is over the
       built JavaScript rather than over every file. The suite is 1352 tests over 89 files where it was
       1339 over 88, and the door is 213 values and 243 types where it was 212 and 241.
-- [ ] **5. The painter at the door.** `paintGpu(surface, marks, view)` loads the engine with `await
-      import()`, builds the description of step 4 and submits it, the way `videoSink` loads the
-      encoder. **Measurement:** the door count, and no file under `dist` naming `@altpsyche/engine`
-      outside a dynamic import except the maths door the arithmetic already uses.
+- [x] **5. The painter at the door.** The plan wrote this as one call and it is three, because a
+      renderer compiles shaders and owns card memory, so making one is asked for once and drawing per
+      frame where the other two painters are one call each. `gpuSurface(canvas, options)` loads the
+      engine with `await import()` and answers a card or nothing; `paintGpu(surface, marks, view)`
+      draws one frame; `pixelsGpu(surface, marks, view)` draws one and reads it back, which is what
+      step 6's comparison needs. The backend choosing is here rather than in the engine, which is that
+      package's finding A: its door hands out a renderer for a backend already chosen, so a device is
+      asked for, the two backends' capabilities are read off what came back, and the engine's own
+      `resolve` answers which draws. **Measured:** `dist/paint/gpu.js`, `dist/figure/gpu-frame.js` and
+      `dist/index.js` carry no static import of `@altpsyche/engine` and the painter carries `await
+      import('@altpsyche/engine')`, which a test in the suite reads off the built files. The engine is
+      already a peer at `^0.4.0`. The suite is 1357 tests over 90 files where it was 1352 over 89, and
+      the door is 216 values and 247 types where it was 213 and 243.
 - [ ] **6. The gate that draws it.** `gates/gpu.mjs` opens Chromium through `playwright`, draws both
       demos at a named time through the painter and through the SVG painter, and compares the two
       pictures pixel by pixel. It is not part of `npm test`, and a card gate stands behind it the way
@@ -1463,6 +1472,21 @@ times.
 9. The version in `package.json` is 2.7.0 and the cut's commit states the door count.
 
 ## Found while working, not yet queued
+
+- **The engine's program cache is keyed on the vertex bytes, so a moving figure recompiles every
+  frame.** `frameKey(frame)` in `pipeline/cache.js` serialises `frame.resources`, and a GPU painter
+  puts its geometry in a `VertexResource`'s `data`, so every frame of an animation is a new key. The
+  renderer's own `WeakMap` misses too, since `gpuFrame` answers a fresh object per call. Reading the
+  code says a program is compiled per frame and 106632 bytes are serialised per frame for the flat
+  demo; what it costs is unmeasured, because measuring it needs a card. What would fix it here is
+  geometry the frame names rather than carries, and the engine's `VertexResource.source` is the field
+  that would name it. Nothing in 2.7.0 depends on the answer, since the version's claim is what a
+  frame draws rather than how fast a run of them draws.
+- **`createFrameRenderer` throws where its own signature answers nothing.** Its return type is
+  `Promise<FrameRenderer | null>`, and `createWebGL2Backend` calls `canvas.getContext('webgl2', …)`
+  with no guard, so a canvas with no such method throws a `TypeError` out of the call rather than
+  giving back the `null` the type promises. `paint/gpu.ts` turns the throw back into the nothing it
+  promises its own caller. This belongs in the engine's own list.
 
 - **The specification writes `ticks` as a step and the code reads it as a count.** `SPECIFICATION.md`
   says `ticks` is the step between two ticks in graph units for a number line, and the major step for
