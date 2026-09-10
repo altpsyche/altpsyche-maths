@@ -1176,6 +1176,11 @@ a group of that name.
     distance from the middle of the box to its corner unless named, so the rays sit outside the
     thing they point at.
   - `inner` — where the near end of a ray sits, as a share of the reach.
+- `showPassingFlash(target, options)` — a light travelling the length of a path and gone. A text mark
+  carries no path for it to run along and is passed over.
+- `PassingFlashOptions` — what a passing flash takes.
+  - `stroke` — how the light is drawn.
+  - `covers` — how much of the path the light covers at once, as a share of the path's own length.
 - `circumscribe(target, options)` — a shape drawn round something and then let go. The first half of
   the span draws it on and the second half fades it, so one span is the whole gesture.
 - `CircumscribeOptions` — what it takes.

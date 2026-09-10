@@ -1206,12 +1206,14 @@ figure names one number and the animation derives the rest.
   a circle, which is twice what a trim from the start reads on the same paths, 1.359e-4 and 9.589e-6,
   because a window cuts at two ends and a trim cuts at one. The window at 0 to 1 is the path itself
   untouched, and both its ends sit on `pointAlong` at the same fraction to twelve places.
-- [ ] **2. `showPassingFlash` is an animation.** `figure/animation.ts` gains a light travelling the
-  target's path: a mark that is a window of that path, its near edge running from the start to the
-  end over the span, at no width at both ends so the list of marks has the same ids whichever way the
-  clock came. **The measurement**: the midpoint of the window at five fractions of the span against
-  the point at the matching fraction of the path's length; the window's length against the share of
-  the path asked for; and the mark count at 0 and at 1, which is the count the target already had.
+- [x] **2. `showPassingFlash` is an animation.** `figure/animation.ts` gains a light travelling the
+  target's path: a mark that is a window of that path, its near edge running from behind the start to
+  past the end over the span, holding no path at both ends so the list of marks has the same ids
+  whichever way the clock came. **The measurement**: the share of the path the light covers, asked
+  for as 0.2 and read at 0.000000, 0.120039, 0.200062, 0.200078, 0.200062, 0.120039 and 0.000000 at
+  seven fractions of the span, so it enters at one end and leaves at the other rather than appearing
+  whole. Both edges of the light sit on `pointAlong` at the fraction the window was cut at to six
+  places, the list holds the same two marks at every fraction, and a text mark is passed over.
 - [ ] **3. `wave` is an animation.** The points of the target displaced along a direction, the
   displacement a sine of how far across the shape a point sits, gated by a band travelling across it,
   and every point back where it started at both ends of the span. **The measurement**: the furthest
@@ -1261,7 +1263,8 @@ first of the eight that draws. Steps 1 through 6 are what it is written from, wh
 - `showPassingFlash`, `wave`, `wiggle` and `write` are at the door with their options types, and each
   hands back an `Animation`.
 - Each of the four leaves the marks it was handed at 0 and at 1, compared by tolerance, so the same
-  ids stand at both ends of every span.
+  ids stand at both ends of every span, which for a light is a mark holding no path rather than a
+  mark that is gone.
 - A typeset rule under `write` draws one glyph after another, which the suite shows by the lengths two
   glyphs carry at a third of the span.
 - A plain text mark under `write` is swept behind a clip whose near edge is read off the mark's own

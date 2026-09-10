@@ -16,7 +16,7 @@ import { lerp } from '../values/scalar.js';
 import { thereAndBack } from '../values/ease.js';
 import { lerpColour } from '../values/colour.js';
 import { circle, line, polygon, transformPath, type Path } from './path.js';
-import { trimPath } from './trim.js';
+import { pathWindow, trimPath } from './trim.js';
 import { lerpPath } from './morph.js';
 import { matchGlyphs } from './equation-match.js';
 import { pointAlong } from './length.js';
@@ -413,6 +413,44 @@ export function flash(target: string, options: FlashOptions): Animation {
       });
     }
     return [...marks, ...rays];
+  };
+}
+
+export interface PassingFlashOptions {
+  stroke: Stroke;
+  /** How much of the path the light covers at once, as a share of the path's own
+   * length. */
+  covers?: number;
+}
+
+/**
+ * A light travelling the length of a path and gone.
+ *
+ * The window runs from behind the start to past the end, so the light enters at
+ * one end and leaves at the other rather than appearing whole and vanishing
+ * whole. It is in the list at every fraction of the span and holds no path at
+ * both ends, for the reason a flash keeps its rays: a mark that arrives between
+ * one frame and the next turns up in a comparison between two frames as
+ * something that changed.
+ *
+ * A text mark carries no path for a light to run along and is passed over.
+ */
+export function showPassingFlash(target: string, options: PassingFlashOptions): Animation {
+  const covers = Math.min(1, Math.max(0, options.covers ?? 0.2));
+  return (marks, along) => {
+    const far = along * (1 + covers);
+    const lit: Mark[] = [];
+    for (const mark of marks) {
+      if (!touches(mark.id, target) || mark.kind === 'text') continue;
+      lit.push({
+        kind: 'path',
+        id: `${mark.id}/passing`,
+        path: pathWindow(mark.path, far - covers, far),
+        stroke: options.stroke,
+        clip: mark.clip,
+      });
+    }
+    return lit.length === 0 ? marks : [...marks, ...lit];
   };
 }
 
