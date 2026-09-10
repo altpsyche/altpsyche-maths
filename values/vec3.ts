@@ -2,52 +2,23 @@
  * Points and directions in space, for the values a figure carries that are not
  * positions on the page, such as a colour or a direction being explained.
  *
- * The names and the shape match the engine's own vectors exactly, so the two
- * can be merged later without either side converting.
+ * The arithmetic is the engine's, imported from the door that package declares
+ * for it, so the two hold one implementation rather than two that agree until
+ * one of them moves. Two copies is how a projection here came to write clip
+ * depth into a range that one never wrote.
+ *
+ * That door carries the arithmetic alone, so a consumer that never draws on a
+ * card loads one file of it and no renderer. The family is rebuilt here rather
+ * than added to, since adding a name to the imported object would change it for
+ * everything else holding it.
  */
+import { vec3 as spatial, type Vec3 } from '@altpsyche/engine/maths';
 import { lerp as lerpNumber } from './scalar.js';
 
-export type Vec3 = { x: number; y: number; z: number };
+export type { Vec3 };
 
-function makeVec3(x: number, y: number, z: number): Vec3 {
-  return { x, y, z };
-}
-
-function add(a: Vec3, b: Vec3): Vec3 {
-  return { x: a.x + b.x, y: a.y + b.y, z: a.z + b.z };
-}
-
-function sub(a: Vec3, b: Vec3): Vec3 {
-  return { x: a.x - b.x, y: a.y - b.y, z: a.z - b.z };
-}
-
-function scale(v: Vec3, s: number): Vec3 {
-  return { x: v.x * s, y: v.y * s, z: v.z * s };
-}
-
-function dot(a: Vec3, b: Vec3): number {
-  return a.x * b.x + a.y * b.y + a.z * b.z;
-}
-
-function cross(a: Vec3, b: Vec3): Vec3 {
-  return {
-    x: a.y * b.z - a.z * b.y,
-    y: a.z * b.x - a.x * b.z,
-    z: a.x * b.y - a.y * b.x,
-  };
-}
-
-function length(v: Vec3): number {
-  return Math.sqrt(dot(v, v));
-}
-
-/** A zero-length vector normalises to zero rather than to not-a-number. */
-function normalize(v: Vec3): Vec3 {
-  const len = length(v);
-  if (len === 0) return { x: 0, y: 0, z: 0 };
-  return scale(v, 1 / len);
-}
-
+/** Part way from one point to another, which the engine's family has no call
+ * for and every animation here does. */
 function lerp(a: Vec3, b: Vec3, along: number): Vec3 {
   return {
     x: lerpNumber(a.x, b.x, along),
@@ -56,14 +27,21 @@ function lerp(a: Vec3, b: Vec3, along: number): Vec3 {
   };
 }
 
-export const vec3 = Object.assign(makeVec3, {
-  ZERO: makeVec3(0, 0, 0),
-  add,
-  sub,
-  scale,
-  dot,
-  cross,
-  magnitude: length,
-  normalize,
+/**
+ * The vector calls under one name, so a call site says which kind of thing it is
+ * reading.
+ *
+ * The magnitude is not called `length`: a function's own `length` is how many
+ * arguments it takes, it is not writable, and assigning one throws.
+ */
+export const vec3 = Object.assign((x: number, y: number, z: number): Vec3 => spatial(x, y, z), {
+  add: spatial.add,
+  sub: spatial.sub,
+  scale: spatial.scale,
+  dot: spatial.dot,
+  cross: spatial.cross,
+  magnitude: spatial.magnitude,
+  normalize: spatial.normalize,
+  ZERO: spatial(0, 0, 0),
   lerp,
 });

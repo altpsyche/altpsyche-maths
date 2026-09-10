@@ -170,6 +170,13 @@ inside the band are bookkeeping while nothing is published, and the ladder's own
 the format rather than of the door, so the two are different axes and the release decides which
 number the break takes.
 
+**Landed on 2026-09-10: this package imports the arithmetic and holds no copy of it.**
+`@altpsyche/engine` is a peer dependency at `^0.4.0`, `values/vec3.ts` and `values/mat4.ts` import
+`Vec3`, `Mat4` and the moves every renderer has from `@altpsyche/engine/maths`, and what is written
+here is what that family has no call for: a projection taking its parameters by name, the parallel one
+beside it, a direction carried without the translation or the divide, and a point walked part way to
+another. 219 lines went and 84 arrived. The rest of this entry is the reasoning that got there.
+
 **The band ends with this package importing the engine rather than copying it.** The third decision
 above already says `@altpsyche/engine` is a dependency and the GPU painter loads it with
 `await import()`. What that decision did not say is where the value types live, and today they live in

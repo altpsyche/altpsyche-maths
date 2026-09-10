@@ -391,6 +391,15 @@ function, so importing the door reaches none of it and a consumer drawing figure
 typesetting pays nothing. Written as a static import instead, 41 MB of CommonJS would sit in the
 graph of every consumer that draws a circle. The cost is that typesetting returns a promise.
 
+**The engine is a peer dependency and the arithmetic in space is imported from it**, rather than
+written here a second time. Two copies of one implementation agree until one of them moves, which is
+what happened: the projection here wrote clip depth into a range that the renderer never wrote, and
+nothing caught it because nothing compared them. What is imported is `Vec3` and `Mat4` from the door
+that package declares for its arithmetic, which is one file with no renderer behind it. The flat
+transform is not imported: `Transform2D` here is an affine transform of the plane and the general
+three by three of the same nine numbers is published there, so one name for the two would be a type
+accepted wherever either is wanted.
+
 ## Reduced motion
 
 A reader who has asked their system to reduce motion receives one still time rather than a loop, and

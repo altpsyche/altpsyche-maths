@@ -44,8 +44,11 @@ its marks against what the demo draws.
 npm install @altpsyche/maths
 ```
 
-Node 20 or newer, ESM, `sideEffects: false`. The single runtime dependency is MathJax, reached by a
-dynamic import inside `typesetElement`, so a figure containing no equations never loads its 41 MB.
+Node 20 or newer, ESM, `sideEffects: false`. MathJax is a runtime dependency reached by a dynamic
+import inside `typesetElement`, so a figure containing no equations never loads its 41 MB.
+`@altpsyche/engine` is a peer dependency, which a package manager installs alongside this one: the
+vectors and matrices in space are imported from the door it declares for its arithmetic, which is one
+file and no renderer, and the GPU painter reaches the rest of it by a dynamic import of its own.
 
 ## A complete figure
 
