@@ -1267,13 +1267,18 @@ answer** is a cross-fade of the two, which costs that ghost.
   to marks `sameMarks` holds equal to the call's own; the checker refuses a second name that is a
   number with `timeline.spans.0.entry.to is text and is 4`; and every kind a span may carry is 19
   entries rather than 18. 1278 tests over 85 files before, 1280 after.
-- [ ] **5. The boolean demo's three panels morph into one another.** `demos/boolean.ts` gains two spans
-  after the walk, the union panel onto the intersection panel and then the intersection panel onto the
-  difference panel, and `TIMES` gains the middle of each morph and the handover between them. **The
-  measurement**: the demo's marks at those three times; the four cases the strip already shows, whose
-  marks are unchanged because every new span is at nothing over the whole of the walk; and the strip's
-  six frames over three rows, with `docs/boolean.svg` regenerating byte for byte and
-  `demos/boolean.figure.json` carrying two more spans.
+- [x] **5. The boolean demo's three panels walk into one another.** `demos/boolean.ts` gained two
+  spans of 1.4 seconds meeting where the first hands over, the union panel onto the intersection panel
+  and then the intersection panel onto the difference panel, with the walker coming back to the middle
+  of the still disc first: at the end of the walk the discs are clear, where the intersection is empty
+  and an empty path is aligned by collapsing the other onto the origin. **The measurement**: the union
+  answer's box at the middle of the first span is centred half a panel across and its caption reads
+  `union` 0.2 seconds before that middle and `intersection` 0.2 after; at the seam every union mark is
+  at nothing, every intersection mark at its own opacity, and the two answers' points agree at five
+  fractions of the length to 1e-9; the second span's shape carries the two loops of the ring it walks
+  onto, centred half a panel the other side; the demo runs 12.64 seconds against 7.74 over 11 spans
+  against 9; and the strip is six frames over three rows at 1036 by 600 against 1555 by 600, with
+  `docs/boolean.svg` regenerating byte for byte. 1280 tests over 85 files before, 1281 after.
 - [ ] **6. The guide, the format's reasoning, and 2.5.0 cut.** `docs/GUIDE.md` gains the section that
   morphs one group into another, `docs/FIGURE-FORMAT.md` carries why the pairing is by name rather than
   by shape, and the version is bumped in that commit. `docs/REFERENCE.md` and `docs/SPECIFICATION.md`
