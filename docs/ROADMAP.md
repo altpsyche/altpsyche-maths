@@ -1306,6 +1306,15 @@ format a recorder reads a file, which is also what lets one run without a page a
 
 ## Found while working, not yet queued
 
+- **Two demo tests run within half a second of vitest's default timeout.** `the portrait demo > draws
+  the spirals the flow itself walks` takes 4550ms and `the committed pictures > give each figure room
+  for the sizes its own scale asks for` takes 3990ms, against the 5000ms a test gets when nothing
+  names a timeout, and `vitest.config.ts` names none. One suite run in ten failed one test on an
+  unchanged tree on 2026-09-10 and nine runs since have passed, which is what a test half a second
+  inside the limit looks like on a machine doing something else. **What closes it** is either a
+  `testTimeout` in the config or the two tests reading fewer times of their figures, and the second is
+  the better answer if what makes them slow is re-resolving one figure at many times.
+
 - **The specification writes `ticks` as a step and the code reads it as a count.** `SPECIFICATION.md`
   says `ticks` is the step between two ticks in graph units for a number line, and the major step for
   a number plane. `tickStep(bounds, about)` divides the span by one less than that number and rounds
