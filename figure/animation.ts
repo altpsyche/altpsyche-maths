@@ -243,6 +243,37 @@ export function scale(target: string, to: number, options: ScaleOptions = {}): A
   });
 }
 
+/** The matrix a map has reached partway along, taken entry by entry from the
+ * identity, which is what makes the entries beside the picture the numbers it is
+ * counting to. */
+function blended(m: Mat3, along: number): Mat3 {
+  const from = mat3.IDENTITY;
+  return from.map((entry, at) => lerp(entry, m[at], along)) as unknown as Mat3;
+}
+
+/**
+ * A linear map carried over the marks it names, reached entry by entry.
+ *
+ * The pivot is the origin of the figure's units rather than the middle of the
+ * box round the marks, which is what `rotate` and `scale` take. A linear map is
+ * defined about the origin, and a grid whose box centre sits elsewhere would be
+ * mapped about the wrong point and slide as it deformed.
+ *
+ * Interpolating the entries is what the picture needs and it is not a turn. The
+ * determinant halfway to a turn by an angle is `(1 + cos angle) / 2`, so a
+ * quarter turn halves the area on the way and a half turn flattens every point
+ * onto one line. A figure that wants the turn itself asks `rotate`, which
+ * interpolates the angle and holds the area at 1.
+ */
+export function applyMatrix(target: string, m: Mat3, options: AboutOptions = {}): Animation {
+  const pivot = options.pivot ?? vec2(0, 0);
+  return (marks, along) => {
+    if (along === 0) return marks;
+    const through = around(pivot, blended(m, along));
+    return marks.map((mark) => (touches(mark.id, target) ? carried(mark, through) : mark));
+  };
+}
+
 /**
  * Carried along a path at a steady pace, by length rather than by piece.
  *

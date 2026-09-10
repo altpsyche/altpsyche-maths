@@ -1200,13 +1200,17 @@ point.
   x -3 and 0; the header rule is 0.2 wide against the 0.1 of the rule it stands in place of; and a row
   aligned start, middle and end places its cells at -4.75, -1.5 and 4.75. The suite runs 1185 tests
   over 75 files, up from 1173 over 74.
-- [ ] **3. `applyMatrix` is an animation.** `figure/animation.ts` gains the linear map carried over the
+- [x] **3. `applyMatrix` is an animation.** `figure/animation.ts` gains the linear map carried over the
   marks it names, interpolated entry by entry from the identity, about the origin of the figure's
   units unless the figure names a pivot. **The measurement**: the determinant halfway through a
   quarter turn, which is 0.500000 entry by entry against 1 through `rotate`, and 0.000000 halfway
   through a half turn; the two ends of a grid line against the map's own image of them, which is exact
   because a linear map takes a straight line to a straight line and the line carries two points; and
-  the area of a mapped unit square against the determinant at five times along the span.
+  the area of a mapped unit square against the determinant at five times along the span. **Measured**:
+  a unit square halfway to a quarter turn encloses 0.5 against the 1 `rotate` holds, and halfway to a
+  half turn encloses 0; every corner of a sheared square lands on the map's own image of it exactly,
+  compared by equality rather than by tolerance; and the area matches the determinant it has reached
+  at 0, 0.25, 0.5, 0.75 and 1 to 1e-12. The suite runs 1194 tests over 76 files, up from 1185 over 75.
 - [ ] **4. The three are in the format.** `NodeRecord` gains `matrix` and `table`, `AnimationRecord`
   gains `applyMatrix`, `figure-check.ts` holds all three, and each reads back to the call it was
   written from. **The measurement**: the members of `NodeRecord`, 28 today and 30 after; the members of

@@ -1128,6 +1128,11 @@ a group of that name.
 - `scale(target, to, options)` — grown or shrunk about a point, from one factor to another.
 - `ScaleOptions` — `AboutOptions`, plus:
   - `from` — what it is scaled by at the start of the span, which is its own size.
+- `applyMatrix(target, m, options)` — a linear map carried over the marks it names, reached entry by
+  entry from the identity. Its pivot is the origin of the figure's units rather than the middle of the
+  box round the marks, since a linear map is defined about the origin. The determinant halfway to a
+  turn by an angle is `(1 + cos angle) / 2`, so a quarter turn halves the area on the way and a half
+  turn flattens every point onto one line. A figure that wants the turn itself asks `rotate`.
 - `growFrom(target, from)` — grown from nothing at a point. Left out, the point is the middle of the
   box round the marks. At the end of the span it is the marks themselves rather than the marks
   rebuilt through a transform, so a finished growth leaves the geometry the author wrote.
