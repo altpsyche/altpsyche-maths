@@ -519,6 +519,10 @@ README that plays a video on load is a README nobody can read.
 
 ## Now
 
+**The 2.x band publishes once, at its end**, which is Siva's call of 2026-09-11 and is now a rule in
+`CLAUDE.md`. 2.0.0 is what `npm view @altpsyche/maths version` answers, six versions are cut behind
+it, and a session cuts the next one and stops rather than asking to release it.
+
 **2.6.0 is cut and unpublished, and its nine done-criteria are verified line by line in the cut's own
 commit.** A figure goes out as a video file. `recordFigure` walks a figure and paints each frame onto
 a sink, `FrameSink` is that sink, `videoSink` is the one that encodes with `mediabunny` behind a

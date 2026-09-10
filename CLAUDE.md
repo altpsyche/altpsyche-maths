@@ -224,6 +224,10 @@ path. The consumer holds itself to that with a test of its own.
 tree. Publishing is public and cannot be taken back, so it is asked for rather than assumed, and the
 version goes to Siva when it is not obvious which half of the convention applies.
 
+**The 2.x band publishes once, at its end.** Siva's call on 2026-09-11. 2.0.0 is what npm answers and
+2.1.0 through 2.6.0 are cut and unpublished, so a session cuts a version and stops there rather than
+asking to release it. What reaches npm next is the version the band closes on.
+
 **The consumer moves after the release, never before.** To see an unreleased change on the site,
 `npm pack` here and `npm install --no-save` the tarball there, and never commit the site with that
 installed: its manifest would name a version that is not what the gates measured.
