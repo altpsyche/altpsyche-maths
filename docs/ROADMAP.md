@@ -278,7 +278,7 @@ are left, since 2.1.0 through 2.5.0 are cut.
 | 2.6.0 | the recorder: a figure out as a video file | nothing in the format, and a name at the door | to plan | every demo as a file on disk rather than a strip of frames | `mediabunny`, which the consumer already records with | to plan |
 | 2.7.0 | the GPU painter | nothing in the format, and a name at the door | to plan | both demos through a third painter, mark for mark against the SVG painter | `@altpsyche/engine`, with its item 2 landed, declared as a peer | to plan |
 | 2.8.0 | dashes and quadratics drawn on a GPU | nothing; `Stroke.dash` is already in the mark and no painter draws it | to plan | a dashed figure, and the strip that shows it moving | `@altpsyche/engine` | to plan |
-| 2.9.0 | text on a GPU, and the recorder running without a page | nothing in the format | to plan | every demo recorded off a card | `@altpsyche/engine`, a source of glyph outlines, and 2.6.0 | to plan |
+| 2.9.0 | text on a GPU, and the recorder running without a page | nothing in the format | to plan | every demo recorded off a card | `@altpsyche/engine`, a source of glyph outlines, 2.6.0, and a canvas with no page behind it if `mediabunny` takes nothing else | to plan |
 | 3.0.0 | depth, so a figure in space keeps it | what a `Mark` may ask for, which breaks the format's own version | to plan | the solid demo, whose crossing curve is drawn in the right order rather than the tree's | `@altpsyche/engine`, and the fourth decision above | blocked on a decision |
 | 3.1.0 | a clip that is a path rather than a rectangle | what a `Mark` may ask for | to plan | nothing yet, which is why it is last of the marks | `@altpsyche/engine`'s counting stencil, its item 2 | to plan |
 | 4.0.0 | a figure a reader can act on | the shape of `Figure`, which gains input | to plan | nothing yet | nothing outside this package | to plan |
@@ -1196,6 +1196,35 @@ animation. This is the largest single distance between this package and Manim, w
 from a command. The third decision above already says the recorder lives here behind a dynamic
 import. **It goes after 2.0.0 rather than before** because a recorder reads a figure, and after the
 format a recorder reads a file, which is also what lets one run without a page around it.
+
+**The recorder is three parts and only one of them is written here.** Siva's reading on 2026-09-10,
+so a planning session starts from it. The walk exists: `framesOf` yields `{index, seconds, marks,
+view}` and `frameTimesOf` gives the times before anything is drawn. What turns a frame into pixels is
+a parameter, and `paintCanvas(context: CanvasLike, marks, view)` already takes a structural
+`CanvasLike` rather than a browser type, so a page's canvas, a canvas shim with no page and 2.7.0's
+GPU painter all satisfy one seam. What writes the bytes is a second parameter, and `mediabunny` behind
+a dynamic import is the first one rather than the only shape allowed. **What this buys** is that 2.7.0
+adds a pixel source, 2.9.0 adds a sink and a source that needs no page, and the recorder itself
+changes no line. A recorder that named its own canvas and its own encoder would be rewritten twice,
+which is what took four renderer versions off this ladder.
+
+**The sink being a parameter is also how the recorder is gated without a device.** A sink that counts
+the frames it is handed and the timestamp on each is pure, so the frame count, a step of exactly one
+over the rate, and the walk stopping strictly before the duration are all held by `npm test`. Only the
+bytes need a browser gate, which is the rule this repository already holds a claim about pixels to.
+
+**Bringing the engine in at this version is refused, and the engine's own gap is why.** Its stencil
+cannot count a winding number, filed there as its item 2, so the GPU painter cannot draw an annulus
+and cannot draw 4 of the 8 glyphs of `a^2 + b^2 = e^0`. A recording taken off a card before that lands
+is a recording with the holes filled in. The order of 2.6.0 and 2.7.0 is forced by that rather than
+chosen.
+
+**What a planning session settles first is whether `mediabunny` takes a frame that is not a canvas.**
+A raw sample path makes the sink independent of a page, and 2.9.0 then needs only a rasteriser that
+runs without one. A `CanvasSource` and nothing else makes that class the browser tie, and 2.9.0 gains a
+canvas shim as a named dependency on the ladder rather than discovering one. **What would change the
+answer** is nothing in this package, so it is read off that library's own surface before a step is
+written.
 
 ## Found while working, not yet queued
 
