@@ -628,6 +628,61 @@ typesetter's own message. A character with no outline arrives as text, which wou
 font the browser had. An undefined macro is not an error to MathJax: it draws the macro's name in
 red, so a typo would otherwise ship inside the picture.
 
+## Matrices and tables
+
+A **matrix** is a grid of entries between two brackets, and every entry is reachable on its own. Each
+row is a group and each entry is a text node inside it, so `map/rows/1/0` names one number and
+`map/rows/1` names the row it sits in.
+
+```ts
+import { applyMatrix, matrix, table, vec2 } from '@altpsyche/maths';
+
+matrix('map', [['1.0', '0.0'], ['0.0', '1.0']], {
+  at: vec2(5.9, 0.5),
+  width: 2.9,
+  height: 2.3,
+  size: 0.42,
+  fill: ink,
+  stroke: pen,
+  align: 'middle',
+});
+
+table('readings', [['t', 'x'], ['0', '1.00'], ['1', '2.72']], {
+  at: vec2(0, 0),
+  columns: [1.2, 2],
+  rowHeight: 0.6,
+  size: 0.3,
+  fill: ink,
+  stroke: pen,
+  header: true,
+  align: ['start', 'end'],
+});
+
+applyMatrix('plane', [2, 1, 0, 1, 1.5, 0, 0, 0, 1]);
+```
+
+An entry is a string a painter lays out and is never measured, so a cell is a share of the box rather
+than a width read off the text. A table takes its column widths from the caller for the same reason.
+A figure sized to fit its own text would be a different figure on a machine with different fonts.
+
+A table draws a rule between rows, a rule between columns, and a heavier rule under a header row in
+place of the row rule that would stand there. The rules are drawn before the cells, so a word crossing
+one is what a reader sees. Rows of different lengths are refused, since a table that is not
+rectangular has no grid to lay out.
+
+`applyMatrix` carries a linear map over the marks it names, reached entry by entry from the identity.
+Its pivot is the origin of the figure's units, where `rotate` and `scale` take the middle of the box
+round the marks, because a linear map is defined about the origin.
+
+Reaching the entries is not a turn. The determinant halfway to a turn by an angle is
+`(1 + cos angle) / 2`, so a quarter turn halves the area on the way and a half turn puts every point
+on one line. A figure that wants the turn itself asks `rotate`, which interpolates the angle and holds
+the area at 1.
+
+A grid mapped past its panel is cut by a clip. A clip does not ride a transform, so the panel stands
+still while the grid inside it deforms, and a grid drawn wider than its panel keeps the panel full as
+the map carries its lines out.
+
 ## Boolean operations
 
 <img src="boolean.svg" width="720" alt="Two discs drawn three times side by side: everything either one covers, only what both cover, and the first with the second taken out of it.">

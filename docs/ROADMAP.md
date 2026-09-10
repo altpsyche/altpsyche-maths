@@ -1239,10 +1239,12 @@ reasoning.
   since the map and the four counts are spans over one interval with one curve; and
   `demos/matrix.figure.json` at 8,352 bytes, `docs/matrix.svg` at 9,239 and `docs/matrix-strip.svg` at
   38,982 regenerate byte for byte. The suite runs 1211 tests over 78 files, up from 1205 over 77.
-- [ ] **6. The guide, the reasoning, and 2.3.0 cut.** `docs/GUIDE.md` gains the section that maps a
+- [x] **6. The guide, the reasoning, and 2.3.0 cut.** `docs/GUIDE.md` gains the section that maps a
   grid, `docs/FIGURE-FORMAT.md` carries why a column width is given rather than measured, and the
   version is bumped in that commit. **The measurement**: the guide's blocks compiled, and the
-  done-criteria below verified line by line.
+  done-criteria below verified line by line. **Measured**: the guide holds 31 blocks against 30 and all
+  of them compile as one module; the suite runs 1212 tests over 78 files; and the eight done-criteria
+  are verified in the cut's own commit.
 
 **Step 1 corrected step 6, and the reference gate is why.** `tests/reference.test.ts` holds the door
 and `docs/REFERENCE.md` equal in both directions, so a door name landing without its entry fails

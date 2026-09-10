@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { boundsOfMarks, colourFrom, flatten, matrix, vec2 } from '@altpsyche/maths';
+import { boundsOfMarks, colourFrom, flatten, indicate, matrix, vec2 } from '@altpsyche/maths';
 import type { Mark, PathMark, TextMark } from '@altpsyche/maths';
 
 /**
@@ -62,6 +62,14 @@ describe('matrix', () => {
   it('takes a tenth of the shorter side as its padding and the same again as its arms', () => {
     const tall = flatten(matrix('m', [['a']], { ...options, width: 4, height: 20 }));
     expect(paths(tall)[0].path[0].start.x).toBeCloseTo(-2 + 0.4, 12);
+  });
+
+  it('lets an animation reach one entry, and one row, and leave the rest standing', () => {
+    const one = indicate('m/rows/1/0', { factor: 2 })(built, 0.5);
+    const moved = one.filter((mark, at) => mark !== built[at]);
+    expect(moved.map((mark) => mark.id)).toEqual(['m/rows/1/0']);
+    const row = indicate('m/rows/1', { factor: 2 })(built, 0.5);
+    expect(row.filter((mark, at) => mark !== built[at]).map((mark) => mark.id)).toEqual(['m/rows/1/0', 'm/rows/1/1']);
   });
 
   it('refuses rows of different lengths, which have no grid to lay out', () => {

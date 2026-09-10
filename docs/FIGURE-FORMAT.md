@@ -563,6 +563,32 @@ interpret.
 per-piece depth cannot fix. That is what depth per pixel is for, and it changes what a `Mark` may ask
 for rather than what a scene may hold.
 
+## Why a column width is given rather than measured, and why a map is reached entry by entry
+
+**Nothing in this tree measures a string.** A text mark carries a string, a size and an anchor, and
+the painter lays the glyphs out, so how wide a word comes out depends on which fonts the machine has.
+A table sizing its columns to fit its cells would be a different table on two machines, and a figure
+is meant to draw the same picture wherever it is read. So `columns` is a list of widths the figure
+gives and a cell is placed against its own column edge. A matrix does the same by a share of its box.
+This is the rule `brace` already holds its label to, written down for the two kinds that make a reader
+expect otherwise.
+
+**What would change the answer** is glyph outlines for plain text, which 2.4.0 is the version of. A
+figure holding the outlines holds the width with them, and a column measured from outlines measures
+the same on every machine.
+
+**A map is reached entry by entry, and that is not a turn.** `applyMatrix` interpolates from the
+identity entry by entry, so the numbers a figure writes beside a mapped grid are the numbers the
+picture is at. The determinant halfway to a turn by an angle is `(1 + cos angle) / 2`: 0.500000 at a
+quarter turn, 0.250000 at 120 degrees, and 0.000000 at a half turn, where every point lands on one
+line. A figure that wants the turn asks `rotate`, which interpolates the angle and holds the area at
+1. Writing the two as one kind would mean a renderer deciding which of them a matrix meant, and the
+two answers differ everywhere except the ends of the span.
+
+**Its pivot is the origin rather than the middle of the box round the marks**, which is what `rotate`
+and `scale` take. A linear map is defined about the origin, and a grid whose box centre sits elsewhere
+would be mapped about the wrong point and slide across the frame as it deformed.
+
 ## The precedent
 
 **Lottie.** Vector animation as JSON, with independent renderers on the web, on two mobile platforms
