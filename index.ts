@@ -229,6 +229,8 @@ export type { ElementMaker, PaintNode, PaintTarget, SvgColour, SvgElement, SvgMa
 export { paintCanvas, paintFrame } from './paint/canvas.js';
 export type { CanvasGradientLike, CanvasLike, SurfaceOptions } from './paint/canvas.js';
 export { recordFigure } from './paint/record.js';
+export { videoSink } from './paint/video.js';
+export type { CanvasSurface, VideoOptions } from './paint/video.js';
 export type { FrameSink, RecordOptions, Recording } from './paint/record.js';
 export { arrow, brace, bracePath, callout, dot } from './figure/annotate.js';
 export type { ArrowOptions, BraceOptions, BracedOptions, CalloutOptions } from './figure/annotate.js';

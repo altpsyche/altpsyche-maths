@@ -1453,6 +1453,16 @@ picture in a recording are the same picture.
   figure's own length, and an optional `onFrame(index, count)` called once per frame taken.
 - `Recording` — what a finished recording is: the `frames` taken, the `seconds` it runs for, and the
   `output` the sink handed back.
+- `videoSink(canvas, options)` — a sink that encodes each frame it is handed and answers the finished
+  file as bytes. It loads `mediabunny` with a dynamic import, so a consumer who never records never
+  loads it. Encoding needs WebCodecs, which a browser has and Node does not.
+- `VideoOptions` — the `fps` the file plays at, the `format`, either `mp4` or `webm`, the `codec`, one
+  of `avc`, `hevc`, `vp9`, `av1` and `vp8`, and the `bitrate` in bits a second. Left out, the format
+  is MP4, the codec is the one that container usually carries, and the bitrate is the encoder's high
+  quality.
+- `CanvasSurface` — a canvas named by the parts an encoder reads: its `width`, its `height` and its
+  `getContext('2d')`. A real `HTMLCanvasElement` and an `OffscreenCanvas` both satisfy it, and naming
+  it here is what keeps this package free of a browser library.
 
 ## Annotations
 

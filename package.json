@@ -50,7 +50,8 @@
     "node": ">=20"
   },
   "dependencies": {
-    "mathjax-full": "^3.2.1"
+    "mathjax-full": "^3.2.1",
+    "mediabunny": "^1.56.1"
   },
   "peerDependencies": {
     "@altpsyche/engine": "^0.4.0"

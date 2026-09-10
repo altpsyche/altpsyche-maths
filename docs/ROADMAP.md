@@ -1388,13 +1388,18 @@ the flat and solid demos at 30 frames a second.
       over 20.5 at 4 frames a second it is 82 frames of which the 40 past the end all hold the picture
       at 10.25 within 1e-9. The suite is 1307 tests over 86 files where it was 1299, and the door is
       207 values and 238 types where it was 206 and 238.
-- [ ] **4. The encoder, behind a dynamic import.** `videoSink(canvas, options)` builds mediabunny's
-      `Output`, `CanvasSource` and target inside an `await import('mediabunny')`, which is how the
-      typesetting call already loads MathJax. `mediabunny` is a dependency rather than a peer, since one
-      install is the goal and the import is what keeps a consumer who never records from paying for it.
-      **Measurement:** no file under `dist` names mediabunny outside an `await import()`, the door goes
-      from 204 values to what the sink adds, and `npm run build` stays clean with no browser library
-      declared.
+- [x] **4. The encoder, behind a dynamic import.** `videoSink(canvas, options)` builds `mediabunny`'s
+      `Output`, `CanvasSource` and `BufferTarget` inside an `await import('mediabunny')` and hands the
+      finished file back from `finish()` as bytes. `CanvasSurface` names the parts of a canvas an
+      encoder reads, so this package still declares no browser library. `mediabunny` is a dependency
+      rather than a peer, since one install is the goal and the import is what keeps a consumer who
+      never records from loading it. **Measured:** 86 lines. `mediabunny` 1.56.1 at 11 MB installed,
+      named in one file of the package and only inside the dynamic import, which the built
+      `dist/paint/video.js` still shows on its one line. The published tarball is 197.8 kB over 149
+      files and does not carry the encoder. The suite is 1310 tests over 87 files where it was 1307
+      over 86, and the door is 208 values and 240 types where it was 207 and 238. Node encodes nothing,
+      so what the suite holds is the dynamic import, the single mention, and a canvas with no context
+      refused before the library loads.
 - [ ] **5. The gate that writes the bytes.** A script under `gates/` drives Chromium through
       `playwright`, reads each committed figure file with `readFigure`, records it through
       `recordFigure` and `videoSink`, and writes one file per figure. It is not part of `npm test`, the
