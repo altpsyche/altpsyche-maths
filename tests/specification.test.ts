@@ -181,7 +181,7 @@ const nodeProse = [
 describe('the specification and the nodes', () => {
   it('names every node kind and its fields', () => {
     const kinds = membersOf('figure/node-record.ts', 'NodeRecord');
-    expect(kinds).toHaveLength(28);
+    expect(kinds).toHaveLength(30);
     const inside = quoted(nodeProse);
     const absent = kinds.flatMap((name) => {
       const missing = fieldsOf('figure/node-record.ts', name).filter((field) => !inside.has(field));
@@ -198,6 +198,8 @@ describe('the specification and the nodes', () => {
       { name: 'CalloutRecordOptions', file: 'figure/node-record.ts' },
       { name: 'BarsRecordOptions', file: 'figure/node-record.ts' },
       { name: 'EquationRecordOptions', file: 'figure/node-record.ts' },
+      { name: 'MatrixOptions', file: 'figure/matrix.ts' },
+      { name: 'TableOptions', file: 'figure/table.ts' },
       { name: 'FieldRecordOptions', file: 'figure/node-record.ts' },
       { name: 'Field3RecordOptions', file: 'figure/node-record.ts' },
       { name: 'Surface3RecordOptions', file: 'figure/node-record.ts' },
@@ -229,7 +231,7 @@ describe('the specification and the nodes', () => {
 describe('the specification and the timeline', () => {
   it('names every animation kind and its fields', () => {
     const kinds = membersOf('figure/animation-record.ts', 'AnimationRecord');
-    expect(kinds).toHaveLength(15);
+    expect(kinds).toHaveLength(16);
     const inside = quoted(written.get('The animations') ?? '');
     const absent = kinds.flatMap((name) => {
       const missing = fieldsOf('figure/animation-record.ts', name).filter((field) => !inside.has(field));
@@ -297,6 +299,7 @@ const WRITTEN = new Map([
   ['sixteen', 16],
   ['twenty-three', 23],
   ['twenty-eight', 28],
+  ['thirty', 30],
   ['thirty-seven', 37],
 ]);
 

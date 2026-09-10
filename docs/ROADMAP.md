@@ -1211,24 +1211,32 @@ point.
   half turn encloses 0; every corner of a sheared square lands on the map's own image of it exactly,
   compared by equality rather than by tolerance; and the area matches the determinant it has reached
   at 0, 0.25, 0.5, 0.75 and 1 to 1e-12. The suite runs 1194 tests over 76 files, up from 1185 over 75.
-- [ ] **4. The three are in the format.** `NodeRecord` gains `matrix` and `table`, `AnimationRecord`
+- [x] **4. The three are in the format.** `NodeRecord` gains `matrix` and `table`, `AnimationRecord`
   gains `applyMatrix`, `figure-check.ts` holds all three, and each reads back to the call it was
   written from. **The measurement**: the members of `NodeRecord`, 28 today and 30 after; the members of
   `AnimationRecord`, 15 today and 16 after; the round trip of a figure carrying all three through
   `writeFigure` and `readFigure`, compared mark for mark by tolerance; and the checker's own message on
-  a row whose entry count differs from the first row's.
+  a row whose entry count differs from the first row's. **Measured**: `NodeRecord` holds 30 members and
+  `AnimationRecord` 16; each of the three resolves to the same marks as the call it was written from
+  within 1e-12; the checker takes the rotation demo carrying a matrix, a table and a map, and refuses a
+  short matrix with `timeline.spans.2.entry.matrix is a list of 9 and holds 6`. The suite runs 1205
+  tests over 77 files, up from 1194 over 76.
+
+**Step 4 corrected step 6 the same way step 1 did, and the specification gate is why.**
+`tests/specification.test.ts` counts the members of both unions and holds `docs/SPECIFICATION.md`
+equal to them, so a kind landing without its section fails `npm test` in the commit that adds it. The
+specification is written in the step that opens the kind, and step 6 keeps the guide and the
+reasoning.
 - [ ] **5. The matrix demo.** `demos/matrix.ts` draws a number plane under a linear map, with the
   matrix written beside it and its four entries counting to the numbers of the map, and a unit square
   carried with the grid so the determinant is an area a reader sees. `demos/render.ts` gains the figure
   and the sheet. **The measurement**: the demo's marks at three named times; the area of the drawn
   square against the determinant of the interpolated matrix at each of them; and the bytes of the
   committed still and strip, which regenerate byte for byte.
-- [ ] **6. The guide, the specification, the reasoning, and 2.3.0 cut.** `docs/SPECIFICATION.md`
-  writes the two node kinds and the one animation kind with their fields, `docs/GUIDE.md` gains the
-  section that maps a grid, `docs/FIGURE-FORMAT.md` carries why a column width is given rather than
-  measured, and the version is bumped in that commit. **The measurement**: the guide's blocks
-  compiled, the specification's count gates at their new numbers, and the done-criteria below verified
-  line by line.
+- [ ] **6. The guide, the reasoning, and 2.3.0 cut.** `docs/GUIDE.md` gains the section that maps a
+  grid, `docs/FIGURE-FORMAT.md` carries why a column width is given rather than measured, and the
+  version is bumped in that commit. **The measurement**: the guide's blocks compiled, and the
+  done-criteria below verified line by line.
 
 **Step 1 corrected step 6, and the reference gate is why.** `tests/reference.test.ts` holds the door
 and `docs/REFERENCE.md` equal in both directions, so a door name landing without its entry fails

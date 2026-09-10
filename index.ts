@@ -90,6 +90,8 @@ export type {
   Field3RecordOptions,
   FillRecord,
   GroupRecord,
+  MatrixRecord,
+  MatrixRecordOptions,
   NodeRecord,
   NumberLineRecord,
   NumberPlaneRecord,
@@ -125,6 +127,8 @@ export type {
   Surface3RecordOptions,
   CurvePieces3Record,
   SurfaceCellsRecord,
+  TableRecord,
+  TableRecordOptions,
   TextContent,
   TextHole,
   Text3Record,
@@ -184,6 +188,7 @@ export type { AboutOptions, Animation, CircumscribeOptions, FlashOptions, Indica
 export { resolveAnimation } from './figure/animation-record.js';
 export type {
   AnimationRecord,
+  ApplyMatrixRecord,
   CircumscribeRecord,
   CountToRecord,
   DrawRecord,

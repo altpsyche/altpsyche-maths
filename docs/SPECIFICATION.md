@@ -8,7 +8,7 @@ the value types and the expression form every kind is written in terms of, then 
 the animations, the timeline and the extent, and conformance last. A renderer is written from this
 page and needs nothing else.
 
-**Five counts say how large the format is.** Twenty-eight node kinds, fifteen animation kinds,
+**Five counts say how large the format is.** Thirty node kinds, sixteen animation kinds,
 sixteen forms of path in eighteen kinds, eleven value types, and thirty-seven functions an expression
 may call.
 
@@ -423,6 +423,8 @@ nothing asks for more air.
 | `arrow` | `from`, `to`, `options` |
 | `brace` | `from`, `to`, `content`, `options` |
 | `callout` | `at`, `to`, `content`, `options` |
+| `matrix` | `entries`, `options` |
+| `table` | `cells`, `options` |
 | `numberLine` | `scale`, `options` |
 | `axes` | `coords`, `options` |
 | `numberPlane` | `coords`, `options` |
@@ -436,6 +438,21 @@ head is how long the head is in figure units and the spread is how wide, both ex
 **A brace's `options` carries `stroke`, `fill`, `size` and `depth`, and `curl`, `padding`, `align`,
 `baseline`, `family` and `weight` beside them.** A callout's carries `stroke`, `fill` and `size`,
 with `marker` as the radius of the disc it plants, and the same four text fields.
+
+**A matrix's `entries` are rows of `TextContent` and its `options` carries `at`, `width`, `height`,
+`size`, `fill` and `stroke`, with `padding`, `serif`, `family`, `weight`, `align` and `baseline`
+beside them.** The `at` is the middle of the box the two brackets stand on, `padding` is how far the
+entries sit inside that box on every side, and `serif` is how far each bracket's arms reach in. Rows
+of different lengths are refused, since a matrix that is not rectangular has no grid to lay out.
+
+**A table's `cells` are rows of `TextContent` and its `options` carries `at`, `columns`, `rowHeight`,
+`size`, `fill` and `stroke`, with `rules`, `header`, `headerWidth`, `padding`, `align`, `family` and
+`weight` beside them.** `columns` is the width of each column in figure units and the table is as
+wide as those add up to, since a renderer measuring its own text would lay the table out differently
+from the one that wrote it. `rules` is `both`, `rows`, `columns` or `none`. `header` draws a heavier
+rule under the first row in place of the row rule that would stand there, and a table of one row has
+none. `align` is one alignment for the table or one for each column. A row whose length differs from
+the count of columns is refused.
 
 **A number line's `options` carries a required `stroke`**, and `fill`, `size`, `at`, `direction`,
 `ticks`, `tickLength`, `gap`, `tip`, `spread`, `family`, `weight`, `skipZero` and `crossedAt` beside
@@ -581,6 +598,7 @@ value into the scene and not into a span.
 | `moveAlong` | `path` | placed along a path record, by length rather than by parameter |
 | `rotate` | `angle`, `options` | turned by radians, about the middle of its own box unless a `pivot` is named |
 | `scale` | `to`, `options` | scaled to a factor, `from` one unless named |
+| `applyMatrix` | `matrix`, `options` | a linear map reached entry by entry, about the origin unless a `pivot` is named |
 | `growFrom` | `from` | grown out of a place, the middle of its own box unless named |
 | `morph` | `into` | walked point by point into another path |
 | `morphEquation` | `from`, `to` | one typeset rule walked into another, glyph by glyph |
@@ -591,6 +609,13 @@ value into the scene and not into a span.
 
 **`morphEquation` carries `from` and `to` rather than a target**, since what it walks is one node
 into another and the pair is the animation.
+
+**`applyMatrix` reaches its matrix entry by entry from the identity**, so the numbers a figure writes
+beside a mapped grid are the numbers the picture is at. That is not a turn: the determinant halfway
+to a turn by an angle is `(1 + cos angle) / 2`, so a quarter turn halves the area on the way and a
+half turn puts every point on one line. A renderer drawing the turn itself reads `rotate`, which
+takes the angle. Its pivot is the origin of the figure's units rather than the middle of the box
+round the marks, because a linear map is defined about the origin.
 
 **A flash's `options` carries a required `stroke`** and `at`, `rays`, `reach` and `inner` beside it,
 where `at` is where the rays are thrown from and the two lengths are how far out and how far in they

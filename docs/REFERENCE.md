@@ -564,6 +564,14 @@ functions, which is what lets the same tree survive being written to a file and 
 - `BraceRecord` — a `kind` of `brace`, a `name`, a `from`, a `to`, a `content` and its `options`.
 - `CalloutRecord` — a `kind` of `callout`, a `name`, the `at` it names, the `to` its word sits at, a
   `content` and its `options`.
+- `MatrixRecord` — a `kind` of `matrix`, a `name`, the rows of `entries` it draws and its `options`.
+  An entry is a `TextContent`, so a template with a hole reads a number the figure is tracking and the
+  matrix beside a mapped grid says what the map is doing while it does it.
+- `MatrixRecordOptions` — what `matrix` takes, with the `at` it is centred on written as an
+  expression.
+- `TableRecord` — a `kind` of `table`, a `name`, the rows of `cells` it draws and its `options`.
+- `TableRecordOptions` — what `table` takes, with the `at` it is centred on written as an
+  expression.
 - `ArrowRecordOptions` — a `stroke`, an optional `fill`, and a `head` and `spread` as expressions.
 - `BraceRecordOptions` — a `stroke`, a `fill`, a `size`, a `depth`, and an optional `curl`, `padding`,
   `align`, `baseline`, `family` and `weight`. The distances are expressions and the size is a plain
@@ -752,6 +760,9 @@ functions, which is what lets the same tree survive being written to a file and 
   turn happens about is the middle of the box round the marks unless the options name one, and it is
   read off the marks as they arrive, so a turn of a whole circle ends where it began.
 - `ScaleRecord` — a `kind` of `scale`, the `target`, the factor `to` and its `options`.
+- `ApplyMatrixRecord` — a `kind` of `applyMatrix`, the `target`, the `matrix` it reaches and its
+  `options`. The map is reached entry by entry from the identity, about the origin of the figure's
+  units unless the options name a pivot.
 - `GrowFromRecord` — a `kind` of `growFrom`, the `target` and the point it grows `from`.
 - `MorphRecord` — a `kind` of `morph`, the `target` and the `into` shape it becomes, as a
   `PathRecord`.

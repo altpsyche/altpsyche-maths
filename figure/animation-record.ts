@@ -17,8 +17,10 @@
  * already take. It is read off the marks as they arrive where a record names
  * none, which is what keeps a turn of a whole circle ending where it began.
  */
+import type { Mat3 } from '../values/mat3.js';
 import type { Vec2 } from '../values/vec2.js';
 import {
+  applyMatrix,
   circumscribe,
   countTo,
   draw,
@@ -101,6 +103,15 @@ export interface ScaleRecord {
   readonly target: string;
   readonly to: number;
   readonly options?: ScaleOptions;
+}
+
+/** A linear map carried over marks, about the origin of the figure's units
+ * unless the record names a pivot. */
+export interface ApplyMatrixRecord {
+  readonly kind: 'applyMatrix';
+  readonly target: string;
+  readonly matrix: Mat3;
+  readonly options?: AboutOptions;
 }
 
 export interface GrowFromRecord {
@@ -186,6 +197,7 @@ export type AnimationRecord =
   | MoveAlongRecord
   | RotateRecord
   | ScaleRecord
+  | ApplyMatrixRecord
   | GrowFromRecord
   | MorphRecord
   | MorphEquationRecord
@@ -220,6 +232,8 @@ export function resolveAnimation(record: AnimationRecord, bindings: Bindings = {
       return rotate(record.target, record.angle, record.options);
     case 'scale':
       return scale(record.target, record.to, record.options);
+    case 'applyMatrix':
+      return applyMatrix(record.target, record.matrix, record.options);
     case 'growFrom':
       return growFrom(record.target, record.from);
     case 'morph':

@@ -37,6 +37,8 @@ import { arrow, brace, callout, dot } from './annotate.js';
 import { axes, numberLine, numberPlane, type AxesOptions, type NumberLineOptions, type NumberPlaneOptions } from './axis.js';
 import { riemannBars, type BarsOptions } from './plot.js';
 import { equationNode, type Equation, type EquationOptions } from './equation.js';
+import { matrix, type MatrixOptions } from './matrix.js';
+import { table, type TableOptions } from './table.js';
 import { vectorField, type VectorFieldOptions } from './field.js';
 import { arrow3, dot3, polyline3, scene3, text3, type Arrow3Options, type Polyline3Options, type SpaceItem, type Text3Options } from './space.js';
 import { axes3, type Axes3Options } from './axis3.js';
@@ -166,6 +168,40 @@ export interface CalloutRecord {
   readonly to: Expression;
   readonly content: TextContent;
   readonly options: CalloutRecordOptions;
+}
+
+/** What a matrix takes beyond its entries. The place it is centred on is an
+ * expression, so a figure may carry it across the frame. */
+export interface MatrixRecordOptions extends Omit<MatrixOptions, 'at'> {
+  readonly at: Expression;
+}
+
+/**
+ * A matrix in a figure, written as the strings its entries are drawn as.
+ *
+ * An entry is a `TextContent`, so a template with a hole reads a number the
+ * figure is tracking and the matrix beside a mapped grid says what the map is
+ * doing while it does it.
+ */
+export interface MatrixRecord {
+  readonly kind: 'matrix';
+  readonly name: string;
+  readonly entries: readonly (readonly TextContent[])[];
+  readonly options: MatrixRecordOptions;
+}
+
+/** What a table takes beyond its cells, which is its column widths and the
+ * place it is centred on. */
+export interface TableRecordOptions extends Omit<TableOptions, 'at'> {
+  readonly at: Expression;
+}
+
+/** A table in a figure, written as the strings its cells are drawn as. */
+export interface TableRecord {
+  readonly kind: 'table';
+  readonly name: string;
+  readonly cells: readonly (readonly TextContent[])[];
+  readonly options: TableRecordOptions;
 }
 
 /**
@@ -641,6 +677,8 @@ export type NodeRecord =
   | ArrowRecord
   | BraceRecord
   | CalloutRecord
+  | MatrixRecord
+  | TableRecord
   | NumberLineRecord
   | AxesRecord
   | NumberPlaneRecord
@@ -993,6 +1031,18 @@ export function resolveNode(record: NodeRecord, bindings: Bindings = {}): Node {
         pointOf(record.to, bindings, "where a callout's word sits"),
         writeTemplate(record.content, bindings),
         { ...record.options, marker: maybe(record.options.marker, bindings, "a callout's marker") }
+      );
+    case 'matrix':
+      return matrix(
+        record.name,
+        record.entries.map((row) => row.map((entry) => writeTemplate(entry, bindings))),
+        { ...record.options, at: pointOf(record.options.at, bindings, "a matrix's place") }
+      );
+    case 'table':
+      return table(
+        record.name,
+        record.cells.map((row) => row.map((cell) => writeTemplate(cell, bindings))),
+        { ...record.options, at: pointOf(record.options.at, bindings, "a table's place") }
       );
     case 'equationNode':
       return equationNode(record.name, record.equation, {
