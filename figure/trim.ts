@@ -7,69 +7,96 @@
  * and the pen would visibly speed up and slow down. The length inside a segment
  * is read off that segment's own table for the same reason.
  */
-import { vec2, type Vec2 } from '../values/vec2.js';
 import { measurePath, parameterAt } from './length.js';
-import type { Cubic, Path, Subpath } from './path.js';
+import { splitCurve, type Cubic, type Path, type Subpath } from './path.js';
 
-/**
- * A cubic cut at a fraction of its own parameter, keeping the first piece.
- *
- * De Casteljau: the same repeated interpolation that evaluates the curve gives
- * the control points of both halves as it goes.
- */
-function splitCubic(from: Vec2, curve: Cubic, along: number): Cubic {
-  const a = vec2.lerp(from, curve.control1, along);
-  const b = vec2.lerp(curve.control1, curve.control2, along);
-  const c = vec2.lerp(curve.control2, curve.to, along);
-  const d = vec2.lerp(a, b, along);
-  const e = vec2.lerp(b, c, along);
-  return { control1: a, control2: d, to: vec2.lerp(d, e, along) };
+/** A fraction held inside nothing to one, so a window given a run wider than the
+ * path is the path rather than nothing. */
+function held(fraction: number): number {
+  return fraction <= 0 ? 0 : fraction >= 1 ? 1 : fraction;
 }
 
 /**
- * The path up to a fraction of its total length.
+ * The piece of a path between two fractions of its own length.
  *
- * A fraction at or past one is the path itself, untouched, so a finished drawing
- * is the same geometry the author wrote rather than a rebuilt copy of it. A
- * subpath the cut has not reached is left out entirely, and the one it lands in
- * ends with a segment split where the cut falls.
+ * Both ends are cut where they fall inside a segment, and a segment the window
+ * does not reach is left out entirely. A window covering the whole path is the
+ * path itself, untouched, so a finished drawing is the geometry the author wrote
+ * rather than a rebuilt copy of it.
+ *
+ * The far end is cut before the near one, and the near cut is then measured
+ * against what the far cut left rather than against the segment it started as,
+ * because de Casteljau's construction rescales the parameter of the half it
+ * keeps.
  */
-export function trimPath(path: Path, fraction: number): Path {
-  if (fraction >= 1) return path;
-  if (fraction <= 0) return [];
+export function pathWindow(path: Path, from: number, to: number): Path {
+  const near = held(from);
+  const far = held(to);
+  if (far <= near) return [];
+  if (near <= 0 && far >= 1) return path;
   const { per, total } = measurePath(path);
   if (total === 0) return path;
 
-  const wanted = total * fraction;
+  const opens = total * near;
+  const closes = total * far;
   let walked = 0;
   const kept: Subpath[] = [];
+  let done = false;
 
-  for (let at = 0; at < path.length; at++) {
+  for (let at = 0; at < path.length && !done; at++) {
     const subpath = path[at];
     const curves: Cubic[] = [];
     let from = subpath.start;
+    let head = subpath.start;
     let cut = false;
 
     for (let piece = 0; piece < subpath.curves.length; piece++) {
       const curve = subpath.curves[piece];
       const measured = per[at][piece];
-      const length = measured.total;
-      if (walked + length <= wanted || length === 0) {
-        curves.push(curve);
-        walked += length;
+      const opensAt = walked;
+      const closesAt = walked + measured.total;
+      walked = closesAt;
+
+      if (closesAt <= opens) {
         from = curve.to;
         continue;
       }
-      curves.push(splitCubic(from, curve, parameterAt(measured, wanted - walked)));
-      cut = true;
-      break;
+      if (opensAt >= closes) {
+        done = true;
+        break;
+      }
+
+      const beyond = closesAt > closes ? parameterAt(measured, closes - opensAt) : 1;
+      const before = opensAt < opens ? parameterAt(measured, opens - opensAt) : 0;
+      let start = from;
+      let piecewise = beyond < 1 ? splitCurve(start, curve, beyond)[0] : curve;
+      if (before > 0) {
+        const [dropped, after] = splitCurve(start, piecewise, beyond < 1 ? before / beyond : before);
+        start = dropped.to;
+        piecewise = after;
+        cut = true;
+      }
+      if (beyond < 1) cut = true;
+      if (curves.length === 0) head = start;
+      curves.push(piecewise);
+      from = curve.to;
     }
 
-    // A subpath cut part way through stops being closed, because the join back
-    // to its start is one of the parts that has not been drawn yet.
-    if (curves.length > 0) kept.push({ start: subpath.start, curves, closed: cut ? false : subpath.closed });
-    if (cut) break;
+    // A subpath the window cuts stops being closed, because the join back to its
+    // start is one of the parts the window leaves out.
+    const whole = !cut && curves.length === subpath.curves.length;
+    if (curves.length > 0) kept.push({ start: head, curves, closed: whole ? subpath.closed : false });
   }
 
   return kept;
+}
+
+/**
+ * The path up to a fraction of its total length.
+ *
+ * A fraction at or past one is the path itself and a fraction at or below
+ * nothing is no path at all, which are the two ends the window already holds.
+ */
+export function trimPath(path: Path, fraction: number): Path {
+  return pathWindow(path, 0, fraction);
 }

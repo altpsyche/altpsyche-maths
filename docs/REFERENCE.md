@@ -342,6 +342,9 @@ numbers and a pointwise map of a shape.
 - `pointAlong(path, fraction)` — the point a fraction of the way along a path, measured by length
   rather than by piece. A fraction outside 0 to 1 is held at the nearer end, and a path with
   no points hands back nothing.
+- `pathWindow(path, from, to)` — the piece of a path between two fractions of its own length, cut at
+  both ends. A window covering the whole is the path itself, untouched, and a far end at or behind
+  the near one is no path at all.
 - `trimPath(path, fraction)` — the path up to a fraction of its total length. A fraction at or past
   one is the path itself, untouched.
 - `alignPaths(from, to)` — the two paths rewritten to the same shape of point list, each drawing

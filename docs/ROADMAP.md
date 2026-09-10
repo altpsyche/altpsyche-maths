@@ -1198,12 +1198,14 @@ anchor, its alignment and its size, so the near edge is the anchor for `start`, 
 `middle` and the whole run back for `end`, and the band the clip spans is measured off the size. A
 figure names one number and the animation derives the rest.
 
-- [ ] **1. A window of a path between two fractions.** `figure/trim.ts` gains `pathWindow(path, from,
-  to)`, the piece between two fractions of the path's own length, with `trimPath` staying the case
-  where `from` is nothing. **The measurement**: the length of the window against the fractions asked
-  for, to within 1e-9 of a figure unit, over a path whose segments differ in size by a factor of ten;
-  the window at 0 to 1 being the path itself untouched; and the point at each end of the window
-  against `pointAlong` at the same fraction.
+- [x] **1. A window of a path between two fractions.** `figure/trim.ts` gains `pathWindow(path, from,
+  to)`, the piece between two fractions of the path's own length, and `trimPath` is now the case where
+  `from` is nothing. **The measurement**: the worst run a window draws against the run it was asked
+  for, over every pair of twentieths, as a share of the whole length. 3.331e-16 along a straight path
+  whose two pieces differ in size by a factor of ten, 2.718e-4 along a quarter arc and 1.918e-5 round
+  a circle, which is twice what a trim from the start reads on the same paths, 1.359e-4 and 9.589e-6,
+  because a window cuts at two ends and a trim cuts at one. The window at 0 to 1 is the path itself
+  untouched, and both its ends sit on `pointAlong` at the same fraction to twelve places.
 - [ ] **2. `showPassingFlash` is an animation.** `figure/animation.ts` gains a light travelling the
   target's path: a mark that is a window of that path, its near edge running from the start to the
   end over the span, at no width at both ends so the list of marks has the same ids whichever way the
@@ -1253,8 +1255,9 @@ first of the eight that draws. Steps 1 through 6 are what it is written from, wh
 
 **Done-criteria, checkable line by line.**
 
-- `pathWindow` is in the tree, `trimPath` is the case where `from` is nothing, and the window's length
-  matches the fractions asked for to within 1e-9 of a figure unit.
+- `pathWindow` is at the door, `trimPath` is the case where `from` is nothing, and the run a window
+  draws is out by twice the cut error a trim carries and no more, which is 2.718e-4 of the whole on a
+  quarter arc.
 - `showPassingFlash`, `wave`, `wiggle` and `write` are at the door with their options types, and each
   hands back an `Animation`.
 - Each of the four leaves the marks it was handed at 0 and at 1, compared by tolerance, so the same
