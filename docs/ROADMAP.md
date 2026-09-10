@@ -1371,18 +1371,6 @@ written.
   `(-1.3, 0.3)` draws a bracket a few points long at its start on both solid sheets, which reads as a
   kink rather than as the run leaving the region. Found while cutting 0.13.0's step 10.
 
-- **The two packages disagree on which depth a projection writes, and 2.7.0 is where that lands.**
-  `values/mat4.ts` builds `perspective` with `(far + near) / (near - far)` and
-  `2 * far * near / (near - far)`, which puts clip-space depth between minus one and one. The engine
-  builds the same matrix with `far / (near - far)` and `near * far / (near - far)`, which puts it
-  between nothing and one, and that module says why: it is what WebGPU reads. Nothing measures the
-  difference today, because `figure/camera.ts` builds the matrix at an aspect of one, reads its x and
-  y alone, and takes depth from view space as a distance, where `transformPoint` divides by a `w` that
-  is the negated view depth under either convention. **What closes it** is this package writing the
-  range WebGPU reads, which moves no number any gate holds today and is a commit rather than a
-  version. **What it costs to leave** is a painter handing a projection to a card at 2.7.0 and a
-  figure keeping its depth at 3.0.0, both against a matrix built for the other convention.
-
 - **`Mat3` is one name and one shape with two meanings, and no compiler can tell them apart.** Here it
   is a 2D affine transform, nine numbers column-major with the translation in the third column. In the
   engine it is the upper-left three by three of a `Mat4`. Both are `readonly [number, number, number,
@@ -1401,7 +1389,9 @@ written.
   package or the engine as a peer would close it and both move a published surface, so neither belongs
   in the 2.x band. **What belongs in 2.x is a parity gate**: a test here, over a dev-only copy of the
   engine, holding the shared functions equal on random inputs to a tolerance, so drift fails a gate
-  instead of waiting for a painter. The finding above is what drift looks like when nothing gates it.
+  instead of waiting for a painter. **What drift already cost** is the two projections writing depth
+  into different ranges, which stood until 2.5.1 wrote the range WebGPU reads and which nothing here
+  would have caught before a painter met it.
 
 - **The recorder's seam is written already, in the consumer, and 2.6.0 should take it rather than
   invent one.** `lib/video/VideoRecorder.ts` is 232 lines and `components/figure/record.ts` is 77.

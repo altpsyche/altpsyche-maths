@@ -153,13 +153,18 @@ export type PerspectiveOptions = {
  * a point twice as far away comes back with twice the divisor and lands half as
  * far from the middle of the frame.
  */
+/** Depth comes back between nothing and one, which is the range WebGPU reads and
+ * the range the engine's own projection writes. A figure reads the x and y of a
+ * projected point and takes its depth from view space, so the two entries this
+ * range lives in touch nothing a flat picture draws. */
 function perspective({ fov, aspect, near, far }: PerspectiveOptions): Mat4 {
   const focal = 1 / Math.tan(fov / 2);
+  const range = near - far;
   return [
     focal / aspect, 0, 0, 0,
     0, focal, 0, 0,
-    0, 0, (far + near) / (near - far), -1,
-    0, 0, (2 * far * near) / (near - far), 0,
+    0, 0, far / range, -1,
+    0, 0, (near * far) / range, 0,
   ];
 }
 

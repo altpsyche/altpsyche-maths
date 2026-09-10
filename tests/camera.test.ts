@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { camera3, orthographic, perspective, vec3 } from '@altpsyche/maths';
+import { camera3, mat4, orthographic, perspective, vec3 } from '@altpsyche/maths';
 
 /**
  * A figure's camera, checked at poses whose answers can be read by hand: an eye
@@ -99,5 +99,42 @@ describe('camera3', () => {
     expect(Math.abs(seen.at.x)).toBeLessThan(1e-12);
     expect(Math.abs(seen.at.y)).toBeLessThan(1e-12);
     expect(Math.abs(seen.depth - Math.sqrt(54))).toBeLessThan(1e-12);
+  });
+});
+
+/**
+ * The range a projection writes depth into.
+ *
+ * A figure reads the x and y of a projected point and takes its depth from view
+ * space, so nothing flat depends on the two entries this range lives in. What
+ * does depend on it is a card, and WebGPU reads depth between nothing and one,
+ * which is the range the renderer's own projection writes.
+ */
+describe('a perspective projection depth', () => {
+  const FOV = Math.PI / 4;
+  const NEAR = 0.01;
+  const FAR = 1000;
+  const matrix = mat4.perspective({ fov: FOV, aspect: 1, near: NEAR, far: FAR });
+  const depthAt = (z: number) => mat4.transformPoint(matrix, vec3(0, 0, z)).z;
+
+  it('runs from nothing at the near plane to one at the far plane', () => {
+    expect(depthAt(-NEAR)).toBeCloseTo(0, 12);
+    expect(depthAt(-FAR)).toBeCloseTo(1, 12);
+  });
+
+  it('grows with distance the whole way between them', () => {
+    const walked = [-NEAR, -0.1, -1, -10, -100, -FAR].map(depthAt);
+    for (let at = 1; at < walked.length; at++) expect(walked[at]).toBeGreaterThan(walked[at - 1]);
+  });
+
+  it('places a point where it placed one before the range changed', () => {
+    // The two entries the range lives in are read through a w that is the negated
+    // view depth, so a point's x and y are the same numbers under either range.
+    const placed = perspective().place(vec3(0.5, 0.25, -2));
+    expect(placed.x).toBeCloseTo(0.603553390593, 12);
+    expect(placed.y).toBeCloseTo(0.301776695297, 12);
+    const far = perspective().place(vec3(-1, 0.75, -5));
+    expect(far.x).toBeCloseTo(-0.482842712475, 12);
+    expect(far.y).toBeCloseTo(0.362132034356, 12);
   });
 });
