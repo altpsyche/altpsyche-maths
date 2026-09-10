@@ -3,6 +3,10 @@ node_modules/
 dist/
 .demos/
 
+# What the recording gate writes, which is an output rather than something to
+# commit.
+recordings/
+
 # What `npm pack` leaves behind, which is the thing that gets published rather
 # than something to commit.
 *.tgz

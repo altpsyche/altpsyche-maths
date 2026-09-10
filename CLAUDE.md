@@ -179,10 +179,20 @@ is worth stating once; a gate this short is not.
 seam: values and timing are pure functions, and a figure at a time is a list of marks. `npm test`
 holds all of it and always will.
 
-**A claim about what a device draws needs a device**, and those are the GPU painter's alone. They are
-gated separately, the way `@altpsyche/engine` already gates its own: a browser gate and a gate on a
-real card, neither of them part of `npm test`. **A claim that could have been made about marks is
-made about marks**, so a pixel gate covers what only a pixel can show and nothing else.
+**A claim about what a device draws needs a device**, and the recorder and the GPU painter are where
+those claims are. They are gated separately, the way `@altpsyche/engine` already gates its own: a
+browser gate and a gate on a real card, neither of them part of `npm test`. **A claim that could have
+been made about marks is made about marks**, so a pixel gate covers what only a pixel can show and
+nothing else.
+
+```
+npm run gate:record   every committed figure recorded to a video file, in Chromium
+```
+
+**The recording gate needs a browser and writes into `recordings/`**, which is not committed.
+Encoding needs a WebCodecs `VideoEncoder` and rasterising needs a canvas, and Node has neither. The
+gate reads each file back afterwards in Node, since taking a container apart needs no encoder, so
+what it prints is how many pictures the file holds rather than how many the recorder handed over.
 
 **The comparison between two lists of marks is by tolerance and never by hash.** `Math.sin`,
 `Math.cos` and `Math.pow` are not specified to the last bit in JavaScript and differ between engines,

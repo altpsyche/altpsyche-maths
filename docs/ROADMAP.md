@@ -1400,12 +1400,19 @@ the flat and solid demos at 30 frames a second.
       over 86, and the door is 208 values and 240 types where it was 207 and 238. Node encodes nothing,
       so what the suite holds is the dynamic import, the single mention, and a canvas with no context
       refused before the library loads.
-- [ ] **5. The gate that writes the bytes.** A script under `gates/` drives Chromium through
-      `playwright`, reads each committed figure file with `readFigure`, records it through
-      `recordFigure` and `videoSink`, and writes one file per figure. It is not part of `npm test`, the
-      way the engine's own device gates are not part of its suite. **Measurement:** one file per
-      committed figure with its size, and the frames the encoder took equal to `frameTimesOf` for that
-      figure at the rate the gate names.
+- [x] **5. The gate that writes the bytes.** `gates/record.mjs` serves the repository over a local
+      address, opens it in Chromium through `playwright`, and records every committed figure with
+      `readFigure`, `recordFigure` and `videoSink`. The page carries an import map, since a browser
+      resolves no bare name: the encoder points at its own bundle rather than its module tree, which
+      imports `node:fs/promises` for the target that writes a file. The gate reads each file back in
+      Node afterwards, because taking a container apart needs no encoder. It is `npm run gate:record`
+      and it is not part of `npm test`. **Measured:** 8 of 8 figures recorded, 190 lines of gate, 9.7
+      MB written in total. Every file holds exactly the frames the walk counted: 379 for the boolean
+      demo at 12.6333 seconds, 54 for the frame demo at 1.8, 180 each for the matrix, rotation and
+      solids demos at 6, 162 for the portrait at 5.4, 399 for the solid demo at 13.3 and 308 for the
+      flat demo at 10.2667, all 1080x600 avc. The last frame of each is drawn rather than blank,
+      between 3.7 and 81.9 per cent of its pixels off the ground, and the eight take between 81 and
+      3822 milliseconds each to record.
 - [ ] **6. The door and the README.** The recorder's names go in `index.ts`, and the README gains the
       call that turns a figure into a file. The strips stay, because a README that plays a video on load
       is a README nobody can read. **Measurement:** the door count after the step, and the README's own
