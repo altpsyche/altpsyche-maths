@@ -269,12 +269,11 @@ because every one would have been written against an API the format is going to 
 went on in front of the format, because each changes something the format freezes a written form for,
 and freezing first costs a major of the format's own version to change it afterwards. Eight went on
 behind, because each adds a kind or a painter, which is a format minor an old figure survives, and
-three more are written past those because a session should not rediscover them. Six of those eight
-are left, since 2.1.0 and 2.2.0 are cut.
+three more are written past those because a session should not rediscover them. Five of those eight
+are left, since 2.1.0, 2.2.0 and 2.3.0 are cut.
 
 | version | what lands | what it changes | steps | cut against | depends on | plan |
 | --- | --- | --- | --- | --- | --- | --- |
-| 2.3.0 | matrices and tables, and a matrix applied to a grid | adds kinds | six, and three design calls are answered | a grid under a linear map, which nothing here can draw | nothing outside this package | planned |
 | 2.4.0 | the indications that run along a path, and text written on rather than faded in | adds kinds, and outlines for plain text | to plan | the flat demo's reading, written on | a source of glyph outlines for plain text | to plan |
 | 2.5.0 | a group morphing into a group | adds a kind | to plan | the boolean demo's three panels, morphing into one another | nothing outside this package | to plan |
 | 2.6.0 | the recorder: a figure out as a video file | nothing in the format, and a name at the door | to plan | every demo as a file on disk rather than a strip of frames | `mediabunny`, which the consumer already records with | to plan |
@@ -416,6 +415,15 @@ the motion in a still. 2.6.0 is the version that ends that, and the strips stay 
 README that plays a video on load is a README nobody can read.
 
 ## Now
+
+**2.3.0 is cut and unpublished, and its eight done-criteria are verified line by line in the cut's own
+commit.** A figure may write a matrix whose every entry answers to a name, a table whose columns are
+given rather than measured, and a linear map carried over the marks it names. `demos/matrix.ts` is the
+picture: a number plane sheared under a map, the unit square filled so the determinant is an area, and
+the map written beside it with its four numbers at the values the grid is at. The map and the four
+counts are five spans over one interval with one curve, so the number written is the number the grid
+is at, and the square encloses the determinant to within 1e-12 at every named time, 1 at the identity
+and 2 at the whole map. `NodeRecord` holds 30 members and `AnimationRecord` 16.
 
 **2.1.0 is cut and unpublished, and its eight done-criteria are verified line by line in the cut's
 own commit.** A figure's marks may now be read against the frame they are drawn in. `frame` is the
@@ -1143,132 +1151,9 @@ list, because writing one is a session of its own.
 
 ### The 2.x band, which is what Manim has and this does not
 
-**Every one of these four adds a kind rather than changing a value type**, so each is a format minor
-an old figure survives. **2.3.0 carries a step list and the other three do not**, and writing one is a
-session of its own, which is the rule this file holds every item to.
-
-**2.3.0 Matrices and tables, and a matrix applied to a grid.** A static matrix is already drawable,
-since `equationFromTex` goes through MathJax and `matchGlyphs` gives glyph-level access to what comes
-back. What is missing is a matrix whose entries are separately targetable, a table with rules, and
-the animation that carries the picture: a matrix applied to a number plane, deforming the grid.
-`mat3`, `numberPlane` and `transformPath` are all at the door already. **The picture waiting** is the
-one this makes possible at all, a grid under a linear map.
-
-**A matrix interpolated entry by entry collapses at a half turn, and this file said a quarter turn.**
-The planning session measured it. Interpolating from the identity to a turn by an angle gives
-`(1 − t)I + tR`, whose determinant halfway along is `(1 + cos angle) / 2`: 0.500000 at a quarter turn,
-0.250000 at 120 degrees, and 0.000000 at a half turn, where every point of the picture lands on one
-line. A quarter turn halves the area rather than losing it, and a half turn is the case that has no
-inverse. The rule holds either way. `rotate` interpolates its angle and `applyMatrix` interpolates
-entry by entry, which is what Manim does and what a linear map's picture needs, since the entries are
-the numbers the matrix beside the grid counts to.
-
-**A linear map in space is refused rather than queued, and the seam is the reason.** Siva's rule is
-that a feature reaches a flat picture and a solid one. A scene projects its points when the node is
-built, so a mark reaching an animation is already flat, and a matrix applied to those marks maps the
-picture rather than the space. Mapping the space means a producer that takes a transform, which is a
-change to `scene3` and to every solid built over it rather than an animation, and that is an item of
-its own. So this version is flat, and `demos/matrix.ts` is the third use of the exception the boolean
-and the rotation demos already stand on: an operation whose picture is its own.
-
-**Three design calls are answered here, so no step reopens them.** An entry is a string drawn as a
-text mark, so a matrix of numbers loads no typesetter, and an entry that needs notation is a typeset
-equation the figure places beside it. A column width is given rather than measured, because nothing
-in this tree measures a string: a text mark is a string a painter lays out, which is the same gap
-2.4.0 closes for text written on. And `applyMatrix` takes the origin of the figure's units as its
-pivot, where `rotate` and `scale` take the middle of the box round the marks, because a linear map is
-defined about the origin and a grid whose box centre sits elsewhere would be mapped about the wrong
-point.
-
-- [x] **1. `matrix` is a node.** `figure/matrix.ts` holds a matrix of entries between two brackets,
-  each row a group and each entry a text node inside it, so `m/rows/1/0` reaches one entry and
-  `m/rows/1` reaches a row. Each bracket is a path of three straight pieces. **The measurement**: the
-  mark count of a 2 by 2, which is four entries and two brackets; the id of every mark it writes; the
-  box round the whole against the width and the height it is given; and the places of the entries of a
-  3 by 2 against the row and column pitch. **Measured**: a 2 by 2 is 6 marks, 2 paths and 4 text, with
-  the ids `m/left`, `m/right` and `m/rows/0/0` through `m/rows/1/1`; the box round the two brackets is
-  the given box exactly, x from -5 to 5 and y from -4 to 4 for a 10 by 8; every entry of a 3 by 2 sits
-  on its cell centre to 1e-12; and the suite runs 1173 tests over 74 files, up from 1164 over 73.
-- [x] **2. `table` is a node.** `figure/table.ts` holds rows of cells with a rule between rows and
-  between columns, a heavier rule under a header row when the figure asks for one, and column widths
-  the caller gives. **The measurement**: the mark count of a 3 by 3 with both sets of rules and a
-  header, which the suite states as a number; the y of each row rule against the row edges to within
-  1e-12; the count a table drawn with neither set of rules falls to; and the x of a cell of each
-  alignment against its column edges. **Measured**: a 3 by 3 with both sets and a header is 13 marks,
-  9 cells and 4 rules, falling to 11 with one set and to 9 with neither; the two row rules of a table
-  3 by 2 units stand at y 1 and -1 to 1e-12 and the two column rules on widths 2, 3 and 5 stand at
-  x -3 and 0; the header rule is 0.2 wide against the 0.1 of the rule it stands in place of; and a row
-  aligned start, middle and end places its cells at -4.75, -1.5 and 4.75. The suite runs 1185 tests
-  over 75 files, up from 1173 over 74.
-- [x] **3. `applyMatrix` is an animation.** `figure/animation.ts` gains the linear map carried over the
-  marks it names, interpolated entry by entry from the identity, about the origin of the figure's
-  units unless the figure names a pivot. **The measurement**: the determinant halfway through a
-  quarter turn, which is 0.500000 entry by entry against 1 through `rotate`, and 0.000000 halfway
-  through a half turn; the two ends of a grid line against the map's own image of them, which is exact
-  because a linear map takes a straight line to a straight line and the line carries two points; and
-  the area of a mapped unit square against the determinant at five times along the span. **Measured**:
-  a unit square halfway to a quarter turn encloses 0.5 against the 1 `rotate` holds, and halfway to a
-  half turn encloses 0; every corner of a sheared square lands on the map's own image of it exactly,
-  compared by equality rather than by tolerance; and the area matches the determinant it has reached
-  at 0, 0.25, 0.5, 0.75 and 1 to 1e-12. The suite runs 1194 tests over 76 files, up from 1185 over 75.
-- [x] **4. The three are in the format.** `NodeRecord` gains `matrix` and `table`, `AnimationRecord`
-  gains `applyMatrix`, `figure-check.ts` holds all three, and each reads back to the call it was
-  written from. **The measurement**: the members of `NodeRecord`, 28 today and 30 after; the members of
-  `AnimationRecord`, 15 today and 16 after; the round trip of a figure carrying all three through
-  `writeFigure` and `readFigure`, compared mark for mark by tolerance; and the checker's own message on
-  a row whose entry count differs from the first row's. **Measured**: `NodeRecord` holds 30 members and
-  `AnimationRecord` 16; each of the three resolves to the same marks as the call it was written from
-  within 1e-12; the checker takes the rotation demo carrying a matrix, a table and a map, and refuses a
-  short matrix with `timeline.spans.2.entry.matrix is a list of 9 and holds 6`. The suite runs 1205
-  tests over 77 files, up from 1194 over 76.
-
-**Step 4 corrected step 6 the same way step 1 did, and the specification gate is why.**
-`tests/specification.test.ts` counts the members of both unions and holds `docs/SPECIFICATION.md`
-equal to them, so a kind landing without its section fails `npm test` in the commit that adds it. The
-specification is written in the step that opens the kind, and step 6 keeps the guide and the
-reasoning.
-- [x] **5. The matrix demo.** `demos/matrix.ts` draws a number plane under a linear map, with the
-  matrix written beside it and its four entries counting to the numbers of the map, and a unit square
-  carried with the grid so the determinant is an area a reader sees. `demos/render.ts` gains the figure
-  and the sheet. **The measurement**: the demo's marks at three named times; the area of the drawn
-  square against the determinant of the interpolated matrix at each of them; and the bytes of the
-  committed still and strip, which regenerate byte for byte. **Measured**: the figure draws 38 marks at
-  each of its four named times, 26 of them grid lines and 12 besides; the square encloses the
-  determinant of the matrix the map has reached to 1e-12 at every one of them, 1 at the identity and 2
-  at the whole map; the four written entries are the entries of that same matrix at every named time,
-  since the map and the four counts are spans over one interval with one curve; and
-  `demos/matrix.figure.json` at 8,352 bytes, `docs/matrix.svg` at 9,239 and `docs/matrix-strip.svg` at
-  38,982 regenerate byte for byte. The suite runs 1211 tests over 78 files, up from 1205 over 77.
-- [x] **6. The guide, the reasoning, and 2.3.0 cut.** `docs/GUIDE.md` gains the section that maps a
-  grid, `docs/FIGURE-FORMAT.md` carries why a column width is given rather than measured, and the
-  version is bumped in that commit. **The measurement**: the guide's blocks compiled, and the
-  done-criteria below verified line by line. **Measured**: the guide holds 31 blocks against 30 and all
-  of them compile as one module; the suite runs 1212 tests over 78 files; and the eight done-criteria
-  are verified in the cut's own commit.
-
-**Step 1 corrected step 6, and the reference gate is why.** `tests/reference.test.ts` holds the door
-and `docs/REFERENCE.md` equal in both directions, so a door name landing without its entry fails
-`npm test` in the commit that adds it. The reference is written in the step that opens the name rather
-than collected at the end, and step 6 keeps the guide, the specification and the reasoning.
-
-**Which step the demos gain from: 5.** It is the picture the version is named against and the only one
-of the six that draws. Steps 1 through 4 are what it is written from, which is the order both demos
-above were built in.
-
-**Done-criteria, checkable line by line.**
-
-- `matrix` and `table` are at the door with their options types, and each hands back a `GroupNode`.
-- Every entry of a matrix is reachable by its own id and every row by the id of that row, which the
-  suite shows by indicating one entry and leaving the rest of the matrix alone.
-- A table draws its rules where its rows and its columns meet, and a table drawn with neither set of
-  rules holds its cells and nothing else.
-- `applyMatrix` is at the door, takes the origin as its pivot unless a figure names one, and reads
-  0.500000 halfway through a quarter turn against the 1 that `rotate` holds.
-- `NodeRecord` carries `matrix` and `table`, `AnimationRecord` carries `applyMatrix`, `checkFigure`
-  refuses a matrix whose rows differ in length, and the specification's node count gate reads 30.
-- `demos/matrix.figure.json` is committed, and its still and its strip regenerate byte for byte.
-- The reference gives every new door name an entry, and the guide compiles its new block.
-- `npm test`, `npm run type-check` and `npm run build` pass, and `package.json` reads 2.3.0.
+**Every one of these three adds a kind rather than changing a value type**, so each is a format minor
+an old figure survives. **None of the three carries a step list**, and writing one is a session of its
+own, which is the rule this file holds every item to.
 
 **2.4.0 The indications that run along a path, and text written on.** A light running along a path, a
 wave, and a wiggle are each a moving window over `trimPath`, which exists and is what `draw` already
