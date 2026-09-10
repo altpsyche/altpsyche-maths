@@ -1256,12 +1256,17 @@ answer** is a cross-fade of the two, which costs that ghost.
   only one of the pair carries reads 0.75 and 0.25 of its alpha at a quarter and three quarters and 0
   at one; 0.1 onto a taper of 0.2 to 0.4 reads 0.15 to 0.25 at half; and clips of -1..1 onto 3..5 read
   1..3 at half. 1271 tests over 85 files before, 1278 after.
-- [ ] **4. `morphGroup` is a written form of the format.** `AnimationRecord` gains `MorphGroupRecord`
-  carrying `from` and `to`, `resolveAnimation` hands back the animation, `figure-check.ts` holds the
-  kind, and a figure carrying it reads back to the call it was written from. **The measurement**: the
-  members of `AnimationRecord`, 20 today and 21 after; the round trip of a figure carrying one through
-  `writeFigure` and `readFigure`, compared mark for mark by tolerance; and the checker's own message on
-  a `morphGroup` whose `to` is not a string.
+- [x] **4. `morphGroup` is a written form of the format, and the specification came with it.**
+  `AnimationRecord` gained `MorphGroupRecord` carrying `from` and `to`, `resolveAnimation` hands back
+  the animation, and `figure-check.ts` holds the kind. **The specification moved out of step 6 into
+  this one**, because its animation count gate reads the word written in the document against the
+  union in the source, so leaving it to the last step would have left a failing gate standing over two
+  commits. **The measurement**: the members of `AnimationRecord`, 20 before and 21 after, with the
+  specification written twenty-one and its own gate reading the union; over the boolean demo's union
+  and intersection panels at all seven named times and five fractions of the span, the record resolves
+  to marks `sameMarks` holds equal to the call's own; the checker refuses a second name that is a
+  number with `timeline.spans.0.entry.to is text and is 4`; and every kind a span may carry is 19
+  entries rather than 18. 1278 tests over 85 files before, 1280 after.
 - [ ] **5. The boolean demo's three panels morph into one another.** `demos/boolean.ts` gains two spans
   after the walk, the union panel onto the intersection panel and then the intersection panel onto the
   difference panel, and `TIMES` gains the middle of each morph and the handover between them. **The
@@ -1269,13 +1274,13 @@ answer** is a cross-fade of the two, which costs that ghost.
   marks are unchanged because every new span is at nothing over the whole of the walk; and the strip's
   six frames over three rows, with `docs/boolean.svg` regenerating byte for byte and
   `demos/boolean.figure.json` carrying two more spans.
-- [ ] **6. The reference, the guide, the specification, and 2.5.0 cut.** `docs/REFERENCE.md` gains
-  `morphGroup` and `matchMarks`, `docs/SPECIFICATION.md` writes the kind with its two fields and the
-  three pairing rules in the order a renderer applies them, `docs/GUIDE.md` gains the section that
+- [ ] **6. The guide, the format's reasoning, and 2.5.0 cut.** `docs/GUIDE.md` gains the section that
   morphs one group into another, `docs/FIGURE-FORMAT.md` carries why the pairing is by name rather than
-  by shape, and the version is bumped in that commit. **The measurement**: the reference gate over the
-  door, the guide's blocks compiled, the specification's animation count gate at 21, and the
-  done-criteria below verified line by line.
+  by shape, and the version is bumped in that commit. `docs/REFERENCE.md` and `docs/SPECIFICATION.md`
+  are already written, since each carries a gate that a step landing a door name or a kind has to
+  satisfy in its own commit. **The measurement**: the reference gate over the door, the guide's blocks
+  compiled, the specification's animation count gate at 21, and the done-criteria below verified line
+  by line.
 
 **Which step the demos gain from: 5.** It is the picture the version is named against, and steps 1
 through 4 are what it is written from.
