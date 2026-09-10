@@ -1,11 +1,15 @@
 import { describe, expect, it } from 'vitest';
 import {
   circle,
+  colourFrom,
   flattenPath,
+  line,
   marksAt,
   outlinedMarks,
+  outlinePath,
   polygon,
   rect,
+  strokeTrianglesOf,
   trianglesOf,
   triangleArea,
   vec2,
@@ -217,5 +221,140 @@ describe('the demos cut into triangles', () => {
         if (windingAt(loops, centre) === 0) expect(covered(corners, centre)).toBe(false);
       }
     }
+  });
+});
+
+/**
+ * The outline's own tolerance rather than the triangulation's, since the outline
+ * is where the curve is approximated and cutting a polyline is exact.
+ */
+const OUTLINE_TOLERANCE = 1e-3;
+
+const black = colourFrom('#000');
+
+/**
+ * The area the two round caps of an open stroke come to, which is the regular
+ * polygon inscribed in a disc of that radius rather than the disc.
+ *
+ * A turn is stepped at the widest angle whose chord stays inside the tolerance,
+ * which for a radius r and a step d is r(1 - cos(d/2)), and each cap is a half
+ * turn. An n-sided polygon inscribed in a disc covers (n/2)r²sin(2π/n), which at
+ * a radius of a twentieth and a tolerance of a thousandth is sixteen sides and
+ * 2.55 parts in a hundred under the disc.
+ */
+function capDisc(radius: number): number {
+  const widest = 2 * Math.acos(1 - OUTLINE_TOLERANCE / radius);
+  const sides = 2 * Math.ceil(Math.PI / widest);
+  return ((sides / 2) * radius * radius * Math.sin((2 * Math.PI) / sides));
+}
+
+/** Every stroked mark of a figure at a time, widened and cut, with each one's
+ * triangles measured against the area its own outline encloses. */
+function stroking(marks: readonly Mark[]) {
+  let strokes = 0;
+  let triangles = 0;
+  let empty = 0;
+  let worst = 0;
+  for (const mark of outlinedMarks(marks)) {
+    if (mark.kind !== 'path' || !mark.stroke) continue;
+    strokes += 1;
+    const corners = strokeTrianglesOf(mark.path, mark.stroke);
+    triangles += corners.length / 3;
+    if (corners.length === 0) {
+      empty += 1;
+      continue;
+    }
+    const outline = outlinePath(mark.path, mark.stroke.width, {
+      cap: mark.stroke.cap,
+      join: mark.stroke.join,
+    });
+    worst = Math.max(worst, Math.abs(triangleArea(corners) - ruledArea(outline)));
+  }
+  return { strokes, triangles, empty, worst };
+}
+
+describe('strokeTrianglesOf', () => {
+  it('cuts a straight line into two triangles covering its length by its width', () => {
+    const corners = strokeTrianglesOf(line(vec2(0, 0), vec2(2, 0)), { colour: black, width: 0.1 });
+    expect(corners).toHaveLength(6);
+    expect(triangleArea(corners)).toBeCloseTo(0.2, 12);
+  });
+
+  it('covers a stroked circle to a part in ten thousand of two pi r w', () => {
+    const corners = strokeTrianglesOf(circle(vec2(0, 0), 1), { colour: black, width: 0.1 });
+    const band = 2 * Math.PI * 1 * 0.1;
+    // The whole of the gap is the flattening, so it grows as the tolerance grows
+    // against the radius.
+    expect(Math.abs(triangleArea(corners) - band) / band).toBeLessThan(1e-4);
+  });
+
+  it('leaves a closed subpath a ring rather than a disc', () => {
+    const corners = strokeTrianglesOf(circle(vec2(0, 0), 1), { colour: black, width: 0.1 });
+    expect(covered(corners, vec2(0, 0))).toBe(false);
+    expect(covered(corners, vec2(0, 1))).toBe(true);
+  });
+
+  // A stroke half as wide as the circle it runs round leaves an inner loop whose
+  // corners are bevels, and a ring bevelled that finely was read as filled
+  // before, which drew the whole disc rather than the band.
+  it('leaves a ring where the width is a quarter of the radius', () => {
+    const corners = strokeTrianglesOf(circle(vec2(0, 0), 0.2), { colour: black, width: 0.05 });
+    const band = 2 * Math.PI * 0.2 * 0.05;
+    expect(Math.abs(triangleArea(corners) - band) / band).toBeLessThan(1e-3);
+    expect(covered(corners, vec2(0, 0))).toBe(false);
+  });
+
+  it('adds the cap the stroke names to the area', () => {
+    const path = line(vec2(0, 0), vec2(2, 0));
+    const butt = strokeTrianglesOf(path, { colour: black, width: 0.1 });
+    const square = strokeTrianglesOf(path, { colour: black, width: 0.1, cap: 'square' });
+    const round = strokeTrianglesOf(path, { colour: black, width: 0.1, cap: 'round' });
+    // A square cap reaches half the width past each end, so the two of them add
+    // the width squared to the length by the width.
+    expect(triangleArea(butt)).toBeCloseTo(0.2, 12);
+    expect(triangleArea(square)).toBeCloseTo(0.21, 12);
+    expect(triangleArea(round)).toBeCloseTo(0.2 + capDisc(0.05), 12);
+  });
+
+  it('draws nothing for a subpath with no length under a butt cap', () => {
+    const dot = line(vec2(1, 1), vec2(1, 1));
+    expect(strokeTrianglesOf(dot, { colour: black, width: 0.1 })).toHaveLength(0);
+    const round = strokeTrianglesOf(dot, { colour: black, width: 0.1, cap: 'round' });
+    expect(triangleArea(round)).toBeCloseTo(capDisc(0.05), 12);
+  });
+
+  it('draws a dashed stroke solid, since no dash is geometry here', () => {
+    const path = line(vec2(0, 0), vec2(2, 0));
+    const solidRun = strokeTrianglesOf(path, { colour: black, width: 0.1 });
+    const dashed = strokeTrianglesOf(path, { colour: black, width: 0.1, dash: [0.1, 0.1] });
+    expect(triangleArea(dashed)).toBeCloseTo(triangleArea(solidRun), 12);
+  });
+
+  it('cuts a tapered stroke, which reaches it as an outline already', () => {
+    const tapered = outlinePath(line(vec2(0, 0), vec2(2, 0)), { from: 0.2, to: 0 });
+    const corners = trianglesOf(tapered, { tolerance: OUTLINE_TOLERANCE, rule: 'nonzero' });
+    // A width falling to nothing along a straight run is a triangle of the
+    // length by half the width at its start.
+    expect(triangleArea(corners)).toBeCloseTo(0.2, 6);
+  });
+});
+
+describe('the demos stroked into triangles', () => {
+  it('covers every stroke of the flat demo to its own outline', () => {
+    const cut = stroking(marksAt(tangent, 5));
+    expect(cut.strokes).toBe(115);
+    expect(cut.triangles).toBe(498);
+    // Eight marks carry an empty path and sixteen a subpath with no length under
+    // a butt cap, and both other painters draw nothing for either.
+    expect(cut.empty).toBe(24);
+    expect(cut.worst).toBeLessThan(1e-10);
+  });
+
+  it('covers every stroke of the solid demo to its own outline', () => {
+    const cut = stroking(marksAt(solid, 6));
+    expect(cut.strokes).toBe(72);
+    expect(cut.triangles).toBe(558);
+    expect(cut.empty).toBe(8);
+    expect(cut.worst).toBeLessThan(1e-10);
   });
 });

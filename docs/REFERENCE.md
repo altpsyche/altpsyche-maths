@@ -1392,6 +1392,11 @@ frame round a picture is a shape.
   published technique for a simple polygon. A ring whose inside the rule calls empty is a hole, and a
   hole is joined into the ring around it by the shortest bridge that crosses no edge. A ring that
   crosses itself has no ear to cut at some point in the walk, and what is left of it is dropped.
+- `strokeTrianglesOf(path, stroke, options)` — a stroked path as triangles, in the picture's own
+  units. The stroke is widened into the outline it covers and that outline is cut like any other
+  fill, under the nonzero rule whatever rule the mark's own fill carries. A dash is drawn solid,
+  since nothing here turns a dash into geometry. A subpath with no length under a butt cap has no
+  triangles, which is the SVG specification's rule.
 - `TriangleOptions` — the `tolerance` a curve is flattened to, in the picture's own units, and the
   `rule`, `nonzero` or `evenodd`, which is the one the mark's own fill carries.
 - `triangleArea(corners)` — how much area a list of triangles covers, which is what a triangulation

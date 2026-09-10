@@ -1373,12 +1373,26 @@ are 1310 tests over 87 files and a door of 208 values and 240 types.
       of fills takes 1.31 milliseconds for the flat demo and 0.87 for the solid, against the 33 a
       frame has at 30 frames a second. The suite is 1321 tests over 88 files where it was 1310 over
       87, and the door is 210 values and 241 types where it was 208 and 240.
-- [ ] **2. A stroked path becomes triangles.** Both other painters hand a stroke to the platform and a
-      card has no such platform, so the outline is built here: a quad per segment with the join and
-      the cap the mark names. `outlinedMarks` already does this for a stroke of two widths, so what is
-      new is the uniform case. **Measurement:** a stroked circle's outline area against 2πrw within a
-      part in ten thousand, and the triangle count of the flat demo's 115 strokes and the solid demo's
-      72 at their named times.
+- [x] **2. A stroked path becomes triangles.** Both other painters hand a stroke to the platform and a
+      card has no such platform, so the outline is built here. `outlinePath` already widens a stroke of
+      two widths and takes a uniform one as it stands, so `strokeTrianglesOf(path, stroke, options)`
+      widens the stroke and cuts the outline under the nonzero rule, which is what reads the two loops
+      of a closed subpath as a ring rather than as a disc. The outline's own tolerance is the one that
+      counts, since cutting a polyline is exact and the outline is where the curve is approximated.
+      One defect the measurement forced: a ring's own winding was read at a point a hair inside its own
+      edge, where a winding number is undefined, so the rule is now read off the other rings plus the
+      ring's own signed area, which answers for itself exactly. **Measured:** a stroked circle of
+      radius 1 at width 0.1 covers 0.62834711 against 2πrw of 0.62831853, 4.55 parts in a hundred
+      thousand, the whole of the gap being the flattening at a tolerance of 1e-3. The flat demo's 115
+      strokes at 5 seconds cut into 498 triangles in 7.21 milliseconds and the solid demo's 72 at 6
+      seconds into 558 in 1.82, against the 33 a frame has at 30 frames a second, and every one covers
+      the area its own outline encloses to within 4.4e-14 of a figure unit squared. 32 of the 187 draw
+      nothing: 8 carry an empty path and 24 a subpath with no length under a butt cap, which is the
+      SVG specification's rule and what both other painters draw there. Before the winding fix a
+      stroke of width 0.05 round a circle of radius 0.2 covered 0.158870 rather than 0.062820, the
+      whole disc rather than the band, since the inner loop's bevelled corners were read as filled.
+      The suite is 1331 tests over 88 files where it was 1321, and the door is 211 values and 241
+      types where it was 210 and 241.
 - [ ] **3. A clip is cut into the geometry.** Sutherland and Hodgman's algorithm clips each triangle
       against the mark's rectangle, since the engine names no scissor. **Measurement:** the 40 clipped
       marks of the flat demo at 5 seconds and the 72 of the solid at 6, each one's clipped area against

@@ -1,9 +1,10 @@
 /**
- * A filled path as triangles, which is what a card draws.
+ * A path as triangles, which is what a card draws.
  *
- * The other two painters hand a path to something that fills it: the SVG
- * painter to the browser, the canvas painter to its context. A card has neither
- * and takes triangles, so the work those two delegate is done here.
+ * The other two painters hand a path to something that fills it and something
+ * that widens it: the SVG painter to the browser, the canvas painter to its
+ * context. A card has neither and takes triangles, so the work those two
+ * delegate is done here, for a fill and for a stroke alike.
  *
  * The path is flattened to a tolerance and each ring is cut into triangles by
  * ear clipping, which is the published technique for a simple polygon. A ring
@@ -16,6 +17,8 @@
  */
 import { vec2, type Vec2 } from '../values/vec2.js';
 import { flattenPath, windingAt } from './inside.js';
+import { outlinePath } from './outline.js';
+import type { Stroke } from './mark.js';
 import type { Path } from './path.js';
 
 export interface TriangleOptions {
@@ -269,10 +272,19 @@ export function trianglesOf(path: Path, options: TriangleOptions = {}): Vec2[] {
   const evenOdd = options.rule === 'evenodd';
   const outers: Vec2[][] = [];
   const holes: Vec2[][] = [];
-  for (const ring of rings) {
+  for (let at = 0; at < rings.length; at += 1) {
+    const ring = rings[at];
     const point = insidePoint(ring);
     if (!point) continue;
-    const filled = evenOdd ? crossings(closed, point) % 2 === 1 : windingAt(closed, point) !== 0;
+    // The rule is read off the other rings and the ring's own direction rather
+    // than off every ring together. The point sits a hair inside this ring's own
+    // edge, where a crossing count is undefined, and a ring's signed area gives
+    // the same answer for itself exactly.
+    const others = closed.filter((_, other) => other !== at);
+    const own = signedArea(ring) > 0 ? 1 : -1;
+    const filled = evenOdd
+      ? (crossings(others, point) + 1) % 2 === 1
+      : windingAt(others, point) + own !== 0;
     (filled ? outers : holes).push(ring);
   }
 
@@ -328,6 +340,30 @@ export function trianglesOf(path: Path, options: TriangleOptions = {}): Vec2[] {
     earClip(polygon, triangles);
   }
   return triangles;
+}
+
+/**
+ * A stroked path as triangles, three corners to a triangle, in the picture's own
+ * units.
+ *
+ * The stroke is widened into the outline it covers and that outline is cut like
+ * any other fill. Its rule is the nonzero one whatever rule the mark's own fill
+ * carries: a closed subpath leaves two loops wound against each other, and the
+ * nonzero rule is what reads those as a ring rather than as a disc.
+ *
+ * A dash is drawn solid, since nothing in this package turns a dash into
+ * geometry and both other painters hand one to the platform.
+ *
+ * A zero-length subpath under a butt cap has no outline and no triangles, which
+ * is the SVG specification's rule and what both other painters draw there.
+ */
+export function strokeTrianglesOf(path: Path, stroke: Stroke, options: TriangleOptions = {}): Vec2[] {
+  const outline = outlinePath(path, stroke.width, {
+    cap: stroke.cap,
+    join: stroke.join,
+    tolerance: options.tolerance,
+  });
+  return trianglesOf(outline, { tolerance: options.tolerance, rule: 'nonzero' });
 }
 
 /** How much area a list of triangles covers, which is what a triangulation is
