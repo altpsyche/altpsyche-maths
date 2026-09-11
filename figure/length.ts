@@ -15,14 +15,14 @@ import { pointOn, type Cubic, type Path } from './path.js';
 import { clamp } from '../values/scalar.js';
 
 /**
- * How many samples measure one piece.
+ * How many samples measure one piece, which is even so the same points give a
+ * second sum at half the resolution.
  *
- * A chord cuts the corner off the arc it spans, so a total read this way is
- * short of the true one. What the count is chosen for is the evenness of a walk
- * rather than the total, and a share of the length is a ratio the shortfall
- * largely cancels out of. Doubling it costs twice the work in every cut and
- * every walk and buys a total four times closer, which nothing here has asked
- * for.
+ * A chord cuts the corner off the arc it spans, so a sum of chords is short of
+ * the true length by an amount that falls as the square of the count. Two sums
+ * whose counts differ by a factor of two are what Richardson extrapolation needs
+ * to cancel that term, and the coarse sum costs no new points because it joins
+ * every other one already taken.
  */
 const SAMPLES = 16;
 
@@ -42,15 +42,28 @@ export interface Measure {
 
 function measureCurve(from: Vec2, curve: Cubic): Measured {
   const upTo: number[] = [0];
+  const points: Vec2[] = [from];
   let total = 0;
   let previous = from;
   for (let at = 1; at <= SAMPLES; at++) {
     const point = pointOn(from, curve, at / SAMPLES);
     total += vec2.distance(previous, point);
     upTo.push(total);
+    points.push(point);
     previous = point;
   }
-  return { upTo, total };
+
+  // Richardson extrapolation over the fine sum and the sum across every other
+  // point, which cancels the square term the chord error is mostly made of.
+  let coarse = 0;
+  for (let at = 2; at <= SAMPLES; at += 2) coarse += vec2.distance(points[at - 2], points[at]);
+  const richer = (4 * total - coarse) / 3;
+
+  // The table is stretched by the same factor as the total, so a length read
+  // back out of it lands at the parameter the uncorrected table put it at and
+  // no entry crosses the one before it.
+  const stretch = total > 0 ? richer / total : 1;
+  return { upTo: upTo.map((reached) => reached * stretch), total: richer };
 }
 
 /** Every piece's length and the whole, which is what a walk by length needs
@@ -89,9 +102,7 @@ export function parameterAt(measured: Measured, wanted: number): number {
   return (sample - 1 + within) / SAMPLES;
 }
 
-/** How long a path is, in figure units, across every subpath it holds. It reads
- * a little short of the truth, by the chord error the sample count above
- * states. */
+/** How long a path is, in figure units, across every subpath it holds. */
 export function lengthOf(path: Path): number {
   return measurePath(path).total;
 }

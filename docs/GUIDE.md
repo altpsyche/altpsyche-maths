@@ -238,7 +238,7 @@ per segment, since the error grows with the angle covered.
 conversion the specification itself gives. An unknown command halts the read rather than being
 skipped. Without it the only available shapes are the ones the builders here produce.
 
-`lengthOf` returns arc length, and reads slightly short by the chord error of its sampling.
+`lengthOf` returns arc length, and reads about six parts in a hundred million short of the truth.
 `pointAlong` returns the point at a fraction of that length rather than of the curve's parameter.
 `trimPath` cuts a path to a fraction of its length.
 

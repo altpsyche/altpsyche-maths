@@ -114,13 +114,15 @@ describe('how long a path is', () => {
     expect(lengthOf(line(vec2(-1, -1), vec2(-1, 5)))).toBeCloseTo(6, 12);
   });
 
-  it('reads a circle a few parts in ten thousand short, because a chord cuts the corner', () => {
+  it('reads a circle a few parts in a hundred million short', () => {
+    // A sum of chords alone is short by four parts in ten thousand here, and the
+    // extrapolation over the two sums is what takes the rest of that away.
     const ring = circle(vec2(0, 0), 1);
     const fine = trueLength(ring);
     expect(lengthOf(ring)).toBeLessThan(fine);
     const short = (fine - lengthOf(ring)) / fine;
-    expect(short).toBeGreaterThan(3.9e-4);
-    expect(short).toBeLessThan(4.2e-4);
+    expect(short).toBeGreaterThan(5.4e-8);
+    expect(short).toBeLessThan(6.4e-8);
   });
 
   it('reads a quarter circle the same fraction short as it reads a whole one', () => {
@@ -129,8 +131,8 @@ describe('how long a path is', () => {
     const quarter = arc(vec2(0, 0), 1, 0, Math.PI / 2);
     const fine = trueLength(quarter);
     const short = (fine - lengthOf(quarter)) / fine;
-    expect(short).toBeGreaterThan(3.9e-4);
-    expect(short).toBeLessThan(4.2e-4);
+    expect(short).toBeGreaterThan(5.4e-8);
+    expect(short).toBeLessThan(6.4e-8);
   });
 
   it('adds up every subpath', () => {

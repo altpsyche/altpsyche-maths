@@ -91,8 +91,8 @@ distance in figure units, `TOLERANCE = 1e-6` by default, rather than a fraction 
 
 `areaOf` returns the signed area, positive for anticlockwise winding, summed over subpaths.
 `containsPoint` flattens to polylines and applies the nonzero winding rule. `lengthOf` and
-`pointAlong` measure by arc length, and `lengthOf` reads slightly short by the chord error of its
-sampling.
+`pointAlong` measure by arc length, and `lengthOf` reads six parts in a hundred million short of the
+truth.
 
 ## Graphs
 

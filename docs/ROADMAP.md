@@ -1349,14 +1349,14 @@ the middle of each of the eight committed figures, 7,486 curves are drawn and 1,
 rather than straight, and flattening them to 0.002 figure units leaves 36,010 straight runs in the
 flat demo and 28,418 in the boolean demo.
 
-**A dash is placed by length, and the length table is sampled rather than solved.** `measurePath`
-takes 16 chords across each cubic, and a chord cuts the corner off the arc it spans, so a measured
-length is short of the true one: a circle reads 261.88 parts per million under 2πr at every
-radius. A dash pattern is placed at absolute distances along the path, so that shortfall accumulates
-rather than cancelling out of a ratio the way a share of the length does, and the last boundary of a
-dashed circle of radius 5 falls 0.0082 figure units before where a browser puts it, which is 0.82
-pixels at the hundred pixels to the unit the sheets draw at. Step 2 is where that number is lowered
-or written down as the bound the three painters agree inside.
+**A dash is placed by length, and the length table is sampled rather than solved.** Step 2 lowered
+that error and its numbers are on the step. The reading the plan opened with mixed two errors that
+are not the same one. A circle of four cubics is 140.29 parts per million longer than a true circle,
+which is the geometry and which all three painters draw alike, and the sum of chords was 402.119
+parts per million short of that cubic, which is the table and which only this package's painters
+suffered. The two together are the 261.88 parts per million `lengthOf` read under 2πr, and quoting
+that figure against a browser was wrong, because a browser dashes the cubics rather than the
+circle.
 
 **The pieces this version reuses rather than writing.** `measurePath` gives every piece's length and
 the whole, `pathWindow` gives the piece of a path between two fractions of its own length, and
@@ -1378,12 +1378,18 @@ are 1,357 tests over 90 files and a door of 216 values and 247 types.
       4.716e-6 units. A line of 5 under `[1, 1]` draws three whole runs at 0, 2 and 4, not two and a
       half, which is what the plan said before the step was worked. 1,368 tests over 91 files and a
       door of 217 values.
-- [ ] **2. Where a dash boundary falls against the true length.** The sampled table places every
-      boundary short, and this step measures by how much and settles what to do about it: `SAMPLES`
-      rises and the cost of every walk with it, or the shortfall is stated as the bound the painters
-      are held inside. **Measurement:** the boundary error of a dashed circle at radii 0.5, 1 and 5
-      against the closed form, before and after, in figure units and in pixels at a hundred pixels to
-      the unit, and what `measurePath` costs over the flat demo's marks either way.
+- [x] **2. Where a dash boundary falls against the true length.** `measureCurve` takes Richardson
+      extrapolation over its sum of sixteen chords and the sum across every other one of the same
+      points, which cancels the square term the chord error is mostly made of and costs no new
+      points, and the table is stretched by the same factor as the total so no entry crosses the one
+      before it. `SAMPLES` stays at 16. **Measured:** a circle of four cubics read 402.119 parts per
+      million under its own length and now reads 6.1488e-2 under it. Each run of a dashed circle was
+      492.9 ppm too long and is now 92.3, and over a circle of radius 5 the drawn total was
+      15.716085 against the 15.710167 the duty cycle names, a drift of 5.918e-3 figure units or 0.59
+      pixels at a hundred pixels to the unit, where it is now 15.710168, a drift of 9.09e-7 units or
+      9.1e-5 pixels. `measurePath` over the flat demo's 163 path marks costs 0.381 ms a pass against
+      0.259, which is against the 33 ms a frame has at 30 frames a second. One of the sixteen
+      committed pictures moved: `docs/tangent-strip.svg` by two bytes, in 5 of its 748 elements.
 - [ ] **3. The card draws the dashes.** `strokeTrianglesOf` cuts the path into its dashes before it
       widens them, so each run gets the stroke's own caps at both its ends, and `gpuFrame` stops
       naming a dashed mark as refused. **Measurement:** the refused count and the triangle count for a
