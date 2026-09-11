@@ -606,7 +606,7 @@ handed the frame it draws in. The consumer's `one-pixel` is a record here placin
 
 **2.0.0 is published, and `npm view @altpsyche/maths version` answers it.** The nine done-criteria are
 verified line by line in the cut's own commit. What a consumer gets is the figure format: a figure is
-a JSON document, [`SPECIFICATION.md`](SPECIFICATION.md) states the whole of it in 613 lines for a
+a JSON document, [`SPECIFICATION.md`](SPECIFICATION.md) stated the whole of it in 613 lines at that cut, for a
 renderer written in another language, and the five committed figure files are its fixtures.
 
 **The consumer crossed on 2026-09-09 and the crossing is landed there**, in six commits on its
@@ -1409,9 +1409,13 @@ are 1,357 tests over 90 files and a door of 216 values and 247 types.
       a branch out of the inset's window. `gpuFrame` refuses 23 of the flat demo's marks and 21 of
       the solid's, the text alone, and draws 1,489 triangles against 1,481 and 2,145 against 1,637,
       in 4.34 and 8.13 ms a frame.
-- [ ] **5. The README's pictures carry the dashes.** `npm run demos` regenerates the eight stills and
-      the eight strips, and the committed bytes move by the dashes alone. **Measurement:** the byte
-      count of each regenerated file, before and after, and the frame count of each strip.
+- [x] **5. The README's pictures carry the dashes.** The pictures moved in step 4, since a figure and
+      the picture of it are one commit, so this step is the prose around them: the alt text of the
+      two stills and the two strips names what a reader sees, the README's count of the flat demo's
+      marks at its still time is the count it now draws, and the specification states the dash rule a
+      renderer in another language has to follow. **Measured:** `npm run demos` regenerates all
+      sixteen pictures byte for byte. The README reads 186 marks at t = 7.86 s against 181.
+      `SPECIFICATION.md` is 785 lines against 773.
 
 **Which step the demos gain from is step 4**, and steps 1 through 3 are what it needs before a dashed
 mark can be drawn by all three painters.

@@ -140,10 +140,19 @@ painter the name reaches, and a colour with no name is a value a page cannot rea
 
 **A `Stroke` carries a `colour` and a `width`, both required**, and `cap`, `join`, `dash` and
 `dashOffset` beside them. A cap is `butt`, `round` or `square` and a join is `miter`, `round` or
-`bevel`. A dash is the lengths of the drawn and undrawn runs in figure units. A width is one number
-the whole way or a `Taper`, which is a `from` width, a `to` width and the `curve` the width leaves
-the first along. A stroke of two widths is drawn as the filled outline of its own path, since neither
-painter here strokes at two widths.
+`bevel`. A width is one number the whole way or a `Taper`, which is a `from` width, a `to` width and
+the `curve` the width leaves the first along. A stroke of two widths is drawn as the filled outline
+of its own path, since no painter here strokes at two widths, and a stroke of two widths carrying a
+dash is drawn solid.
+
+**A `dash` is the lengths of the drawn and undrawn runs in figure units, and `dashOffset` is how far
+into that pattern the first run of each subpath begins.** The rule is the SVG specification's. A
+pattern holding an odd number of lengths is repeated to make the count even, so `[1]` draws what
+`[1, 1]` draws. A pattern that is empty, holds a length below nothing, or sums to nothing draws the
+path solid. The pattern restarts at the beginning of each subpath, so two subpaths of different
+lengths both open with a whole first run. A run is measured along the path's own length, so a run of
+1 covers one figure unit of arc whether the piece it crosses is straight or curved, and each run
+carries the stroke's cap at both of its ends.
 
 **A `Fill` carries a `colour`**, and `gradient` and `rule` beside it. A fill carrying a gradient is
 drawn as the gradient rather than as the colour beside it, and the colour is what anything needing

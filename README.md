@@ -25,10 +25,10 @@ A **painter** consumes marks. `viewMatrix` builds the single affine transform ta
 a surface of a given size. It inverts the y axis, since a figure counts upward and both painters
 count downward from the top. No conversion to device units occurs anywhere else.
 
-<img src="https://raw.githubusercontent.com/altpsyche/altpsyche-maths/master/docs/tangent.svg" width="720" alt="A parabola on a labelled grid over a field of small blue arrows, the region under it shaded to a point on the curve, the tangent at that point drawn, and the slope written as a number under the typeset rule it comes from.">
+<img src="https://raw.githubusercontent.com/altpsyche/altpsyche-maths/master/docs/tangent.svg" width="720" alt="A parabola on a labelled grid over a field of small blue arrows, the region under it shaded to a point on the curve, the tangent at that point drawn, a dashed guide dropped from the point to each axis, and the slope written as a number under the typeset rule it comes from.">
 
 The figure above is evaluated at t = 7.86 s of a 10.25 s duration. Its extent is 10.8 by 6 units and
-its marks number 181 there, counting the inset it draws.
+its marks number 186 there, counting the inset it draws.
 
 A figure is also data. Every part of one has a written form: a node is a record of a kind and its
 parameters, a parameter a track drives is an expression, and a timeline is its spans. `writeFigure`
@@ -126,7 +126,7 @@ fix, so it cannot be a morph's source.
 
 ## Space
 
-<img src="https://raw.githubusercontent.com/altpsyche/altpsyche-maths/master/docs/surface.svg" width="720" alt="A saddle-shaped surface drawn as a grid of shaded cells, with a flat pane cutting through it at one height and the two branches of the curve where they meet drawn in orange along the surface. Blue arrows across the pane show the way the saddle falls and three green runs of steepest descent are drawn on it.">
+<img src="https://raw.githubusercontent.com/altpsyche/altpsyche-maths/master/docs/surface.svg" width="720" alt="A saddle-shaped surface drawn as a grid of shaded cells, with a flat pane cutting through it at one height and the two branches of the curve where they meet drawn in orange along the surface. Two more levels of the saddle are drawn dashed either side of it. Blue arrows across the pane show the way the saddle falls and three green runs of steepest descent are drawn on it.">
 
 <img src="https://raw.githubusercontent.com/altpsyche/altpsyche-maths/master/docs/solids.svg" width="640" alt="Four panels: a shaded sphere, a shaded cube, a cylinder with an orange helix wound three times round it, and a torus with a blue trefoil knot wound through its hole. Each curve passes behind its solid on the far side and in front of it on the near side.">
 

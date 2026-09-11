@@ -389,7 +389,7 @@ const timeline = Timeline.empty()
 `play` runs one animation after the previous span. `together` runs several over one span. `stagger`
 offsets a row of them so the parts arrive in succession.
 
-<img src="tangent-strip.svg" width="820" alt="Four frames of the same figure in two rows, the point walking up the curve over the field of slope arrows, the shaded region growing behind it, and a brace measuring the rise in the last frame.">
+<img src="tangent-strip.svg" width="820" alt="Four frames of the same figure in two rows, the point walking up the curve over the field of slope arrows with a dashed guide to each axis following it, the shaded region growing behind it, and a brace measuring the rise in the last frame.">
 
 Four times of one figure. A moving picture needs a GIF and this package has no encoder, so a still
 shows motion as a strip: several times of one figure laid out side by side. Every strip on this page
@@ -934,7 +934,7 @@ drawn on the page.
 
 Drive a camera with a track and never with an animation, for the reason tracks give above.
 
-<img src="surface-strip.svg" width="820" alt="Four frames in two rows, showing the same saddle, pane, field arrows and runs of descent from four points around one orbit of the eye.">
+<img src="surface-strip.svg" width="820" alt="Four frames in two rows, showing the same saddle, pane, dashed levels, field arrows and runs of descent from four points around one orbit of the eye.">
 
 The quarters of one orbit. The eye returns to where it started. A test holds that by comparing the
 marks at the end of the entrance against the marks one orbit later, mark for mark by name.
