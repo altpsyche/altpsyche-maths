@@ -327,10 +327,23 @@ describe('strokeTrianglesOf', () => {
     expect(triangleArea(round)).toBeCloseTo(capDisc(0.05), 12);
   });
 
-  it('draws a dashed stroke solid, since no dash is geometry here', () => {
+  it('covers the share of a solid stroke the dash pattern draws', () => {
     const path = line(vec2(0, 0), vec2(2, 0));
     const solidRun = strokeTrianglesOf(path, { colour: black, width: 0.1 });
     const dashed = strokeTrianglesOf(path, { colour: black, width: 0.1, dash: [0.1, 0.1] });
+    // Ten runs of a tenth over two units under a butt cap, so half the area and
+    // none of the length the caps of a wider run would add.
+    expect(triangleArea(dashed)).toBeCloseTo(triangleArea(solidRun) / 2, 12);
+  });
+
+  it('widens a tapered stroke solid and leaves its dash out', () => {
+    // A taper is a fraction of the whole path's length, and outlinedMarks drops
+    // the dash with the stroke it turns into a fill, so both painters draw this
+    // solid too.
+    const path = line(vec2(0, 0), vec2(2, 0));
+    const taper = { from: 0.1, to: 0.1 } as const;
+    const solidRun = strokeTrianglesOf(path, { colour: black, width: taper });
+    const dashed = strokeTrianglesOf(path, { colour: black, width: taper, dash: [0.1, 0.1] });
     expect(triangleArea(dashed)).toBeCloseTo(triangleArea(solidRun), 12);
   });
 

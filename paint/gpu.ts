@@ -195,8 +195,8 @@ function unblended(surface: Held, marks: readonly Mark[]): string[] {
  *
  * What comes back is what the frame left out rather than the picture, since the
  * picture is on the canvas. A text mark is left out because a card has no text
- * vocabulary, a dashed stroke is drawn solid, and on WebGL 2 a mark under partial
- * opacity is drawn without its blend.
+ * vocabulary, and on WebGL 2 a mark under partial opacity is drawn without its
+ * blend.
  */
 export function paintGpu(surface: GpuSurface, marks: readonly Mark[], view: Transform2D): GpuPainting {
   const held = heldBy(surface);

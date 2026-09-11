@@ -147,7 +147,7 @@ describe('gpuFrame', () => {
     expect(built.triangles).toBe(0);
   });
 
-  it('names a dashed stroke as refused, since it is widened solid', () => {
+  it('draws a dashed stroke as its runs and refuses nothing for it', () => {
     const dashed: Mark = {
       kind: 'path',
       id: 'dashed',
@@ -155,9 +155,9 @@ describe('gpuFrame', () => {
       stroke: { colour: colourFrom('#000'), width: 0.2, dash: [0.2, 0.2] },
     };
     const built = gpuFrame([dashed], straight, TINY);
-    expect(built.refused).toEqual(['dashed']);
-    // It is still drawn, as one solid run rather than as the dashes.
-    expect(built.triangles).toBe(2);
+    expect(built.refused).toEqual([]);
+    // Five runs of a fifth over two units, each a rectangle of two triangles.
+    expect(built.triangles).toBe(10);
   });
 
   it('cuts a clip into the geometry rather than naming a scissor', () => {

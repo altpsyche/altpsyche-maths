@@ -18,6 +18,7 @@
 import { interval } from '../values/interval.js';
 import { vec2, type Vec2 } from '../values/vec2.js';
 import type { Bounds } from './bounds.js';
+import { dashPath } from './dash.js';
 import { flattenPath, windingAt } from './inside.js';
 import { outlinePath } from './outline.js';
 import type { Stroke } from './mark.js';
@@ -353,14 +354,24 @@ export function trianglesOf(path: Path, options: TriangleOptions = {}): Vec2[] {
  * carries: a closed subpath leaves two loops wound against each other, and the
  * nonzero rule is what reads those as a ring rather than as a disc.
  *
- * A dash is drawn solid, since nothing in this package turns a dash into
- * geometry and both other painters hand one to the platform.
+ * A dash is cut into the path before it is widened, so each run carries the
+ * stroke's own cap at both of its ends the way a run the platform cuts does.
+ *
+ * A tapered width is a fraction of the whole path's length, so cutting the path
+ * into runs first would restart the taper at each one. A tapered stroke is
+ * widened solid and its dash is left out, which is what the other painters draw
+ * too: `outlinedMarks` turns a taper into a fill and the dash goes with the
+ * stroke it named.
  *
  * A zero-length subpath under a butt cap has no outline and no triangles, which
  * is the SVG specification's rule and what both other painters draw there.
  */
 export function strokeTrianglesOf(path: Path, stroke: Stroke, options: TriangleOptions = {}): Vec2[] {
-  const outline = outlinePath(path, stroke.width, {
+  const runs =
+    stroke.dash && typeof stroke.width === 'number'
+      ? dashPath(path, stroke.dash, stroke.dashOffset)
+      : path;
+  const outline = outlinePath(runs, stroke.width, {
     cap: stroke.cap,
     join: stroke.join,
     tolerance: options.tolerance,

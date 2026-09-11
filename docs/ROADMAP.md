@@ -1390,11 +1390,15 @@ are 1,357 tests over 90 files and a door of 216 values and 247 types.
       9.1e-5 pixels. `measurePath` over the flat demo's 163 path marks costs 0.381 ms a pass against
       0.259, which is against the 33 ms a frame has at 30 frames a second. One of the sixteen
       committed pictures moved: `docs/tangent-strip.svg` by two bytes, in 5 of its 748 elements.
-- [ ] **3. The card draws the dashes.** `strokeTrianglesOf` cuts the path into its dashes before it
-      widens them, so each run gets the stroke's own caps at both its ends, and `gpuFrame` stops
-      naming a dashed mark as refused. **Measurement:** the refused count and the triangle count for a
-      dashed figure, before and after, and the summed triangle area against the duty cycle times the
-      area the solid stroke covers.
+- [x] **3. The card draws the dashes.** `strokeTrianglesOf` cuts the path into its dashes before it
+      widens them, so each run gets the stroke's own caps at both its ends, and `gpuFrame` names a
+      mark refused for its text alone. A tapered width is left widened solid with its dash out, which
+      is what `outlinedMarks` already leaves the other two painters. **Measured:** the flat demo at
+      5.13 seconds with a dash of [0.12, 0.08] on each of its 115 stroked marks named 138 marks
+      refused and drew 1,479 triangles, the solid stroke's, and now names 23, the text alone, and
+      draws 4,635. A stroke of width 0.1 over 20 units covers the duty cycle's share of the solid
+      area to under a part per million under three patterns. Building that frame costs 20.79 ms
+      against 2.62, which is in the found list below.
 - [ ] **4. Both demos gain a dashed mark.** The flat demo drops a dashed guide from the walking point
       to each axis, and the solid demo dashes the crossing curve where the surface stands in front of
       it. **Measurement:** each demo's mark count at named times and how many of those carry a dash,
@@ -1426,6 +1430,22 @@ mark can be drawn by all three painters.
 11. `npm test`, `npm run type-check` and `npm run build` are green, with the test count quoted.
 
 ## Found while working, not yet queued
+
+- **A tapered stroke's dash is dropped and nothing says so.** `outlinedMarks` turns a stroke whose
+  width is a `Taper` into a fill, carrying the colour, the opacity and the clip across and leaving
+  `dash` and `dashOffset` behind with the stroke it replaced. So a figure naming both draws solid in
+  every painter, and `strokeTrianglesOf` now says the same thing in a comment rather than by
+  accident. Whether a taper and a dash together should draw the runs at their own widths is the call
+  a fix has to make, and the answer decides whether a taper is measured along the whole path or along
+  each run.
+- **Cutting a dash re-measures the subpath once per run.** `dashPath` calls `pathWindow` for each
+  run, and `pathWindow` calls `measurePath` on the subpath it is handed, so a subpath of P pieces cut
+  into R runs takes 16*P*(R+1) point evaluations where one walk would take 16*P. The flat demo with
+  a dash on each of its 115 stroked marks builds a frame in 20.79 ms against the 2.62 the same frame
+  takes undashed, which is against the 33 ms a frame has at 30 frames a second. What would fix it is
+  one walk that cuts every run as it passes, which is `pathWindow`'s own body with the measuring
+  lifted out of it. No figure here dashes more than a few marks, which is why this is filed rather
+  than fixed.
 
 - **The WebGL 2 backend applies no blend, and `resolve` does not say so.** `gpu/webgl2.js` names
   `blend` nowhere in the whole module, where `gpu/webgpu.js` carries a pipeline's `targets[].blend`

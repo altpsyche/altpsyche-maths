@@ -143,10 +143,9 @@ function vertexData(marks: readonly Mark[], view: Transform2D, options: GpuFrame
   const numbers: number[] = [];
   const refused: string[] = [];
   for (const mark of marks) {
-    // A text mark carries no outline and a card has no text vocabulary, and a
-    // dashed stroke is widened solid because nothing here turns a dash into
-    // geometry. Both differ from what the other two painters draw.
-    if (mark.kind === 'text' || (mark.kind === 'path' && mark.stroke?.dash)) refused.push(mark.id);
+    // A text mark carries no outline and a card has no text vocabulary, which is
+    // the one thing here that differs from what the other two painters draw.
+    if (mark.kind === 'text') refused.push(mark.id);
     const pieces = trianglesFor(mark, options);
     if (pieces.length === 0 || pieces.every((piece) => piece.corners.length === 0)) continue;
     const opacity = mark.opacity ?? 1;
