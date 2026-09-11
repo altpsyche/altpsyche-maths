@@ -150,6 +150,12 @@ no index: `git log` is the only archive there is.
 **A rule in this file is the rule**, so a rule that looks worth changing is changed rather than
 checked against a second document that would then disagree with it.
 
+**A feature lands where it belongs, and a workaround is not a landing.** Siva's rule of 2026-09-11.
+Where a gap is another package's, the fix is that package's and the reading that found it is written
+down for it, rather than a second implementation growing here around the hole. A workaround already
+in the tree stays until its answer exists, since taking one out early leaves the thing it holds up
+unable to run at all, and `docs/ROADMAP.md` lists the six the GPU painter carries.
+
 **An item bigger than one commit gets its steps written before it is worked**, each naming the
 measurement it will quote, plus done-criteria checkable line by line. Writing that plan is a session
 on its own and no code is touched in it. Later sessions resume at the first unticked step.

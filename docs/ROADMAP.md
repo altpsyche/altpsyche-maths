@@ -92,28 +92,24 @@ whenever a picture wants an image, which is the number that exists so a kind can
 reads under a new reader, and only a new file under an old reader fails. **What would change this
 answer** is a chapter whose picture is a photograph.
 
-**A fourth decision is open and it is Siva's. It gates the frozen renderer work rather than the format,
-so nothing below waits on it.**
+**A fourth decision is answered and it is Siva's, taken on 2026-09-11. A figure names the painters
+that can draw it.**
 
-**May a figure be undrawable in SVG?** `figure/mark.ts` says no, in its own header: what a mark may
+**May a figure be undrawable in SVG?** `figure/mark.ts` said no, in its own header: what a mark may
 ask for is the intersection of what an SVG element and a two-dimensional canvas can both do, rather
 than the union, because a figure reaching for something only one painter has "would look right on the
-page and lose it without a word in a recording". A third painter makes that a three-way intersection.
+page and lose it without a word in a recording". A third painter made that a three-way intersection.
 
-**The two answers and what each costs.** If the rule stands, the GPU painter draws the same marks
-faster and sharper and gains no capability, so there is no depth buffer and the version that would
-have written one never returns to the ladder.
-If the rule goes, a figure using depth is silently wrong in SVG, and the still frame a page puts in
-its exported HTML for a reader with no JavaScript is SVG.
+**The answer is the third one.** A figure declares which painters can draw it, so a figure asking for
+depth is turned away by the SVG painter with a refusal rather than drawn wrongly by it. That keeps
+the rule's purpose, which is that nothing is lost without a word, and it lets a mark ask for what
+only one painter has. **What would change this answer** is a refusal a page cannot act on, since the
+still frame a page puts in its exported HTML for a reader with no JavaScript is SVG and a refusal
+there is a hole in the page.
 
-**A third answer exists and it is the one worth examining.** A figure declares which painters can
-draw it, so a figure asking for depth is refused by the SVG painter rather than drawn wrongly by it.
-That keeps the rule's purpose, which is that nothing is lost without a word, while letting the GPU
-painter be worth building.
-
-**Nothing waits on this**, since the format work draws the marks that exist today and the four look
-versions in front of it draw them differently rather than draw more of them. What the answer gates is
-the GPU painter, which is off the ladder either way.
+**What it unblocks is 3.0.0**, which is depth, and that version is on the ladder to plan rather than
+blocked. The two answers it beat are the rule standing, which would have taken depth off the plan for
+good, and the rule going, which would have let a figure be silently wrong in SVG.
 
 **A fifth set of decisions is answered, all Siva's, taken on 2026-09-08 after a review of the whole
 architecture. They reorder everything below.**
@@ -250,6 +246,16 @@ in its own terms, and this package installs the version that comes out.
 
 ## The eight gaps the GPU spike found, which are what it leaves behind
 
+**A gap in another package is fixed in that package, and this is Siva's rule of 2026-09-11.** A
+feature lands where it belongs and a workaround is not a landing. Six of the readings below are
+worked around inside `paint/gpu.ts` and `gates/gpu.mjs` today, and every one of those workarounds is
+a thing this package does because the engine cannot be asked: it translates WGSL to GLSL by hand,
+gathers the offering and selects a backend itself, builds a fresh canvas per figure, names a mark
+refused rather than blending it, cuts a rectangle into the geometry rather than naming a scissor, and
+screenshots a canvas it cannot read back. **They stay until the engine answers**, because ripping one
+out before its answer exists would leave the painter unable to draw at all, and each is written here
+with the reading that found it so the engine session has the case already made.
+
 **The spike is done and it was not a version.** It ran on 2026-09-09, drew a figure's marks as filled
 and stroked paths on a `blackwell` adapter, and closed in six commits whose bodies carry every number
 it read. Its steps and its done-criteria are in `git log` and are not repeated here. **What queues
@@ -372,14 +378,13 @@ is left, since 2.1.0 through 2.8.0 are cut.
 | version | what lands | what it changes | steps | cut against | depends on | plan |
 | --- | --- | --- | --- | --- | --- | --- |
 | 2.9.0 | text on a GPU, and the recorder running without a page | nothing in the format | to plan | every demo recorded off a card | `@altpsyche/engine`, a source of glyph outlines, 2.6.0, and a canvas with no page behind it if `mediabunny` takes nothing else | to plan |
-| 3.0.0 | depth, so a figure in space keeps it | what a `Mark` may ask for, which breaks the format's own version | to plan | the solid demo, whose crossing curve is drawn in the right order rather than the tree's | `@altpsyche/engine`, and the fourth decision above | blocked on a decision |
+| 3.0.0 | depth, so a figure in space keeps it, and a figure naming the painters that can draw it | what a `Mark` may ask for, which breaks the format's own version | to plan | the solid demo, whose crossing curve is drawn in the right order rather than the tree's | `@altpsyche/engine` | to plan |
 | 3.1.0 | a clip that is a path rather than a rectangle | what a `Mark` may ask for | to plan | nothing yet, which is why it is last of the marks | `@altpsyche/engine`'s counting stencil, its item 2 | to plan |
 | 4.0.0 | a figure a reader can act on | the shape of `Figure`, which gains input | to plan | nothing yet | nothing outside this package | to plan |
 
-**The three rows past 2.8.0 are consequences rather than plans.** A major here exists only when
-something breaks, so 3.0.0 is what the fourth decision creates if it is answered one way and nothing
-at all if it is answered the other. 3.1.0 and 4.0.0 are written down so they are not rediscovered,
-and neither has a picture waiting, which is what a version needs before it is worked.
+**3.1.0 and 4.0.0 are consequences rather than plans**, written down so they are not rediscovered,
+and neither has a picture waiting, which is what a version needs before it is worked. 3.0.0 is a plan
+now that the fourth decision is answered, and the solid demo is the picture waiting for it.
 
 **What hit testing already gives 4.0.0, so it is not built twice.** `containsPoint`, `windingAt` and
 `nearestEdge` are at the door and a flat list of marks with stable ids is why hit testing is possible
@@ -420,7 +425,8 @@ the format's value types.
 **What is cut is not here.** A version that is cut leaves this table, its entry is deleted, and the
 Now section and `git log` are what keep it.
 
-**Three things wait off the ladder, and each waits on something named.** The GPU painter was the
+**Two things wait off the ladder, and each waits on something named.** Depth was the third and it is
+on the ladder now that the fourth decision above is answered. The GPU painter was the
 fourth and it is cut, and it did not wait for the engine's stencil in the end: the fills are
 triangulated here by ear clipping, which needs no device. **Dashes left this table for 2.8.0 and the
 quadratics they were paired with came back to it**, because a dash is cut by length here and needs no
@@ -429,10 +435,9 @@ device either, where a curve drawn as a curve needs a winding the engine cannot 
 | off the ladder | what it waits on |
 | --- | --- |
 | a curve drawn as a curve rather than flattened | the engine's counted stencil, its item 2, since Loop and Blinn's fill decides an interior by counting a winding, and the one route round it subtracts a concave curve triangle's area with a blend a pipeline drawing the frame the reader sees may not name |
-| a figure in space keeping its depth | the fourth decision above, which is whether a figure may be undrawable in SVG |
 | text on a GPU with a recorder | a source of glyph outlines, which is the one dependency the painter did not answer |
 
-**The reading behind each of the three is below and in `git log`**, so none of them is rediscovered
+**The reading behind each of the two is below and in `git log`**, so none of them is rediscovered
 from nothing when it returns.
 
 **What queues work is the table above, the spike's eight gaps in front of it, the found list below,
