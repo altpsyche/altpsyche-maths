@@ -219,6 +219,7 @@ export type {
 export { Timeline } from './figure/timeline.js';
 export type { Entry, PlayOptions, Span, StaggerOptions } from './figure/timeline.js';
 export { lengthOf, pointAlong } from './figure/length.js';
+export { dashPath } from './figure/dash.js';
 export { pathWindow, trimPath } from './figure/trim.js';
 export { alignPaths, lerpPath } from './figure/morph.js';
 export { durationOf, extentAt, figureTime, isLoop, marksAt, sameMarks, viewAt } from './figure/figure.js';

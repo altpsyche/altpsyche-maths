@@ -349,6 +349,10 @@ numbers and a pointwise map of a shape.
   the near one is no path at all.
 - `trimPath(path, fraction)` — the path up to a fraction of its total length. A fraction at or past
   one is the path itself, untouched.
+- `dashPath(path, dash, dashOffset)` — the runs a dash pattern draws, one subpath per run, by the
+  SVG rule: a pattern of odd length is repeated to make it even, a pattern that is empty, holds a
+  value below nothing or sums to nothing draws the path solid, and the pattern restarts at each
+  subpath. A closed subpath is cut across its seam rather than at it.
 - `alignPaths(from, to)` — the two paths rewritten to the same shape of point list, each drawing
   exactly what it drew before.
 - `lerpPath(from, to, along)` — part way from one path to another, point by point, after aligning

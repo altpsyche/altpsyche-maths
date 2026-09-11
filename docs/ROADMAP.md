@@ -1366,14 +1366,18 @@ called in a loop.
 **The steps.** Each is one commit and each names the measurement its commit quotes. Today's numbers
 are 1,357 tests over 90 files and a door of 216 values and 247 types.
 
-- [ ] **1. A path cut into its dashes.** `dashPath(path, dash, dashOffset)` gives back the runs a
+- [x] **1. A path cut into its dashes.** `dashPath(path, dash, dashOffset)` gives back the runs a
       dashed stroke draws, as one subpath per run, under the SVG specification's own rule: a pattern
       of odd length is repeated to make it even, a pattern that is empty or holds a negative or sums
-      to nothing draws the path solid, the pattern restarts at each subpath, and a closed subpath's
-      pattern runs round the join. **Measurement:** the summed length of the runs against the
-      pattern's duty cycle times the path's length, over a line, a circle and every bent curve the
-      eight committed figures draw, quoted as the worst share; and a line of length 5 under `[1, 1]`
-      giving three runs of 1, 1 and 0.5.
+      to nothing draws the path solid, the pattern restarts at each subpath, and a closed subpath is
+      cut across its seam rather than at it. **Measured:** against a 4,096-step walk a dashed circle
+      draws 0.500000002876 of its own length where the duty cycle names a half, out by 2.88e-9 at
+      radii 0.5, 1 and 5 alike. Over the 1,455 bent curves the eight committed figures draw at the
+      middle of each, the median share is out by 5.421e-6 and the worst by 2.246e-3, on a glyph
+      segment of the flat demo's equation 0.0021 figure units long, where the drawn length is out by
+      4.716e-6 units. A line of 5 under `[1, 1]` draws three whole runs at 0, 2 and 4, not two and a
+      half, which is what the plan said before the step was worked. 1,368 tests over 91 files and a
+      door of 217 values.
 - [ ] **2. Where a dash boundary falls against the true length.** The sampled table places every
       boundary short, and this step measures by how much and settles what to do about it: `SAMPLES`
       rises and the cost of every walk with it, or the shortfall is stated as the bound the painters
