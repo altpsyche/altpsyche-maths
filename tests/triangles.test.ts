@@ -4,6 +4,7 @@ import {
   circle,
   clipTriangles,
   colourFrom,
+  dashPath,
   flattenPath,
   intersectionOf,
   interval,
@@ -268,7 +269,13 @@ function stroking(marks: readonly Mark[]) {
       empty += 1;
       continue;
     }
-    const outline = outlinePath(mark.path, mark.stroke.width, {
+    // The outline is taken over the runs a dash leaves, since that is the shape
+    // the triangles are cut from.
+    const runs =
+      mark.stroke.dash && typeof mark.stroke.width === 'number'
+        ? dashPath(mark.path, mark.stroke.dash, mark.stroke.dashOffset)
+        : mark.path;
+    const outline = outlinePath(runs, mark.stroke.width, {
       cap: mark.stroke.cap,
       join: mark.stroke.join,
     });
@@ -359,8 +366,8 @@ describe('strokeTrianglesOf', () => {
 describe('the demos stroked into triangles', () => {
   it('covers every stroke of the flat demo to its own outline', () => {
     const cut = stroking(marksAt(tangent, 5));
-    expect(cut.strokes).toBe(115);
-    expect(cut.triangles).toBe(498);
+    expect(cut.strokes).toBe(119);
+    expect(cut.triangles).toBe(506);
     // Eight marks carry an empty path and sixteen a subpath with no length under
     // a butt cap, and both other painters draw nothing for either.
     expect(cut.empty).toBe(24);
@@ -369,8 +376,8 @@ describe('the demos stroked into triangles', () => {
 
   it('covers every stroke of the solid demo to its own outline', () => {
     const cut = stroking(marksAt(solid, 6));
-    expect(cut.strokes).toBe(72);
-    expect(cut.triangles).toBe(558);
+    expect(cut.strokes).toBe(78);
+    expect(cut.triangles).toBe(1446);
     expect(cut.empty).toBe(8);
     expect(cut.worst).toBeLessThan(1e-10);
   });
@@ -475,19 +482,19 @@ describe('the demos clipped', () => {
     const cut = clipping(marksAt(tangent, 5));
     // Twelve of the forty carry text, which has no outline until a card has a
     // source of glyphs.
-    expect(cut.clipped).toBe(40);
-    expect(cut.paths).toBe(28);
-    expect(cut.before).toBe(317);
-    expect(cut.after).toBe(244);
+    expect(cut.clipped).toBe(42);
+    expect(cut.paths).toBe(30);
+    expect(cut.before).toBe(321);
+    expect(cut.after).toBe(248);
     expect(cut.worst).toBeLessThan(1e-9);
   });
 
   it('cuts every clipped mark of the solid demo to its own box', () => {
     const cut = clipping(marksAt(solid, 6));
-    expect(cut.clipped).toBe(72);
-    expect(cut.paths).toBe(61);
-    expect(cut.before).toBe(296);
-    expect(cut.after).toBe(190);
+    expect(cut.clipped).toBe(74);
+    expect(cut.paths).toBe(63);
+    expect(cut.before).toBe(742);
+    expect(cut.after).toBe(256);
     // Two marks fall wholly outside the box they carry.
     expect(cut.emptied).toBe(2);
     expect(cut.worst).toBeLessThan(1e-9);

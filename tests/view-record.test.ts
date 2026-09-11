@@ -160,10 +160,10 @@ describe('an inset as a record', () => {
       const theirs = marks.filter((mark) => mark.id.startsWith('tangent/lens'));
       const whole = marks.filter((mark) => !mark.id.startsWith('tangent/lens'));
       const ours = insetMarks(whole, resolveInset(record));
-      expect(theirs.length, `the inset at ${seconds}`).toBeGreaterThanOrEqual(32);
-      expect(theirs.length).toBeLessThanOrEqual(41);
-      expect(marks.length).toBeGreaterThanOrEqual(179);
-      expect(marks.length).toBeLessThanOrEqual(188);
+      expect(theirs.length, `the inset at ${seconds}`).toBeGreaterThanOrEqual(34);
+      expect(theirs.length).toBeLessThanOrEqual(43);
+      expect(marks.length).toBeGreaterThanOrEqual(183);
+      expect(marks.length).toBeLessThanOrEqual(192);
       expect(sameMarks(ours, theirs)).toBe(true);
     }
   });

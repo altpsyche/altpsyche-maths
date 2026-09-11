@@ -1399,10 +1399,16 @@ are 1,357 tests over 90 files and a door of 216 values and 247 types.
       draws 4,635. A stroke of width 0.1 over 20 units covers the duty cycle's share of the solid
       area to under a part per million under three patterns. Building that frame costs 20.79 ms
       against 2.62, which is in the found list below.
-- [ ] **4. Both demos gain a dashed mark.** The flat demo drops a dashed guide from the walking point
-      to each axis, and the solid demo dashes the crossing curve where the surface stands in front of
-      it. **Measurement:** each demo's mark count at named times and how many of those carry a dash,
-      before and after, and the guide's foot against the point's own coordinate to 1e-12.
+- [x] **4. Both demos gain a dashed mark.** The flat demo drops a dashed guide from the dot to each
+      axis, and the solid demo cuts two more levels of the saddle either side of the one its plane
+      sits at and dashes both. Dashing the crossing curve where the surface stands in front of it was
+      the plan's picture and it needs depth, which is 3.0.0. **Measured:** the flat demo draws 149
+      marks of its own at every time against 147, four of them dashed counting the inset's copies,
+      and its guides' feet land on -2.135 up and -2.76 across, which are the axes, to 1e-12 at every
+      named time. The solid demo draws 253 against 249, with six to eight dashed as the camera turns
+      a branch out of the inset's window. `gpuFrame` refuses 23 of the flat demo's marks and 21 of
+      the solid's, the text alone, and draws 1,489 triangles against 1,481 and 2,145 against 1,637,
+      in 4.34 and 8.13 ms a frame.
 - [ ] **5. The README's pictures carry the dashes.** `npm run demos` regenerates the eight stills and
       the eight strips, and the committed bytes move by the dashes alone. **Measurement:** the byte
       count of each regenerated file, before and after, and the frame count of each strip.

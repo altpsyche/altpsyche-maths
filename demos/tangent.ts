@@ -83,6 +83,10 @@ const accent = { colour: DEEP, width: 0.035 };
  * whole of it.
  */
 const slope: Stroke = { colour: DEEP, width: { from: 0, to: 0.035, curve: 'thereAndBack' } };
+/** The guide dropped from the dot to each axis. It is dashed so it reads as a
+ * measurement of where the dot stands rather than as another line of the
+ * picture, which is what every solid stroke here already is. */
+const guide: Stroke = { colour: STEEL, width: 0.018, dash: [0.14, 0.1] };
 const lit = AMBER;
 
 /** The two colours a field arrow takes, the second where the curve has begun to
@@ -277,6 +281,20 @@ const point: Expression = {
   arguments: [{ kind: 'path', of: walked }, along],
 };
 
+/** Where the two axes cross, in figure units, which is where each guide's foot
+ * sits. */
+const ORIGIN = pointOf(coords, 0, 0);
+
+/** One guide, from the dot to its foot on an axis. The foot takes one coordinate
+ * from the dot and the other from the origin, so the line is square to the axis
+ * it lands on. */
+const guideTo = (name: string, foot: Expression): NodeRecord => ({
+  kind: 'shape',
+  name,
+  path: { kind: 'line', from: point, to: foot },
+  style: { stroke: guide },
+});
+
 /** The graph x the dot stands at, which is its place across mapped back through
  * the scale it was drawn with. */
 const graphX: Expression = {
@@ -418,6 +436,8 @@ export const scene: NodeRecord = {
       path: { kind: 'tangentAt', coords, curve: walked, x: graphX, reach: 1.2 },
       style: { stroke: slope },
     },
+    guideTo('drop', { kind: 'point', x: { kind: 'member', of: point, name: 'x' }, y: ORIGIN.y }),
+    guideTo('reach', { kind: 'point', x: ORIGIN.x, y: { kind: 'member', of: point, name: 'y' } }),
     { kind: 'dot', name: 'point', at: point, radius: 0.08, fill: ink },
     {
       kind: 'text',

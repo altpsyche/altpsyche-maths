@@ -168,9 +168,9 @@ describe('the flat demo as a committed file', () => {
   });
 
   it('draws the counts its still time and its named times each have', () => {
-    expect(marksAt(readFigure(committed), tangent.still)).toHaveLength(182);
+    expect(marksAt(readFigure(committed), tangent.still)).toHaveLength(186);
     expect(times.map((seconds) => marksAt(readFigure(committed), seconds).length)).toEqual([
-      187, 186, 186, 183, 179, 179, 179,
+      191, 190, 190, 187, 183, 183, 183,
     ]);
   });
 
@@ -244,8 +244,8 @@ describe('the solid demo as a committed file', () => {
 
   it('draws the counts its still time and its four named times each have', () => {
     const read = readFigure(committed);
-    expect(marksAt(read, solid.still)).toHaveLength(322);
-    expect(times.map((seconds) => marksAt(read, seconds).length)).toEqual([319, 320, 319, 319]);
+    expect(marksAt(read, solid.still)).toHaveLength(328);
+    expect(times.map((seconds) => marksAt(read, seconds).length)).toEqual([326, 326, 326, 326]);
   });
 
   it('washes the pane differently at two bearings, which is the camera reaching the fill', () => {

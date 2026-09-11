@@ -468,8 +468,8 @@ describe('the flat demo', () => {
     }
   });
 
-  it('draws the same 147 marks at every time, and an inset of between 32 and 41', () => {
-    // Forty-two of the 147 are the field's twenty-one arrows, fifteen the two
+  it('draws the same 149 marks at every time, and an inset of between 34 and 43', () => {
+    // Forty-two of the 149 are the field's twenty-one arrows, fifteen the two
     // rules, two the inset's own panel and one the light that runs along the
     // tangent, which is in the list at every time and holds no path outside its
     // own span. Nothing arrives or leaves part way through, so every time alike. What the inset draws is not: it magnifies a
@@ -477,9 +477,34 @@ describe('the flat demo', () => {
     for (const seconds of [0, ...FRAMES, durationOf(tangent)]) {
       const marks = marksAt(tangent, seconds);
       const lens = marks.filter((mark) => mark.id.startsWith('tangent/lens/'));
-      expect(marks.length - lens.length).toBe(147);
-      expect(lens.length).toBeGreaterThanOrEqual(32);
-      expect(lens.length).toBeLessThanOrEqual(41);
+      expect(marks.length - lens.length).toBe(149);
+      expect(lens.length).toBeGreaterThanOrEqual(34);
+      expect(lens.length).toBeLessThanOrEqual(43);
+    }
+  });
+
+  it('drops a dashed guide from the dot to each axis, with its foot on that axis', () => {
+    // The origin in figure units, which the graph's own scales put at -2.76
+    // across and -2.135 up.
+    for (const seconds of [0, ...FRAMES, durationOf(tangent)]) {
+      const marks = marksAt(tangent, seconds);
+      const dashed = marks.filter((mark) => mark.kind === 'path' && mark.stroke?.dash);
+      // Two in the picture and two in the inset's magnified copy of it.
+      expect(dashed).toHaveLength(4);
+      const drop = marks.find((mark) => mark.id === 'tangent/drop') as Mark & { kind: 'path' };
+      const reach = marks.find((mark) => mark.id === 'tangent/reach') as Mark & { kind: 'path' };
+      const dot = marks.find((mark) => mark.id === 'tangent/point/disc') as Mark & { kind: 'path' };
+      const endOf = (mark: Mark & { kind: 'path' }) => {
+        const subpath = mark.path[mark.path.length - 1];
+        return subpath.curves[subpath.curves.length - 1].to;
+      };
+      expect(endOf(drop).y).toBeCloseTo(-2.135, 12);
+      expect(endOf(reach).x).toBeCloseTo(-2.76, 12);
+      // Both leave the same point, and that point is inside the dot, so the
+      // guide reads where the dot stands rather than a place beside it.
+      expect(drop.path[0].start).toEqual(reach.path[0].start);
+      const disc = dot.path[0].start;
+      expect(Math.hypot(drop.path[0].start.x - disc.x, drop.path[0].start.y - disc.y)).toBeLessThan(0.09);
     }
   });
 
@@ -854,10 +879,10 @@ describe('the flat demo', () => {
 describe('the strip of frames', () => {
   it('carries every frame with no two marks sharing an id', () => {
     const { marks } = stripMarks(FRAMES);
-    // Four frames of 147 own marks, and the four insets between them draw 142:
+    // Four frames of 149 own marks, and the four insets between them draw 150:
     // each magnifies a window that has moved, so no two of them hold the same
     // number of marks.
-    expect(marks).toHaveLength(147 * FRAMES.length + 142);
+    expect(marks).toHaveLength(149 * FRAMES.length + 150);
     expect(new Set(marks.map((mark) => mark.id)).size).toBe(marks.length);
   });
 
@@ -1306,17 +1331,28 @@ describe('the solid demo', () => {
     expect(named3).toEqual(['x', 'y', 'z']);
   });
 
-  it('draws the same 249 marks at every time, and an inset of between 67 and 80', () => {
+  it('cuts two levels either side of the plane and dashes both', () => {
+    for (const seconds of [0, ...SOLID_FRAMES, SOLID_TIMES.round]) {
+      const dashed = solidAt(seconds).filter((mark) => mark.kind === 'path' && mark.stroke?.dash);
+      // Two branches to each of the two levels, in the picture and again in the
+      // inset, less any branch the camera has turned out of the window.
+      expect(dashed.length).toBeGreaterThanOrEqual(6);
+      expect(dashed.length).toBeLessThanOrEqual(8);
+      for (const mark of dashed) expect(mark.id).toMatch(/contour[01]/);
+    }
+  });
+
+  it('draws the same 253 marks at every time, and an inset of between 69 and 83', () => {
     // A hundred and forty-four cells of saddle, sixteen panes of glass and the
     // field's thirty-six arrows at two marks each, with the rest the axes, the
     // title, the rule, the inset's own panel and the two lights that run along
     // the two branches of the crossing. What the inset draws is not
     // fixed: it magnifies a window on the middle and the saddle turns under it.
     for (const seconds of [0, ...SOLID_FRAMES, SOLID_TIMES.round]) {
-      expect(solidOwn(seconds)).toHaveLength(249);
+      expect(solidOwn(seconds)).toHaveLength(253);
       const lens = solidAt(seconds).length - solidOwn(seconds).length;
-      expect(lens).toBeGreaterThanOrEqual(67);
-      expect(lens).toBeLessThanOrEqual(80);
+      expect(lens).toBeGreaterThanOrEqual(69);
+      expect(lens).toBeLessThanOrEqual(83);
     }
   });
 
@@ -1527,10 +1563,10 @@ describe('the solid demo', () => {
 describe('the solid strip', () => {
   it('carries every frame with no two marks sharing an id', () => {
     const { marks } = solidStripMarks(SOLID_FRAMES, 2);
-    // Four frames of 249 own marks, and the four insets between them draw 286:
+    // Four frames of 253 own marks, and the four insets between them draw 295:
     // each magnifies a window on a saddle that has turned, so no two of them hold
     // the same number of marks.
-    expect(marks).toHaveLength(249 * SOLID_FRAMES.length + 286);
+    expect(marks).toHaveLength(253 * SOLID_FRAMES.length + 295);
     expect(new Set(marks.map((mark) => mark.id)).size).toBe(marks.length);
   });
 });

@@ -607,6 +607,284 @@
           }
         },
         {
+          "kind": "shape",
+          "name": "drop",
+          "path": {
+            "from": {
+              "arguments": [
+                {
+                  "kind": "path",
+                  "of": {
+                    "coords": {
+                      "x": {
+                        "graph": {
+                          "from": -1,
+                          "to": 4
+                        },
+                        "units": {
+                          "from": -4.6,
+                          "to": 4.6
+                        }
+                      },
+                      "y": {
+                        "graph": {
+                          "from": -1,
+                          "to": 9
+                        },
+                        "units": {
+                          "from": -2.55,
+                          "to": 1.6
+                        }
+                      }
+                    },
+                    "kind": "plot",
+                    "of": {
+                      "kind": "arithmetic",
+                      "left": {
+                        "kind": "variable",
+                        "name": "x"
+                      },
+                      "operator": "*",
+                      "right": {
+                        "kind": "variable",
+                        "name": "x"
+                      }
+                    },
+                    "over": {
+                      "from": 0,
+                      "to": 3
+                    }
+                  }
+                },
+                {
+                  "kind": "track",
+                  "name": "s"
+                }
+              ],
+              "kind": "call",
+              "name": "pointAlong"
+            },
+            "kind": "line",
+            "to": {
+              "kind": "point",
+              "x": {
+                "kind": "member",
+                "name": "x",
+                "of": {
+                  "arguments": [
+                    {
+                      "kind": "path",
+                      "of": {
+                        "coords": {
+                          "x": {
+                            "graph": {
+                              "from": -1,
+                              "to": 4
+                            },
+                            "units": {
+                              "from": -4.6,
+                              "to": 4.6
+                            }
+                          },
+                          "y": {
+                            "graph": {
+                              "from": -1,
+                              "to": 9
+                            },
+                            "units": {
+                              "from": -2.55,
+                              "to": 1.6
+                            }
+                          }
+                        },
+                        "kind": "plot",
+                        "of": {
+                          "kind": "arithmetic",
+                          "left": {
+                            "kind": "variable",
+                            "name": "x"
+                          },
+                          "operator": "*",
+                          "right": {
+                            "kind": "variable",
+                            "name": "x"
+                          }
+                        },
+                        "over": {
+                          "from": 0,
+                          "to": 3
+                        }
+                      }
+                    },
+                    {
+                      "kind": "track",
+                      "name": "s"
+                    }
+                  ],
+                  "kind": "call",
+                  "name": "pointAlong"
+                }
+              },
+              "y": -2.135
+            }
+          },
+          "style": {
+            "stroke": {
+              "colour": {
+                "a": 1,
+                "b": 179,
+                "g": 143,
+                "name": "steel",
+                "r": 90
+              },
+              "dash": [
+                0.14,
+                0.1
+              ],
+              "width": 0.018
+            }
+          }
+        },
+        {
+          "kind": "shape",
+          "name": "reach",
+          "path": {
+            "from": {
+              "arguments": [
+                {
+                  "kind": "path",
+                  "of": {
+                    "coords": {
+                      "x": {
+                        "graph": {
+                          "from": -1,
+                          "to": 4
+                        },
+                        "units": {
+                          "from": -4.6,
+                          "to": 4.6
+                        }
+                      },
+                      "y": {
+                        "graph": {
+                          "from": -1,
+                          "to": 9
+                        },
+                        "units": {
+                          "from": -2.55,
+                          "to": 1.6
+                        }
+                      }
+                    },
+                    "kind": "plot",
+                    "of": {
+                      "kind": "arithmetic",
+                      "left": {
+                        "kind": "variable",
+                        "name": "x"
+                      },
+                      "operator": "*",
+                      "right": {
+                        "kind": "variable",
+                        "name": "x"
+                      }
+                    },
+                    "over": {
+                      "from": 0,
+                      "to": 3
+                    }
+                  }
+                },
+                {
+                  "kind": "track",
+                  "name": "s"
+                }
+              ],
+              "kind": "call",
+              "name": "pointAlong"
+            },
+            "kind": "line",
+            "to": {
+              "kind": "point",
+              "x": -2.76,
+              "y": {
+                "kind": "member",
+                "name": "y",
+                "of": {
+                  "arguments": [
+                    {
+                      "kind": "path",
+                      "of": {
+                        "coords": {
+                          "x": {
+                            "graph": {
+                              "from": -1,
+                              "to": 4
+                            },
+                            "units": {
+                              "from": -4.6,
+                              "to": 4.6
+                            }
+                          },
+                          "y": {
+                            "graph": {
+                              "from": -1,
+                              "to": 9
+                            },
+                            "units": {
+                              "from": -2.55,
+                              "to": 1.6
+                            }
+                          }
+                        },
+                        "kind": "plot",
+                        "of": {
+                          "kind": "arithmetic",
+                          "left": {
+                            "kind": "variable",
+                            "name": "x"
+                          },
+                          "operator": "*",
+                          "right": {
+                            "kind": "variable",
+                            "name": "x"
+                          }
+                        },
+                        "over": {
+                          "from": 0,
+                          "to": 3
+                        }
+                      }
+                    },
+                    {
+                      "kind": "track",
+                      "name": "s"
+                    }
+                  ],
+                  "kind": "call",
+                  "name": "pointAlong"
+                }
+              }
+            }
+          },
+          "style": {
+            "stroke": {
+              "colour": {
+                "a": 1,
+                "b": 179,
+                "g": 143,
+                "name": "steel",
+                "r": 90
+              },
+              "dash": [
+                0.14,
+                0.1
+              ],
+              "width": 0.018
+            }
+          }
+        },
+        {
           "at": {
             "arguments": [
               {

@@ -1953,6 +1953,314 @@
               "z": 1
             }
           },
+          "curve": {
+            "of": {
+              "x": {
+                "kind": "variable",
+                "name": "u"
+              },
+              "y": {
+                "kind": "variable",
+                "name": "v"
+              },
+              "z": {
+                "kind": "arithmetic",
+                "left": {
+                  "kind": "arithmetic",
+                  "left": {
+                    "kind": "arithmetic",
+                    "left": {
+                      "kind": "variable",
+                      "name": "u"
+                    },
+                    "operator": "*",
+                    "right": {
+                      "kind": "variable",
+                      "name": "u"
+                    }
+                  },
+                  "operator": "-",
+                  "right": {
+                    "kind": "arithmetic",
+                    "left": {
+                      "kind": "variable",
+                      "name": "v"
+                    },
+                    "operator": "*",
+                    "right": {
+                      "kind": "variable",
+                      "name": "v"
+                    }
+                  }
+                },
+                "operator": "/",
+                "right": 2
+              }
+            },
+            "options": {
+              "over": {
+                "u": {
+                  "from": -1.5,
+                  "to": 1.5
+                },
+                "v": {
+                  "from": -1.5,
+                  "to": 1.5
+                }
+              },
+              "resolution": 48
+            },
+            "plane": {
+              "normal": {
+                "x": 0,
+                "y": 0,
+                "z": 1
+              },
+              "point": {
+                "x": 0,
+                "y": 0,
+                "z": -0.10000000000000003
+              }
+            }
+          },
+          "kind": "section3",
+          "name": "contour0",
+          "options": {
+            "stroke": {
+              "colour": {
+                "a": 1,
+                "b": 12,
+                "g": 65,
+                "name": "ember",
+                "r": 194
+              },
+              "dash": [
+                0.1,
+                0.07
+              ],
+              "width": 0.022
+            }
+          },
+          "style": {
+            "opacity": 0.55
+          }
+        },
+        {
+          "camera": {
+            "eye": {
+              "x": {
+                "kind": "arithmetic",
+                "left": 4.6,
+                "operator": "*",
+                "right": {
+                  "arguments": [
+                    {
+                      "kind": "arithmetic",
+                      "left": 6.283185307179586,
+                      "operator": "*",
+                      "right": {
+                        "kind": "track",
+                        "name": "turn"
+                      }
+                    }
+                  ],
+                  "kind": "call",
+                  "name": "cos"
+                }
+              },
+              "y": {
+                "kind": "arithmetic",
+                "left": 4.6,
+                "operator": "*",
+                "right": {
+                  "arguments": [
+                    {
+                      "kind": "arithmetic",
+                      "left": 6.283185307179586,
+                      "operator": "*",
+                      "right": {
+                        "kind": "track",
+                        "name": "turn"
+                      }
+                    }
+                  ],
+                  "kind": "call",
+                  "name": "sin"
+                }
+              },
+              "z": 2.6
+            },
+            "projection": {
+              "fov": 0.6283185307179586,
+              "height": 5,
+              "kind": "perspective",
+              "near": 0.2
+            },
+            "target": {
+              "x": 0,
+              "y": 0,
+              "z": 0
+            },
+            "up": {
+              "x": 0,
+              "y": 0,
+              "z": 1
+            }
+          },
+          "curve": {
+            "of": {
+              "x": {
+                "kind": "variable",
+                "name": "u"
+              },
+              "y": {
+                "kind": "variable",
+                "name": "v"
+              },
+              "z": {
+                "kind": "arithmetic",
+                "left": {
+                  "kind": "arithmetic",
+                  "left": {
+                    "kind": "arithmetic",
+                    "left": {
+                      "kind": "variable",
+                      "name": "u"
+                    },
+                    "operator": "*",
+                    "right": {
+                      "kind": "variable",
+                      "name": "u"
+                    }
+                  },
+                  "operator": "-",
+                  "right": {
+                    "kind": "arithmetic",
+                    "left": {
+                      "kind": "variable",
+                      "name": "v"
+                    },
+                    "operator": "*",
+                    "right": {
+                      "kind": "variable",
+                      "name": "v"
+                    }
+                  }
+                },
+                "operator": "/",
+                "right": 2
+              }
+            },
+            "options": {
+              "over": {
+                "u": {
+                  "from": -1.5,
+                  "to": 1.5
+                },
+                "v": {
+                  "from": -1.5,
+                  "to": 1.5
+                }
+              },
+              "resolution": 48
+            },
+            "plane": {
+              "normal": {
+                "x": 0,
+                "y": 0,
+                "z": 1
+              },
+              "point": {
+                "x": 0,
+                "y": 0,
+                "z": 0.8
+              }
+            }
+          },
+          "kind": "section3",
+          "name": "contour1",
+          "options": {
+            "stroke": {
+              "colour": {
+                "a": 1,
+                "b": 12,
+                "g": 65,
+                "name": "ember",
+                "r": 194
+              },
+              "dash": [
+                0.1,
+                0.07
+              ],
+              "width": 0.022
+            }
+          },
+          "style": {
+            "opacity": 0.55
+          }
+        },
+        {
+          "camera": {
+            "eye": {
+              "x": {
+                "kind": "arithmetic",
+                "left": 4.6,
+                "operator": "*",
+                "right": {
+                  "arguments": [
+                    {
+                      "kind": "arithmetic",
+                      "left": 6.283185307179586,
+                      "operator": "*",
+                      "right": {
+                        "kind": "track",
+                        "name": "turn"
+                      }
+                    }
+                  ],
+                  "kind": "call",
+                  "name": "cos"
+                }
+              },
+              "y": {
+                "kind": "arithmetic",
+                "left": 4.6,
+                "operator": "*",
+                "right": {
+                  "arguments": [
+                    {
+                      "kind": "arithmetic",
+                      "left": 6.283185307179586,
+                      "operator": "*",
+                      "right": {
+                        "kind": "track",
+                        "name": "turn"
+                      }
+                    }
+                  ],
+                  "kind": "call",
+                  "name": "sin"
+                }
+              },
+              "z": 2.6
+            },
+            "projection": {
+              "fov": 0.6283185307179586,
+              "height": 5,
+              "kind": "perspective",
+              "near": 0.2
+            },
+            "target": {
+              "x": 0,
+              "y": 0,
+              "z": 0
+            },
+            "up": {
+              "x": 0,
+              "y": 0,
+              "z": 1
+            }
+          },
           "kind": "axes3",
           "name": "axes",
           "options": {

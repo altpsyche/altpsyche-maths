@@ -208,10 +208,10 @@ describe('gpuFrame', () => {
 describe('the demos as a frame description', () => {
   it('resolves the flat demo to a backend and costs one pass and one draw', () => {
     const built = frameOf(tangent, 5);
-    expect(built.triangles).toBe(1481);
+    expect(built.triangles).toBe(1489);
     // Two coordinates and four channels to a vertex, four bytes each.
     expect(built.bytes).toBe(built.triangles * 3 * 24);
-    expect(built.bytes).toBe(106632);
+    expect(built.bytes).toBe(107208);
     // Every text mark of the flat demo at 5 seconds, and nothing else.
     expect(built.refused).toHaveLength(23);
 
@@ -232,8 +232,8 @@ describe('the demos as a frame description', () => {
 
   it('resolves the solid demo to a backend and costs one pass and one draw', () => {
     const built = frameOf(solid, 6);
-    expect(built.triangles).toBe(1637);
-    expect(built.bytes).toBe(117864);
+    expect(built.triangles).toBe(2145);
+    expect(built.bytes).toBe(154440);
     expect(built.refused).toHaveLength(21);
 
     const spent = cost(built.frame, { width: WIDTH, height: HEIGHT });

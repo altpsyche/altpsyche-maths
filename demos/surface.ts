@@ -62,6 +62,10 @@ const ink = { colour: INK };
 const pen = { colour: INK, width: 0.014 };
 const cut = { colour: EMBER, width: 0.05 };
 const glass = { colour: SKY, width: 0.008 };
+/** The two levels either side of the one the plane sits at. They are dashed so
+ * that the level the plane cuts stays the one solid curve on the surface, and
+ * the dashes read as levels nothing is drawn at rather than as edges. */
+const contour: Stroke = { colour: EMBER, width: 0.022, dash: [0.1, 0.07] };
 const light = { colour: AMBER, width: 0.06 };
 const flow = { colour: DEEP, width: 0.022 };
 /**
@@ -148,6 +152,11 @@ export const saddle: Point3Record = {
  * lines crossing at the middle, which is the one height that says nothing about
  * the method. */
 export const HEIGHT = 0.35;
+
+/** The heights the dashed levels are cut at, one either side of the plane's own,
+ * far enough from it that the three curves do not touch anywhere over the patch
+ * the surface is drawn on. */
+const CONTOURS = [HEIGHT - 0.45, HEIGHT + 0.45];
 
 const plane: Point3Record = { x: u, y: v, z: HEIGHT };
 
@@ -360,6 +369,14 @@ export const scene: NodeRecord = {
       options: { stroke: cut },
       style: { opacity: 1 },
     },
+    ...CONTOURS.map((height, at) => ({
+      kind: 'section3' as const,
+      name: `contour${at}`,
+      curve: { of: saddle, plane: { point: vec3(0, 0, height), normal: vec3(0, 0, 1) }, options: { ...spread, resolution: 48 } },
+      camera,
+      options: { stroke: contour },
+      style: { opacity: 0.55 },
+    })),
     {
       kind: 'axes3',
       name: 'axes',
