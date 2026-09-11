@@ -366,12 +366,11 @@ because every one would have been written against an API the format is going to 
 went on in front of the format, because each changes something the format freezes a written form for,
 and freezing first costs a major of the format's own version to change it afterwards. Eight went on
 behind, because each adds a kind or a painter, which is a format minor an old figure survives, and
-three more are written past those because a session should not rediscover them. One of those eight
-is left, since 2.1.0 through 2.7.0 are cut.
+three more are written past those because a session should not rediscover them. None of those eight
+is left, since 2.1.0 through 2.8.0 are cut.
 
 | version | what lands | what it changes | steps | cut against | depends on | plan |
 | --- | --- | --- | --- | --- | --- | --- |
-| 2.8.0 | a dash drawn as geometry, so a card draws one | nothing; `Stroke.dash` is already in the mark and no painter turns it into geometry | 5 | both demos, each gaining a dashed mark, and the strips that show them moving | nothing outside this package, and `@altpsyche/engine` for the gate alone | below |
 | 2.9.0 | text on a GPU, and the recorder running without a page | nothing in the format | to plan | every demo recorded off a card | `@altpsyche/engine`, a source of glyph outlines, 2.6.0, and a canvas with no page behind it if `mediabunny` takes nothing else | to plan |
 | 3.0.0 | depth, so a figure in space keeps it | what a `Mark` may ask for, which breaks the format's own version | to plan | the solid demo, whose crossing curve is drawn in the right order rather than the tree's | `@altpsyche/engine`, and the fourth decision above | blocked on a decision |
 | 3.1.0 | a clip that is a path rather than a rectangle | what a `Mark` may ask for | to plan | nothing yet, which is why it is last of the marks | `@altpsyche/engine`'s counting stencil, its item 2 | to plan |
@@ -520,6 +519,26 @@ the motion in a still. 2.6.0 is the version that ends that, and the strips stay 
 README that plays a video on load is a README nobody can read.
 
 ## Now
+
+**2.8.0 is cut and unpublished, and its eleven done-criteria are verified line by line in the cut's
+own commit.** A dash is drawn as geometry rather than handed to a platform. `dashPath` cuts a path
+into the runs a pattern draws by the SVG specification's own rule, `strokeTrianglesOf` cuts before it
+widens so each run carries the stroke's cap at both ends, and `gpuFrame` names a mark refused for its
+text alone. The door is 217 values and 247 types.
+
+**The length table was the version's real finding and it was not the one the plan named.** A dash
+pattern is placed at absolute distances along a path, so the table's error accumulates instead of
+cancelling out of a ratio. `measureCurve` takes Richardson extrapolation over its sum of sixteen
+chords and the sum across every other one of the same points, which costs no new points and takes a
+circle of four cubics from 402.119 parts per million short of its own length to 6.1488e-2. The plan
+had quoted 261.88 parts per million against a browser, which mixed the table's error with the
+140.29 the cubic circle is longer than a true one, and a browser dashes the cubics.
+
+**The quadratics came off this version and back to the off-ladder table.** A curve drawn as a curve
+is Loop and Blinn's technique and it decides an interior by counting a winding, which
+`@altpsyche/engine` 0.4.0 cannot express: `StencilMode` is `'mark' | 'inside'` with no increment and
+no decrement, and the route round it needs a blend a pipeline drawing the frame the reader sees may
+not name. Both are that package's item 2.
 
 **The 2.x band publishes once, at its end**, which is Siva's call of 2026-09-11 and is now a rule in
 `CLAUDE.md`. 2.0.0 is what `npm view @altpsyche/maths version` answers, six versions are cut behind
@@ -1315,129 +1334,6 @@ and `difference = A less the overlap` to 1.776e-15. Two circles crossed at every
 1e4 answer 4.11e-4 of the closed form, the same share at every one, so nothing there turns on the
 tolerance being an absolute distance. Two 400-piece paths unite in 48ms, so the crossing search needs
 no box test in front of it and the quadratic over piece pairs is not worth removing.
-
-## The items
-
-### 2.8.0 A dash drawn as geometry
-
-**A dashed stroke is a path cut into runs of its own length before it is widened.** `Stroke.dash` and
-`Stroke.dashOffset` have been in the mark since the format froze, and two painters hand a dash to the
-platform under them: the SVG painter writes `stroke-dasharray` and the canvas painter calls
-`setLineDash`. A card has no platform to hand it to, so `gpuFrame` names a dashed mark as refused and
-widens it solid. This version cuts the path here instead. The step list is below, written on
-2026-09-11.
-
-**Nothing draws a dash today, which is the reading that decides the demos.** Across the eight
-committed figures at the middle of each one, 1,949 marks draw and 0 of them carry a `dash`. The
-feature is in the format, in two painters and in one test of the SVG painter, and no picture holds
-it. So a step teaching the third painter to draw a dash leaves the version checked by nothing, and
-both demos gain a dashed mark.
-
-**The quadratic half of this row is off it, and that correction is what the planning found.** The
-ladder read dashes and quadratics together and the off-ladder table said the pair waited on nothing
-but a session. `@altpsyche/engine` 0.4.0 says otherwise for the quadratics. A curve drawn as a curve
-rather than flattened is Loop and Blinn's technique, which decides an interior by counting a winding
-with front and back faces cancelling, and `StencilMode` there is `'mark' | 'inside'` with no
-increment and no decrement, so that frame cannot be written down. The route round it subtracts a
-concave curve triangle's area from an ear-clipped fill, which needs a blend, and `blend` lives on a
-pipeline's `targets`, which a pipeline drawing the frame the reader sees may not name. Both routes
-are that package's item 2, unstarted there, so the quadratics go back to the off-ladder table with
-the dependency named and 2.8.0 is the dashes alone.
-
-**What flattening costs today, so the quadratics have a number waiting when that stencil lands.** At
-the middle of each of the eight committed figures, 7,486 curves are drawn and 1,455 of them are bent
-rather than straight, and flattening them to 0.002 figure units leaves 36,010 straight runs in the
-flat demo and 28,418 in the boolean demo.
-
-**A dash is placed by length, and the length table is sampled rather than solved.** Step 2 lowered
-that error and its numbers are on the step. The reading the plan opened with mixed two errors that
-are not the same one. A circle of four cubics is 140.29 parts per million longer than a true circle,
-which is the geometry and which all three painters draw alike, and the sum of chords was 402.119
-parts per million short of that cubic, which is the table and which only this package's painters
-suffered. The two together are the 261.88 parts per million `lengthOf` read under 2πr, and quoting
-that figure against a browser was wrong, because a browser dashes the cubics rather than the
-circle.
-
-**The pieces this version reuses rather than writing.** `measurePath` gives every piece's length and
-the whole, `pathWindow` gives the piece of a path between two fractions of its own length, and
-`outlinePath` widens a path into the outline it covers. A dash is a window, so the cutting is those
-called in a loop.
-
-**The steps.** Each is one commit and each names the measurement its commit quotes. Today's numbers
-are 1,357 tests over 90 files and a door of 216 values and 247 types.
-
-- [x] **1. A path cut into its dashes.** `dashPath(path, dash, dashOffset)` gives back the runs a
-      dashed stroke draws, as one subpath per run, under the SVG specification's own rule: a pattern
-      of odd length is repeated to make it even, a pattern that is empty or holds a negative or sums
-      to nothing draws the path solid, the pattern restarts at each subpath, and a closed subpath is
-      cut across its seam rather than at it. **Measured:** against a 4,096-step walk a dashed circle
-      draws 0.500000002876 of its own length where the duty cycle names a half, out by 2.88e-9 at
-      radii 0.5, 1 and 5 alike. Over the 1,455 bent curves the eight committed figures draw at the
-      middle of each, the median share is out by 5.421e-6 and the worst by 2.246e-3, on a glyph
-      segment of the flat demo's equation 0.0021 figure units long, where the drawn length is out by
-      4.716e-6 units. A line of 5 under `[1, 1]` draws three whole runs at 0, 2 and 4, not two and a
-      half, which is what the plan said before the step was worked. 1,368 tests over 91 files and a
-      door of 217 values.
-- [x] **2. Where a dash boundary falls against the true length.** `measureCurve` takes Richardson
-      extrapolation over its sum of sixteen chords and the sum across every other one of the same
-      points, which cancels the square term the chord error is mostly made of and costs no new
-      points, and the table is stretched by the same factor as the total so no entry crosses the one
-      before it. `SAMPLES` stays at 16. **Measured:** a circle of four cubics read 402.119 parts per
-      million under its own length and now reads 6.1488e-2 under it. Each run of a dashed circle was
-      492.9 ppm too long and is now 92.3, and over a circle of radius 5 the drawn total was
-      15.716085 against the 15.710167 the duty cycle names, a drift of 5.918e-3 figure units or 0.59
-      pixels at a hundred pixels to the unit, where it is now 15.710168, a drift of 9.09e-7 units or
-      9.1e-5 pixels. `measurePath` over the flat demo's 163 path marks costs 0.381 ms a pass against
-      0.259, which is against the 33 ms a frame has at 30 frames a second. One of the sixteen
-      committed pictures moved: `docs/tangent-strip.svg` by two bytes, in 5 of its 748 elements.
-- [x] **3. The card draws the dashes.** `strokeTrianglesOf` cuts the path into its dashes before it
-      widens them, so each run gets the stroke's own caps at both its ends, and `gpuFrame` names a
-      mark refused for its text alone. A tapered width is left widened solid with its dash out, which
-      is what `outlinedMarks` already leaves the other two painters. **Measured:** the flat demo at
-      5.13 seconds with a dash of [0.12, 0.08] on each of its 115 stroked marks named 138 marks
-      refused and drew 1,479 triangles, the solid stroke's, and now names 23, the text alone, and
-      draws 4,635. A stroke of width 0.1 over 20 units covers the duty cycle's share of the solid
-      area to under a part per million under three patterns. Building that frame costs 20.79 ms
-      against 2.62, which is in the found list below.
-- [x] **4. Both demos gain a dashed mark.** The flat demo drops a dashed guide from the dot to each
-      axis, and the solid demo cuts two more levels of the saddle either side of the one its plane
-      sits at and dashes both. Dashing the crossing curve where the surface stands in front of it was
-      the plan's picture and it needs depth, which is 3.0.0. **Measured:** the flat demo draws 149
-      marks of its own at every time against 147, four of them dashed counting the inset's copies,
-      and its guides' feet land on -2.135 up and -2.76 across, which are the axes, to 1e-12 at every
-      named time. The solid demo draws 253 against 249, with six to eight dashed as the camera turns
-      a branch out of the inset's window. `gpuFrame` refuses 23 of the flat demo's marks and 21 of
-      the solid's, the text alone, and draws 1,489 triangles against 1,481 and 2,145 against 1,637,
-      in 4.34 and 8.13 ms a frame.
-- [x] **5. The README's pictures carry the dashes.** The pictures moved in step 4, since a figure and
-      the picture of it are one commit, so this step is the prose around them: the alt text of the
-      two stills and the two strips names what a reader sees, the README's count of the flat demo's
-      marks at its still time is the count it now draws, and the specification states the dash rule a
-      renderer in another language has to follow. **Measured:** `npm run demos` regenerates all
-      sixteen pictures byte for byte. The README reads 186 marks at t = 7.86 s against 181.
-      `SPECIFICATION.md` is 785 lines against 773.
-
-**Which step the demos gain from is step 4**, and steps 1 through 3 are what it needs before a dashed
-mark can be drawn by all three painters.
-
-**Done-criteria.**
-
-1. `dashPath` is at the door and `index.ts` exports it.
-2. A pattern of odd length draws what that pattern written twice draws, held by a test.
-3. A pattern that is empty, holds a negative, or sums to nothing gives back the path itself
-   untouched, held by a test.
-4. The pattern restarts at each subpath, held by a test over a path whose first subpath is not a
-   whole number of patterns long.
-5. A `dashOffset` of one whole pattern draws what an offset of nothing draws, held by a test.
-6. The summed length of a dashed path's runs is the pattern's duty cycle times the path's length,
-   inside the bound step 2 names.
-7. `gpuFrame` names no mark as refused for its dash, and a dashed mark's triangles are its runs
-   rather than the solid stroke.
-8. Both demos carry a dashed mark, with counts at named times.
-9. The eight stills and the eight strips regenerate byte-identically from `npm run demos`.
-10. `npm run gate:gpu` draws every figure and the dashed marks agree with the SVG painter inside the
-    floor that gate already holds.
-11. `npm test`, `npm run type-check` and `npm run build` are green, with the test count quoted.
 
 ## Found while working, not yet queued
 
