@@ -111,6 +111,26 @@ there is a hole in the page.
 blocked. The two answers it beat are the rule standing, which would have taken depth off the plan for
 good, and the rule going, which would have let a figure be silently wrong in SVG.
 
+**A sixth decision is answered and it is Siva's, taken on 2026-09-11. This package ships a font
+file and a reader for it.**
+
+**Where do the letter shapes for a plain label come from?** A card has no text vocabulary, so a label
+drawn on one is shapes or it is nothing, and 2.4.0 refused outlines for exactly this reason. Three
+answers were on the table and two were refused.
+
+**The typesetter already answers it and that is the answer that lost.** MathJax is a runtime
+dependency already and `\text{slope 1.59}` comes back as ten path marks, one per character, with no
+browser and no new dependency. What it costs is the typeface: a label on a card would be set in
+MathJax's font and the same label on the page in the family the mark names, so one figure would carry
+two typefaces for the same words. **Building a glyph atlas from a two-dimensional canvas lost for a
+harder reason**, which is that it needs a browser and hands a renderer written in another language
+nothing.
+
+**So the package carries a font.** One typeface everywhere, whichever painter draws it, and a
+renderer in another language can be handed the same shapes. **What it costs** is a dependency and an
+install every consumer pays for, including one that never draws on a card. **What would change this
+answer** is that cost measured against an install nobody is willing to pay.
+
 **A fifth set of decisions is answered, all Siva's, taken on 2026-09-08 after a review of the whole
 architecture. They reorder everything below.**
 
@@ -377,7 +397,7 @@ is left, since 2.1.0 through 2.8.0 are cut.
 
 | version | what lands | what it changes | steps | cut against | depends on | plan |
 | --- | --- | --- | --- | --- | --- | --- |
-| 2.9.0 | text on a GPU, and the recorder running without a page | nothing in the format | to plan | every demo recorded off a card | `@altpsyche/engine`, a source of glyph outlines, 2.6.0, and a canvas with no page behind it if `mediabunny` takes nothing else | to plan |
+| 2.9.0 | text on a GPU, and the recorder running without a page | nothing in the format | to plan | every demo recorded off a card | a font file and a reader for it, `@altpsyche/engine`, 2.6.0, and a canvas with no page behind it if `mediabunny` takes nothing else | to plan |
 | 3.0.0 | depth, so a figure in space keeps it, and a figure naming the painters that can draw it | what a `Mark` may ask for, which breaks the format's own version | to plan | the solid demo, whose crossing curve is drawn in the right order rather than the tree's | `@altpsyche/engine` | to plan |
 | 3.1.0 | a clip that is a path rather than a rectangle | what a `Mark` may ask for | to plan | nothing yet, which is why it is last of the marks | `@altpsyche/engine`'s counting stencil, its item 2 | to plan |
 | 4.0.0 | a figure a reader can act on | the shape of `Figure`, which gains input | to plan | nothing yet | nothing outside this package | to plan |
@@ -425,8 +445,8 @@ the format's value types.
 **What is cut is not here.** A version that is cut leaves this table, its entry is deleted, and the
 Now section and `git log` are what keep it.
 
-**Two things wait off the ladder, and each waits on something named.** Depth was the third and it is
-on the ladder now that the fourth decision above is answered. The GPU painter was the
+**One thing waits off the ladder and it waits on something named.** Depth left it when the fourth
+decision above was answered, and text on a card left it when the sixth was. The GPU painter was the
 fourth and it is cut, and it did not wait for the engine's stencil in the end: the fills are
 triangulated here by ear clipping, which needs no device. **Dashes left this table for 2.8.0 and the
 quadratics they were paired with came back to it**, because a dash is cut by length here and needs no
@@ -435,9 +455,8 @@ device either, where a curve drawn as a curve needs a winding the engine cannot 
 | off the ladder | what it waits on |
 | --- | --- |
 | a curve drawn as a curve rather than flattened | the engine's counted stencil, its item 2, since Loop and Blinn's fill decides an interior by counting a winding, and the one route round it subtracts a concave curve triangle's area with a blend a pipeline drawing the frame the reader sees may not name |
-| text on a GPU with a recorder | a source of glyph outlines, which is the one dependency the painter did not answer |
 
-**The reading behind each of the two is below and in `git log`**, so none of them is rediscovered
+**The reading behind it is below and in `git log`**, so none of them is rediscovered
 from nothing when it returns.
 
 **What queues work is the table above, the spike's eight gaps in front of it, the found list below,
