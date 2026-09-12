@@ -1644,17 +1644,19 @@ door is 226 values and 250 types. `npm run gate:gpu` draws all eight above both 
         way, agreeing over 97.54 per cent of them with its labels against 97.55 and 98.28 without
         them either way. `npm run gate:record` writes 32 of 32, each portrait file holding 222 frames
         against 162. 1,425 tests over 94 files to 1,426.
-  - [ ] **6b. Two indications join the family they belong to.** `wave` and `wiggle` in the flat demo,
-        which already drives `indicate`, `flash`, `circumscribe` and `showPassingFlash`. Both leave
-        their marks where they found them at either end of their span, so neither moves the still.
-        **Measurement:** the demo's marks over each span against the marks at its ends, which is what
-        says the figure is where it was.
-  - [ ] **6c. The turn demo shows what else a span does to a shape.** `scale` and `morph` beside the
-        two turns, which is the demo whose subject is a flat list of marks carried by a flat matrix
-        over a span. Both must be at rest at both ends or the figure stops being the loop it declares.
-        **The call this commit makes** is whether the demo keeps the name `rotate` once it draws three
-        things rather than one. **Measurement:** the figure's marks at its frame times, that it is
-        still a loop, and the sheets' bytes.
+  - [ ] **6b. The turn demo shows what else a span does to a shape.** `scale`, `morph`, `wave` and
+        `wiggle` beside the two turns. **This was two steps and is one, on 2026-09-13.** `wave` was
+        to go in the flat demo beside the four indications it already drives, and `wave` pushes the
+        points of a path: the parabola there has a shaded area drawn under it and a field of slopes
+        along it, so a ripple on the curve leaves the curve and the area it bounds apart. The four
+        are one subject rather than two, since each is a flat list of marks carried over a span, and
+        that subject is what the turn demo already is. Each must be at rest at both ends or the
+        figure stops being the loop it declares: `wave` and `wiggle` are by construction, `scale`
+        needs a span out and one back, and `morph` needs a second span walking the shape into the one
+        it started as, since a morph reads the marks it is handed. **The call this commit makes** is
+        whether the demo keeps the name `rotate` once it draws four things rather than one.
+        **Measurement:** the figure's marks at its frame times, the reading that says it is still a
+        loop, and the sheets' bytes.
 - [ ] **7. The version is cut.** `package.json` reads 2.11.0, the done-criteria below are verified
       line by line, and the ladder's 2.11.0 row is deleted. **Measurement:** both gates' readings,
       the door's counts, and the suite, type-check and build.
