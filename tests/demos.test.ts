@@ -25,6 +25,7 @@ import {
   readFigure,
   pointOf,
   resolveExtent,
+  resolveFigure,
   resolveNode,
   sameMarks,
   sampleTrack,
@@ -37,6 +38,7 @@ import {
   viewAt,
   widthAt,
   type Figure,
+  type NodeRecord,
   pointOn,
   shippedFont,
   type Mark,
@@ -69,6 +71,7 @@ import {
   STEPS,
   STILL as SOLIDS_STILL,
   solids,
+  written as solidsWritten,
 } from '../demos/solids.js';
 import { FAMILY, WEIGHT } from '../demos/typeface.js';
 import {
@@ -1936,12 +1939,33 @@ describe('the solids demo', () => {
   });
 
   it('cuts each solid into the cells its own steps ask for', () => {
-    const cells = (panel: string) => named(SOLIDS_STILL, `${panel}/body/skin`).length;
-    expect(cells('ball')).toBe(STEPS.sphere * STEPS.sphere);
-    expect(cells('box')).toBe(6 * STEPS.cube * STEPS.cube);
-    expect(cells('can')).toBe(3 * STEPS.cylinder * STEPS.cylinder);
-    expect(cells('ring')).toBe(STEPS.torus * STEPS.torus);
-    expect(cells('ball') + cells('box') + cells('can') + cells('ring')).toBe(844);
+    // A solid drawn alone makes the scene itself and names its own cells `face`,
+    // where a solid handed to a scene is named by whoever wrote the scene.
+    const cells = (panel: string, part: string) => named(SOLIDS_STILL, `${panel}/body/${part}`).length;
+    expect(cells('ball', 'face')).toBe(STEPS.sphere * STEPS.sphere);
+    expect(cells('box', 'face')).toBe(6 * STEPS.cube * STEPS.cube);
+    expect(cells('can', 'skin')).toBe(3 * STEPS.cylinder * STEPS.cylinder);
+    expect(cells('ring', 'skin')).toBe(STEPS.torus * STEPS.torus);
+    expect(cells('ball', 'face') + cells('box', 'face') + cells('can', 'skin') + cells('ring', 'skin')).toBe(844);
+  });
+
+  it('draws a solid standing alone exactly as a scene holding its own cells does', () => {
+    const longhand = (node: NodeRecord): NodeRecord => {
+      if (node.kind === 'group') return { ...node, children: node.children.map(longhand) };
+      if (node.kind === 'sphere3') {
+        const { kind, name, camera, ...rest } = node;
+        return { kind: 'scene3', name, camera, items: [{ ...rest, kind: 'sphereCells', name: 'face' }] };
+      }
+      if (node.kind === 'cube3') {
+        const { kind, name, camera, ...rest } = node;
+        return { kind: 'scene3', name, camera, items: [{ ...rest, kind: 'cubeCells', name: 'face' }] };
+      }
+      return node;
+    };
+    const spelt = resolveFigure({ ...solidsWritten, scene: longhand(solidsWritten.scene) });
+    for (const seconds of [0, ...SOLIDS_FRAMES]) {
+      expect(sameMarks(marksAt(solids, seconds), marksAt(spelt, seconds), 0), `${seconds}`).toBe(true);
+    }
   });
 
   it('cuts each curve into the pieces its own count asks for', () => {

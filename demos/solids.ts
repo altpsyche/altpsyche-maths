@@ -2,13 +2,14 @@
  * The solids demo: a sphere, a cube, a cylinder and a torus turning together,
  * with a curve wound on two of them.
  *
- * The four solids are the shapes the format names rather than parametrises, and
- * each hands a scene its cells rather than one shape, so a curve that passes
- * through a solid is sorted against the pieces of it. The helix on the cylinder
- * and the trefoil on the torus are what make that visible: both wrap the solid
- * they lie on, so at every angle part of each curve is in front of its solid and
- * part is behind it, and a curve sorted whole would be painted entirely on one
- * side.
+ * The four solids are the shapes the format names rather than parametrises. A
+ * solid standing alone is one node that makes a scene of its own cells, and a
+ * solid a curve is wound on hands its cells to a scene the curve's pieces are
+ * sorted in too, so a curve that passes through a solid is sorted against the
+ * pieces of it. The helix on the cylinder and the trefoil on the torus are what
+ * make that visible: both wrap the solid they lie on, so at every angle part of
+ * each curve is in front of its solid and part is behind it, and a curve sorted
+ * whole would be painted entirely on one side.
  *
  * The trefoil is the (2, 3) torus knot, which winds twice about the axis while it
  * winds three times through the hole, and it lies exactly on the torus it is
@@ -159,15 +160,19 @@ const trefoil: Point3Record = {
   z: over('*', TORUS.tube + LIFT.knot, call('sin', turns(3))),
 };
 
-/** One panel: a scene of its own, so each solid is sorted against what lies on it
- * and against nothing else, moved to its quarter of the figure. */
-function panel(name: string, at: { x: number; y: number }, items: readonly SceneItemRecord[], label: string): NodeRecord {
+/** The body of a panel whose curve is wound on its solid: one scene holding both,
+ * so the curve's pieces and the solid's cells are ordered against each other. */
+const sorted = (items: readonly SceneItemRecord[]): NodeRecord => ({ kind: 'scene3', name: 'body', camera, items });
+
+/** One panel: a body sorted against nothing outside itself, moved to its quarter
+ * of the figure, with its name under it. */
+function panel(name: string, at: { x: number; y: number }, body: NodeRecord, label: string): NodeRecord {
   return {
     kind: 'group',
     name,
     transform: mat3.translation(vec2(at.x, at.y)),
     children: [
-      { kind: 'scene3', name: 'body', camera, items },
+      body,
       {
         kind: 'text',
         name: 'name',
@@ -191,13 +196,19 @@ export const scene: NodeRecord = {
   kind: 'group',
   name: 'solids',
   children: [
-    panel('ball', { x: -PANEL.across / 2, y: PANEL.down / 2 + 0.2 }, [
-      { kind: 'sphereCells', name: 'skin', centre: vec3(0, 0, 0), radius: SPHERE, options: { ...skin, resolution: STEPS.sphere } },
-    ], 'a sphere'),
-    panel('box', { x: PANEL.across / 2, y: PANEL.down / 2 + 0.2 }, [
-      { kind: 'cubeCells', name: 'skin', centre: vec3(0, 0, 0), size: CUBE, options: { ...skin, resolution: STEPS.cube } },
-    ], 'a cube'),
-    panel('can', { x: -PANEL.across / 2, y: -PANEL.down / 2 + 0.2 }, [
+    panel(
+      'ball',
+      { x: -PANEL.across / 2, y: PANEL.down / 2 + 0.2 },
+      { kind: 'sphere3', name: 'body', centre: vec3(0, 0, 0), radius: SPHERE, camera, options: { ...skin, resolution: STEPS.sphere } },
+      'a sphere'
+    ),
+    panel(
+      'box',
+      { x: PANEL.across / 2, y: PANEL.down / 2 + 0.2 },
+      { kind: 'cube3', name: 'body', centre: vec3(0, 0, 0), size: CUBE, camera, options: { ...skin, resolution: STEPS.cube } },
+      'a cube'
+    ),
+    panel('can', { x: -PANEL.across / 2, y: -PANEL.down / 2 + 0.2 }, sorted([
       {
         kind: 'cylinderCells',
         name: 'skin',
@@ -207,8 +218,8 @@ export const scene: NodeRecord = {
         options: { ...skin, resolution: STEPS.cylinder },
       },
       { kind: 'curvePieces3', name: 'coil', curve: { of: helix, resolution: PIECES.coil }, options: { stroke: coil } },
-    ], 'a cylinder, with a helix'),
-    panel('ring', { x: PANEL.across / 2, y: -PANEL.down / 2 + 0.2 }, [
+    ]), 'a cylinder, with a helix'),
+    panel('ring', { x: PANEL.across / 2, y: -PANEL.down / 2 + 0.2 }, sorted([
       {
         kind: 'torusCells',
         name: 'skin',
@@ -218,7 +229,7 @@ export const scene: NodeRecord = {
         options: { ...skin, resolution: STEPS.torus },
       },
       { kind: 'curvePieces3', name: 'knot', curve: { of: trefoil, resolution: PIECES.knot }, options: { stroke: knot } },
-    ], 'a torus, with a trefoil'),
+    ]), 'a torus, with a trefoil'),
     {
       kind: 'text',
       name: 'title',

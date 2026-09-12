@@ -1581,10 +1581,16 @@ door is 226 values and 250 types. `npm run gate:gpu` draws all eight above both 
       the largest file in the tree. The surface demo sorts its surface, its field, its sections and
       its streamline in one scene, so `surface3` and `vectorField3` have no room there either.
       Siva's call on 2026-09-13 is the three steps below.
-  - [ ] **5a. Two panels are written the short way.** `ball` becomes `sphere3` and `box` becomes
-        `cube3`. **Measurement:** the marks at each named time against today's 1,065, each path of the
-        two panels against the path the cells spelling draws for the same geometry held by tolerance,
-        and the two sheets' bytes.
+  - [x] **5a. Two panels are written the short way.** `ball` becomes `sphere3` and `box` becomes
+        `cube3`, and the two panels that sort a curve against their solid keep their `scene3`.
+        **Measured:** 1,065 marks at every named time, unchanged, and the figure with both panels
+        written back as a scene over the matching cells draws the same marks at a tolerance of 0, at
+        the four strip times and at nothing. The record is 82,796 bytes to 81,374, which is 1.7 per
+        cent, since a solid drawn alone is one node where a scene holding it is two. Both sheets are
+        the bytes they were, 354,696 and 1,381,130: the only change in either is one segment of every
+        id in the two panels, `skin` to `face`, which is the same four characters. 1,417 tests over 94
+        files, and the door is 226 values and 250 types, unchanged. `docs/SPECIFICATION.md` carries
+        the record's new size in its fixture table.
   - [ ] **5b. A point in space is named.** The eye sits at 2.3 above the plane looking at the origin,
         so the cube's top face is seen at every angle the turn reaches. Its outline is a closed
         `polyline3` of four points, its middle a `dot3`, the direction it faces an `arrow3` along the

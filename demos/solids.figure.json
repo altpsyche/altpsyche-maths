@@ -73,154 +73,148 @@
                   "z": 1
                 }
               },
-              "items": [
-                {
-                  "centre": {
-                    "x": 0,
-                    "y": 0,
-                    "z": 0
+              "centre": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "kind": "sphere3",
+              "name": "body",
+              "options": {
+                "light": {
+                  "x": -0.4,
+                  "y": -0.6,
+                  "z": 0.7
+                },
+                "resolution": 14,
+                "shade": {
+                  "band": {
+                    "from": 0,
+                    "to": 1
                   },
-                  "kind": "sphereCells",
-                  "name": "skin",
-                  "options": {
-                    "light": {
-                      "x": -0.4,
-                      "y": -0.6,
-                      "z": 0.7
-                    },
-                    "resolution": 14,
-                    "shade": {
-                      "band": {
-                        "from": 0,
-                        "to": 1
-                      },
-                      "ramp": [
-                        {
-                          "colour": {
-                            "a": 1,
-                            "b": 99,
-                            "g": 119,
-                            "name": "shade0",
-                            "r": 133
-                          }
-                        },
-                        {
-                          "colour": {
-                            "a": 1,
-                            "b": 109,
-                            "g": 129,
-                            "name": "shade1",
-                            "r": 143
-                          }
-                        },
-                        {
-                          "colour": {
-                            "a": 1,
-                            "b": 120,
-                            "g": 140,
-                            "name": "shade2",
-                            "r": 154
-                          }
-                        },
-                        {
-                          "colour": {
-                            "a": 1,
-                            "b": 130,
-                            "g": 150,
-                            "name": "shade3",
-                            "r": 164
-                          }
-                        },
-                        {
-                          "colour": {
-                            "a": 1,
-                            "b": 140,
-                            "g": 160,
-                            "name": "shade4",
-                            "r": 174
-                          }
-                        },
-                        {
-                          "colour": {
-                            "a": 1,
-                            "b": 150,
-                            "g": 170,
-                            "name": "shade5",
-                            "r": 184
-                          }
-                        },
-                        {
-                          "colour": {
-                            "a": 1,
-                            "b": 161,
-                            "g": 181,
-                            "name": "shade6",
-                            "r": 195
-                          }
-                        },
-                        {
-                          "colour": {
-                            "a": 1,
-                            "b": 171,
-                            "g": 191,
-                            "name": "shade7",
-                            "r": 205
-                          }
-                        },
-                        {
-                          "colour": {
-                            "a": 1,
-                            "b": 181,
-                            "g": 201,
-                            "name": "shade8",
-                            "r": 215
-                          }
-                        },
-                        {
-                          "colour": {
-                            "a": 1,
-                            "b": 191,
-                            "g": 211,
-                            "name": "shade9",
-                            "r": 225
-                          }
-                        },
-                        {
-                          "colour": {
-                            "a": 1,
-                            "b": 202,
-                            "g": 222,
-                            "name": "shade10",
-                            "r": 236
-                          }
-                        },
-                        {
-                          "colour": {
-                            "a": 1,
-                            "b": 212,
-                            "g": 232,
-                            "name": "shade11",
-                            "r": 246
-                          }
-                        }
-                      ]
-                    },
-                    "stroke": {
+                  "ramp": [
+                    {
                       "colour": {
                         "a": 1,
-                        "b": 192,
-                        "g": 185,
-                        "name": "mist",
-                        "r": 180
-                      },
-                      "width": 0.008
+                        "b": 99,
+                        "g": 119,
+                        "name": "shade0",
+                        "r": 133
+                      }
+                    },
+                    {
+                      "colour": {
+                        "a": 1,
+                        "b": 109,
+                        "g": 129,
+                        "name": "shade1",
+                        "r": 143
+                      }
+                    },
+                    {
+                      "colour": {
+                        "a": 1,
+                        "b": 120,
+                        "g": 140,
+                        "name": "shade2",
+                        "r": 154
+                      }
+                    },
+                    {
+                      "colour": {
+                        "a": 1,
+                        "b": 130,
+                        "g": 150,
+                        "name": "shade3",
+                        "r": 164
+                      }
+                    },
+                    {
+                      "colour": {
+                        "a": 1,
+                        "b": 140,
+                        "g": 160,
+                        "name": "shade4",
+                        "r": 174
+                      }
+                    },
+                    {
+                      "colour": {
+                        "a": 1,
+                        "b": 150,
+                        "g": 170,
+                        "name": "shade5",
+                        "r": 184
+                      }
+                    },
+                    {
+                      "colour": {
+                        "a": 1,
+                        "b": 161,
+                        "g": 181,
+                        "name": "shade6",
+                        "r": 195
+                      }
+                    },
+                    {
+                      "colour": {
+                        "a": 1,
+                        "b": 171,
+                        "g": 191,
+                        "name": "shade7",
+                        "r": 205
+                      }
+                    },
+                    {
+                      "colour": {
+                        "a": 1,
+                        "b": 181,
+                        "g": 201,
+                        "name": "shade8",
+                        "r": 215
+                      }
+                    },
+                    {
+                      "colour": {
+                        "a": 1,
+                        "b": 191,
+                        "g": 211,
+                        "name": "shade9",
+                        "r": 225
+                      }
+                    },
+                    {
+                      "colour": {
+                        "a": 1,
+                        "b": 202,
+                        "g": 222,
+                        "name": "shade10",
+                        "r": 236
+                      }
+                    },
+                    {
+                      "colour": {
+                        "a": 1,
+                        "b": 212,
+                        "g": 232,
+                        "name": "shade11",
+                        "r": 246
+                      }
                     }
+                  ]
+                },
+                "stroke": {
+                  "colour": {
+                    "a": 1,
+                    "b": 192,
+                    "g": 185,
+                    "name": "mist",
+                    "r": 180
                   },
-                  "radius": 1.15
+                  "width": 0.008
                 }
-              ],
-              "kind": "scene3",
-              "name": "body"
+              },
+              "radius": 1.15
             },
             {
               "at": {
@@ -323,154 +317,148 @@
                   "z": 1
                 }
               },
-              "items": [
-                {
-                  "centre": {
-                    "x": 0,
-                    "y": 0,
-                    "z": 0
+              "centre": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "kind": "cube3",
+              "name": "body",
+              "options": {
+                "light": {
+                  "x": -0.4,
+                  "y": -0.6,
+                  "z": 0.7
+                },
+                "resolution": 2,
+                "shade": {
+                  "band": {
+                    "from": 0,
+                    "to": 1
                   },
-                  "kind": "cubeCells",
-                  "name": "skin",
-                  "options": {
-                    "light": {
-                      "x": -0.4,
-                      "y": -0.6,
-                      "z": 0.7
-                    },
-                    "resolution": 2,
-                    "shade": {
-                      "band": {
-                        "from": 0,
-                        "to": 1
-                      },
-                      "ramp": [
-                        {
-                          "colour": {
-                            "a": 1,
-                            "b": 99,
-                            "g": 119,
-                            "name": "shade0",
-                            "r": 133
-                          }
-                        },
-                        {
-                          "colour": {
-                            "a": 1,
-                            "b": 109,
-                            "g": 129,
-                            "name": "shade1",
-                            "r": 143
-                          }
-                        },
-                        {
-                          "colour": {
-                            "a": 1,
-                            "b": 120,
-                            "g": 140,
-                            "name": "shade2",
-                            "r": 154
-                          }
-                        },
-                        {
-                          "colour": {
-                            "a": 1,
-                            "b": 130,
-                            "g": 150,
-                            "name": "shade3",
-                            "r": 164
-                          }
-                        },
-                        {
-                          "colour": {
-                            "a": 1,
-                            "b": 140,
-                            "g": 160,
-                            "name": "shade4",
-                            "r": 174
-                          }
-                        },
-                        {
-                          "colour": {
-                            "a": 1,
-                            "b": 150,
-                            "g": 170,
-                            "name": "shade5",
-                            "r": 184
-                          }
-                        },
-                        {
-                          "colour": {
-                            "a": 1,
-                            "b": 161,
-                            "g": 181,
-                            "name": "shade6",
-                            "r": 195
-                          }
-                        },
-                        {
-                          "colour": {
-                            "a": 1,
-                            "b": 171,
-                            "g": 191,
-                            "name": "shade7",
-                            "r": 205
-                          }
-                        },
-                        {
-                          "colour": {
-                            "a": 1,
-                            "b": 181,
-                            "g": 201,
-                            "name": "shade8",
-                            "r": 215
-                          }
-                        },
-                        {
-                          "colour": {
-                            "a": 1,
-                            "b": 191,
-                            "g": 211,
-                            "name": "shade9",
-                            "r": 225
-                          }
-                        },
-                        {
-                          "colour": {
-                            "a": 1,
-                            "b": 202,
-                            "g": 222,
-                            "name": "shade10",
-                            "r": 236
-                          }
-                        },
-                        {
-                          "colour": {
-                            "a": 1,
-                            "b": 212,
-                            "g": 232,
-                            "name": "shade11",
-                            "r": 246
-                          }
-                        }
-                      ]
-                    },
-                    "stroke": {
+                  "ramp": [
+                    {
                       "colour": {
                         "a": 1,
-                        "b": 192,
-                        "g": 185,
-                        "name": "mist",
-                        "r": 180
-                      },
-                      "width": 0.008
+                        "b": 99,
+                        "g": 119,
+                        "name": "shade0",
+                        "r": 133
+                      }
+                    },
+                    {
+                      "colour": {
+                        "a": 1,
+                        "b": 109,
+                        "g": 129,
+                        "name": "shade1",
+                        "r": 143
+                      }
+                    },
+                    {
+                      "colour": {
+                        "a": 1,
+                        "b": 120,
+                        "g": 140,
+                        "name": "shade2",
+                        "r": 154
+                      }
+                    },
+                    {
+                      "colour": {
+                        "a": 1,
+                        "b": 130,
+                        "g": 150,
+                        "name": "shade3",
+                        "r": 164
+                      }
+                    },
+                    {
+                      "colour": {
+                        "a": 1,
+                        "b": 140,
+                        "g": 160,
+                        "name": "shade4",
+                        "r": 174
+                      }
+                    },
+                    {
+                      "colour": {
+                        "a": 1,
+                        "b": 150,
+                        "g": 170,
+                        "name": "shade5",
+                        "r": 184
+                      }
+                    },
+                    {
+                      "colour": {
+                        "a": 1,
+                        "b": 161,
+                        "g": 181,
+                        "name": "shade6",
+                        "r": 195
+                      }
+                    },
+                    {
+                      "colour": {
+                        "a": 1,
+                        "b": 171,
+                        "g": 191,
+                        "name": "shade7",
+                        "r": 205
+                      }
+                    },
+                    {
+                      "colour": {
+                        "a": 1,
+                        "b": 181,
+                        "g": 201,
+                        "name": "shade8",
+                        "r": 215
+                      }
+                    },
+                    {
+                      "colour": {
+                        "a": 1,
+                        "b": 191,
+                        "g": 211,
+                        "name": "shade9",
+                        "r": 225
+                      }
+                    },
+                    {
+                      "colour": {
+                        "a": 1,
+                        "b": 202,
+                        "g": 222,
+                        "name": "shade10",
+                        "r": 236
+                      }
+                    },
+                    {
+                      "colour": {
+                        "a": 1,
+                        "b": 212,
+                        "g": 232,
+                        "name": "shade11",
+                        "r": 246
+                      }
                     }
+                  ]
+                },
+                "stroke": {
+                  "colour": {
+                    "a": 1,
+                    "b": 192,
+                    "g": 185,
+                    "name": "mist",
+                    "r": 180
                   },
-                  "size": 1.7
+                  "width": 0.008
                 }
-              ],
-              "kind": "scene3",
-              "name": "body"
+              },
+              "size": 1.7
             },
             {
               "at": {
