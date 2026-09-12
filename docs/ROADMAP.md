@@ -1506,9 +1506,14 @@ door is 226 values and 250 types. `npm run gate:gpu` draws all eight above both 
       is 9.5 per cent, from 1.5 per cent on `solids-strip.svg` at 1,360,393 to 1,381,130 to 1,030.7
       per cent on `frame.svg` at 1,977 to 22,354. The door is 226 values and 250 types, unchanged,
       since `carryFont` is a field of an interface already at the door. 1,410 tests over 94 files.
-- [ ] **2. Every committed sheet is shown.** The README gains the `frame` demo, and the four strips
-      nothing shows are placed beside the feature each one shows. **Measurement:** sheets committed
-      against sheets referenced, and each page's total image weight.
+- [x] **2. Every committed sheet is shown.** The README gains a section on the frame and the `frame`
+      demo's still, and the four strips nothing showed are placed beside the feature each one shows:
+      `frame-strip.svg` under the frame section of the guide, `matrix-strip.svg` under matrices,
+      `portrait-strip.svg` under fields and `solids-strip.svg` under space. A test holds every sheet
+      to being shown, which nothing did while the claim stood in this file. **Measured:** 11 of the 16
+      sheets were shown and 16 are, and every source the guide names is a sheet this tree writes. The
+      README carries 8 pictures over 856,583 bytes and the guide 14 over 3,696,150, of which
+      `solids-strip.svg` is 1,381,130 and `surface-strip.svg` 624,371. 1,411 tests over 94 files.
 - [ ] **3. The flat demo measures the area it shades.** `riemannBars` under the parabola, refining as
       the walk runs, with a `numberLine` carrying the reading. **Measurement:** the demo's marks at
       named times before and after, and the bars' total area against the integral the shading
@@ -1553,6 +1558,13 @@ are what makes the pictures right and steps 3 to 6 are what makes them complete.
 12. The ladder's 2.11.0 row is deleted and the Now section carries what the version landed.
 
 ## Found while working, not yet queued
+
+- **The guide carries 3,696,150 bytes of pictures over fourteen images**, of which `solids-strip.svg`
+  is 1,381,130 and `surface-strip.svg` 624,371. A strip is that big because it draws every cell of
+  every solid once per frame, so the cost is the frame count times the cell count rather than
+  anything the sheet writer chooses. **What closes it** is a strip drawn at fewer frames or a solid
+  drawn at fewer steps, and which of the two is a reading rather than a preference: the sphere's flat
+  cell falls inside its true radius by 106.4 parts in ten thousand at 24 steps and 26.7 at 48.
 
 - **A renderer `openRenderer` opened for a translated frame still leaves every later frame to the
   caller.** That door translates the frame it is handed and answers it beside the renderer, and the

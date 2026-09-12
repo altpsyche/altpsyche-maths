@@ -439,6 +439,21 @@ describe('the committed pictures', () => {
     }
   });
 
+  it('are each shown by the README or the guide, so a committed sheet is one a reader reaches', () => {
+    // A sheet nothing shows is regenerated and gated on every demo change for a
+    // picture nobody reads, which is what five of them were until 2.11.0.
+    const readme = readFileSync(path.join(root, 'README.md'), 'utf8');
+    const guide = readFileSync(path.join(root, 'docs/GUIDE.md'), 'utf8');
+    for (const sheet of sheets) {
+      const name = sheet.file.replace('docs/', '');
+      expect(readme.includes(sheet.file) || guide.includes(`"${name}"`), sheet.file).toBe(true);
+    }
+    // The guide sits beside the sheets, so its own sources are relative and each
+    // one names a sheet this module writes.
+    const shown = [...guide.matchAll(/<img src="([^"]+)"/g)].map((match) => match[1]);
+    for (const source of shown) expect(sheets.map((sheet) => sheet.file)).toContain(`docs/${source}`);
+  });
+
   it('are all sixteen there', () => {
     expect(sheets.map((sheet) => sheet.file)).toEqual([
       'docs/tangent.svg',

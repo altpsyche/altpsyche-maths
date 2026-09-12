@@ -69,6 +69,17 @@ At t = 0.5 the timeline has applied `draw` at half its span, and the mark carrie
 arc length. `svgMarkup` returns a complete SVG document as a string, with a view box and no width or
 height of its own.
 
+## The frame
+
+<img src="https://raw.githubusercontent.com/altpsyche/altpsyche-maths/master/docs/frame.svg" width="640" alt="A peach plate held a twentieth of the frame off each edge, with a blue disc of radius 1.05 about the origin sitting on it, each labelled with what it is measured in.">
+
+A **frame expression** is the width, the height, the aspect or the centre of the frame, read while
+the figure is drawn. A mark whose place is built from one moves when the frame changes shape, and a
+mark placed in the figure's own units does not. The frame is the extent the figure declares resolved
+at the aspect being drawn, never the extent a view move has left, since a view that follows a mark
+reads the marks and a mark reading that extent would ask for what is being built. `matchingAspect`
+gives a figure a different extent at each shape it is drawn in.
+
 ## Geometry
 
 All geometry is cubic Bézier. A **path** is a sequence of subpaths; a subpath is a start point

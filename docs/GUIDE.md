@@ -128,6 +128,11 @@ refused with the measure it was asked for named.
 The `centre` measure answers a place rather than a number, so a figure whose declared extent sits
 off the origin builds a fraction of the frame from `centre` and `width` together.
 
+<img src="frame-strip.svg" width="820" alt="The same figure drawn three times side by side, at sixteen by nine, at square and at nine by sixteen. The peach plate is a different rectangle in each, held a twentieth of the frame off every edge, and the blue disc is the same circle in all three.">
+
+That is the frame demo, and it is the reading that says which mark answers to the frame: the plate is
+inset a twentieth of the frame on every side and the disc is a circle of radius 1.05 about the origin.
+
 ## Painters
 
 `svgMarkup` returns one SVG document as a string. It requires no browser, so a test reads the text
@@ -778,6 +783,11 @@ A grid mapped past its panel is cut by a clip. A clip does not ride a transform,
 still while the grid inside it deforms, and a grid drawn wider than its panel keeps the panel full as
 the map carries its lines out.
 
+<img src="matrix-strip.svg" width="820" alt="Four frames in two rows, the grid panel shearing further over in each and the unit square opening into a parallelogram, with the two by two matrix beside it counting to the numbers the grid has reached.">
+
+That is the matrix demo, and the four numbers beside the panel are the map the grid is under at that
+frame, each counting to its own value rather than being written once at the end.
+
 ## Boolean operations
 
 <img src="boolean.svg" width="720" alt="Two discs drawn three times side by side: everything either one covers, only what both cover, and the first with the second taken out of it.">
@@ -851,6 +861,11 @@ a distance rather than a time, which keeps the points evenly spaced. Halving the
 error along the curve by 15.1 and then 15.6, against the factor of 16 the order predicts. The step
 is fixed and never adaptive: an adaptive step returns a different number of points as the field
 changes, and one path is interpolated into another by pairing points.
+
+<img src="portrait-strip.svg" width="820" alt="Four frames in two rows of a phase portrait: the blue and amber arrows of the flow turning about the origin, the two green nullclines crossing where the flow stands still, and two blue spirals winding further in from inside and outside onto the orange circle of radius one.">
+
+That is the portrait demo, and the two spirals are what the field integrates to: every run turns once
+per unit of time and settles on the circle of radius one, which is the limit cycle.
 
 ## Space
 
@@ -938,6 +953,12 @@ Drive a camera with a track and never with an animation, for the reason tracks g
 
 The quarters of one orbit. The eye returns to where it started. A test holds that by comparing the
 marks at the end of the entrance against the marks one orbit later, mark for mark by name.
+
+<img src="solids-strip.svg" width="820" alt="Four frames in two rows of four panels each: a shaded sphere, a shaded cube, a cylinder with an orange helix wound three times round it, and a torus with a blue trefoil knot through its hole, each turned further in each frame.">
+
+That is the solids demo, and what the turn shows is the sort: each curve passes behind its solid on
+the far side and in front of it on the near side at every frame, because `curvePieces3` cuts the curve
+into one entry per step and the scene sorts those pieces among the solid's own cells.
 
 ## Records
 
