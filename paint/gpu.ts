@@ -18,12 +18,15 @@
  * painting are two calls where the other two painters are one: a canvas context
  * and an SVG string cost nothing to make.
  */
+import { paintPixels } from './canvas.js';
+import type { FramePainter } from './record.js';
 import { gpuFrame, type GpuFrameOptions } from '../figure/gpu-frame.js';
 import { shippedFont } from '../figure/font.js';
 import { textOutlines } from '../figure/text-outline.js';
 import type { Font } from '../figure/font.js';
 import { mat3, type Transform2D } from '../values/mat3.js';
 import { vec2 } from '../values/vec2.js';
+import type { Frame } from '../figure/frames.js';
 import type { Mark } from '../figure/mark.js';
 import type { FrameGraph, FrameRenderer, WgslFrameGraph } from '@altpsyche/engine';
 
@@ -196,5 +199,29 @@ export async function pixelsGpu(
   return {
     pixels,
     painting: { refused: built.refused, triangles: built.triangles },
+  };
+}
+
+/**
+ * A card as a recording's painter, which draws each frame and writes the pixels
+ * it reads back onto the surface the sink is reading.
+ *
+ * The frame crosses as pixels because it cannot cross as a canvas: a WebGPU
+ * canvas cannot be drawn into a two-dimensional context and a WebGL 2 one is not
+ * asked to preserve its drawing buffer. The readback is the stall, which a
+ * recorder can afford where a player could not.
+ *
+ * A frame's ground here is the clear colour the surface was opened with, since
+ * the pixels replace what the context held and a background painted underneath
+ * them is covered.
+ */
+export function painterGpu(
+  surface: GpuSurface,
+  onPainting?: (painting: GpuPainting, frame: Frame) => void
+): FramePainter {
+  return async (context, frame, options) => {
+    const drawn = await pixelsGpu(surface, frame.marks, frame.view);
+    paintPixels(context, drawn.pixels, options.width, options.height);
+    onPainting?.(drawn.painting, frame);
   };
 }

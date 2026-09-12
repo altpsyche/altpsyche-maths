@@ -1487,6 +1487,11 @@ picture in a recording and a picture on a card are the same picture.
   pixel, which is what lets a claim about what a device draws be checked against what the SVG painter
   draws.
 - `GpuPainting` — how many `triangles` the frame was, and the id of every mark it `refused`.
+- `painterGpu(surface, onPainting?)` — a card as a recording's painter, which draws each frame and
+  writes the pixels it read back onto the surface the sink is reading. The frame crosses as pixels
+  because a WebGPU canvas cannot be drawn into a two-dimensional context and a WebGL 2 one is not
+  asked to preserve its drawing buffer. The ground is the clear colour the surface was opened with,
+  since the pixels replace what the context held.
 - `svgMarkup(marks, view, width, height, options?)` — a whole `<svg>` as text, for a page that has
   not run any script yet. It carries no width or height of its own and only a view box, so the
   element around it decides how big it is.
@@ -1530,9 +1535,15 @@ picture in a recording and a picture on a card are the same picture.
   mark after it.
 - `CanvasLike` — the part of a canvas context this package uses, so a recorder can hand in its own. Its
   `createLinearGradient` is optional, and a context without one paints every mark in its single
-  colour.
+  colour. Its `createImageData` and `putImageData` are optional too, and a frame drawn on a card is
+  what needs them.
 - `CanvasGradientLike` — what a canvas hands back for a gradient: anything with `addColorStop`. A
   canvas takes a gradient as an object built from the context rather than as a value written out.
+- `ImageDataLike` — a rectangle of pixels: its `width`, its `height` and its `data`, four bytes to a
+  pixel and the top row first. A real `ImageData` satisfies it.
+- `paintPixels(context, pixels, width, height)` — pixels written onto a canvas as they are. They
+  replace what the canvas held rather than being composited over it, which is how a frame drawn on a
+  card reaches the canvas an encoder reads.
 - `paintFrame(context, frame, options)` — one frame painted whole, ground and marks together. A
   canvas keeps what was drawn on it until something covers it, so a frame with no ground opens on the
   frame before it.
@@ -1552,7 +1563,11 @@ picture in a recording and a picture on a card are the same picture.
   has fallen behind.
 - `RecordOptions` — the `fps` the recording plays at, the `width` and `height` of the surface, the
   `background` each frame opens on, the `seconds` the recording runs for where that is not the
-  figure's own length, and an optional `onFrame(index, count)` called once per frame taken.
+  figure's own length, the `paint` each frame reaches the surface by, and an optional
+  `onFrame(index, count)` called once per frame taken.
+- `FramePainter` — how one frame reaches the surface the sink is reading, taking the `context`, the
+  frame and the `SurfaceOptions`. `paintFrame` is one answer and `painterGpu` is another, and it may
+  answer a promise, since reading a frame back off a card is asynchronous.
 - `Recording` — what a finished recording is: the `frames` taken, the `seconds` it runs for, and the
   `output` the sink handed back.
 - `videoSink(canvas, options)` — a sink that encodes each frame it is handed and answers the finished

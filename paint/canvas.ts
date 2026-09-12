@@ -35,6 +35,14 @@ export interface CanvasGradientLike {
   addColorStop(offset: number, colour: string): void;
 }
 
+/** A rectangle of pixels, four bytes to one and the top row first, named by the
+ * parts a painter reads. A real `ImageData` satisfies it. */
+export interface ImageDataLike {
+  readonly width: number;
+  readonly height: number;
+  readonly data: Uint8ClampedArray;
+}
+
 export interface CanvasLike {
   /** It is optional because a stand-in written before gradients existed is still
    * a stand-in, and a context without it paints every mark in its one colour. */
@@ -54,6 +62,11 @@ export interface CanvasLike {
   stroke(): void;
   fillText(text: string, x: number, y: number): void;
   setLineDash(segments: number[]): void;
+  /** The two image calls are optional for the same reason the gradient above is:
+   * a stand-in that paints marks and nothing else is still a painter's context.
+   * A frame drawn on a card is what needs them. */
+  createImageData?(width: number, height: number): ImageDataLike;
+  putImageData?(image: ImageDataLike, x: number, y: number): void;
   globalAlpha: number;
   fillStyle: unknown;
   strokeStyle: unknown;
@@ -211,4 +224,30 @@ export function paintFrame(context: CanvasLike, frame: Frame, options: SurfaceOp
     context.restore();
   }
   paintCanvas(context, frame.marks, frame.view);
+}
+
+/**
+ * Pixels written onto a canvas as they are, four bytes to a pixel and the top
+ * row first.
+ *
+ * They replace what the canvas held rather than being composited over it, so a
+ * frame drawn somewhere else shows nothing of the frame before through its
+ * transparent parts. That is what `putImageData` does and what makes it the call
+ * a frame read back off a card arrives by.
+ */
+export function paintPixels(
+  context: CanvasLike,
+  pixels: Uint8Array,
+  width: number,
+  height: number
+): void {
+  if (!context.createImageData || !context.putImageData)
+    throw new Error('the canvas handed pixels has no createImageData and putImageData');
+  if (pixels.length !== width * height * 4)
+    throw new Error(
+      `${pixels.length} bytes of pixels is not the ${width * height * 4} a ${width}x${height} frame holds`
+    );
+  const image = context.createImageData(width, height);
+  image.data.set(pixels);
+  context.putImageData(image, 0, 0);
 }

@@ -10,11 +10,17 @@
  * What runs in the page is the built package itself, served over a local
  * address and loaded as modules, so the gate measures what a consumer installs
  * rather than a copy of it. The encoder is a bare name inside a dynamic import,
- * which a browser cannot resolve on its own, and the engine's maths door is
- * another, so the page carries an import map pointing each at what is
- * installed. The encoder is mapped to its own bundle rather than to its module
- * tree, since that tree imports `node:fs/promises` for the target that writes a
- * file and a browser refuses the whole graph for it.
+ * which a browser cannot resolve on its own, and the engine's two doors are
+ * more, so the page carries an import map pointing each at what is installed.
+ * The encoder is mapped to its own bundle rather than to its module tree, since
+ * that tree imports `node:fs/promises` for the target that writes a file and a
+ * browser refuses the whole graph for it.
+ *
+ * Each figure is recorded twice, through the two-dimensional painter and off a
+ * card, which is what holds a recording painted by either to the same walk. The
+ * card draws on its own canvas and its frames reach the encoder's canvas as the
+ * pixels `painterGpu` reads back, so the two recordings differ in how a frame was
+ * painted and in nothing else.
  *
  * The file is read back afterwards in Node, which needs no encoder: reading a
  * container apart is arithmetic, and only writing the pictures inside it needs
@@ -51,10 +57,12 @@ const page_html = `<!doctype html>
 <script type="importmap">
 {"imports": {
   "mediabunny": "/node_modules/mediabunny/dist/bundles/mediabunny.mjs",
+  "@altpsyche/engine": "/node_modules/@altpsyche/engine/dist/index.js",
   "@altpsyche/engine/maths": "/node_modules/@altpsyche/engine/dist/scene/maths.js"
 }}
 </script>
 <canvas id="surface"></canvas>
+<canvas id="card"></canvas>
 `;
 
 /** The repository over a local address, so the page loads the built package and
@@ -88,26 +96,62 @@ function serve() {
 }
 
 
-/** One figure recorded in the page, which answers the bytes and what the walk
- * counted. */
-async function record(page, origin, name) {
+/** The card every figure is drawn on, opened once. A canvas keeps the first
+ * graphics context it is given for as long as it lives, so one canvas serving
+ * every recording is what a renderer opened once buys. */
+async function openCard(page, origin) {
   return page.evaluate(
-    async ({ origin, name, fps, width, height }) => {
-      const { readFigure, recordFigure, videoSink, colourFrom, frameTimesOf } = await import(
-        `${origin}/dist/index.js`
-      );
+    async ({ origin, width, height }) => {
+      const { gpuSurface } = await import(`${origin}/dist/index.js`);
+      const card = document.getElementById('card');
+      card.width = width;
+      card.height = height;
+      window.surface = await gpuSurface(card, {
+        clear: [1, 1, 1, 1],
+        onRefused: (message) => {
+          throw new Error(message);
+        },
+      });
+      if (!window.surface) throw new Error('no backend drew the figure');
+      return window.surface.backend;
+    },
+    { origin, width: WIDTH, height: HEIGHT }
+  );
+}
+
+/** One figure recorded in the page, painted either by the two-dimensional
+ * painter or off the card, which answers the bytes and what the walk counted. */
+async function record(page, origin, name, through) {
+  return page.evaluate(
+    async ({ origin, name, fps, width, height, through }) => {
+      const { readFigure, recordFigure, videoSink, colourFrom, frameTimesOf, painterGpu } =
+        await import(`${origin}/dist/index.js`);
       const text = await (await fetch(`${origin}/demos/${name}.figure.json`)).text();
       const figure = readFigure(text);
       const canvas = document.getElementById('surface');
       canvas.width = width;
       canvas.height = height;
       const sink = await videoSink(canvas, { fps, format: 'mp4', codec: 'avc' });
+      // A card's frame opens on the clear colour the surface was opened with and
+      // its pixels replace the canvas, so a ground painted underneath them would
+      // be covered rather than shown.
+      const refused = new Set();
+      let triangles = 0;
+      const card = through === 'card';
+      const painting = card
+        ? {
+            paint: painterGpu(window.surface, (drawn) => {
+              for (const mark of drawn.refused) refused.add(mark);
+              triangles = Math.max(triangles, drawn.triangles);
+            }),
+          }
+        : { background: colourFrom('#ffffff') };
       const started = performance.now();
       const recording = await recordFigure(figure, sink, {
         fps,
         width,
         height,
-        background: colourFrom('#ffffff'),
+        ...painting,
       });
       // The last frame read back off the canvas, so a recording of nothing is
       // told from a recording of the figure. An encoder writes a white file as
@@ -126,9 +170,11 @@ async function record(page, origin, name) {
         seconds: recording.seconds,
         inked: inked / (width * height),
         took: Math.round(performance.now() - started),
+        refused: [...refused],
+        triangles,
       };
     },
-    { origin, name, fps: FPS, width: WIDTH, height: HEIGHT }
+    { origin, name, fps: FPS, width: WIDTH, height: HEIGHT, through }
   );
 }
 
@@ -159,32 +205,45 @@ page.on('console', (message) => {
   if (message.type() === 'error') console.error(`  page: ${message.text()}`);
 });
 await page.goto(`${origin}/`);
+const backend = await openCard(page, origin);
 
 mkdirSync(out, { recursive: true });
 let failed = 0;
 for (const name of figures) {
-  try {
-    const answer = await record(page, origin, name);
-    const bytes = Buffer.from(answer.bytes, 'base64');
-    const file = path.join(out, `${name}.mp4`);
-    writeFileSync(file, bytes);
-    const held = await inside(file);
-    const agrees =
-      answer.frames === answer.walked && held.packets === answer.frames && answer.inked > 0;
-    console.log(
-      `${name}.mp4 ${bytes.length} bytes, ${answer.frames} frames of ${answer.walked} walked, ` +
-        `${held.packets} in the file, ${held.duration.toFixed(4)}s of ${held.size} ${held.codec}, ` +
-        `${(answer.inked * 100).toFixed(1)}% of the last frame drawn, ${answer.took}ms, ` +
-        `${agrees ? 'the file holds the walk' : 'THE FILE DISAGREES WITH THE WALK'}`
-    );
-    if (!agrees) failed += 1;
-  } catch (error) {
-    failed += 1;
-    console.error(`${name} failed: ${error.message}`);
+  for (const through of ['canvas', 'card']) {
+    const stem = through === 'card' ? `${name}.card` : name;
+    try {
+      const answer = await record(page, origin, name, through);
+      const bytes = Buffer.from(answer.bytes, 'base64');
+      const file = path.join(out, `${stem}.mp4`);
+      writeFileSync(file, bytes);
+      const held = await inside(file);
+      const agrees =
+        answer.frames === answer.walked &&
+        held.packets === answer.frames &&
+        answer.inked > 0 &&
+        answer.refused.length === 0;
+      console.log(
+        `${stem}.mp4 ${bytes.length} bytes, ${answer.frames} frames of ${answer.walked} walked, ` +
+          `${held.packets} in the file, ${held.duration.toFixed(4)}s of ${held.size} ${held.codec}, ` +
+          `${(answer.inked * 100).toFixed(1)}% of the last frame drawn, ${answer.took}ms` +
+          (through === 'card'
+            ? `, ${answer.refused.length} marks refused on ${backend}`
+            : '') +
+          `, ${agrees ? 'the file holds the walk' : 'THE FILE DISAGREES WITH THE WALK'}`
+      );
+      if (!agrees) failed += 1;
+    } catch (error) {
+      failed += 1;
+      console.error(`${stem} failed: ${error.message}`);
+    }
   }
 }
 
 await browser.close();
 server.close();
-console.log(`${figures.length - failed} of ${figures.length} figures recorded into ${out}`);
+console.log(
+  `${figures.length * 2 - failed} of ${figures.length * 2} recordings written into ${out}, ` +
+    `each figure through the two-dimensional painter and off a ${backend} card`
+);
 process.exit(failed === 0 ? 0 : 1);

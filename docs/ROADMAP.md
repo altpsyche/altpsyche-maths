@@ -1534,11 +1534,19 @@ The suite is 1,372 tests over 91 files and the door is 217 values and 247 types.
       letters are in the same places: a label drawn both ways has its ink inside 0.62 of a pixel
       across and 1.62 down, for all three baselines. The floor with the labels is 0.96 and without
       them the 0.97 it was.
-- [ ] **6. The recorder paints through a painter rather than a context.** `recordFigure` takes how a
-      frame is painted, so the 2D painter is one answer and a card is another, and a card's frame
-      reaches the encoder's canvas through `pixelsGpu` and `putImageData`. **Measurement:** the eight
-      recordings off a card, bytes and frames in the file against frames walked, and the time against
-      the page's 99 to 3,856 milliseconds.
+- [x] **6. The recorder paints through a painter rather than a context.** `recordFigure` takes a
+      `paint`, so `paintFrame` is one answer and `painterGpu` is another, and a card's frame reaches
+      the encoder's canvas as the pixels `pixelsGpu` reads back, written by `paintPixels` through
+      `putImageData`. The gate records every figure both ways. **Measured:** 8 recordings off a card
+      before and 16 after, all 8 of the card's holding exactly the frames the walk counted and
+      refusing 0 marks on WebGL 2: `boolean` 1,666,402 bytes over 379 frames, `frame` 141,675 over
+      54, `matrix` 1,495,476 over 180, `portrait` 425,770 over 162, `rotate` 1,474,057 over 180,
+      `solids` 1,475,504 over 180, `surface` 2,468,848 over 399 and `tangent` 1,227,646 over 308. The
+      card draws the same picture: the last frame's inked share is 3.6 per cent against the painter's
+      3.7, 81.9 against 81.9, 41.9 against 42.1, 6.6 against 7.8, 5.0 against 5.2, 16.7 against 16.9,
+      24.0 against 24.4 and 19.6 against 20.3. The readback is the cost, at 845 to 12,016
+      milliseconds against the painter's 99 to 3,856, measured against a software WebGL 2 rather than
+      a card. The door is 226 values and 250 types. 1,409 tests over 94 files.
 - [ ] **7. The recorder runs with no page.** The recording gate records the eight in a worker on an
       `OffscreenCanvas`, with no document anywhere in the call. **Measurement:** the eight files'
       bytes and frame counts recorded in a worker against the same eight recorded in the page, and

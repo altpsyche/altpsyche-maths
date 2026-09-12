@@ -2,19 +2,34 @@
  * A figure recorded, one frame at a time, into whatever takes the frames.
  *
  * The recorder walks the figure and paints each frame and does nothing else.
- * What the frames are painted onto and what becomes of them afterwards are one
- * parameter, so a canvas on a page, a canvas with no page behind it and a card
- * each satisfy the same call and this file changes for none of them.
+ * What the frames are painted onto, how they are painted and what becomes of
+ * them afterwards are all parameters, so a canvas on a page, a canvas with no
+ * page behind it and a card each satisfy the same call and this file changes for
+ * none of them.
  *
  * The walk is `frameTimesOf` and there is no second frame count anywhere here. A
  * recorder counting its own frames answers a different number from the walk the
  * strips are drawn from, since a floor and a round differ for every figure whose
  * duration times the rate lands above a half.
  */
-import { paintFrame, type CanvasLike } from './canvas.js';
-import { framesOf, frameTimesOf } from '../figure/frames.js';
+import { paintFrame, type CanvasLike, type SurfaceOptions } from './canvas.js';
+import { framesOf, frameTimesOf, type Frame } from '../figure/frames.js';
 import { durationOf, type Figure } from '../figure/figure.js';
 import type { Colour } from '../values/colour.js';
+
+/**
+ * How one frame reaches the surface the sink is reading.
+ *
+ * `paintFrame` is one answer and a card is another, since a card draws the frame
+ * on its own canvas and the pixels it reads back are written onto this one. It
+ * answers a promise because that readback is asynchronous where painting onto a
+ * context is not.
+ */
+export type FramePainter = (
+  context: CanvasLike,
+  frame: Frame,
+  options: SurfaceOptions
+) => Promise<void> | void;
 
 /**
  * Where a recording's frames go, which is an encoder or anything shaped like
@@ -61,6 +76,9 @@ export interface RecordOptions {
    * without one shows every frame through the one before it, since a canvas keeps
    * what was drawn on it. */
   background?: Colour;
+  /** How each frame reaches the sink's surface. Left out, the marks are painted
+   * onto it by the two-dimensional painter. */
+  paint?: FramePainter;
   /** Called once per frame taken, which is what a progress reading is built
    * from. */
   onFrame?: (index: number, count: number) => void;
@@ -87,10 +105,11 @@ export async function recordFigure<Output>(
   const span = options.seconds ?? durationOf(figure);
   const count = frameTimesOf(figure, { fps, seconds: span }).length;
   const gap = 1 / fps;
+  const paint = options.paint ?? paintFrame;
   let frames = 0;
   try {
     for (const frame of framesOf(figure, { fps, width, height, seconds: span })) {
-      paintFrame(sink.context, frame, { width, height, background: options.background });
+      await paint(sink.context, frame, { width, height, background: options.background });
       await sink.add(frame.seconds, gap);
       frames += 1;
       options.onFrame?.(frame.index, count);

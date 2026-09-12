@@ -1,6 +1,14 @@
 import { describe, expect, it } from 'vitest';
-import { colourFrom, durationOf, framesOf, paintCanvas, paintFrame, recordFigure } from '@altpsyche/maths';
-import type { CanvasLike, Figure, FrameSink } from '@altpsyche/maths';
+import {
+  colourFrom,
+  durationOf,
+  framesOf,
+  paintCanvas,
+  paintFrame,
+  paintPixels,
+  recordFigure,
+} from '@altpsyche/maths';
+import type { CanvasLike, Figure, Frame, FrameSink, ImageDataLike } from '@altpsyche/maths';
 import { tangent } from '../demos/tangent.js';
 import { solid } from '../demos/surface.js';
 import { turns } from '../demos/rotate.js';
@@ -186,6 +194,70 @@ describe('recordFigure', () => {
     expect(sink.finished).toBe(0);
   });
 
+  it('paints each frame with the painter it was handed rather than with the canvas painter', async () => {
+    const sink = new Taken();
+    const seen: Frame[] = [];
+    await recordFigure(tangent, sink, {
+      fps: 30,
+      width: WIDTH,
+      height: HEIGHT,
+      background: GROUND,
+      paint: (context, frame, options) => {
+        expect(context).toBe(sink.context);
+        expect(options).toEqual({ width: WIDTH, height: HEIGHT, background: GROUND });
+        seen.push(frame);
+      },
+    });
+    expect(seen).toHaveLength(308);
+    expect(seen.map((frame) => frame.index)).toEqual(seen.map((_, index) => index));
+    expect(sink.context.calls).toBe(0);
+  });
+
+  it('waits for a painter that answers a promise before taking the frame', async () => {
+    const order: string[] = [];
+    const sink: FrameSink = {
+      context: new Counter(),
+      add: () => {
+        order.push('taken');
+      },
+      finish: () => {},
+    };
+    await recordFigure(tangent, sink, {
+      fps: 4,
+      width: WIDTH,
+      height: HEIGHT,
+      paint: async () => {
+        order.push('painting');
+        await Promise.resolve();
+        order.push('painted');
+      },
+    });
+    expect(order.slice(0, 6)).toEqual([
+      'painting',
+      'painted',
+      'taken',
+      'painting',
+      'painted',
+      'taken',
+    ]);
+  });
+
+  it('throws the sink away rather than finishing it when a painter fails', async () => {
+    const sink = new Taken();
+    await expect(
+      recordFigure(tangent, sink, {
+        fps: 30,
+        width: WIDTH,
+        height: HEIGHT,
+        paint: async () => {
+          throw new Error('the card was lost');
+        },
+      })
+    ).rejects.toThrow('the card was lost');
+    expect(sink.cancelled).toBe(1);
+    expect(sink.finished).toBe(0);
+  });
+
   it('waits for a sink that has fallen behind before painting the next frame', async () => {
     let inside = false;
     let overlapped = false;
@@ -258,3 +330,48 @@ describe('paintFrame', () => {
   });
 });
 
+
+/** A context that keeps the pixels it was handed, which is what a card's frame
+ * arrives as. Its image data is the shape a real context makes rather than the
+ * DOM's own, since this package names no browser library. */
+class Pixels extends Counter {
+  written?: { image: ImageDataLike; x: number; y: number };
+  createImageData(width: number, height: number): ImageDataLike {
+    return { width, height, data: new Uint8ClampedArray(width * height * 4) };
+  }
+  putImageData(image: ImageDataLike, x: number, y: number) {
+    this.written = { image, x, y };
+  }
+}
+
+describe('paintPixels', () => {
+  it('writes the bytes it was handed at the top left corner', () => {
+    const context = new Pixels();
+    const pixels = new Uint8Array(4 * 3 * 4);
+    for (let at = 0; at < pixels.length; at += 1) pixels[at] = at % 256;
+    paintPixels(context, pixels, 4, 3);
+    expect(context.written?.x).toBe(0);
+    expect(context.written?.y).toBe(0);
+    expect(context.written?.image.width).toBe(4);
+    expect(context.written?.image.height).toBe(3);
+    expect([...(context.written?.image.data ?? [])]).toEqual([...pixels]);
+  });
+
+  it('paints nothing, since pixels replace what the canvas held', () => {
+    const context = new Pixels();
+    paintPixels(context, new Uint8Array(2 * 2 * 4), 2, 2);
+    expect(context.calls).toBe(0);
+  });
+
+  it('refuses a count of bytes that is not the frame', () => {
+    expect(() => paintPixels(new Pixels(), new Uint8Array(15), 2, 2)).toThrow(
+      '15 bytes of pixels is not the 16 a 2x2 frame holds'
+    );
+  });
+
+  it('refuses a context with no image calls rather than dropping the frame', () => {
+    expect(() => paintPixels(new Counter(), new Uint8Array(16), 2, 2)).toThrow(
+      'no createImageData and putImageData'
+    );
+  });
+});

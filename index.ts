@@ -46,7 +46,7 @@ export { outlineText, textAdvance, textOutlines, textWidth } from './figure/text
 export type { Font } from './figure/font.js';
 export { gpuFrame } from './figure/gpu-frame.js';
 export type { GpuFrame, GpuFrameOptions } from './figure/gpu-frame.js';
-export { gpuSurface, paintGpu, pixelsGpu } from './paint/gpu.js';
+export { gpuSurface, paintGpu, painterGpu, pixelsGpu } from './paint/gpu.js';
 export type { GpuCanvas, GpuPainting, GpuSurface, GpuSurfaceOptions } from './paint/gpu.js';
 export type { FlatEdge, FlattenOptions } from './figure/inside.js';
 export { cutPath } from './figure/cut.js';
@@ -237,12 +237,12 @@ export { FIGURE_FORMAT_VERSION, readFigure, writeFigure } from './figure/figure-
 export type { FigureFile } from './figure/figure-file.js';
 export { paintSvg, pathToData, svgElements, svgMarkup } from './paint/svg.js';
 export type { ElementMaker, PaintNode, PaintTarget, SvgColour, SvgElement, SvgMarkupOptions, SvgTheme } from './paint/svg.js';
-export { paintCanvas, paintFrame } from './paint/canvas.js';
-export type { CanvasGradientLike, CanvasLike, SurfaceOptions } from './paint/canvas.js';
+export { paintCanvas, paintFrame, paintPixels } from './paint/canvas.js';
+export type { CanvasGradientLike, CanvasLike, ImageDataLike, SurfaceOptions } from './paint/canvas.js';
 export { recordFigure } from './paint/record.js';
 export { videoSink } from './paint/video.js';
 export type { CanvasSurface, VideoOptions } from './paint/video.js';
-export type { FrameSink, RecordOptions, Recording } from './paint/record.js';
+export type { FramePainter, FrameSink, RecordOptions, Recording } from './paint/record.js';
 export { arrow, brace, bracePath, callout, dot } from './figure/annotate.js';
 export type { ArrowOptions, BraceOptions, BracedOptions, CalloutOptions } from './figure/annotate.js';
 export { matrix } from './figure/matrix.js';
