@@ -1423,6 +1423,14 @@ frame round a picture is a shape.
   punctuation a figure writes, 15,148 bytes over 205 glyphs under the SIL Open Font License 1.1. The
   bytes are behind a call rather than an import at the top of a file, so a consumer who never draws a
   label never fetches them, and one reading is held however often it is asked for.
+- `glyphPath(font, glyph)` — one glyph's outline as a path, in font units with y counting up the way
+  the table writes it. A `glyf` outline is a quadratic B-spline and every path here is cubic, and the
+  conversion is exact: a quadratic from P₀ through control Q to P₂ is the cubic with controls
+  P₀ + (2/3)(Q − P₀) and P₂ + (2/3)(Q − P₂), which is the same curve at every parameter. Two control
+  points in a row imply the point halfway between them, a contour of control points alone starts
+  halfway between its last and its first, and a composite glyph is its components read and placed
+  under their own two-by-two transforms. A glyph with no outline gives an empty path, which is what a
+  space is.
 - `gpuFrame(marks, view, options)` — a list of marks as `@altpsyche/engine`'s own `FrameGraph`, which
   is a value rather than a drawing. The geometry is triangles in clip space and the shade is a colour
   per vertex, so a mark's opacity is in its alpha and its clip is in its triangles, and the whole
