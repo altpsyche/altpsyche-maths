@@ -428,6 +428,34 @@ const PRECISION = 0.01;
  */
 const READING_WIDTH = ADVANCE * TEXT.note * 'slope -0.00'.length;
 
+/**
+ * The arrow that points at the tangent while the dot is held at the stationary
+ * point, and the two places it runs between.
+ *
+ * It stands to the right of the axis, where the curve has not yet climbed and
+ * the shaded region has no width while the dot is held, and its head stops short
+ * of the tangent rather than crossing it, so the line it names is the line a
+ * reader sees whole. Left of the axis it would cross the numbers written up the
+ * side of the graph.
+ */
+const AIM_FROM = pointOf(coords, 1, 2.2);
+const AIM_TO = pointOf(coords, 0.35, 0.45);
+
+/**
+ * The word on the wash the bars leave, and the place it names.
+ *
+ * The marker sits at graph 2.6, where every one of the three runs reads its bar
+ * at the left edge 2.5 and each one is 0.51 graph units short of the curve, so
+ * the gap the marker stands in is the same gap whichever run is showing.
+ *
+ * The word stands in the band above the graph and left of the panel, which is
+ * the one place the guide dropped from the dot cannot reach. Inside the graph it
+ * would be crossed by that guide, since the guide sweeps every height the dot
+ * climbs through and the word arrives while the dot is still climbing.
+ */
+const SHORTFALL_AT = pointOf(coords, 2.6, 6.5);
+const SHORTFALL_TO = vec2(1.6, 1.68);
+
 /** Every label along the x axis, named after the number it shows, which is what
  * lets them arrive one after another. */
 const acrossLabels = ['-1', '0', '1', '2', '3', '4'].map((label) => `tangent/axes/x/labels/${label}`);
@@ -485,6 +513,21 @@ export const scene: NodeRecord = {
     guideTo('drop', { kind: 'point', x: { kind: 'member', of: point, name: 'x' }, y: ORIGIN.y }),
     guideTo('reach', { kind: 'point', x: ORIGIN.x, y: { kind: 'member', of: point, name: 'y' } }),
     { kind: 'dot', name: 'point', at: point, radius: 0.08, fill: ink },
+    {
+      kind: 'arrow',
+      name: 'aim',
+      from: AIM_FROM,
+      to: AIM_TO,
+      options: { stroke: accent, head: 0.22, spread: 0.55 },
+    },
+    {
+      kind: 'callout',
+      name: 'shortfall',
+      at: SHORTFALL_AT,
+      to: SHORTFALL_TO,
+      content: 'what the bars miss',
+      options: { stroke: pen, fill: ink, size: TEXT.tick, align: 'end' },
+    },
     {
       kind: 'text',
       name: 'reading',
@@ -607,8 +650,15 @@ const barsSpans: readonly SpanRecord[] = BARS.flatMap((count, at): SpanRecord[] 
   return [arrive, { entry: { kind: 'fadeOut', target: `tangent/bars${count}` }, from: leaves, to: leaves + BARS_IN }];
 });
 
+/** When the word on the wash arrives, which is when the last run of bars does,
+ * since the gap it names is the gap that run leaves. */
+const SHORTFALL_IN = WALK_FROM + 0.1 + (BARS.length - 1) * BARS_HOLD;
+
 const spans: readonly SpanRecord[] = [
   ...barsSpans,
+  { entry: { kind: 'fadeIn', target: 'tangent/shortfall' }, from: SHORTFALL_IN, to: SHORTFALL_IN + BARS_IN },
+  { entry: { kind: 'fadeIn', target: 'tangent/aim' }, ...PARTS },
+  { entry: { kind: 'fadeOut', target: 'tangent/aim' }, from: WALK_FROM, to: WALK_FROM + 0.4 },
   {
     entry: { kind: 'followView', target: 'tangent/point', options: { within: REACH, room: ROOM, axis: 'x' } },
     from: 0,
@@ -698,7 +748,9 @@ export const written: FigureRecord = {
       into: LENS,
       view: { kind: 'followView', target: 'tangent/point' },
       name: 'tangent/lens',
-      hides: ['tangent/window'],
+      // The annotations are written at the picture's own scale, so magnifying
+      // one puts a leader across the panel with neither end of it in view.
+      hides: ['tangent/window', 'tangent/aim', 'tangent/shortfall'],
     },
   ],
 };

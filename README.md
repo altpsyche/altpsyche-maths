@@ -25,7 +25,7 @@ A **painter** consumes marks. `viewMatrix` builds the single affine transform ta
 a surface of a given size. It inverts the y axis, since a figure counts upward and both painters
 count downward from the top. No conversion to device units occurs anywhere else.
 
-<img src="https://raw.githubusercontent.com/altpsyche/altpsyche-maths/master/docs/tangent.svg" width="720" alt="A parabola on a labelled grid over a field of small blue arrows, the region under it shaded to a point on the curve, twenty-four pale blue bars standing under the curve in a staircase with the shaded wash showing between their tops and the curve, the tangent at that point drawn, a dashed guide dropped from the point to each axis, and the slope written as a number under the typeset rule it comes from.">
+<img src="https://raw.githubusercontent.com/altpsyche/altpsyche-maths/master/docs/tangent.svg" width="720" alt="A parabola on a labelled grid over a field of small blue arrows, the region under it shaded to a point on the curve, twenty-four pale blue bars standing under the curve in a staircase with the shaded wash showing between their tops and the curve, the tangent at that point drawn, a dashed guide dropped from the point to each axis, a word above the graph pointing down at the wash the bars miss, and the slope written as a number under the typeset rule it comes from.">
 
 The figure above is evaluated at t = 7.86 s of a 10.25 s duration. Its extent is 10.8 by 6 units and
 its marks number 186 there, counting the inset it draws.
@@ -166,7 +166,7 @@ points where a plane cuts a parametric surface, closing a run whose ends meet.
 
 <img src="https://raw.githubusercontent.com/altpsyche/altpsyche-maths/master/docs/rotate.svg" width="720" alt="Two panels side by side, each an L-shaped block turned part way round with a dot marking the point it turns about. In the left panel the dot sits at the middle of the block's own box. In the right it sits off to one side, so the block swings round it.">
 
-<img src="https://raw.githubusercontent.com/altpsyche/altpsyche-maths/master/docs/matrix.svg" width="720" alt="A square panel of grid lines sheared over by a linear map, with the two axes through the origin carried with them and the unit square drawn as a filled parallelogram. Beside the panel the map is written as a two by two matrix in brackets, its four numbers at the values the grid has reached.">
+<img src="https://raw.githubusercontent.com/altpsyche/altpsyche-maths/master/docs/matrix.svg" width="720" alt="A square panel of grid lines sheared over by a linear map, with the two axes through the origin carried with them and the unit square drawn as a filled parallelogram. Beside the panel the map is written as a two by two matrix in brackets, its four numbers at the values the grid has reached, over a table holding where each basis vector lands and a number line whose marker stands at the determinant.">
 
 An **animation** maps marks and a fraction of a span to marks. Twenty-one of them are supplied, among
 them `draw`, `fadeIn`, `moveAlong`, `rotate`, `applyMatrix`, `morph`, `morphEquation`, which pairs the

@@ -767,7 +767,7 @@ renderer is conformant inside that band and wrong outside it in either direction
 
 | file | bytes | what it exercises |
 | --- | --- | --- |
-| `demos/tangent.figure.json` | 408,625 | the graph domain, a moving view, an inset, two typeset rules, a brace, a field and three runs of bars |
+| `demos/tangent.figure.json` | 410,650 | the graph domain, a moving view, an inset, two typeset rules, a brace, a field, three runs of bars, an arrow and a callout |
 | `demos/surface.figure.json` | 275,151 | a surface, a plane, a section, streamlines, axes in space and an orbiting camera |
 | `demos/boolean.figure.json` | 14,444 | the three boolean operations through no crossing, one, two and containment |
 | `demos/rotate.figure.json` | 8,257 | a rotation about a box's middle and about a named place, and a loop |

@@ -239,11 +239,297 @@
           }
         },
         {
+          "cells": [
+            [
+              "in",
+              "out"
+            ],
+            [
+              "(1, 0)",
+              {
+                "holes": [
+                  {
+                    "precision": 0.1,
+                    "value": {
+                      "kind": "arithmetic",
+                      "left": 1,
+                      "operator": "+",
+                      "right": {
+                        "kind": "arithmetic",
+                        "left": 1,
+                        "operator": "*",
+                        "right": {
+                          "kind": "track",
+                          "name": "f"
+                        }
+                      }
+                    }
+                  },
+                  {
+                    "precision": 0.1,
+                    "value": {
+                      "kind": "arithmetic",
+                      "left": 0,
+                      "operator": "+",
+                      "right": {
+                        "kind": "arithmetic",
+                        "left": 1,
+                        "operator": "*",
+                        "right": {
+                          "kind": "track",
+                          "name": "f"
+                        }
+                      }
+                    }
+                  }
+                ],
+                "template": "({0}, {1})"
+              }
+            ],
+            [
+              "(0, 1)",
+              {
+                "holes": [
+                  {
+                    "precision": 0.1,
+                    "value": {
+                      "kind": "arithmetic",
+                      "left": 0,
+                      "operator": "+",
+                      "right": {
+                        "kind": "arithmetic",
+                        "left": 1,
+                        "operator": "*",
+                        "right": {
+                          "kind": "track",
+                          "name": "f"
+                        }
+                      }
+                    }
+                  },
+                  {
+                    "precision": 0.1,
+                    "value": {
+                      "kind": "arithmetic",
+                      "left": 1,
+                      "operator": "+",
+                      "right": {
+                        "kind": "arithmetic",
+                        "left": 0.5,
+                        "operator": "*",
+                        "right": {
+                          "kind": "track",
+                          "name": "f"
+                        }
+                      }
+                    }
+                  }
+                ],
+                "template": "({0}, {1})"
+              }
+            ]
+          ],
+          "kind": "table",
+          "name": "columns",
+          "options": {
+            "align": "middle",
+            "at": {
+              "x": 5.9,
+              "y": -1.48
+            },
+            "columns": [
+              1.25,
+              1.75
+            ],
+            "fill": {
+              "colour": {
+                "a": 1,
+                "b": 27,
+                "g": 27,
+                "name": "ink",
+                "r": 27
+              }
+            },
+            "header": true,
+            "rowHeight": 0.44,
+            "size": 0.3,
+            "stroke": {
+              "colour": {
+                "a": 1,
+                "b": 27,
+                "g": 27,
+                "name": "ink",
+                "r": 27
+              },
+              "width": 0.025
+            }
+          }
+        },
+        {
+          "at": {
+            "x": 5.9,
+            "y": -2.5
+          },
+          "content": "the determinant",
+          "kind": "text",
+          "name": "says",
+          "options": {
+            "align": "middle",
+            "fill": {
+              "colour": {
+                "a": 1,
+                "b": 27,
+                "g": 27,
+                "name": "ink",
+                "r": 27
+              }
+            }
+          },
+          "size": 0.3
+        },
+        {
+          "kind": "numberLine",
+          "name": "area",
+          "options": {
+            "at": -2.86,
+            "fill": {
+              "colour": {
+                "a": 1,
+                "b": 27,
+                "g": 27,
+                "name": "ink",
+                "r": 27
+              }
+            },
+            "gap": 0.05,
+            "size": 0.21213203435596423,
+            "stroke": {
+              "colour": {
+                "a": 1,
+                "b": 27,
+                "g": 27,
+                "name": "ink",
+                "r": 27
+              },
+              "width": 0.025
+            },
+            "tickLength": 0.18,
+            "ticks": 4,
+            "tip": 0.14
+          },
+          "scale": {
+            "graph": {
+              "from": 0,
+              "to": 3
+            },
+            "units": {
+              "from": 4.4,
+              "to": 7.4
+            }
+          }
+        },
+        {
+          "at": {
+            "kind": "point",
+            "x": {
+              "arguments": [
+                {
+                  "kind": "arithmetic",
+                  "left": {
+                    "kind": "arithmetic",
+                    "left": {
+                      "kind": "arithmetic",
+                      "left": 1,
+                      "operator": "+",
+                      "right": {
+                        "kind": "arithmetic",
+                        "left": 1,
+                        "operator": "*",
+                        "right": {
+                          "kind": "track",
+                          "name": "f"
+                        }
+                      }
+                    },
+                    "operator": "*",
+                    "right": {
+                      "kind": "arithmetic",
+                      "left": 1,
+                      "operator": "+",
+                      "right": {
+                        "kind": "arithmetic",
+                        "left": 0.5,
+                        "operator": "*",
+                        "right": {
+                          "kind": "track",
+                          "name": "f"
+                        }
+                      }
+                    }
+                  },
+                  "operator": "-",
+                  "right": {
+                    "kind": "arithmetic",
+                    "left": {
+                      "kind": "arithmetic",
+                      "left": 0,
+                      "operator": "+",
+                      "right": {
+                        "kind": "arithmetic",
+                        "left": 1,
+                        "operator": "*",
+                        "right": {
+                          "kind": "track",
+                          "name": "f"
+                        }
+                      }
+                    },
+                    "operator": "*",
+                    "right": {
+                      "kind": "arithmetic",
+                      "left": 0,
+                      "operator": "+",
+                      "right": {
+                        "kind": "arithmetic",
+                        "left": 1,
+                        "operator": "*",
+                        "right": {
+                          "kind": "track",
+                          "name": "f"
+                        }
+                      }
+                    }
+                  }
+                },
+                0,
+                3,
+                4.4,
+                7.4
+              ],
+              "kind": "call",
+              "name": "remap"
+            },
+            "y": -2.86
+          },
+          "fill": {
+            "colour": {
+              "a": 1,
+              "b": 12,
+              "g": 65,
+              "name": "ember",
+              "r": 194
+            }
+          },
+          "kind": "dot",
+          "name": "reading",
+          "radius": 0.085
+        },
+        {
           "at": {
             "x": 0,
             "y": -3.5
           },
-          "content": "the unit square and its area",
+          "content": "the unit square",
           "kind": "text",
           "name": "underPanel",
           "options": {
@@ -361,6 +647,19 @@
           },
           "from": 0,
           "to": 6
+        }
+      ]
+    },
+    "tracks": {
+      "f": [
+        {
+          "curve": "thereAndBack",
+          "time": 0,
+          "value": 0
+        },
+        {
+          "time": 6,
+          "value": 1
         }
       ]
     }

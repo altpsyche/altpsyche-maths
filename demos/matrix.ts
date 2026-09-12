@@ -15,8 +15,9 @@
  * One clock drives the whole picture. The map and the four counted entries are
  * spans over the same interval with the same curve, so each entry reads the same
  * eased fraction the map does and the number written is the number the grid is
- * at. A track driving the entries would be a second clock free to disagree with
- * the span.
+ * at. The track the table and the line read names that same curve over those
+ * same seconds, so it is the one clock written a second way rather than a
+ * second clock.
  *
  * The area is drawn rather than written. The determinant of a matrix reached
  * entry by entry is not linear in that fraction, so a number counted from 1 to 2
@@ -28,13 +29,18 @@ import {
   frameTimesOf,
   interval,
   resolveFigure,
+  scaleOf,
   textScale,
   vec2,
   type Coords,
+  type Expression,
   type Extent,
   type Figure,
   type FigureRecord,
   type Mark,
+  type Scale,
+  type TextContent,
+  type Track,
   type Transform2D,
   type NodeRecord,
 } from '../index.js';
@@ -48,6 +54,7 @@ const axis = { colour: INK, width: 0.045 };
 const edge = { colour: EMBER, width: 0.055 };
 const wash = { colour: PEACH };
 const bracket = { colour: INK, width: 0.04 };
+const rule = { colour: INK, width: 0.025 };
 
 /** How far the panel reaches from the origin, in graph units and in figure units
  * alike, since one figure unit is one graph unit here. */
@@ -92,6 +99,9 @@ export const ENTRIES = [
   { from: 1, to: MAP[4] },
 ];
 
+/** How long the map takes to go out and come back. */
+export const TURN = 6;
+
 /** Where the matrix stands, clear of the panel. */
 const MATRIX_AT = vec2(5.9, 0.5);
 const CAPTION_Y = -3.5;
@@ -100,9 +110,10 @@ export const TEXT = textScale(0.3 / TEXT_RATIO);
 /**
  * The frame, shaped and placed from what the picture reaches.
  *
- * It runs x -3.2 to 7.6 and y -3.85 to 3.15: the panel's own square, the matrix
- * out to 7.35, and the captions at their own size below both. It is off the
- * origin because everything beside the panel stands to the right of it.
+ * It runs x -3.2 to 7.6 and y -3.85 to 3.15: the panel's own square, the column
+ * beside it out to the tip the line ends in at 7.54, and the captions at their
+ * own size below both. It is off the origin because everything beside the panel
+ * stands to the right of it.
  */
 export const CENTRE = vec2(2.2, -0.35);
 const extent: Extent = { width: 10.8, height: 7, centre: CENTRE };
@@ -159,6 +170,126 @@ const numbers: NodeRecord = {
   },
 };
 
+/**
+ * How far through the map the picture has reached, as one number.
+ *
+ * The key names the curve the map's own span names, over the same seconds and
+ * from the same nothing to the same whole, so the table and the line read the
+ * clock the grid is read from rather than a second clock beside it.
+ */
+export const FRACTION: Track = [
+  { time: 0, value: 0, curve: 'thereAndBack' },
+  { time: TURN, value: 1 },
+];
+
+const fraction: Expression = { kind: 'track', name: 'f' };
+
+/** One entry of the map at the fraction reached, which is the identity's number
+ * walked towards the map's. */
+const entryAt = (at: number): Expression => ({
+  kind: 'arithmetic',
+  operator: '+',
+  left: ENTRIES[at].from,
+  right: { kind: 'arithmetic', operator: '*', left: ENTRIES[at].to - ENTRIES[at].from, right: fraction },
+});
+
+/** The determinant as the entries give it, ad less bc, which is the area of the
+ * parallelogram the unit square lands on. It is quadratic in the fraction, so
+ * the marker reading it off the line travels at a pace of its own rather than
+ * the pace the grid deforms at. */
+const determinant: Expression = {
+  kind: 'arithmetic',
+  operator: '-',
+  left: { kind: 'arithmetic', operator: '*', left: entryAt(0), right: entryAt(3) },
+  right: { kind: 'arithmetic', operator: '*', left: entryAt(1), right: entryAt(2) },
+};
+
+/** Where the two basis vectors land, written as the pair of entries of one
+ * column of the map. */
+const landsAt = (across: number, up: number): TextContent => ({
+  template: '({0}, {1})',
+  holes: [
+    { value: entryAt(across), precision: 0.1 },
+    { value: entryAt(up), precision: 0.1 },
+  ],
+});
+
+/** Where the table stands and how its two columns are split, the second wide
+ * enough for a pair of numbers written to a tenth. */
+const TABLE_AT = vec2(MATRIX_AT.x, -1.48);
+const TABLE_COLUMNS = [1.25, 1.75];
+
+/** The two columns of the map as the two places the basis vectors go, which is
+ * the same four numbers the matrix writes, read a pair at a time. */
+const columns: NodeRecord = {
+  kind: 'table',
+  name: 'columns',
+  cells: [
+    ['in', 'out'],
+    ['(1, 0)', landsAt(0, 2)],
+    ['(0, 1)', landsAt(1, 3)],
+  ],
+  options: {
+    at: TABLE_AT,
+    columns: TABLE_COLUMNS,
+    rowHeight: 0.44,
+    size: TEXT.label,
+    fill: ink,
+    stroke: rule,
+    header: true,
+    align: 'middle',
+  },
+};
+
+/** The line the determinant is read off, one figure unit to one unit of area,
+ * and where it sits under the table. */
+export const AREA_LINE: Scale = scaleOf(interval(0, 3), interval(4.4, 7.4));
+const LINE_Y = -2.86;
+
+/** The line, and the marker standing on it at the area the square encloses. The
+ * marker takes the square's own colour, since the number it points at is the
+ * area of that square. */
+const areaLine: readonly NodeRecord[] = [
+  {
+    kind: 'text',
+    name: 'says',
+    at: vec2(MATRIX_AT.x, -2.5),
+    content: 'the determinant',
+    size: TEXT.label,
+    options: { fill: ink, align: 'middle' },
+  },
+  {
+    kind: 'numberLine',
+    name: 'area',
+    scale: AREA_LINE,
+    options: {
+      stroke: rule,
+      fill: ink,
+      size: TEXT.tick,
+      at: LINE_Y,
+      ticks: 4,
+      tickLength: 0.18,
+      gap: 0.05,
+      tip: 0.14,
+    },
+  },
+  {
+    kind: 'dot',
+    name: 'reading',
+    at: {
+      kind: 'point',
+      x: {
+        kind: 'call',
+        name: 'remap',
+        arguments: [determinant, AREA_LINE.graph.from, AREA_LINE.graph.to, AREA_LINE.units.from, AREA_LINE.units.to],
+      },
+      y: LINE_Y,
+    },
+    radius: 0.085,
+    fill: { colour: EMBER },
+  },
+];
+
 export const scene: NodeRecord = {
   kind: 'group',
   name: 'map',
@@ -166,11 +297,13 @@ export const scene: NodeRecord = {
     { kind: 'shape', name: 'panel', path: { kind: 'rect', corner: vec2(-REACH, -REACH), width: 2 * REACH, height: 2 * REACH }, style: { fill: { colour: FROST } } },
     plane,
     numbers,
+    columns,
+    ...areaLine,
     {
       kind: 'text',
       name: 'underPanel',
       at: vec2(0, CAPTION_Y),
-      content: 'the unit square and its area',
+      content: 'the unit square',
       size: TEXT.label,
       options: { fill: ink, align: 'middle' },
     },
@@ -186,9 +319,6 @@ export const scene: NodeRecord = {
   style: TYPE,
 };
 
-/** How long the map takes to go out and come back. */
-export const TURN = 6;
-
 /**
  * The map and its four numbers over one span each, all of them from nothing to
  * the whole duration on `thereAndBack`.
@@ -200,6 +330,7 @@ export const TURN = 6;
 export const written: FigureRecord = {
   extent,
   scene,
+  tracks: { f: FRACTION },
   timeline: {
     spans: [
       { entry: { kind: 'applyMatrix', target: 'map/plane', matrix: MAP }, from: 0, to: TURN, curve: 'thereAndBack' },

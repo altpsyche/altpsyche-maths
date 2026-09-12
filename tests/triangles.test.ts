@@ -193,8 +193,8 @@ describe('the demos cut into triangles', () => {
   it('covers every fill of the flat demo to its own area', () => {
     const cut = cutting(marksAt(tangent, 5));
     expect(cut.rules).toEqual(['nonzero']);
-    expect(cut.fills).toBe(97);
-    expect(cut.triangles).toBe(1142);
+    expect(cut.fills).toBe(99);
+    expect(cut.triangles).toBe(1157);
     // The area a fill rule encloses and the area its triangles cover are the
     // same number to a part in ten thousand of a millionth of a figure unit.
     expect(cut.worst).toBeLessThan(1e-10);
@@ -366,8 +366,8 @@ describe('strokeTrianglesOf', () => {
 describe('the demos stroked into triangles', () => {
   it('covers every stroke of the flat demo to its own outline', () => {
     const cut = stroking(marksAt(tangent, 5));
-    expect(cut.strokes).toBe(119);
-    expect(cut.triangles).toBe(506);
+    expect(cut.strokes).toBe(121);
+    expect(cut.triangles).toBe(510);
     // Eight marks carry an empty path and sixteen a subpath with no length under
     // a butt cap, and both other painters draw nothing for either.
     expect(cut.empty).toBe(24);

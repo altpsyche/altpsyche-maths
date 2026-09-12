@@ -397,7 +397,7 @@ const timeline = Timeline.empty()
 `play` runs one animation after the previous span. `together` runs several over one span. `stagger`
 offsets a row of them so the parts arrive in succession.
 
-<img src="tangent-strip.svg" width="820" alt="Four frames of the same figure in two rows, the point walking up the curve over the field of slope arrows with a dashed guide to each axis following it, the shaded region growing behind it, a run of pale blue bars under the curve that is finer in each frame, and a brace measuring the rise in the last frame.">
+<img src="tangent-strip.svg" width="820" alt="Four frames of the same figure in two rows, the point walking up the curve over the field of slope arrows with a dashed guide to each axis following it, the shaded region growing behind it, a run of pale blue bars under the curve that is finer in each frame, an arrow pointing at the flat tangent in the first frame, a word naming the wash the bars miss in the last, and a brace measuring the rise there.">
 
 Four times of one figure. A moving picture needs a GIF and this package has no encoder, so a still
 shows motion as a strip: several times of one figure laid out side by side. Every strip on this page
@@ -786,10 +786,14 @@ A grid mapped past its panel is cut by a clip. A clip does not ride a transform,
 still while the grid inside it deforms, and a grid drawn wider than its panel keeps the panel full as
 the map carries its lines out.
 
-<img src="matrix-strip.svg" width="820" alt="Four frames in two rows, the grid panel shearing further over in each and the unit square opening into a parallelogram, with the two by two matrix beside it counting to the numbers the grid has reached.">
+<img src="matrix-strip.svg" width="820" alt="Four frames in two rows, the grid panel shearing further over in each and the unit square opening into a parallelogram, with the two by two matrix beside it counting to the numbers the grid has reached, a table under it holding where the two basis vectors land, and a number line under that with a marker standing at the determinant.">
 
 That is the matrix demo, and the four numbers beside the panel are the map the grid is under at that
-frame, each counting to its own value rather than being written once at the end.
+frame, each counting to its own value rather than being written once at the end. The table under the
+matrix holds the same four numbers a column at a time, which is where each of the two basis vectors
+lands, and the marker on the number line under it stands at the determinant of the map reached so
+far. That determinant is the area of the parallelogram the square has opened into, so the marker and
+the drawn square are one reading in two places.
 
 ## Boolean operations
 

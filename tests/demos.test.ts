@@ -510,18 +510,19 @@ describe('the flat demo', () => {
     }
   });
 
-  it('draws the same 191 marks at every time, and an inset of between 35 and 53', () => {
-    // Forty-two of the 191 are the three runs of bars, which are all in the list
+  it('draws the same 196 marks at every time, and an inset of between 35 and 53', () => {
+    // Forty-two of the 196 are the three runs of bars, which are all in the list
     // whichever one is showing, another forty-two the field's twenty-one arrows,
-    // fifteen the two rules, two the inset's own panel and one the light that runs
-    // along the tangent, which is in the list at every time and holds no path
-    // outside its own span. Nothing arrives or leaves part way through, so every
-    // time alike. What the inset draws is not: it magnifies a window that moves,
-    // so what falls inside the window changes as the dot walks.
+    // fifteen the two rules, five the arrow and the word on the wash, two the
+    // inset's own panel and one the light that runs along the tangent, which is
+    // in the list at every time and holds no path outside its own span. Nothing
+    // arrives or leaves part way through, so every time alike. What the inset
+    // draws is not: it magnifies a window that moves, so what falls inside the
+    // window changes as the dot walks.
     for (const seconds of [0, ...FRAMES, durationOf(tangent)]) {
       const marks = marksAt(tangent, seconds);
       const lens = marks.filter((mark) => mark.id.startsWith('tangent/lens/'));
-      expect(marks.length - lens.length).toBe(191);
+      expect(marks.length - lens.length).toBe(196);
       expect(lens.length).toBeGreaterThanOrEqual(35);
       expect(lens.length).toBeLessThanOrEqual(53);
     }
@@ -550,6 +551,64 @@ describe('the flat demo', () => {
     const short = BARS.map((count) => 9 - barsSum(count));
     expect(short).toEqual([2.125, 1.09375, 0.5546875]);
     for (let at = 1; at < short.length; at += 1) expect(short[at - 1] / short[at]).toBeGreaterThan(1.94);
+  });
+
+  it('stands the word on the wash in the gap between a bar and the curve', () => {
+    // The marker is read in graph units rather than in figure units, since what
+    // it has to stand in is the gap between the height a bar is read at and the
+    // curve above it, and both of those are heights of the curve.
+    const marks = marksAt(tangent, tangent.still);
+    const marker = marks.find((mark) => mark.id === 'tangent/shortfall/marker') as Mark & { kind: 'path' };
+    const middle = centreOf(boundsOf(marker.path)!);
+    const at = vec2(toGraph(coords.x, middle.x), toGraph(coords.y, middle.y));
+    expect(at.y).toBeLessThan(curve(at.x));
+    for (const count of BARS) {
+      const step = 3 / count;
+      expect(at.y, `${count} bars`).toBeGreaterThan(curve(Math.floor(at.x / step) * step));
+    }
+    // The leader runs from that gap out to the word, so the two ends of it are
+    // the place named and the name.
+    const leader = marks.find((mark) => mark.id === 'tangent/shortfall/leader') as Mark & { kind: 'path' };
+    const word = marks.find((mark) => mark.id === 'tangent/shortfall/word');
+    if (word?.kind !== 'text') throw new Error('the word on the wash is a text mark');
+    const far = leader.path[0].curves[leader.path[0].curves.length - 1].to;
+    expect(far.x).toBeCloseTo(word.at.x, 12);
+    expect(far.y).toBeCloseTo(word.at.y, 12);
+    expect(word.text).toBe('what the bars miss');
+    // It arrives with the last run of bars, which is the run whose gap it names.
+    expect(word.opacity ?? 1).toBe(1);
+    expect(marksAt(tangent, TIMES.walkFrom).find((mark) => mark.id === 'tangent/shortfall/word')!.opacity).toBe(0);
+  });
+
+  it('points an arrow at the tangent while the dot is held at the stationary point', () => {
+    // The head is a triangle whose apex is the point the arrow was drawn to, and
+    // the shaft stops where that head begins, so the tail is the far end of the
+    // shaft and the two together give the direction it points in.
+    const marks = marksAt(tangent, TIMES.beat);
+    const head = marks.find((mark) => mark.id === 'tangent/aim/head') as Mark & { kind: 'path' };
+    const shaft = marks.find((mark) => mark.id === 'tangent/aim/shaft') as Mark & { kind: 'path' };
+    const line = marks.find((mark) => mark.id === 'tangent/tangent') as Mark & { kind: 'path' };
+    const apex = head.path[0].start;
+    const tail = shaft.path[0].start;
+    // The tangent at the stationary point is flat, and it is drawn as the filled
+    // outline of a stroke of two widths, so the height it sits at is the middle
+    // of that outline rather than either edge of it.
+    const drawn = boundsOf(line.path)!;
+    const seat = pointOf(coords, 0, 0).y;
+    expect(centreOf(drawn).y).toBeCloseTo(seat, 12);
+    // The apex stands off the line by less than the head is long, which is what
+    // says the arrow stops short of the tangent rather than crossing it.
+    expect(apex.y - seat).toBeGreaterThan(0);
+    expect(apex.y - seat).toBeLessThan(0.22);
+    // Carried on in the direction it points, the arrow meets the line inside the
+    // stretch the line is drawn over.
+    const met = apex.x + ((apex.x - tail.x) / (apex.y - tail.y)) * (seat - apex.y);
+    const along = drawn.x;
+    expect(met).toBeGreaterThan(along.from);
+    expect(met).toBeLessThan(along.to);
+    // It is there for the beat and gone once the dot walks, since a line that
+    // has a slope no longer needs pointing at.
+    expect(marksAt(tangent, tangent.still).find((mark) => mark.id === 'tangent/aim/shaft')!.opacity).toBe(0);
   });
 
   it('drops a dashed guide from the dot to each axis, with its foot on that axis', () => {
@@ -948,10 +1007,10 @@ describe('the flat demo', () => {
 describe('the strip of frames', () => {
   it('carries every frame with no two marks sharing an id', () => {
     const { marks } = stripMarks(FRAMES);
-    // Four frames of 191 own marks, and the four insets between them draw 179:
+    // Four frames of 196 own marks, and the four insets between them draw 179:
     // each magnifies a window that has moved, so no two of them hold the same
     // number of marks.
-    expect(marks).toHaveLength(191 * FRAMES.length + 179);
+    expect(marks).toHaveLength(196 * FRAMES.length + 179);
     expect(new Set(marks.map((mark) => mark.id)).size).toBe(marks.length);
   });
 

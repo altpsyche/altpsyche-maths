@@ -9,7 +9,9 @@
     "insets": [
       {
         "hides": [
-          "tangent/window"
+          "tangent/window",
+          "tangent/aim",
+          "tangent/shortfall"
         ],
         "into": {
           "x": {
@@ -1116,6 +1118,68 @@
           "kind": "dot",
           "name": "point",
           "radius": 0.08
+        },
+        {
+          "from": {
+            "x": -0.9199999999999999,
+            "y": -1.2219999999999998
+          },
+          "kind": "arrow",
+          "name": "aim",
+          "options": {
+            "head": 0.22,
+            "spread": 0.55,
+            "stroke": {
+              "colour": {
+                "a": 1,
+                "b": 161,
+                "g": 105,
+                "name": "deep",
+                "r": 3
+              },
+              "width": 0.035
+            }
+          },
+          "to": {
+            "x": -2.1159999999999997,
+            "y": -1.9482499999999998
+          }
+        },
+        {
+          "at": {
+            "x": 2.024,
+            "y": 0.5625000000000004
+          },
+          "content": "what the bars miss",
+          "kind": "callout",
+          "name": "shortfall",
+          "options": {
+            "align": "end",
+            "fill": {
+              "colour": {
+                "a": 1,
+                "b": 27,
+                "g": 27,
+                "name": "ink",
+                "r": 27
+              }
+            },
+            "size": 0.32,
+            "stroke": {
+              "colour": {
+                "a": 1,
+                "b": 27,
+                "g": 27,
+                "name": "ink",
+                "r": 27
+              },
+              "width": 0.02
+            }
+          },
+          "to": {
+            "x": 1.6,
+            "y": 1.68
+          }
         },
         {
           "at": {
@@ -10794,6 +10858,30 @@
           },
           "from": 7.299999999999999,
           "to": 7.799999999999999
+        },
+        {
+          "entry": {
+            "kind": "fadeIn",
+            "target": "tangent/shortfall"
+          },
+          "from": 7.299999999999999,
+          "to": 7.799999999999999
+        },
+        {
+          "entry": {
+            "kind": "fadeIn",
+            "target": "tangent/aim"
+          },
+          "from": 3.1,
+          "to": 3.6
+        },
+        {
+          "entry": {
+            "kind": "fadeOut",
+            "target": "tangent/aim"
+          },
+          "from": 4.8,
+          "to": 5.2
         },
         {
           "entry": {

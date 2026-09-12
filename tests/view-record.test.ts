@@ -151,7 +151,7 @@ describe('an inset as a record', () => {
     into: LENS,
     view: { kind: 'followView', target: 'tangent/point' },
     name: 'tangent/lens',
-    hides: ['tangent/window'],
+    hides: ['tangent/window', 'tangent/aim', 'tangent/shortfall'],
   };
 
   it('draws the flat demo panel where the demo own inset draws it, at each of its named times', () => {
@@ -162,8 +162,8 @@ describe('an inset as a record', () => {
       const ours = insetMarks(whole, resolveInset(record));
       expect(theirs.length, `the inset at ${seconds}`).toBeGreaterThanOrEqual(34);
       expect(theirs.length).toBeLessThanOrEqual(53);
-      expect(marks.length).toBeGreaterThanOrEqual(226);
-      expect(marks.length).toBeLessThanOrEqual(242);
+      expect(marks.length).toBeGreaterThanOrEqual(231);
+      expect(marks.length).toBeLessThanOrEqual(247);
       expect(sameMarks(ours, theirs)).toBe(true);
     }
   });

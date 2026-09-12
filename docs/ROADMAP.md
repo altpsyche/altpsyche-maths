@@ -1479,7 +1479,7 @@ sees. The roadmap has claimed since 0.9.5 that every demo is in the README and t
 was.
 
 **What no committed figure draws.** Five flat marks: `arrow`, `callout`, `table`, `numberLine` and
-`riemannBars`. Eleven in space: `arrow3`, `dot3`, `polyline3`, `text3`, `curve3`, `surface3`,
+`riemannBars`, all five of them drawn by steps 3 and 4. Eleven in space: `arrow3`, `dot3`, `polyline3`, `text3`, `curve3`, `surface3`,
 `vectorField3`, and the four solids `sphere3`, `cube3`, `cylinder3` and `torus3` in the spelling that
 takes the camera itself, where `demos/solids.ts` writes the cell spellings inside a `scene3` of its
 own. Six animations: `fadeOut`, `morph`, `moveAlong`, `scale`, `wave` and `wiggle`. `moveBy` is drawn
@@ -1531,20 +1531,47 @@ door is 226 values and 250 types. `npm run gate:gpu` draws all eight above both 
       21.7 per cent of its pixels inked against 20.3, and it agrees with the sheet over 97.31 per cent
       of them with its labels against 97.29 and 98.54 without them against 98.52. 1,412 tests over 94
       files.
-- [ ] **4. A figure points at what it is talking about, and reads one number off a line.** `arrow`
+- [x] **4. A figure points at what it is talking about, and reads one number off a line.** `arrow`
       and `callout` in the flat demo, and `table` and `numberLine` beside the matrix demo's map. The
-      line carries the determinant, which is the area of the parallelogram that demo already draws,
-      and the matrix figure has the band for it: its panel stops at the reach and its captions sit at
-      -3.5, where the flat figure has no band left. **Measurement:** the two demos' marks at named
-      times, the table's columns against the matrix's own numbers, and the place the line's marker
-      stands at against the determinant of the map at that time.
+      line carries the determinant, which is the area of the parallelogram that demo already draws.
+      The table and the line read one track whose single key names the curve the map's own span
+      names over the same seconds, so the column beside the panel reads the clock the grid is read
+      from. **Measured:** the flat demo draws 196 marks at every time against 191, the five being the
+      arrow's shaft and head and the callout's marker, leader and word, and its inset is 35 to 53 as
+      before, since the annotations are hidden from it; its timeline is 40 spans against 37 and its
+      file 410,650 bytes against 408,625. The matrix demo draws 60 marks at every named time against
+      38 and its file is 16,478 bytes against 8,365. The marker stands where the square stands: read
+      back through the line's own scale it gives 1, 1.625, 2 and 1.625 at the four named times,
+      within 1e-12 of the area the drawn square encloses at each, which a marker placed at the
+      fraction could not do, since the determinant is quadratic in it. The table writes the matrix's
+      own four numbers a column at a time at every named time, reached over a track where the matrix
+      reaches them over a span. `npm run gate:gpu` draws all eight above both floors: `matrix` is 60
+      marks at 2,321 triangles against 38 at 1,391, with 44.0 per cent of its pixels inked against
+      42.6, and it agrees with the sheet over 96.27 per cent of them with its labels against 97.06
+      and 98.17 per cent without them against 98.29; `tangent` is 236 marks at 2,744 triangles
+      against 231 at 2,240, 22.4 per cent inked against 21.7, 96.61 per cent with its labels against
+      97.31 and 98.51 without them against 98.54. `npm run gate:record` writes 32 of 32 recordings.
+      1,416 tests over 94 files.
+      **What the lettered floor cost, which is a reading the next text-carrying figure will meet
+      again.** The matrix figure is drawn at 86 pixels a figure unit where every other demo is 100,
+      since the gate fits a 10.8 by 7 figure into 1080 by 600 by its height, and the card triangulates
+      a glyph's outline where the sheet is rasterised by the browser's own font engine, so every glyph
+      costs a ring of pixels that disagree. Nine new text marks took the lettered agreement from 97.06
+      to 95.98 against a floor of 96.00, which is about 0.02 of a point a character. Writing them
+      larger made it worse rather than better: at 0.36 figure units the reading was 95.75 against
+      95.97 at 0.30, so the cost follows the inked area of a glyph and not the width of its stem. What
+      paid for the table is the left caption, which said `the unit square and its area` while the new
+      line reads that area off a scale, so it now says `the unit square` and the figure states the
+      area once.
 - [ ] **5. The solid demo writes its space nodes the short way.** `arrow3`, `dot3`, `polyline3`,
       `text3`, `curve3`, `surface3`, `vectorField3` and the four solids in the spelling that takes a
       camera. **Measurement:** the marks each spelling draws against the marks the cell spelling
       draws for the same geometry, held by tolerance.
-- [ ] **6. Six animations get a picture.** `fadeOut`, `morph`, `moveAlong`, `scale`, `wave` and
-      `wiggle`, each in the demo where it has one. **Measurement:** each demo's marks at the times
-      the animation runs over, and 0 of the format's animations left undrawn.
+- [ ] **6. Five animations get a picture.** `morph`, `moveAlong`, `scale`, `wave` and `wiggle`, each
+      in the demo where it has one. `fadeOut` left this list at step 3, where each run of bars leaves
+      as the next arrives, and step 4 drove it a second time to take the arrow out of the picture when
+      the dot begins to walk. **Measurement:** each demo's marks at the times the animation runs over,
+      and 0 of the format's animations left undrawn.
 - [ ] **7. The version is cut.** `package.json` reads 2.11.0, the done-criteria below are verified
       line by line, and the ladder's 2.11.0 row is deleted. **Measurement:** both gates' readings,
       the door's counts, and the suite, type-check and build.

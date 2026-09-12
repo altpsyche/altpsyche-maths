@@ -168,9 +168,9 @@ describe('the flat demo as a committed file', () => {
   });
 
   it('draws the counts its still time and its named times each have', () => {
-    expect(marksAt(readFigure(committed), tangent.still)).toHaveLength(231);
+    expect(marksAt(readFigure(committed), tangent.still)).toHaveLength(236);
     expect(times.map((seconds) => marksAt(readFigure(committed), seconds).length)).toEqual([
-      240, 239, 239, 242, 226, 226, 226,
+      245, 244, 244, 247, 231, 231, 231,
     ]);
   });
 

@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import { marksAt, type Mark, type Transform2D, type PathMark } from '../index.js';
-import { ENTRIES, MAP, TIMES, mapped } from '../demos/matrix.js';
+import { boundsOf, centreOf, marksAt, toGraph, type Mark, type Transform2D, type PathMark } from '../index.js';
+import { AREA_LINE, ENTRIES, MAP, TIMES, mapped } from '../demos/matrix.js';
 
 /**
  * The matrix demo read off its own marks: what the square encloses, and whether
@@ -9,6 +9,12 @@ import { ENTRIES, MAP, TIMES, mapped } from '../demos/matrix.js';
 
 const paths = (marks: readonly Mark[]) => marks.filter((m): m is PathMark => m.kind === 'path');
 const square = (seconds: number) => paths(marksAt(mapped, seconds)).find((mark) => mark.id === 'map/plane/square');
+/** Every cell of the table, in the order it is drawn, which is by row. */
+const cells = (seconds: number) =>
+  marksAt(mapped, seconds)
+    .filter((mark) => mark.kind === 'text' && mark.id.startsWith('map/columns/rows/'))
+    .map((mark) => (mark.kind === 'text' ? mark.text : ''));
+
 const written = (seconds: number) =>
   marksAt(mapped, seconds)
     .filter((mark) => mark.kind === 'text' && mark.id.startsWith('map/map/rows/'))
@@ -36,13 +42,44 @@ const reached = (at: number): Transform2D =>
   [1, 0, 0, 0, 1, 0, 0, 0, 1].map((entry, index) => entry + (MAP[index] - entry) * at) as unknown as Transform2D;
 
 describe('the matrix demo', () => {
-  it('draws twelve marks besides its grid at every named time', () => {
+  it('draws thirty-four marks besides its grid at every named time', () => {
     for (const seconds of Object.values(TIMES)) {
       const marks = marksAt(mapped, seconds);
       const grid = marks.filter((mark) => mark.id.startsWith('map/plane/grid'));
-      expect(marks, String(seconds)).toHaveLength(38);
+      expect(marks, String(seconds)).toHaveLength(60);
       expect(grid, String(seconds)).toHaveLength(26);
     }
+  });
+
+  it('writes in the table the two columns the matrix writes', () => {
+    // The table reads the fraction off a track and the matrix counts its entries
+    // over a span, so the two arrive at their numbers by different routes and
+    // the same four numbers coming out is what says the routes agree.
+    for (const seconds of Object.values(TIMES)) {
+      const [a, b, c, d] = written(seconds);
+      expect(cells(seconds), String(seconds)).toEqual([
+        'in',
+        'out',
+        '(1, 0)',
+        `(${a}, ${c})`,
+        '(0, 1)',
+        `(${b}, ${d})`,
+      ]);
+    }
+  });
+
+  it('stands the marker on the line at the area the square encloses', () => {
+    // The determinant is quadratic in the fraction the map has reached, so a
+    // marker that stood at the fraction would be wrong at every time between the
+    // ends. It is read back off the line the way a reader pointing at the
+    // picture would read it, through the scale the line was drawn with.
+    for (const seconds of Object.values(TIMES)) {
+      const marker = marksAt(mapped, seconds).find((mark) => mark.id === 'map/reading/disc') as PathMark;
+      const reads = toGraph(AREA_LINE, centreOf(boundsOf(marker.path)!).x);
+      expect(reads, String(seconds)).toBeCloseTo(areaOf(square(seconds)!), 12);
+    }
+    expect(toGraph(AREA_LINE, AREA_LINE.units.from)).toBe(0);
+    expect(toGraph(AREA_LINE, AREA_LINE.units.to)).toBe(3);
   });
 
   it('holds the square at the area the map it has reached gives it', () => {
