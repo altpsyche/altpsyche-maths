@@ -409,6 +409,7 @@ is left, since 2.1.0 through 2.10.0 are cut.
 
 | version | what lands | what it changes | steps | cut against | depends on | plan |
 | --- | --- | --- | --- | --- | --- | --- |
+| 2.11.0 | every picture this package can draw, drawn, and a sheet that reads the same on every machine | one option at `svgMarkup`; nothing in the format | 7 | all eight demos, and the twenty-two nodes and animations no figure draws today | the typeface 2.10.0 ships | below |
 | 3.0.0 | depth, so a figure in space keeps it, and a figure naming the painters that can draw it | what a `Mark` may ask for, which breaks the format's own version | to plan | the solid demo, whose crossing curve is drawn in the right order rather than the tree's | `@altpsyche/engine` | to plan |
 | 3.1.0 | a clip that is a path rather than a rectangle | what a `Mark` may ask for | to plan | nothing yet, which is why it is last of the marks | nothing now, since `@altpsyche/engine` 0.5.0 counts a winding | to plan |
 | 4.0.0 | a figure a reader can act on | the shape of `Figure`, which gains input | to plan | nothing yet | nothing outside this package | to plan |
@@ -1449,8 +1450,101 @@ no box test in front of it and the quadratic over piece pairs is not worth remov
 
 ## The items
 
-**Nothing is queued here.** Every version on the ladder above is still to plan, and planning one
-is a session of its own.
+### 2.11.0 Every picture this package can draw, drawn
+
+**A sheet names a typeface it does not carry, and twenty-two of the format's nodes and animations
+have no picture at all.** Siva's ask on 2026-09-12, answered as what shows the package fully. The
+step list is below, written the same day.
+
+**What the sixteen committed sheets say about their letters.** Every one writes
+`font-family="'Noto Sans', system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif"` and carries
+no `@font-face`, and a sheet read inside an `<img>` fetches nothing, so the letters are whatever the
+reader's machine has. `demos/render.ts` passes no `font` to `svgMarkup` either, so each baseline is
+named to the browser as a `dominant-baseline` rather than placed from the font's own metrics, which
+2.10.0's step 5 measured as Chrome putting a hanging baseline 4.4 pixels below this font's declared
+cap height at a 30-pixel em. Both answers landed at 2.10.0 and neither reaches a committed picture.
+
+**The face is carried rather than the letters outlined, and the strips are what decides it.**
+Outlining every label costs what that sheet writes: the eight stills go from 693,133 bytes to
+955,473, which is 11.5 per cent on `surface` and 1,776 per cent on `frame`, since a small sheet is
+nearly all label. A strip repeats every label once per frame, so outlining one multiplies that cost
+by the frame count. The face is a flat 15,188 bytes whatever a sheet writes, the text stays text, and
+the rule that carries it is the one `gates/gpu.mjs` already uses to set a label in an `<img>`.
+
+**Five committed sheets are shown nowhere**, and they are 1,875,610 bytes of the tree:
+`solids-strip.svg` at 1,360,393, `portrait-strip.svg` at 355,251, `matrix-strip.svg` at 39,295,
+`frame-strip.svg` at 4,485 and `frame.svg` at 1,977. `npm run demos` writes them and
+`tests/demos.test.ts` gates them, so each one costs a diff on every demo change for nothing a reader
+sees. The roadmap has claimed since 0.9.5 that every demo is in the README and the `frame` demo never
+was.
+
+**What no committed figure draws.** Five flat marks: `arrow`, `callout`, `table`, `numberLine` and
+`riemannBars`. Eleven in space: `arrow3`, `dot3`, `polyline3`, `text3`, `curve3`, `surface3`,
+`vectorField3`, and the four solids `sphere3`, `cube3`, `cylinder3` and `torus3` in the spelling that
+takes the camera itself, where `demos/solids.ts` writes the cell spellings inside a `scene3` of its
+own. Six animations: `fadeOut`, `morph`, `moveAlong`, `scale`, `wave` and `wiggle`. `moveBy` is drawn
+by `demos/strip.ts` rather than by a figure, which is a seventh half-answer. A feature nothing draws
+is a feature nobody has checked, which is the test this file orders its items by, and twenty-two of
+them are that.
+
+**Today's reading, which is what the steps quote.** The eight stills are 693,133 bytes written and
+the eight strips 2,728,660. The eight figures carry 74 text marks at their still times, and all 74
+are written as `<text>` with a `dominant-baseline`. `npm test` is 1,409 tests over 94 files and the
+door is 226 values and 250 types. `npm run gate:gpu` draws all eight above both floors and
+`npm run gate:record` writes 32 of 32 recordings.
+
+**The steps.** Each is one commit and each names the measurement its commit quotes.
+
+- [ ] **1. A sheet carries the face it names.** `SvgMarkupOptions` gains a field that writes the
+      shipped face into the sheet's own `<style>` as a rule whose source is the font's bytes, beside
+      the theme that element already carries, and `demos/render.ts` asks for it and passes `font`.
+      **Measurement:** each of the sixteen sheets' bytes before and after, how many of the 74 labels
+      carry a `y` from the font's metrics rather than a `dominant-baseline`, and the door's counts.
+- [ ] **2. Every committed sheet is shown.** The README gains the `frame` demo, and the four strips
+      nothing shows are placed beside the feature each one shows. **Measurement:** sheets committed
+      against sheets referenced, and each page's total image weight.
+- [ ] **3. The flat demo measures the area it shades.** `riemannBars` under the parabola, refining as
+      the walk runs, with a `numberLine` carrying the reading. **Measurement:** the demo's marks at
+      named times before and after, and the bars' total area against the integral the shading
+      already draws.
+- [ ] **4. A figure points at what it is talking about.** `arrow` and `callout` in the flat demo, and
+      `table` beside the matrix demo's map. **Measurement:** the three demos' marks at named times,
+      and the table's columns against the matrix's own numbers.
+- [ ] **5. The solid demo writes its space nodes the short way.** `arrow3`, `dot3`, `polyline3`,
+      `text3`, `curve3`, `surface3`, `vectorField3` and the four solids in the spelling that takes a
+      camera. **Measurement:** the marks each spelling draws against the marks the cell spelling
+      draws for the same geometry, held by tolerance.
+- [ ] **6. Six animations get a picture.** `fadeOut`, `morph`, `moveAlong`, `scale`, `wave` and
+      `wiggle`, each in the demo where it has one. **Measurement:** each demo's marks at the times
+      the animation runs over, and 0 of the format's animations left undrawn.
+- [ ] **7. The version is cut.** `package.json` reads 2.11.0, the done-criteria below are verified
+      line by line, and the ladder's 2.11.0 row is deleted. **Measurement:** both gates' readings,
+      the door's counts, and the suite, type-check and build.
+
+**Which step the demos gain from is every one of them**, since this item is the demos. Steps 1 and 2
+are what makes the pictures right and steps 3 to 6 are what makes them complete.
+
+**Done-criteria.**
+
+1. Every one of the sixteen committed sheets carries the shipped face as a `@font-face` whose source
+   is the font's own bytes, so a sheet read inside an `<img>` sets its labels in that face.
+2. Every label in every committed sheet has its baseline written as a `y` placed from the font's
+   metrics, and no sheet writes a `dominant-baseline`.
+3. `npm run demos` regenerates all sixteen sheets and the demos gate compares the regenerated bytes
+   against the committed files, as it does today.
+4. Every committed sheet is referenced by the README or the guide, and `frame.svg` is in the README.
+5. No node of the figure format is left without a committed figure that draws it, and the count is
+   quoted against today's twenty-two.
+6. No animation of the figure format is left without a committed figure that drives it.
+7. Each new node's marks agree with the marks its other spelling draws for the same geometry, by
+   tolerance rather than by hash.
+8. The door's value and type counts are quoted, with each new name at `index.ts`.
+9. `npm run gate:gpu` draws all eight figures above both floors, 0.97 without labels and 0.96 with
+   them, with the new marks drawn.
+10. `npm run gate:record` records every figure both ways, in the page and in a worker, each file
+    holding exactly the frames the walk counted.
+11. `npm test`, `npm run type-check` and `npm run build` are green, with the test count quoted.
+12. The ladder's 2.11.0 row is deleted and the Now section carries what the version landed.
 
 ## Found while working, not yet queued
 
