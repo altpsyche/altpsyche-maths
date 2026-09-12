@@ -405,11 +405,11 @@ went on in front of the format, because each changes something the format freeze
 and freezing first costs a major of the format's own version to change it afterwards. Eight went on
 behind, because each adds a kind or a painter, which is a format minor an old figure survives, and
 three more are written past those because a session should not rediscover them. None of those eight
-is left, since 2.1.0 through 2.8.0 are cut.
+is left, since 2.1.0 through 2.9.0 are cut.
 
 | version | what lands | what it changes | steps | cut against | depends on | plan |
 | --- | --- | --- | --- | --- | --- | --- |
-| 2.10.0 | text on a GPU, and the recorder running without a page | nothing in the format | to plan | every demo recorded off a card | a font file and a reader for it, 2.9.0, 2.6.0, and a canvas with no page behind it if `mediabunny` takes nothing else | to plan |
+| 2.10.0 | a label drawn on a card, and a recording that needs no page | nothing in the format; a mark's `family` stays what the SVG painter writes | 8 | every demo recorded off a card, and both painters drawing one typeface | a font file and a reader for it, 2.9.0 and 2.6.0 | below |
 | 3.0.0 | depth, so a figure in space keeps it, and a figure naming the painters that can draw it | what a `Mark` may ask for, which breaks the format's own version | to plan | the solid demo, whose crossing curve is drawn in the right order rather than the tree's | `@altpsyche/engine` | to plan |
 | 3.1.0 | a clip that is a path rather than a rectangle | what a `Mark` may ask for | to plan | nothing yet, which is why it is last of the marks | nothing now, since `@altpsyche/engine` 0.5.0 counts a winding | to plan |
 | 4.0.0 | a figure a reader can act on | the shape of `Figure`, which gains input | to plan | nothing yet | nothing outside this package | to plan |
@@ -1407,6 +1407,155 @@ and `difference = A less the overlap` to 1.776e-15. Two circles crossed at every
 1e4 answer 4.11e-4 of the closed form, the same share at every one, so nothing there turns on the
 tolerance being an absolute distance. Two 400-piece paths unite in 48ms, so the crossing search needs
 no box test in front of it and the quadratic over piece pairs is not worth removing.
+
+## The items
+
+### 2.10.0 Text on a card, and a recording that needs no page
+
+**A card has no text vocabulary, so a label drawn on one is shapes or it is nothing.** The sixth
+decision above answers where the shapes come from: this package ships a font file and a reader for
+it. The step list is below, written on 2026-09-12.
+
+**What the eight figures ask for, which is what the reader has to cover.** Across the eight committed
+figures sampled at 41 times each, every label is written in 38 characters: a space, a comma, a full
+stop, a hyphen, the ten digits and the twenty-five lower-case letters the words use. At their still
+times the eight carry 74 text marks, and `npm run gate:gpu` takes every one of them out of both
+painters before it compares anything. Each of those marks names one family, the CSS stack
+`system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif`, which no renderer outside a browser
+can resolve.
+
+**The font is a subset and that is what makes the install cost an argument rather than a worry.** A
+full Noto Sans is 621,572 bytes, a full Liberation Sans 410,820 and a full DejaVu Sans 759,720.
+Subset to Latin-1 with the punctuation a figure writes, and with the hinting and layout tables
+dropped, Noto Sans is **15,148 bytes over 205 glyphs**, against 28,212 with the layout tables kept.
+So a consumer who never draws a label pays 15 KB, which is the cost the decision said would have to
+be measured. **The typeface is Noto Sans, under the SIL Open Font License 1.1, which is Siva's call
+of 2026-09-12.** Liberation Sans is the same licence and DejaVu Sans is Bitstream Vera's, and both
+subset to roughly 16 KB, so size did not decide it.
+
+**The bytes ship as a generated module rather than as a file beside the code.** A `.ttf` in `dist`
+is reached by a path, and a path is a different thing in Node, in a bundler and in a browser with no
+bundler. A module holding the bytes as base64 is reached by an import, which is the same thing
+everywhere, and a dynamic import is what keeps a consumer who never draws a label from loading it.
+That is the rule this package already keeps for MathJax, for `mediabunny` and for the engine. 15,148
+bytes of font is 20,200 characters of base64.
+
+**The reader is TrueType and the tables it needs are named.** `head` for the units an em is divided
+into and for how `loca` is written, `maxp` for how many glyphs there are, `cmap` for which glyph a
+code point is, `loca` and `glyf` for the outlines, and `hhea` with `hmtx` for how far each glyph
+advances. The subset carries one `cmap` in format 4 and 56 of its 205 glyphs are composites, which
+are a glyph built from other glyphs under a transform, so the reader handles both kinds or draws no
+accented letter at all.
+
+**A quadratic becomes a cubic exactly and no tolerance is spent on it.** A `glyf` outline is a
+quadratic B-spline and every path in this package is cubic, and a quadratic with control Q from P₀ to
+P₂ is the cubic with controls P₀ + (2/3)(Q − P₀) and P₂ + (2/3)(Q − P₂). The two curves are the same
+curve, so the only error in a drawn letter is the flattening tolerance the triangulation already
+spends.
+
+**Two painters drawing one typeface needs the advances to agree, which is what turns kerning off.**
+The reader takes a glyph's advance from `hmtx` and knows nothing of `GPOS`, and a browser setting the
+same font applies its kerning pairs, so the same label would be laid out twice and the two would
+drift apart along the line. The subset drops `GPOS`, and the SVG painter writes `font-kerning: none`
+so the browser lays the label out on the advances the reader reads.
+
+**The card has one typeface and a figure that wants both painters to agree names it.** A mark's
+`family` stays what the SVG painter writes, so nothing in the format changes and no painter starts
+ignoring a field. A mark naming anything else still draws in the shipped font on a card, because that
+is the only font there, and the demos name the shipped family so their two pictures are one picture.
+
+**The recorder's half is two separate things and only one of them is about a page.** `recordFigure`
+calls `paintFrame` on the sink's own `CanvasLike`, so the 2D painter is written into the recorder and
+a recording off a card cannot be asked for. And `videoSink` needs a WebCodecs `VideoEncoder`, which
+Node 26.8.1 still does not have, so **running without a page means running in a worker on an
+`OffscreenCanvas`** rather than running in Node. Both `videoSink` and the GPU painter already name a
+canvas by the parts they read rather than by the DOM's types, so an `OffscreenCanvas` satisfies each
+one today and nothing in either needs widening.
+
+**A card's frame reaches the encoder through a readback rather than through the canvas.** A WebGPU
+canvas cannot be drawn into a 2D context and a WebGL 2 one asks for no `preserveDrawingBuffer`, which
+is why the engine added `Surface.read()`. `pixelsGpu` already draws and reads in one step, so a
+recording off a card puts those pixels into the encoder's own canvas with `putImageData`. It costs a
+stall the recorder waits on, which a recorder can afford: the engine measures drawing at 1.9 to 2.5
+milliseconds a frame against 5.0 for drawing and reading, at 1200x750.
+
+**Today's reading, which is what the steps quote.** `npm run gate:record` records all eight figures in
+a page, 1,842 frames in total, every file holding exactly the frames the walk counted: `boolean`
+1,515,375 bytes over 379 frames in 1,328 milliseconds, `frame` 138,981 over 54 in 99, `matrix`
+1,498,573 over 180 in 362, `portrait` 376,100 over 162 in 979, `rotate` 1,444,631 over 180 in 273,
+`solids` 1,471,498 over 180 in 3,856, `surface` 2,499,233 over 399 in 2,898, and `tangent` 1,220,284
+over 308 in 1,256. `npm run gate:gpu` draws the eight with their text taken out and all eight agree.
+The suite is 1,372 tests over 91 files and the door is 217 values and 247 types.
+
+**The steps.** Each is one commit and each names the measurement its commit quotes.
+
+- [ ] **1. The font ships and its tables are read.** The subset lands as a generated module of base64
+      bytes with its licence beside it, and `readFont` gives the units an em is divided into, how many
+      glyphs there are, which glyph a code point is, and how far each glyph advances.
+      **Measurement:** the module's byte count and the font's; the glyph count; every one of the 38
+      characters the demos write resolving to a glyph that is not the missing-glyph one; and the
+      advance of a known letter against what `fontTools` reads from the same file.
+- [ ] **2. A glyph's outline as a path.** `glyphPath` gives a glyph's contours as this package's own
+      cubic path in font units, for a simple glyph and for a composite one under its transform, with
+      each quadratic converted to the cubic that is the same curve. **Measurement:** a quadratic
+      against the cubic it becomes, sampled at eleven parameters and held to 1e-15; the contour and
+      point counts of a letter with a hole and of an accented letter against `fontTools`; and how many
+      of the subset's 205 glyphs read without an error.
+- [ ] **3. A label becomes outlines.** `textOutlines(marks, font)` turns each `TextMark` into a
+      `PathMark` carrying the label's glyphs at the mark's size, with its `align` and `baseline`
+      honoured and its fill, opacity and clip carried across, the way `outlinedMarks` already carries
+      a tapered stroke's. **Measurement:** the laid-out width of each of the demos' 74 labels against
+      the summed advances; the three `align` cases and the three `baseline` cases as offsets of that
+      width and of the font's own ascent; and the mark count before and after.
+- [ ] **4. The card draws the labels.** `gpuSurface` loads the font and `paintGpu` outlines the text
+      before it builds the frame, so `gpuFrame` names no text mark as refused. **Measurement:** the
+      refused count per figure, 74 across the eight before and the count after; the triangle count per
+      figure before and after; and the time a frame takes with the labels in it.
+- [ ] **5. Both painters draw one typeface.** The demos' labels name the shipped family, the SVG
+      painter writes `font-kerning: none`, and `gates/gpu.mjs` loads the font into its page and stops
+      taking the text out of either painter. **Measurement:** each figure's equal share, within-8
+      share and worst channel with the labels drawn, against the reading with them taken out; and the
+      mark count each painter draws, which is now the same number.
+- [ ] **6. The recorder paints through a painter rather than a context.** `recordFigure` takes how a
+      frame is painted, so the 2D painter is one answer and a card is another, and a card's frame
+      reaches the encoder's canvas through `pixelsGpu` and `putImageData`. **Measurement:** the eight
+      recordings off a card, bytes and frames in the file against frames walked, and the time against
+      the page's 99 to 3,856 milliseconds.
+- [ ] **7. The recorder runs with no page.** The recording gate records the eight in a worker on an
+      `OffscreenCanvas`, with no document anywhere in the call. **Measurement:** the eight files'
+      bytes and frame counts recorded in a worker against the same eight recorded in the page, and
+      the last frame's inked share either way.
+- [ ] **8. The version is cut.** `package.json` reads 2.10.0, the done-criteria below are verified
+      line by line, and the ladder's 2.10.0 row is deleted. **Measurement:** both gates' readings, the
+      door's value and type counts, and the suite, type-check and build.
+
+**Which step the demos gain from is step 5**, and it is where the two pictures of a label become one
+picture. Steps 1 through 4 are what a card needs before a label can be drawn at all.
+
+**Done-criteria.**
+
+1. The font module and its licence are in the tree and in `package.json`'s `files`, and the built
+   JavaScript loads the module by a dynamic import so a consumer who never draws a label never
+   fetches it.
+2. `readFont` answers the units an em is divided into, the glyph count, a glyph for each of the 38
+   characters the demos write, and an advance for each.
+3. `glyphPath` reads every glyph in the subset without an error, and a quadratic converted to a cubic
+   agrees with the quadratic to 1e-15 at eleven parameters.
+4. A composite glyph draws its parts under their own transforms, held by a test against an accented
+   letter's contour and point counts.
+5. `textOutlines` lays a label out on the font's advances, and its three `align` and three `baseline`
+   cases each move the label by the offset the metric names.
+6. `gpuFrame` names no mark as refused for being text, and the eight figures refuse 0 marks against
+   the 74 they carry.
+7. `npm run gate:gpu` compares both painters with the labels drawn rather than taken out, and all
+   eight figures stay above the 97 per cent floor.
+8. `npm run gate:record` records all eight figures off a card, each file holding exactly the frames
+   the walk counted.
+9. `npm run gate:record` records all eight figures in a worker with no document, each file holding
+   exactly the frames the walk counted.
+10. The door's value and type counts are quoted, with each new name at `index.ts`.
+11. `npm test`, `npm run type-check` and `npm run build` are green, with the test count quoted.
+12. The ladder's 2.10.0 row is deleted and the Now section carries what the version landed.
 
 ## Found while working, not yet queued
 
