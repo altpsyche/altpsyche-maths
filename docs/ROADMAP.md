@@ -1526,7 +1526,11 @@ door is 226 values and 250 types. `npm run gate:gpu` draws all eight above both 
       The drawn rectangles carry the sum a reader could work out: 6.875 graph units at six bars,
       7.90625 at twelve and 8.445313 at twenty-four against the 9 the shaded region holds, each
       within 1.776e-15 of the closed form, so what is left over is 2.125, then 1.09375, then
-      0.554688. The frame is 1,577 triangles against 1,489. 1,412 tests over 94 files.
+      0.554688. The frame is 1,577 triangles against 1,489. `npm run gate:gpu` draws the bars on a
+      card refusing nothing: `tangent` is 231 marks at 2,240 triangles against 186 at 2,153, with
+      21.7 per cent of its pixels inked against 20.3, and it agrees with the sheet over 97.31 per cent
+      of them with its labels against 97.29 and 98.54 without them against 98.52. 1,412 tests over 94
+      files.
 - [ ] **4. A figure points at what it is talking about, and reads one number off a line.** `arrow`
       and `callout` in the flat demo, and `table` and `numberLine` beside the matrix demo's map. The
       line carries the determinant, which is the area of the parallelogram that demo already draws,
