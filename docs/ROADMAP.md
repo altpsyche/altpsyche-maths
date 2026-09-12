@@ -409,7 +409,6 @@ is left, since 2.1.0 through 2.10.0 are cut.
 
 | version | what lands | what it changes | steps | cut against | depends on | plan |
 | --- | --- | --- | --- | --- | --- | --- |
-| 2.11.0 | every picture this package can draw, drawn, and a sheet that reads the same on every machine | one option at `svgMarkup`; nothing in the format | 7 | all eight demos, and the twenty-two nodes and animations no figure draws today | the typeface 2.10.0 ships | below |
 | 3.0.0 | depth, so a figure in space keeps it, and a figure naming the painters that can draw it | what a `Mark` may ask for, which breaks the format's own version | to plan | the solid demo, whose crossing curve is drawn in the right order rather than the tree's | `@altpsyche/engine` | to plan |
 | 3.1.0 | a clip that is a path rather than a rectangle | what a `Mark` may ask for | to plan | nothing yet, which is why it is last of the marks | nothing now, since `@altpsyche/engine` 0.5.0 counts a winding | to plan |
 | 4.0.0 | a figure a reader can act on | the shape of `Figure`, which gains input | to plan | nothing yet | nothing outside this package | to plan |
@@ -555,6 +554,41 @@ the motion in a still. 2.6.0 is the version that ends that, and the strips stay 
 README that plays a video on load is a README nobody can read.
 
 ## Now
+
+**2.11.0 is cut and unpublished, and its twelve done-criteria are verified line by line in the cut's
+own commit.** A sheet read inside an `<img>` fetches nothing, so the letters were whatever the
+reader's machine had. `svgMarkup` takes `carryFont`, which writes the shipped face into the sheet's
+own `<style>` as a `@font-face` whose source is the font's bytes. All sixteen committed sheets carry
+it, each holding the 15,188 bytes of `font/noto-sans-latin.ttf`, and 275 of the 374 labels that named
+their baseline to the browser as a `dominant-baseline` now have it placed from the font's own metrics
+and written into the `y`. The face costs a flat 20,280 bytes a sheet, 9.5 per cent over the sixteen.
+
+**Twenty-two nodes and animations had no committed figure drawing them and seven are left, each held
+by a reading rather than a picture.** `sphere3` and `cube3` are what the solids demo's two single
+panels now write, at no marks, since a solid drawn alone is one node where a scene holding it is two.
+The cube's top face carries its rim as a closed `polyline3`, its middle as a `dot3`, the direction it
+faces as an `arrow3` and the word `normal` as a `text3`, all painted over the solid because the eye is
+above that face at every angle the turn reaches. The phase portrait's limit cycle carries a dot round
+it with `moveAlong`, over the path record the cycle itself is drawn from. The turn demo gained five
+panels: a swell, a walk into the rectangle round the L, a wave, a rock and a straight move, which are
+`scale`, `morph`, `wave`, `wiggle` and `moveBy`. 0 of the format's twenty-one animations are left
+undrawn.
+
+**The seven left are one call over a spelling a committed figure already draws, and a test holds each
+to that spelling.** `cylinder3`, `torus3`, `surface3` and `vectorField3` are a `scene3` over the
+matching cells and `curve3` is a group holding one `polyline3`; `sphereCells` and `cubeCells` are the
+same reading the other way round, since the solids demo now writes the short spelling that resolves to
+them. Each agreement is at a tolerance of nothing: both spellings run the same arithmetic in the same
+process, so the looser tolerance that guards against an engine's trig buys nothing. `curve3` draws the
+helix as one run of 97 places and the 96 pieces the demo's scene sorts walk the same 97 places.
+
+**Five committed sheets were shown nowhere and all sixteen are shown now**, each placed beside the
+feature it shows, with a test holding every sheet to being shown. The README carries 8 pictures and
+the guide 14.
+
+**The door is 226 values and 250 types, unchanged**, since this version added pictures and readings
+rather than names. `npm test` is 1,431 tests over 94 files, `npm run gate:gpu` draws all eight figures
+above both floors and `npm run gate:record` writes 32 of 32 recordings.
 
 **2.10.0 is cut and unpublished, and its twelve done-criteria are verified line by line in the cut's
 own commit.** A card has no text vocabulary, so this package ships a typeface and reads it: Noto Sans
@@ -1449,288 +1483,6 @@ tolerance being an absolute distance. Two 400-piece paths unite in 48ms, so the 
 no box test in front of it and the quadratic over piece pairs is not worth removing.
 
 ## The items
-
-### 2.11.0 Every picture this package can draw, drawn
-
-**A sheet names a typeface it does not carry, and twenty-two of the format's nodes and animations
-have no picture at all.** Siva's ask on 2026-09-12, answered as what shows the package fully. The
-step list is below, written the same day.
-
-**What the sixteen committed sheets say about their letters.** Every one writes
-`font-family="'Noto Sans', system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif"` and carries
-no `@font-face`, and a sheet read inside an `<img>` fetches nothing, so the letters are whatever the
-reader's machine has. `demos/render.ts` passes no `font` to `svgMarkup` either, so each baseline is
-named to the browser as a `dominant-baseline` rather than placed from the font's own metrics, which
-2.10.0's step 5 measured as Chrome putting a hanging baseline 4.4 pixels below this font's declared
-cap height at a 30-pixel em. Both answers landed at 2.10.0 and neither reaches a committed picture.
-
-**The face is carried rather than the letters outlined, and the strips are what decides it.**
-Outlining every label costs what that sheet writes: the eight stills go from 693,133 bytes to
-955,473, which is 11.5 per cent on `surface` and 1,776 per cent on `frame`, since a small sheet is
-nearly all label. A strip repeats every label once per frame, so outlining one multiplies that cost
-by the frame count. The face is a flat 15,188 bytes whatever a sheet writes, the text stays text, and
-the rule that carries it is the one `gates/gpu.mjs` already uses to set a label in an `<img>`.
-
-**Five committed sheets are shown nowhere**, and they are 1,875,610 bytes of the tree:
-`solids-strip.svg` at 1,360,393, `portrait-strip.svg` at 355,251, `matrix-strip.svg` at 39,295,
-`frame-strip.svg` at 4,485 and `frame.svg` at 1,977. `npm run demos` writes them and
-`tests/demos.test.ts` gates them, so each one costs a diff on every demo change for nothing a reader
-sees. The roadmap has claimed since 0.9.5 that every demo is in the README and the `frame` demo never
-was.
-
-**What no committed figure draws.** Five flat marks: `arrow`, `callout`, `table`, `numberLine` and
-`riemannBars`, all five of them drawn by steps 3 and 4. Eleven in space: `arrow3`, `dot3`, `polyline3`, `text3`, `curve3`, `surface3`,
-`vectorField3`, and the four solids `sphere3`, `cube3`, `cylinder3` and `torus3` in the spelling that
-takes the camera itself, where `demos/solids.ts` writes the cell spellings inside a `scene3` of its
-own. Six animations: `fadeOut`, `morph`, `moveAlong`, `scale`, `wave` and `wiggle`. `moveBy` is drawn
-by `demos/strip.ts` rather than by a figure, which is a seventh half-answer. A feature nothing draws
-is a feature nobody has checked, which is the test this file orders its items by, and twenty-two of
-them are that.
-
-**Today's reading, which is what the steps quote.** The eight stills are 693,133 bytes written and
-the eight strips 2,728,660. The eight figures carry 74 text marks at their still times, and all 74
-are written as `<text>` with a `dominant-baseline`. `npm test` is 1,409 tests over 94 files and the
-door is 226 values and 250 types. `npm run gate:gpu` draws all eight above both floors and
-`npm run gate:record` writes 32 of 32 recordings.
-
-**The steps.** Each is one commit and each names the measurement its commit quotes.
-
-- [x] **1. A sheet carries the face it names.** `SvgMarkupOptions` gains `carryFont`, which writes
-      the font into the sheet's own `<style>` as a `@font-face` whose source is the font's bytes,
-      beside the theme that element already carries, and `demos/render.ts` asks for it and passes
-      `font`. **Measured:** 0 of the sixteen sheets carried a face and 16 do, each holding exactly the
-      15,188 bytes of `font/noto-sans-latin.ttf` and each still parsing as XML; 275 of the 374 labels
-      named their baseline to the browser as a `dominant-baseline` and 0 do, every one now placed from
-      the font's metrics and written into its `y`, with kerning off. The face costs a flat 20,280
-      bytes a sheet whatever that sheet writes: 3,422,780 bytes over the sixteen to 3,748,183, which
-      is 9.5 per cent, from 1.5 per cent on `solids-strip.svg` at 1,360,393 to 1,381,130 to 1,030.7
-      per cent on `frame.svg` at 1,977 to 22,354. The door is 226 values and 250 types, unchanged,
-      since `carryFont` is a field of an interface already at the door. 1,410 tests over 94 files.
-- [x] **2. Every committed sheet is shown.** The README gains a section on the frame and the `frame`
-      demo's still, and the four strips nothing showed are placed beside the feature each one shows:
-      `frame-strip.svg` under the frame section of the guide, `matrix-strip.svg` under matrices,
-      `portrait-strip.svg` under fields and `solids-strip.svg` under space. A test holds every sheet
-      to being shown, which nothing did while the claim stood in this file. **Measured:** 11 of the 16
-      sheets were shown and 16 are, and every source the guide names is a sheet this tree writes. The
-      README carries 8 pictures over 856,583 bytes and the guide 14 over 3,696,150, of which
-      `solids-strip.svg` is 1,381,130 and `surface-strip.svg` 624,371. 1,411 tests over 94 files.
-- [x] **3. The flat demo measures the area it shades.** Three runs of `riemannBars` stand under the
-      parabola over the same interval, at six bars, twelve and twenty-four, each arriving as the one
-      before it leaves while the dot walks. A bar is filled and not outlined, so it stays one mark,
-      one drawing call and one element, and what a reader sees between a bar's top and the curve is
-      the wash the sum is short by. **The number line moved to step 4 and this is where that was
-      read:** the flat figure's bands are taken, the top by the reading, the rule and the lens and
-      the strip under the graph by the axis labels, so a line drawn in either would stand on
-      something. **Measured:** the demo draws 191 marks at every time against 149, the 42 being the
-      three runs, and its inset 35 to 53 against 34 to 43; the file is 408,625 bytes against 404,014.
-      The drawn rectangles carry the sum a reader could work out: 6.875 graph units at six bars,
-      7.90625 at twelve and 8.445313 at twenty-four against the 9 the shaded region holds, each
-      within 1.776e-15 of the closed form, so what is left over is 2.125, then 1.09375, then
-      0.554688. The frame is 1,577 triangles against 1,489. `npm run gate:gpu` draws the bars on a
-      card refusing nothing: `tangent` is 231 marks at 2,240 triangles against 186 at 2,153, with
-      21.7 per cent of its pixels inked against 20.3, and it agrees with the sheet over 97.31 per cent
-      of them with its labels against 97.29 and 98.54 without them against 98.52. 1,412 tests over 94
-      files.
-- [x] **4. A figure points at what it is talking about, and reads one number off a line.** `arrow`
-      and `callout` in the flat demo, and `table` and `numberLine` beside the matrix demo's map. The
-      line carries the determinant, which is the area of the parallelogram that demo already draws.
-      The table and the line read one track whose single key names the curve the map's own span
-      names over the same seconds, so the column beside the panel reads the clock the grid is read
-      from. **Measured:** the flat demo draws 196 marks at every time against 191, the five being the
-      arrow's shaft and head and the callout's marker, leader and word, and its inset is 35 to 53 as
-      before, since the annotations are hidden from it; its timeline is 40 spans against 37 and its
-      file 410,650 bytes against 408,625. The matrix demo draws 60 marks at every named time against
-      38 and its file is 16,478 bytes against 8,365. The marker stands where the square stands: read
-      back through the line's own scale it gives 1, 1.625, 2 and 1.625 at the four named times,
-      within 1e-12 of the area the drawn square encloses at each, which a marker placed at the
-      fraction could not do, since the determinant is quadratic in it. The table writes the matrix's
-      own four numbers a column at a time at every named time, reached over a track where the matrix
-      reaches them over a span. `npm run gate:gpu` draws all eight above both floors: `matrix` is 60
-      marks at 2,321 triangles against 38 at 1,391, with 44.0 per cent of its pixels inked against
-      42.6, and it agrees with the sheet over 96.27 per cent of them with its labels against 97.06
-      and 98.17 per cent without them against 98.29; `tangent` is 236 marks at 2,744 triangles
-      against 231 at 2,240, 22.4 per cent inked against 21.7, 96.61 per cent with its labels against
-      97.31 and 98.51 without them against 98.54. `npm run gate:record` writes 32 of 32 recordings.
-      1,416 tests over 94 files.
-      **What the lettered floor cost, which is a reading the next text-carrying figure will meet
-      again.** The matrix figure is drawn at 86 pixels a figure unit where every other demo is 100,
-      since the gate fits a 10.8 by 7 figure into 1080 by 600 by its height, and the card triangulates
-      a glyph's outline where the sheet is rasterised by the browser's own font engine, so every glyph
-      costs a ring of pixels that disagree. Nine new text marks took the lettered agreement from 97.06
-      to 95.98 against a floor of 96.00, which is about 0.02 of a point a character. Writing them
-      larger made it worse rather than better: at 0.36 figure units the reading was 95.75 against
-      95.97 at 0.30, so the cost follows the inked area of a glyph and not the width of its stem. What
-      paid for the table is the left caption, which said `the unit square and its area` while the new
-      line reads that area off a scale, so it now says `the unit square` and the figure states the
-      area once.
-- [ ] **5. The solid demo writes its space nodes the short way.** **Rewritten on 2026-09-13, when
-      the step's own reading proved it wrong.** Seven of the eleven nodes it named are one call over
-      a spelling a committed figure already draws: `sphere3`, `cube3`, `cylinder3` and `torus3` are
-      `scene3(name, <solid>Cells({ ...record, name: 'face' }), camera)`, `surface3` is `scene3` over
-      `surfaceCells`, `vectorField3` is `scene3` over `fieldArrows3`, and `curve3` is a group holding
-      one `polyline3`. Four carry geometry nothing draws: `dot3`, `text3`, `arrow3`, and `polyline3`
-      over a run of more than two points, since `curvePieces3` calls `polyline3` with two points a
-      piece and no committed figure splits a run at the near plane. **What decided the shape below is
-      what a panel costs.** The solids figure draws 1,065 marks at every named time and a faded node
-      still emits its marks, so a panel is paid for in all four strip frames: 324 on the torus, 300
-      on the cylinder, 196 on the sphere, 120 on the trefoil, 96 on the helix, 24 on the cube and 5
-      labels. The `ball` and `box` panels hold one solid each, so the short spelling is a rename there
-      at no marks. The `can` and `ring` panels sort a curve against their solid's cells, which is what
-      the demo is for, so neither drops its `scene3`, and standalone `cylinder3` and `torus3` panels
-      are 624 marks more, which is 59 per cent on a figure whose strip is 1,381,130 bytes and already
-      the largest file in the tree. The surface demo sorts its surface, its field, its sections and
-      its streamline in one scene, so `surface3` and `vectorField3` have no room there either.
-      Siva's call on 2026-09-13 is the three steps below.
-  - [x] **5a. Two panels are written the short way.** `ball` becomes `sphere3` and `box` becomes
-        `cube3`, and the two panels that sort a curve against their solid keep their `scene3`.
-        **Measured:** 1,065 marks at every named time, unchanged, and the figure with both panels
-        written back as a scene over the matching cells draws the same marks at a tolerance of 0, at
-        the four strip times and at nothing. The record is 82,796 bytes to 81,374, which is 1.7 per
-        cent, since a solid drawn alone is one node where a scene holding it is two. Both sheets are
-        the bytes they were, 354,696 and 1,381,130: the only change in either is one segment of every
-        id in the two panels, `skin` to `face`, which is the same four characters. 1,417 tests over 94
-        files, and the door is 226 values and 250 types, unchanged. `docs/SPECIFICATION.md` carries
-        the record's new size in its fixture table.
-  - [x] **5b. A point in space is named.** The eye sits at 2.3 above the plane looking at the origin,
-        so the cube's top face is seen at every angle the turn reaches. Its outline is a closed
-        `polyline3` of four points, its middle a `dot3`, the direction it faces an `arrow3` along the
-        z axis, and a `text3` names it. The four are painted over the cube rather than sorted with
-        it, since no cell of the cube is ever in front of them. **Measured:** the figure draws 1,070
-        marks at every named time against 1,065, the five being the rim, the disc, the shaft, the
-        head and the word, and what is seen at the four strip times is 853, 945, 1,054 and 1,070
-        against 848, 940, 1,049 and 1,065. The rim comes back as one closed run of four segments at
-        every angle over 241 readings of the turn, which is a face with no corner behind the eye and
-        none off the side. The shaft leaves the disc's own centre within 1e-12 and its direction is
-        the axis the face faces projected through the camera to within 2.2e-16 of a radian, which one
-        upright line at the panel's middle is, since the camera orbits that axis. The word is set at
-        0.26 against the title's 0.3677 and its capitals reach 4.26 against the title's letters
-        starting at 4.36. The record is 81,374 bytes to 92,012, 13.1 per cent, four of which is a
-        camera written out per node; the still is 354,696 to 355,877 and the strip 1,381,130 to
-        1,386,260. `npm run gate:gpu` draws all eight above both floors, `solids` at 1,070 marks and
-        13,833 triangles against 1,065 and 13,647, 18.0 per cent of its pixels inked against 17.9,
-        agreeing with the sheet over 96.50 per cent of them with its labels against 96.61 and 98.64
-        without them against 98.68, so one word of six characters cost 0.11 of a point against a
-        floor of 96.00. `npm run gate:record` writes 32 of 32 recordings. 1,417 tests over 94 files to
-        1,420.
-  - [x] **5c. The five wrappers with no room are held by agreement.** `cylinder3`, `torus3`,
-        `surface3`, `vectorField3` and `curve3` each get a test holding their marks to the marks the
-        spelling a committed figure draws gives for the same geometry. Each test lifts the record out
-        of the demo's own tree rather than writing a saddle or a cylinder a second time, since a
-        second writing drifts from the demo's without either side being wrong. **Measured:** 300
-        marks on the cylinder, 324 on the torus, 144 on the saddle and 48 on the field, each list
-        equal to the scene over the matching cells at a tolerance of nothing, since both spellings
-        run the same arithmetic in the same process. `curve3` draws the helix as one run of 97 places
-        and the 96 pieces the demo's scene sorts walk the same 97 places, read back by the place along
-        the run each piece's name carries rather than by where it was painted, with a largest
-        disagreement of 0. 1,420 tests over 94 files to 1,425.
-- [ ] **6. Five animations get a picture.** `morph`, `moveAlong`, `scale`, `wave` and `wiggle`, each
-      in the demo where it has one. `fadeOut` left this list at step 3, where each run of bars leaves
-      as the next arrives, and step 4 drove it a second time to take the arrow out of the picture when
-      the dot begins to walk. **Split into three on 2026-09-13**, since the five land in three demos
-      and one commit carries one finding. **Measurement:** each demo's marks at the times the
-      animation runs over, and 0 of the format's animations left undrawn.
-  - [x] **6a. The limit cycle carries a dot round it.** `moveAlong` in the phase portrait, over the
-        path record the `cycle` shape is already drawn from, so the figure names that form once. The
-        cycle is where both spirals end up and a dot riding it is what says so. **Measured:** 306
-        marks at every named time against 305, and what is seen at the four strip times is 300, 302,
-        303 and 306 against 300, 302, 303 and 305. The figure runs 7.4 seconds against 5.4 and its
-        still stands at 6.1 against 4.8, which is halfway along the ride, so the rider is drawn at
-        -1, 0 in the graph's own numbers where the figure writes it at 1, 0, both within 1e-12. Over
-        401 readings of the ride the rider is never further than 4.29e-7 from the unit circle, which
-        is the path's own sampling: the orbit is drawn as cubics through 96 places and a ride reads
-        the drawn path. The record is 23,402 bytes to 25,603, the still 131,625 to 131,866 and the
-        strip 375,398 to 376,513. `npm run gate:gpu` draws all eight above both floors, `portrait` at
-        306 marks and 2,664 triangles against 305 and 2,634, 8.1 per cent of its pixels inked either
-        way, agreeing over 97.54 per cent of them with its labels against 97.55 and 98.28 without
-        them either way. `npm run gate:record` writes 32 of 32, each portrait file holding 222 frames
-        against 162. 1,425 tests over 94 files to 1,426.
-  - [x] **6b. The turn demo shows what else a span does to a shape.** `scale`, `morph`, `wave` and
-        `wiggle` beside the two turns. **This was two steps and is one, on 2026-09-13.** `wave` was
-        to go in the flat demo beside the four indications it already drives, and `wave` pushes the
-        points of a path: the parabola there has a shaded area drawn under it and a field of slopes
-        along it, so a ripple on the curve leaves the curve and the area it bounds apart. The four
-        are one subject rather than two, since each is a flat list of marks carried over a span, and
-        that subject is what the turn demo already is. Each must be at rest at both ends or the
-        figure stops being the loop it declares: `wave` and `wiggle` are by construction, `scale`
-        needs a span out and one back, and `morph` needs a second span walking the shape into the one
-        it started as, since a morph reads the marks it is handed. **The call this commit makes** is
-        whether the demo keeps the name `rotate` once it draws four things rather than one.
-        **Measured:** 20 marks at every named time against 8, and the figure is still a loop to 1e-9.
-        The swell reaches 1.34 of the shape's own width and height at the half and is back to 1.000
-        at the end, both within 1e-12, and its middle never leaves the panel's own place. The walk
-        takes the L from an area of 0.96 to 1.92, which is the rectangle round it, and back to 0.96,
-        each within 1e-12; the two quarters read the same. The wave lifts the outline by 0.34000,
-        which is the amplitude it is given, and leaves it where it was at both ends. The rock moves a
-        corner 0.29 at its widest and returns it within 1e-12. The frame is 10.15 by 14.1 against
-        10.15 by 5.8, so the smallest glyph still reads 21.0 pixels on the page and the flat demo's
-        21.33 is still the largest. The record is 8,257 bytes to 22,789, the still 23,764 to 27,396
-        and the strip 31,566 to 47,089. `npm run gate:gpu` draws all eight above both floors,
-        `rotate` at 20 marks and 3,642 triangles against 8 and 1,535, 3.5 per cent of its pixels
-        inked against 6.4, agreeing over 98.26 per cent of them with its labels against 97.06 and
-        99.69 without them against 99.69. `npm run gate:record` writes 32 of 32, each rotate file
-        holding 180 frames as before. 1,426 tests over 94 files to 1,430.
-        **The name stays `rotate`,** and the demo now draws four things that are not turns, so the
-        name under-describes it. Renaming is its own finding and is queued below.
-  - [x] **6c. The straight move gets a picture.** `moveBy` is the one animation of the twenty-one
-        that no committed figure drives. `demos/strip.ts` calls the function directly at a fraction
-        of one to carry each frame into its slot, so every one of the eight committed strips is built
-        with it, but the record kind is resolved by no figure and only tests reach that path. It
-        belongs beside the four gestures, since a straight move and a move along a path are the same
-        family and the turn demo is where a span carrying marks is the subject. **The shape of it:**
-        a fifth gesture panel named `nudged`, captioned `moved and moved back`, driven by two
-        `moveBy` spans, the second taking the negated offset, since the figure declares itself a loop
-        and `moveBy` translates the marks it is handed. The gesture rows are then two, two and one:
-        `bigger` beside `walked`, `rippled` beside `rocked`, and `nudged` alone on the row under them
-        at the middle between the two columns, where it has the whole width for its caption. The
-        frame grows by about 4 in height and stays 10.15 wide, which is what holds the smallest glyph
-        at 21.0 pixels on the page, and the strip's `DOWN` follows it. **Measurement:** the panel's
-        marks against the offset at the half and against where they started at the end, both within
-        1e-12; the reading that says the figure is still a loop; the marks at every named time; the
-        sheets' bytes; and both gates. **Measured:** 23 marks at every named time against 20, and the
-        figure is still a loop to 1e-9. The panel stands at nothing across, is drawn 0.900000000000
-        across at the half, which is the offset it is given, and is back at nothing at the end with
-        no error at all; the two quarters read the same. The frame is 10.15 by 18 against 10.15 by
-        14.1, so the smallest glyph still reads 21.0 pixels on the page. The record is 22,789 bytes
-        to 26,211, the still 27,396 to 28,303 and the strip 47,089 to 51,057. `npm run gate:gpu`
-        draws all eight above both floors, `rotate` at 23 marks and 4,381 triangles against 20 and
-        3,642, 2.8 per cent of its pixels inked against 3.5, agreeing over 98.50 per cent of them
-        with its labels against 98.26 and 99.71 without them against 99.69. `npm run gate:record`
-        writes 32 of 32, each rotate file holding 180 frames. 1,430 tests over 94 files to 1,431.
-        **0 of the format's twenty-one animations are left without a committed figure driving them.**
-
-- [ ] **7. The version is cut.** `package.json` reads 2.11.0, the done-criteria below are verified
-      line by line, and the ladder's 2.11.0 row is deleted. **Measurement:** both gates' readings,
-      the door's counts, and the suite, type-check and build.
-
-**Which step the demos gain from is every one of them**, since this item is the demos. Steps 1 and 2
-are what makes the pictures right and steps 3 to 6 are what makes them complete.
-
-**Done-criteria.**
-
-1. Every one of the sixteen committed sheets carries the shipped face as a `@font-face` whose source
-   is the font's own bytes, so a sheet read inside an `<img>` sets its labels in that face.
-2. Every label in every committed sheet has its baseline written as a `y` placed from the font's
-   metrics, and no sheet writes a `dominant-baseline`.
-3. `npm run demos` regenerates all sixteen sheets and the demos gate compares the regenerated bytes
-   against the committed files, as it does today.
-4. Every committed sheet is referenced by the README or the guide, and `frame.svg` is in the README.
-5. No node of the figure format carrying geometry of its own is left without a committed figure that
-   draws it, and the count is quoted against today's twenty-two. A node whose resolution is one call
-   over a spelling a committed figure already draws is held by criterion 7 instead, and the five are
-   `cylinder3`, `torus3`, `surface3`, `vectorField3` and `curve3`. `sphereCells` and `cubeCells` are
-   the same reading the other way round: step 5a wrote the two panels that hold one solid as
-   `sphere3` and `cube3`, which resolve to those cells and draw them at every frame, so no committed
-   file names the two kinds and `tests/solid3.test.ts` holds both as records.
-6. No animation of the figure format is left without a committed figure that drives it.
-7. Each new node's marks agree with the marks its other spelling draws for the same geometry, by
-   tolerance rather than by hash.
-8. The door's value and type counts are quoted, with each new name at `index.ts`.
-9. `npm run gate:gpu` draws all eight figures above both floors, 0.97 without labels and 0.96 with
-   them, with the new marks drawn.
-10. `npm run gate:record` records every figure both ways, in the page and in a worker, each file
-    holding exactly the frames the walk counted.
-11. `npm test`, `npm run type-check` and `npm run build` are green, with the test count quoted.
-12. The ladder's 2.11.0 row is deleted and the Now section carries what the version landed.
 
 ## Found while working, not yet queued
 
