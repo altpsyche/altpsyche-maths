@@ -767,13 +767,13 @@ renderer is conformant inside that band and wrong outside it in either direction
 
 | file | bytes | what it exercises |
 | --- | --- | --- |
-| `demos/tangent.figure.json` | 404,001 | the graph domain, a moving view, an inset, two typeset rules, a brace and a field |
-| `demos/surface.figure.json` | 275,138 | a surface, a plane, a section, streamlines, axes in space and an orbiting camera |
-| `demos/boolean.figure.json` | 14,431 | the three boolean operations through no crossing, one, two and containment |
-| `demos/rotate.figure.json` | 8,244 | a rotation about a box's middle and about a named place, and a loop |
-| `demos/frame.figure.json` | 6,360 | a mark placed against the frame beside one placed in the figure's own units |
-| `demos/portrait.figure.json` | 23,389 | a parametric closed orbit, two polar spirals and two implicit nullclines over a field |
-| `demos/solids.figure.json` | 82,783 | the four solids as cells, and two curves in space cut into pieces the scenes sort |
+| `demos/tangent.figure.json` | 404,014 | the graph domain, a moving view, an inset, two typeset rules, a brace and a field |
+| `demos/surface.figure.json` | 275,151 | a surface, a plane, a section, streamlines, axes in space and an orbiting camera |
+| `demos/boolean.figure.json` | 14,444 | the three boolean operations through no crossing, one, two and containment |
+| `demos/rotate.figure.json` | 8,257 | a rotation about a box's middle and about a named place, and a loop |
+| `demos/frame.figure.json` | 6,373 | a mark placed against the frame beside one placed in the figure's own units |
+| `demos/portrait.figure.json` | 23,402 | a parametric closed orbit, two polar spirals and two implicit nullclines over a field |
+| `demos/solids.figure.json` | 82,796 | the four solids as cells, and two curves in space cut into pieces the scenes sort |
 
 **Each carries `format` 0 and reads with no renderer at all.** A reader in another language that draws
 the same marks at these figures' named times, inside the tolerances above, is conformant.

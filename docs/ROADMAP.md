@@ -1522,11 +1522,18 @@ The suite is 1,372 tests over 91 files and the door is 217 values and 247 types.
       figures before and 0 after, every figure at 0; 18,772 triangles to 26,979, the 8,207 the labels
       draw, from 495 more in `portrait` to 2,530 more in `solids`; the gate's eight readings unchanged,
       since it still takes the text out of both painters, which is step 5. 1,402 tests over 94 files.
-- [ ] **5. Both painters draw one typeface.** The demos' labels name the shipped family, the SVG
-      painter writes `font-kerning: none`, and `gates/gpu.mjs` loads the font into its page and stops
-      taking the text out of either painter. **Measurement:** each figure's equal share, within-8
-      share and worst channel with the labels drawn, against the reading with them taken out; and the
-      mark count each painter draws, which is now the same number.
+- [x] **5. Both painters draw one typeface.** The demos name the shipped family first and fall
+      through to the system stack, since a sheet read inside an `<img>` fetches nothing. The gate
+      carries the face into each sheet as a rule whose source is the font's own bytes, which is the
+      one way a label in an `<img>` is set in it, and `svgMarkup` takes a `font` and places each
+      baseline from the font's metrics rather than naming one to the browser. **Measured:** each
+      figure drawn both ways, with its labels and without: `boolean` 98.51 per cent within 8 against
+      99.46, `frame` 98.75 against 99.83, `matrix` 97.06 against 98.29, `portrait` 97.55 against
+      98.28, `rotate` 97.06 against 99.69, `solids` 96.61 against 98.68, `surface` 96.94 against
+      97.75, `tangent` 97.29 against 98.52, so the labels cost between 0.73 and 2.63 points. The
+      letters are in the same places: a label drawn both ways has its ink inside 0.62 of a pixel
+      across and 1.62 down, for all three baselines. The floor with the labels is 0.96 and without
+      them the 0.97 it was.
 - [ ] **6. The recorder paints through a painter rather than a context.** `recordFigure` takes how a
       frame is painted, so the 2D painter is one answer and a card is another, and a card's frame
       reaches the encoder's canvas through `pixelsGpu` and `putImageData`. **Measurement:** the eight

@@ -16,20 +16,23 @@
  * browser cannot resolve on its own, so the page carries an import map pointing
  * it at what is installed.
  *
- * Both painters are handed the same marks with the text taken out, because a
- * card has no text vocabulary until a source of glyph outlines arrives and
- * comparing a drawn label against no label would measure the missing font rather
- * than the painter. Which marks were left out is printed beside the reading.
+ * Both painters are handed the same marks, labels included. The card draws a
+ * label as the shapes the shipped typeface gives it and the page writes it as
+ * text, so the page is handed that same typeface as a `FontFace` built from the
+ * font's own bytes: one typeface either way, which is what makes the comparison
+ * a comparison of painters rather than of fonts.
  *
  * The two pictures are not expected to be equal to the last bit and no reading
  * here says they are. An SVG rasteriser computes an edge pixel's coverage exactly
  * and a card resolves four samples to five levels, so an edge pixel differs by
  * construction, and a thin diagonal stroke is nearly all edge.
  *
- * Each figure is read twice. The whole figure is one reading, and the figure with
- * the marks the painter named as refused taken out is the other, which is what
- * measures this painter rather than the backend under it. The floor below is
- * against the second reading and the first is printed beside it.
+ * Each figure is read twice, once with its labels and once without them. The two
+ * hold different floors and for one reason: a glyph stem is two or three pixels
+ * across at the sizes these figures write, so a label is nearly all edge, and an
+ * edge is where the two painters differ by construction. Reading the figure both
+ * ways is what tells a letter in the wrong place from a letter whose edge is
+ * resolved differently.
  *
  * One canvas and one surface draw all eight figures, since disposing a renderer
  * releases what it allocated and leaves the canvas alone. The last figure is then
@@ -59,6 +62,14 @@ const CHANNEL = 8;
  * is a small share of a figure and a shape drawn in the wrong place is a large
  * one. */
 const FLOOR = 0.97;
+
+/** The same floor for the figure with its labels drawn. A glyph stem at the sizes
+ * these figures write is two or three pixels across, so a label is nearly all
+ * edge, and an edge pixel is where an exact coverage and four samples resolved to
+ * five levels differ by construction. The letters are in the same places either
+ * way: the ink of a label drawn both ways sits within half a pixel across and
+ * within a pixel down. */
+const LETTERED_FLOOR = 0.96;
 
 const TYPES = {
   '.js': 'text/javascript',
@@ -116,7 +127,19 @@ function serve() {
 async function openSurface(page, origin) {
   return page.evaluate(
     async ({ origin, width, height }) => {
-      const { gpuSurface } = await import(`${origin}/dist/index.js`);
+      const { gpuSurface, shippedFont } = await import(`${origin}/dist/index.js`);
+      // The sheet is rasterised inside an `<img>`, which is an isolated document
+      // that fetches nothing and never sees the page's own fonts. So the typeface
+      // is carried into each sheet as a rule whose source is the font's own bytes,
+      // which is the one way a label in an `<img>` is set in the face the card
+      // draws from.
+      const font = await shippedFont();
+      if (!window.face) {
+        let binary = '';
+        for (const byte of font.bytes) binary += String.fromCharCode(byte);
+        window.face =
+          `@font-face{font-family:'${font.family}';src:url(data:font/ttf;base64,${btoa(binary)})}`;
+      }
       if (!window.card) {
         window.card = document.createElement('canvas');
         window.card.width = width;
@@ -148,18 +171,17 @@ async function disposeSurface(page) {
 async function compare(page, origin, name) {
   return page.evaluate(
     async ({ origin, name, width, height, channel }) => {
-      const { readFigure, marksAt, viewAt, pixelsGpu, svgMarkup, colourFrom } = await import(
+      const { readFigure, marksAt, viewAt, pixelsGpu, shippedFont, svgMarkup, colourFrom } = await import(
         `${origin}/dist/index.js`
       );
+      const font = await shippedFont();
 
       const text = await (await fetch(`${origin}/demos/${name}.figure.json`)).text();
       const figure = readFigure(text);
       const seconds = figure.still;
       const view = viewAt(figure, seconds, width, height);
-      // The text is taken out of both, since a card has no glyph outlines and the
-      // difference would be the missing font rather than the painter.
       const everything = marksAt(figure, seconds, width / height);
-      const marks = everything.filter((mark) => mark.kind !== 'text');
+      const marks = everything;
       const ground = colourFrom('#ffffff');
 
       const surface = window.surface;
@@ -172,7 +194,10 @@ async function compare(page, origin, name) {
 
         // The same marks through the SVG painter, rasterised by the browser's own
         // reader so the comparison is against what a page actually shows.
-        const markup = svgMarkup(drawing, view, width, height, { ground });
+        const markup = svgMarkup(drawing, view, width, height, { ground, font }).replace(
+          '>',
+          `><style>${window.face}</style>`
+        );
         const url = URL.createObjectURL(new Blob([markup], { type: 'image/svg+xml' }));
         const image = new Image();
         await new Promise((done, failed) => {
@@ -221,11 +246,10 @@ async function compare(page, origin, name) {
       };
 
       const whole = await reading(marks);
-      // The marks the painter itself named as refused, taken out so what is left
-      // measures the painter rather than the backend under it.
-      const turned = new Set(whole.refused);
-      const drawable = marks.filter((mark) => !turned.has(mark.id));
-      const held = turned.size === 0 ? whole : await reading(drawable);
+      // The same figure with its labels taken out, which is every mark whose edge
+      // is a stroke or a fill rather than a letter.
+      const unlettered = marks.filter((mark) => mark.kind !== 'text');
+      const held = unlettered.length === marks.length ? whole : await reading(unlettered);
 
       return {
         backend: surface.backend,
@@ -262,12 +286,12 @@ for (const name of figures) {
     const answer = await compare(page, origin, name);
     first.set(name, answer.whole);
     const { whole, held } = answer;
-    const agrees = held.close >= FLOOR && held.inked > 0;
+    const agrees = held.close >= FLOOR && whole.close >= LETTERED_FLOOR && held.inked > 0;
     console.log(
       `${name} at ${answer.seconds.toFixed(2)}s on ${answer.backend}: ${whole.drew} of ${answer.marks} marks, ` +
         `${answer.refused} refused, ${whole.triangles} triangles, ${whole.took}ms, ` +
-        `${(whole.inked * 100).toFixed(1)}% drawn | whole figure ${(whole.same * 100).toFixed(2)}% equal, ` +
-        `${(whole.close * 100).toFixed(2)}% within ${CHANNEL}, worst ${whole.worst} | drawable ` +
+        `${(whole.inked * 100).toFixed(1)}% drawn | with its labels ${(whole.same * 100).toFixed(2)}% equal, ` +
+        `${(whole.close * 100).toFixed(2)}% within ${CHANNEL}, worst ${whole.worst} | without them ` +
         `${held.drew} marks, ${(held.same * 100).toFixed(2)}% equal, ${(held.close * 100).toFixed(2)}% ` +
         `within ${CHANNEL}, worst ${held.worst} | ` +
         `${agrees ? 'the card draws the sheet' : 'THE CARD DISAGREES WITH THE SHEET'}`
@@ -297,5 +321,8 @@ if (!kept) failed += 1;
 
 await browser.close();
 server.close();
-console.log(`${figures.length - failed} of ${figures.length} figures agree within ${CHANNEL} of 255 over ${FLOOR * 100}% of their pixels`);
+console.log(
+  `${figures.length - failed} of ${figures.length} figures agree within ${CHANNEL} of 255 over ` +
+    `${LETTERED_FLOOR * 100}% of their pixels with their labels and ${FLOOR * 100}% without them`
+);
 process.exit(failed === 0 ? 0 : 1);

@@ -20,6 +20,8 @@ import { hexOf, type Colour } from '../values/colour.js';
 import type { Fill, Mark, PathMark, TextMark } from '../figure/mark.js';
 import type { Path } from '../figure/path.js';
 import { outlinedMarks } from '../figure/outline.js';
+import { baselineDrop } from '../figure/text-outline.js';
+import type { Font } from '../figure/font.js';
 import { widestWidth } from '../figure/width.js';
 import { short } from './number.js';
 
@@ -81,6 +83,18 @@ export interface SvgMarkupOptions {
    * document want different prefixes.
    */
   prefix?: string;
+  /**
+   * The typeface a card would draw these labels in, where the sheet is being
+   * compared with one.
+   *
+   * Given, each label's baseline is placed here from the font's own metrics and
+   * the kerning is turned off, so the browser lays the label out on the same
+   * advances and puts the same letters in the same places. Left out, the baseline
+   * is named to the browser and the browser decides what it means: Chrome puts a
+   * hanging one 4.4 pixels below this font's declared cap height at a 30-pixel
+   * em, which is a rule no font states and no other painter can read.
+   */
+  font?: Font;
 }
 
 /** The `d` attribute: a move to the start, a cubic per segment, and a close
@@ -235,19 +249,35 @@ function pathElement(mark: PathMark, view: Transform2D, scale: number, prefix: s
   return { tag: 'path', attributes };
 }
 
-function textElement(mark: TextMark, view: Transform2D, scale: number, lift: number, prefix: string): SvgElement {
+function textElement(
+  mark: TextMark,
+  view: Transform2D,
+  scale: number,
+  lift: number,
+  prefix: string,
+  font: Font | undefined
+): SvgElement {
   const at = mat3.transformPoint(view, mark.at);
+  const size = mark.size * scale * lift;
+  // A baseline named to the browser is a baseline the browser defines, and the
+  // two painters then place the same label differently. With the font in hand the
+  // drop is taken from the metric the font declares and written into the y, which
+  // is the same arithmetic the outliner does.
+  const drop = font ? baselineDrop(font, mark.baseline) * (size / font.unitsPerEm) : 0;
   const attributes: Record<string, string> = {
     'data-mark': mark.id,
     x: short(at.x),
-    y: short(at.y),
+    y: short(at.y + drop),
     'font-family': mark.family,
-    'font-size': short(mark.size * scale * lift),
+    'font-size': short(size),
     fill: fillPaint(mark.fill, mark.id, prefix),
   };
+  // The advances a label is laid out on carry no kerning here and none in the
+  // shipped face, so the browser is told to apply none either.
+  if (font) attributes['font-kerning'] = 'none';
   if (mark.weight !== undefined) attributes['font-weight'] = String(mark.weight);
   if (mark.align) attributes['text-anchor'] = mark.align;
-  if (mark.baseline) attributes['dominant-baseline'] = mark.baseline;
+  if (mark.baseline && !font) attributes['dominant-baseline'] = mark.baseline;
   if (mark.opacity !== undefined && mark.opacity !== 1) attributes.opacity = short(mark.opacity);
   if (mark.clip) attributes['clip-path'] = `url(#${clipId(prefix, clipRect(mark.clip, view))})`;
   return { tag: 'text', attributes, text: mark.text };
@@ -276,7 +306,7 @@ export function svgElements(marks: readonly Mark[], view: Transform2D, options: 
   const prefix = options.prefix ?? '';
   const defs = defsElement(drawn, view, prefix);
   const elements = drawn.map((mark) =>
-    mark.kind === 'path' ? pathElement(mark, view, scale, prefix) : textElement(mark, view, scale, lift, prefix)
+    mark.kind === 'path' ? pathElement(mark, view, scale, prefix) : textElement(mark, view, scale, lift, prefix, options.font)
   );
   return defs ? [defs, ...elements] : elements;
 }

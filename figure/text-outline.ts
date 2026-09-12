@@ -26,7 +26,7 @@ import type { Path, Subpath } from './path.js';
  * `middle` puts the anchor halfway up a lower-case letter, and `hanging` hangs
  * the label from the top of a capital.
  */
-function baselineDrop(font: Font, baseline: TextMark['baseline']): number {
+export function baselineDrop(font: Font, baseline: TextMark['baseline']): number {
   if (baseline === 'middle') return font.xHeight / 2;
   if (baseline === 'hanging') return font.capHeight;
   return 0;

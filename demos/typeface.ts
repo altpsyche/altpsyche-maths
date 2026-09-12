@@ -11,12 +11,18 @@
  * The package holds no default of its own past the generic `sans-serif`,
  * because a family is a name a painter hands to the platform and the choosing is
  * the author's, so this sits with the demos rather than behind the door.
+ *
+ * The shipped typeface is named first all the same. A card has that face and no
+ * other, so a page that has loaded it draws the same letters the card draws, and
+ * a sheet read inside an `<img>` falls through to the system stack exactly as it
+ * did before.
  */
 
 /** The families to try in order, ending in a generic the browser always answers.
- * The four named faces are the sans serif an operating system ships with, so one
- * of them is installed wherever a sheet is read. */
-export const FAMILY = "system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif";
+ * The first is the face this package ships, which a page may have loaded; the
+ * four after it are the sans serif an operating system ships with, so one of them
+ * is installed wherever a sheet is read. */
+export const FAMILY = "'Noto Sans', system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif";
 
 /** The weight every demo writes at. Four hundred is the upright text weight, and
  * it is the one weight a system stack has without a face being synthesised. */

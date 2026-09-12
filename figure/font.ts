@@ -31,6 +31,9 @@ export interface Font {
   readonly unitsPerEm: number;
   /** How many glyphs the font holds, the missing-glyph one included. */
   readonly glyphCount: number;
+  /** What the font calls itself, which is the name a page registers it under and
+   * a mark names to be drawn in it. */
+  readonly family: string;
   /** How far the top of a line sits above the baseline, in font units. */
   readonly ascent: number;
   /** How far the bottom sits below it, as a positive number of font units. */
@@ -145,6 +148,37 @@ function unicodeCmap(view: DataView, table: Table): Map<number, number> {
   return cmap4(view, chosen);
 }
 
+/**
+ * What the font calls itself, read out of its own name table.
+ *
+ * A name record is written in one of two encodings and the table holds both: the
+ * Windows records are UTF-16 two bytes to a character and the Macintosh ones are
+ * one byte. The Windows record is preferred because every font written this
+ * century carries one.
+ */
+function familyName(view: DataView, table: Table): string {
+  const count = view.getUint16(table.at + 2);
+  const strings = table.at + view.getUint16(table.at + 4);
+  let found = '';
+  for (let index = 0; index < count; index += 1) {
+    const record = table.at + 6 + index * 12;
+    const platform = view.getUint16(record);
+    const nameId = view.getUint16(record + 6);
+    if (nameId !== 1) continue;
+    const length = view.getUint16(record + 8);
+    const at = strings + view.getUint16(record + 10);
+    let name = '';
+    if (platform === 3) {
+      for (let step = 0; step + 1 < length; step += 2) name += String.fromCharCode(view.getUint16(at + step));
+    } else {
+      for (let step = 0; step < length; step += 1) name += String.fromCharCode(view.getUint8(at + step));
+    }
+    if (platform === 3) return name;
+    found ||= name;
+  }
+  return found;
+}
+
 /** Where each glyph's outline begins, as offsets from the start of the file. The
  * table holds one more entry than there are glyphs, so a glyph's end is the next
  * entry. */
@@ -192,12 +226,14 @@ export function readFont(bytes: Uint8Array): Font {
   const xHeight = version >= 2 ? view.getInt16(os2.at + 86) : Math.round(unitsPerEm * 0.52);
   const capHeight = version >= 2 ? view.getInt16(os2.at + 88) : Math.round(unitsPerEm * 0.7);
 
+  const family = familyName(view, tableOf(tables, 'name'));
   const characters = unicodeCmap(view, tableOf(tables, 'cmap'));
   const outlines = locations(view, tableOf(tables, 'loca'), tableOf(tables, 'glyf'), glyphCount, longLoca);
 
   return {
     unitsPerEm,
     glyphCount,
+    family,
     ascent,
     descent,
     xHeight,

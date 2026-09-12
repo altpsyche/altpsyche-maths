@@ -286,7 +286,7 @@
       "kind": "group",
       "name": "map",
       "style": {
-        "family": "system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif",
+        "family": "'Noto Sans', system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif",
         "weight": 400
       }
     },

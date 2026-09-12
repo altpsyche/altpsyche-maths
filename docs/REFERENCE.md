@@ -1491,7 +1491,12 @@ picture in a recording and a picture on a card are the same picture.
   not run any script yet. It carries no width or height of its own and only a view box, so the
   element around it decides how big it is.
 - `SvgMarkupOptions` — what else `svgMarkup` and `paintSvg` take: a `theme`, a `ground`, a
-  `minTextSize`, and a `prefix`. Every text size is multiplied by the one factor that brings the
+  `minTextSize`, a `prefix`, and a `font`. Given a `font`, each label's baseline is placed from the
+  font's own metrics and written into the `y`, and the kerning is turned off, so a browser lays the
+  label out on the advances the outliner walks on and the sheet and a card put the same letters in
+  the same places. Left out, the baseline is named to the browser as a `dominant-baseline` and the
+  browser decides what it means: Chrome puts a hanging one 4.4 pixels below this font's declared cap
+  height at a 30-pixel em, which is a rule no font states and no other painter can read. Every text size is multiplied by the one factor that brings the
   smallest of them to that size, so the sizes stay in the ratios the figure gave them. The `ground` is
   painted behind the marks as the `background` of the sheet, so the colours land on the ground they
   were measured against wherever the sheet is shown. The `prefix` begins every id written, since an
