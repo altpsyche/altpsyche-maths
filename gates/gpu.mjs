@@ -31,6 +31,11 @@
  * measures this painter rather than the backend under it. The floor below is
  * against the second reading and the first is printed beside it.
  *
+ * One canvas and one surface draw all eight figures, since disposing a renderer
+ * releases what it allocated and leaves the canvas alone. The last figure is then
+ * drawn again through a second surface opened on that same canvas, which is what
+ * says so rather than assumes it.
+ *
  * Run it with `npm run gate:gpu`. It writes nothing.
  */
 import { createServer } from 'node:http';
@@ -104,11 +109,46 @@ function serve() {
   });
 }
 
+/** The one canvas every figure is drawn on, and the surface over it. A canvas
+ * keeps the first graphics context it is given for as long as it lives, so the
+ * same one serving every figure is what a disposed renderer leaving it alone
+ * buys. */
+async function openSurface(page, origin) {
+  return page.evaluate(
+    async ({ origin, width, height }) => {
+      const { gpuSurface } = await import(`${origin}/dist/index.js`);
+      if (!window.card) {
+        window.card = document.createElement('canvas');
+        window.card.width = width;
+        window.card.height = height;
+        document.getElementById('canvases').replaceChildren(window.card);
+      }
+      window.surface = await gpuSurface(window.card, {
+        clear: [1, 1, 1, 1],
+        onRefused: (message) => {
+          throw new Error(message);
+        },
+      });
+      if (!window.surface) throw new Error('no backend drew the figure');
+      return window.surface.backend;
+    },
+    { origin, width: WIDTH, height: HEIGHT }
+  );
+}
+
+/** Gives up the card resources the surface holds, leaving the canvas where it is. */
+async function disposeSurface(page) {
+  return page.evaluate(() => {
+    window.surface.dispose();
+    window.surface = null;
+  });
+}
+
 /** One figure drawn both ways in the page and the two pictures compared. */
 async function compare(page, origin, name) {
   return page.evaluate(
     async ({ origin, name, width, height, channel }) => {
-      const { readFigure, marksAt, viewAt, gpuSurface, pixelsGpu, svgMarkup, colourFrom } = await import(
+      const { readFigure, marksAt, viewAt, pixelsGpu, svgMarkup, colourFrom } = await import(
         `${origin}/dist/index.js`
       );
 
@@ -122,20 +162,7 @@ async function compare(page, origin, name) {
       const marks = everything.filter((mark) => mark.kind !== 'text');
       const ground = colourFrom('#ffffff');
 
-      // A fresh canvas per figure, because disposing a renderer loses the WebGL 2
-      // context for good and a canvas hands the same lost context back to the
-      // next caller that asks it for one.
-      const card = document.createElement('canvas');
-      card.width = width;
-      card.height = height;
-      document.getElementById('canvases').replaceChildren(card);
-      const surface = await gpuSurface(card, {
-        clear: [1, 1, 1, 1],
-        onRefused: (message) => {
-          throw new Error(message);
-        },
-      });
-      if (!surface) throw new Error('no backend drew the figure');
+      const surface = window.surface;
 
       /** The same list of marks through both painters, read pixel against pixel. */
       const reading = async (drawing) => {
@@ -200,7 +227,6 @@ async function compare(page, origin, name) {
       const drawable = marks.filter((mark) => !turned.has(mark.id));
       const held = turned.size === 0 ? whole : await reading(drawable);
 
-      surface.dispose();
       return {
         backend: surface.backend,
         seconds,
@@ -227,11 +253,14 @@ page.on('console', (message) => {
   if (message.type() === 'error') console.error(`  page: ${message.text()}`);
 });
 await page.goto(`${origin}/`);
+await openSurface(page, origin);
 
 let failed = 0;
+const first = new Map();
 for (const name of figures) {
   try {
     const answer = await compare(page, origin, name);
+    first.set(name, answer.whole);
     const { whole, held } = answer;
     const agrees = held.close >= FLOOR && held.inked > 0;
     console.log(
@@ -249,6 +278,22 @@ for (const name of figures) {
     console.error(`${name} failed: ${error.message}`);
   }
 }
+
+// The same canvas through a second surface, which is what says a disposed
+// renderer left it drawable rather than taking its context with it.
+const again = figures[figures.length - 1];
+await disposeSurface(page);
+await openSurface(page, origin);
+const redrawn = (await compare(page, origin, again)).whole;
+const before = first.get(again);
+const kept = redrawn.same === before.same && redrawn.worst === before.worst;
+console.log(
+  `${again} redrawn through a second surface on the same canvas: ` +
+    `${(redrawn.same * 100).toFixed(2)}% equal against ${(before.same * 100).toFixed(2)}%, ` +
+    `worst ${redrawn.worst} against ${before.worst} | ` +
+    `${kept ? 'the canvas survived the dispose' : 'THE CANVAS DID NOT SURVIVE THE DISPOSE'}`
+);
+if (!kept) failed += 1;
 
 await browser.close();
 server.close();

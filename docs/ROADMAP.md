@@ -1474,10 +1474,12 @@ sheet over 98.70 per cent of its pixels.
       to the last digit, and 1,372 tests over 91 files. Three readings about that door went to the
       found list below: the per-frame translation that stays, the `requires` check that leaves with
       `resolve`, and a refusal naming a backend the caller excluded.
-- [ ] **4. One canvas for the whole gate.** `gates/gpu.mjs` makes one canvas and one surface for all
-      eight figures, since disposing a renderer leaves the canvas alone as of 0.5.0.
-      **Measurement:** canvases made, 8 before and 1 after; a surface disposed and a second one opened
-      on the same canvas drawing the same picture as the first; and the eight readings unchanged.
+- [x] **4. One canvas for the whole gate.** `gates/gpu.mjs` makes one canvas and one surface for all
+      eight figures, since disposing a renderer leaves the canvas alone as of 0.5.0, and the last
+      figure is drawn again through a second surface opened on that same canvas. **Measured:** 8
+      canvases to 1; the redrawn figure 87.51 per cent equal against 87.51 with its worst channel 126
+      against 126; the eight readings identical to step 3; and the drawing 300 milliseconds over the
+      eight to 251, since one renderer holds one program cache across every figure.
 - [ ] **5. A scissor against a cut, decided by the reading.** The three clipped figures are drawn both
       ways and compared with the SVG painter. The form that agrees is what the frame keeps, and the
       form that loses is written down with its number. **Measurement:** `matrix`, `surface` and
