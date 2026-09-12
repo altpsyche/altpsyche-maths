@@ -1626,8 +1626,25 @@ door is 226 values and 250 types. `npm run gate:gpu` draws all eight above both 
 - [ ] **6. Five animations get a picture.** `morph`, `moveAlong`, `scale`, `wave` and `wiggle`, each
       in the demo where it has one. `fadeOut` left this list at step 3, where each run of bars leaves
       as the next arrives, and step 4 drove it a second time to take the arrow out of the picture when
-      the dot begins to walk. **Measurement:** each demo's marks at the times the animation runs over,
-      and 0 of the format's animations left undrawn.
+      the dot begins to walk. **Split into three on 2026-09-13**, since the five land in three demos
+      and one commit carries one finding. **Measurement:** each demo's marks at the times the
+      animation runs over, and 0 of the format's animations left undrawn.
+  - [ ] **6a. The limit cycle carries a dot round it.** `moveAlong` in the phase portrait, over the
+        path record the `cycle` shape is already drawn from, so the figure names that form once. The
+        cycle is where both spirals end up and a dot riding it is what says so. **Measurement:** the
+        demo's marks at its four strip times, and the dot's place read back against the orbit it is
+        carried along at each of them.
+  - [ ] **6b. Two indications join the family they belong to.** `wave` and `wiggle` in the flat demo,
+        which already drives `indicate`, `flash`, `circumscribe` and `showPassingFlash`. Both leave
+        their marks where they found them at either end of their span, so neither moves the still.
+        **Measurement:** the demo's marks over each span against the marks at its ends, which is what
+        says the figure is where it was.
+  - [ ] **6c. The turn demo shows what else a span does to a shape.** `scale` and `morph` beside the
+        two turns, which is the demo whose subject is a flat list of marks carried by a flat matrix
+        over a span. Both must be at rest at both ends or the figure stops being the loop it declares.
+        **The call this commit makes** is whether the demo keeps the name `rotate` once it draws three
+        things rather than one. **Measurement:** the figure's marks at its frame times, that it is
+        still a loop, and the sheets' bytes.
 - [ ] **7. The version is cut.** `package.json` reads 2.11.0, the done-criteria below are verified
       line by line, and the ladder's 2.11.0 row is deleted. **Measurement:** both gates' readings,
       the door's counts, and the suite, type-check and build.
