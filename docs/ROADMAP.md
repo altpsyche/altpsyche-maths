@@ -268,13 +268,23 @@ in its own terms, and this package installs the version that comes out.
 
 **A gap in another package is fixed in that package, and this is Siva's rule of 2026-09-11.** A
 feature lands where it belongs and a workaround is not a landing. Six of the readings below are
-worked around inside `paint/gpu.ts` and `gates/gpu.mjs` today, and every one of those workarounds is
-a thing this package does because the engine cannot be asked: it translates WGSL to GLSL by hand,
+worked around inside `paint/gpu.ts` and `gates/gpu.mjs`: the painter translates WGSL to GLSL by hand,
 gathers the offering and selects a backend itself, builds a fresh canvas per figure, names a mark
 refused rather than blending it, cuts a rectangle into the geometry rather than naming a scissor, and
-screenshots a canvas it cannot read back. **They stay until the engine answers**, because ripping one
-out before its answer exists would leave the painter unable to draw at all, and each is written here
-with the reading that found it so the engine session has the case already made.
+the gate screenshots a canvas it cannot read back.
+
+**The engine answered all six, in its 0.5.0 of 2026-09-12, and taking them out is 2.9.0.**
+`openRenderer` carries a backend selection through to a renderer and translates on the way, so the
+first two go together. `RenderPassSpec.scissor` is a rectangle a pass may write into, measured across
+both backends at 0 of 1,440,000 channels differing. `Surface.read()` hands back the pixels of a live
+surface, measured at 480,000 of 480,000. The WebGL 2 backend applies the blend a pipeline names,
+which it had never done. `dispose()` leaves a canvas alone. **One answer nobody here asked for
+matters as much as those**: `@builtin(position)` counted rows from opposite corners on the two
+backends, and the fix took eight presets already inside tolerance to 0 of 1,440,000 at worst 0, which
+is the floor this package's own GPU gate has been reading against.
+
+**Nothing is taken out before 2.9.0 is planned**, because six removals in one commit is not one
+finding, and the readings below are what that plan is written against.
 
 **The spike is done and it was not a version.** It ran on 2026-09-09, drew a figure's marks as filled
 and stroked paths on a `blackwell` adapter, and closed in six commits whose bodies carry every number
@@ -397,9 +407,10 @@ is left, since 2.1.0 through 2.8.0 are cut.
 
 | version | what lands | what it changes | steps | cut against | depends on | plan |
 | --- | --- | --- | --- | --- | --- | --- |
-| 2.9.0 | text on a GPU, and the recorder running without a page | nothing in the format | to plan | every demo recorded off a card | a font file and a reader for it, `@altpsyche/engine`, 2.6.0, and a canvas with no page behind it if `mediabunny` takes nothing else | to plan |
+| 2.9.0 | the engine at 0.5.0, and the six workarounds the GPU painter carries taken out | nothing in the format; the peer range moves to `^0.5.0`, which a consumer on 0.4.0 has to ask for | to plan | both demos on a card, with fewer marks refused than 2.8.0 refused | `@altpsyche/engine` 0.5.0 | to plan |
+| 2.10.0 | text on a GPU, and the recorder running without a page | nothing in the format | to plan | every demo recorded off a card | a font file and a reader for it, 2.9.0, 2.6.0, and a canvas with no page behind it if `mediabunny` takes nothing else | to plan |
 | 3.0.0 | depth, so a figure in space keeps it, and a figure naming the painters that can draw it | what a `Mark` may ask for, which breaks the format's own version | to plan | the solid demo, whose crossing curve is drawn in the right order rather than the tree's | `@altpsyche/engine` | to plan |
-| 3.1.0 | a clip that is a path rather than a rectangle | what a `Mark` may ask for | to plan | nothing yet, which is why it is last of the marks | `@altpsyche/engine`'s counting stencil, its item 2 | to plan |
+| 3.1.0 | a clip that is a path rather than a rectangle | what a `Mark` may ask for | to plan | nothing yet, which is why it is last of the marks | nothing now, since `@altpsyche/engine` 0.5.0 counts a winding | to plan |
 | 4.0.0 | a figure a reader can act on | the shape of `Figure`, which gains input | to plan | nothing yet | nothing outside this package | to plan |
 
 **3.1.0 and 4.0.0 are consequences rather than plans**, written down so they are not rediscovered,
@@ -454,7 +465,7 @@ device either, where a curve drawn as a curve needs a winding the engine cannot 
 
 | off the ladder | what it waits on |
 | --- | --- |
-| a curve drawn as a curve rather than flattened | the engine's counted stencil, its item 2, since Loop and Blinn's fill decides an interior by counting a winding, and the one route round it subtracts a concave curve triangle's area with a blend a pipeline drawing the frame the reader sees may not name |
+| a curve drawn as a curve rather than flattened | a picture waiting, and nothing else. The engine's counted stencil landed in its 0.5.0 as `StencilMode`'s `count` and `nonzero`, which is what Loop and Blinn's fill decides an interior with, so the dependency this row was written for is gone and what is left is that no figure here is asking to be drawn this way |
 
 **The reading behind it is below and in `git log`**, so none of them is rediscovered
 from nothing when it returns.
