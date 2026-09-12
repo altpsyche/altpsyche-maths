@@ -14,9 +14,20 @@ import {
   type Expression,
   type Mark,
   type NodeRecord,
+  type SceneItemRecord,
+  type SpaceItemRecord,
 } from '../index.js';
 import { EMBER, INK, MOSS } from '../demos/palette.js';
-import { FRAMES, OVER, TEXT, alongAt, camera, sceneAt } from '../demos/surface.js';
+import {
+  FRAMES,
+  OVER,
+  TEXT,
+  alongAt,
+  camera,
+  sceneAt,
+  written as surfaceWritten,
+} from '../demos/surface.js';
+import { camera as solidsCamera, written as solidsWritten } from '../demos/solids.js';
 import { descents, eyeAt, section } from './solid-forms.js';
 
 const ink = { colour: INK };
@@ -79,7 +90,7 @@ describe('the space nodes as records', () => {
   });
 });
 
-describe('the space nodes no demo names directly', () => {
+describe('the space nodes read back against their own calls', () => {
   const built = eyeAt(0.3);
   const at = { tracks: { turn: 0.3 } };
 
@@ -169,5 +180,113 @@ describe('the space nodes no demo names directly', () => {
       camera,
     };
     expect(() => resolveNode(record, at)).toThrow("the z of a dot's place in space is a number and was given a point");
+  });
+});
+
+/**
+ * One node of a demo's own tree, by the names that reach it.
+ *
+ * The five nodes below are held against what a committed figure draws rather
+ * than against geometry written again here, since a second writing of a saddle
+ * or a cylinder drifts from the demo's own without either side being wrong.
+ */
+type Named = NodeRecord | Exclude<SceneItemRecord, SpaceItemRecord>;
+
+function nodeAt(node: Named, path: readonly string[]): Named {
+  if (path.length === 0) return node;
+  const inside: readonly Named[] =
+    node.kind === 'group'
+      ? node.children
+      : node.kind === 'scene3'
+        ? node.items.map((item) => ('node' in item ? item.node : item))
+        : [];
+  const next = inside.find((child) => child.name === path[0]);
+  if (!next) throw new Error(`nothing named ${path[0]} under this node`);
+  return nodeAt(next, path.slice(1));
+}
+
+describe('a solid, a surface, a field and a curve written the short way', () => {
+  const surfaceAt = { tracks: { turn: 0.3 } };
+  const solidsAt = { tracks: { turn: 0.37 } };
+
+  /** Both spellings of one node drawn and compared: the short one that makes its
+   * own scene, and the scene a demo writes round the cells it names. Both run the
+   * same arithmetic in the same process, so the tolerance the two are held at is
+   * nothing. */
+  const agree = (short: NodeRecord, long: NodeRecord, bindings: { tracks: { turn: number } }) => {
+    const one = flatten(resolveNode(short, bindings));
+    const two = flatten(resolveNode(long, bindings));
+    return { marks: one.length, same: sameMarks(one, two, 0) };
+  };
+
+  const sceneOver = (item: SceneItemRecord, seen: Camera3Record): NodeRecord => ({
+    kind: 'scene3',
+    name: 'one',
+    camera: seen,
+    items: [item],
+  });
+
+  it('draws a cylinder where a scene over a cylinder`s own cells draws one', () => {
+    const cells = nodeAt(solidsWritten.scene, ['can', 'body', 'skin']);
+    if (cells.kind !== 'cylinderCells') throw new Error('the cylinder is not written as cells');
+    const short: NodeRecord = { ...cells, kind: 'cylinder3', name: 'one', camera: solidsCamera };
+    const held = agree(short, sceneOver({ ...cells, name: 'face' }, solidsCamera), solidsAt);
+    expect(held.marks).toBe(300);
+    expect(held.same).toBe(true);
+  });
+
+  it('draws a torus where a scene over a torus`s own cells draws one', () => {
+    const cells = nodeAt(solidsWritten.scene, ['ring', 'body', 'skin']);
+    if (cells.kind !== 'torusCells') throw new Error('the torus is not written as cells');
+    const short: NodeRecord = { ...cells, kind: 'torus3', name: 'one', camera: solidsCamera };
+    const held = agree(short, sceneOver({ ...cells, name: 'face' }, solidsCamera), solidsAt);
+    expect(held.marks).toBe(324);
+    expect(held.same).toBe(true);
+  });
+
+  it('draws a surface where a scene over that surface`s own cells draws one', () => {
+    const cells = nodeAt(surfaceWritten.scene, ['body', 'hill']);
+    if (cells.kind !== 'surfaceCells') throw new Error('the saddle is not written as cells');
+    const short: NodeRecord = { ...cells, kind: 'surface3', name: 'one', camera: camera };
+    const held = agree(short, sceneOver({ ...cells, name: 'cell' }, camera), surfaceAt);
+    expect(held.marks).toBe(144);
+    expect(held.same).toBe(true);
+  });
+
+  it('draws a field in space where a scene over that field`s own arrows draws one', () => {
+    const arrows = nodeAt(surfaceWritten.scene, ['body', 'flow']);
+    if (arrows.kind !== 'fieldArrows3') throw new Error('the flow is not written as arrows');
+    const short: NodeRecord = { ...arrows, kind: 'vectorField3', name: 'one', camera: camera };
+    const held = agree(short, sceneOver({ ...arrows, name: 'arrow' }, camera), surfaceAt);
+    expect(held.marks).toBe(48);
+    expect(held.same).toBe(true);
+  });
+
+  it('draws a curve in space through the places its own pieces are cut at', () => {
+    const cut = nodeAt(solidsWritten.scene, ['can', 'body', 'coil']);
+    if (cut.kind !== 'curvePieces3') throw new Error('the helix is not cut into pieces');
+    const whole: NodeRecord = { kind: 'curve3', name: 'coil', curve: cut.curve, camera: solidsCamera, options: cut.options };
+    const run = flatten(resolveNode(whole, solidsAt));
+    expect(run).toHaveLength(1);
+    if (run[0].kind !== 'path') throw new Error('a curve in space is one run');
+    const drawn = [run[0].path[0].start, ...run[0].path[0].curves.map((curve) => curve.to)];
+    expect(drawn).toHaveLength(97);
+
+    // A scene sorts its pieces by depth, so a piece is read back by the place
+    // along the run its own name carries rather than by where it was painted.
+    const pieces = flatten(resolveNode(sceneOver(cut, solidsCamera), solidsAt))
+      .map((mark) => ({ along: Number(mark.id.split('/')[2]), mark }))
+      .sort((one, two) => one.along - two.along)
+      .map(({ mark }) => {
+        if (mark.kind !== 'path') throw new Error('a piece of a curve is one run');
+        return mark.path[0];
+      });
+    expect(pieces).toHaveLength(drawn.length - 1);
+    const walked = [pieces[0].start, ...pieces.map((piece) => piece.curves[piece.curves.length - 1].to)];
+    let worst = 0;
+    for (let step = 0; step < drawn.length; step += 1) {
+      worst = Math.max(worst, Math.hypot(drawn[step].x - walked[step].x, drawn[step].y - walked[step].y));
+    }
+    expect(worst).toBe(0);
   });
 });

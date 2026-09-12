@@ -1612,10 +1612,17 @@ door is 226 values and 250 types. `npm run gate:gpu` draws all eight above both 
         without them against 98.68, so one word of six characters cost 0.11 of a point against a
         floor of 96.00. `npm run gate:record` writes 32 of 32 recordings. 1,417 tests over 94 files to
         1,420.
-  - [ ] **5c. The five wrappers with no room are held by agreement.** `cylinder3`, `torus3`,
+  - [x] **5c. The five wrappers with no room are held by agreement.** `cylinder3`, `torus3`,
         `surface3`, `vectorField3` and `curve3` each get a test holding their marks to the marks the
-        spelling a committed figure draws gives for the same geometry. **Measurement:** the marks
-        compared and the largest disagreement, per node.
+        spelling a committed figure draws gives for the same geometry. Each test lifts the record out
+        of the demo's own tree rather than writing a saddle or a cylinder a second time, since a
+        second writing drifts from the demo's without either side being wrong. **Measured:** 300
+        marks on the cylinder, 324 on the torus, 144 on the saddle and 48 on the field, each list
+        equal to the scene over the matching cells at a tolerance of nothing, since both spellings
+        run the same arithmetic in the same process. `curve3` draws the helix as one run of 97 places
+        and the 96 pieces the demo's scene sorts walk the same 97 places, read back by the place along
+        the run each piece's name carries rather than by where it was painted, with a largest
+        disagreement of 0. 1,420 tests over 94 files to 1,425.
 - [ ] **6. Five animations get a picture.** `morph`, `moveAlong`, `scale`, `wave` and `wiggle`, each
       in the demo where it has one. `fadeOut` left this list at step 3, where each run of bars leaves
       as the next arrives, and step 4 drove it a second time to take the arrow out of the picture when
