@@ -1516,10 +1516,12 @@ The suite is 1,372 tests over 91 files and the door is 217 values and 247 types.
       to twelve places; the missing-glyph box keeps its outline, so a character the subset does not
       cover draws a box rather than silence, which took the font from 15,148 bytes to 15,188. The
       door is 224 values and 248 types. 1,401 tests over 94 files.
-- [ ] **4. The card draws the labels.** `gpuSurface` loads the font and `paintGpu` outlines the text
-      before it builds the frame, so `gpuFrame` names no text mark as refused. **Measurement:** the
-      refused count per figure, 74 across the eight before and the count after; the triangle count per
-      figure before and after; and the time a frame takes with the labels in it.
+- [x] **4. The card draws the labels.** `gpuSurface` reads the shipped font and both painting calls
+      outline the labels before the frame is built. `gpuFrame` still refuses text it is handed itself,
+      which is what a caller with no font hands it. **Measured:** 74 marks refused across the eight
+      figures before and 0 after, every figure at 0; 18,772 triangles to 26,979, the 8,207 the labels
+      draw, from 495 more in `portrait` to 2,530 more in `solids`; the gate's eight readings unchanged,
+      since it still takes the text out of both painters, which is step 5. 1,402 tests over 94 files.
 - [ ] **5. Both painters draw one typeface.** The demos' labels name the shipped family, the SVG
       painter writes `font-kerning: none`, and `gates/gpu.mjs` loads the font into its page and stops
       taking the text out of either painter. **Measurement:** each figure's equal share, within-8

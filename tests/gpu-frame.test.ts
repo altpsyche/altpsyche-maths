@@ -8,6 +8,8 @@ import {
   marksAt,
   mat3,
   rect,
+  shippedFont,
+  textOutlines,
   vec2,
   viewAt,
 } from '@altpsyche/maths';
@@ -145,6 +147,22 @@ describe('gpuFrame', () => {
     const built = gpuFrame([label], straight, TINY);
     expect(built.refused).toEqual(['label']);
     expect(built.triangles).toBe(0);
+  });
+
+  it('refuses nothing where the labels were outlined before the frame was built', async () => {
+    const font = await shippedFont();
+    // A card has no font, so the painter outlines a label before it builds a
+    // frame. What gpuFrame refuses is text it is handed itself, which is what a
+    // caller building a frame with no font hands it.
+    const marks = marksAt(tangent, 5, WIDTH / HEIGHT);
+    const plain = gpuFrame(marks, viewAt(tangent, 5, WIDTH, HEIGHT), { width: WIDTH, height: HEIGHT });
+    const lettered = gpuFrame(textOutlines(marks, font), viewAt(tangent, 5, WIDTH, HEIGHT), {
+      width: WIDTH,
+      height: HEIGHT,
+    });
+    expect(plain.refused.length).toBeGreaterThan(0);
+    expect(lettered.refused).toEqual([]);
+    expect(lettered.triangles).toBeGreaterThan(plain.triangles);
   });
 
   it('draws a dashed stroke as its runs and refuses nothing for it', () => {

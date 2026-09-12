@@ -19,6 +19,9 @@
  * and an SVG string cost nothing to make.
  */
 import { gpuFrame, type GpuFrameOptions } from '../figure/gpu-frame.js';
+import { shippedFont } from '../figure/font.js';
+import { textOutlines } from '../figure/text-outline.js';
+import type { Font } from '../figure/font.js';
 import { mat3, type Transform2D } from '../values/mat3.js';
 import { vec2 } from '../values/vec2.js';
 import type { Mark } from '../figure/mark.js';
@@ -77,6 +80,9 @@ export interface GpuPainting {
 interface Held extends GpuSurface {
   readonly renderer: FrameRenderer;
   readonly options: GpuSurfaceOptions;
+  /** The typeface a label's shapes come from, read once when the surface is
+   * opened, since a card has no font of its own. */
+  readonly font: Font;
   /** The frame as the chosen backend takes it, which is the WGSL as written for
    * WebGPU and the baked GLSL for WebGL 2. */
   readonly asDrawn: (frame: FrameGraph) => FrameGraph;
@@ -107,6 +113,7 @@ export async function gpuSurface(
   options: GpuSurfaceOptions = {}
 ): Promise<GpuSurface | null> {
   const engine = await import('@altpsyche/engine');
+  const font = await shippedFont();
   const empty = gpuFrame([], mat3.scaling(vec2(1, 1)), sizedFor(canvas, options)).frame;
 
   // The engine's door names the DOM's own canvas types and this package declares
@@ -139,6 +146,7 @@ export async function gpuSurface(
     canvas,
     renderer: opened.renderer,
     options,
+    font,
     asDrawn,
     dispose: () => opened.renderer.dispose(),
   };
@@ -157,12 +165,12 @@ function heldBy(surface: GpuSurface): Held {
  * One list of marks drawn on a card, at the size the surface's canvas is now.
  *
  * What comes back is what the frame left out rather than the picture, since the
- * picture is on the canvas. A text mark is left out because a card has no text
- * vocabulary, and that is the only reason either backend leaves one out.
+ * picture is on the canvas. A label is drawn as the shapes the shipped typeface
+ * gives it, so nothing is left out for being text.
  */
 export function paintGpu(surface: GpuSurface, marks: readonly Mark[], view: Transform2D): GpuPainting {
   const held = heldBy(surface);
-  const built = gpuFrame(marks, view, sizedFor(held.canvas, held.options));
+  const built = gpuFrame(textOutlines(marks, held.font), view, sizedFor(held.canvas, held.options));
   held.renderer.resize(held.canvas.width, held.canvas.height);
   held.renderer.draw(held.asDrawn(built.frame), {});
   return { refused: built.refused, triangles: built.triangles };
@@ -182,7 +190,7 @@ export async function pixelsGpu(
   view: Transform2D
 ): Promise<{ pixels: Uint8Array; painting: GpuPainting }> {
   const held = heldBy(surface);
-  const built = gpuFrame(marks, view, sizedFor(held.canvas, held.options));
+  const built = gpuFrame(textOutlines(marks, held.font), view, sizedFor(held.canvas, held.options));
   held.renderer.resize(held.canvas.width, held.canvas.height);
   const pixels = await held.renderer.frame(held.asDrawn(built.frame), {});
   return {
