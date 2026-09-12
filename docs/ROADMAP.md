@@ -1591,11 +1591,27 @@ door is 226 values and 250 types. `npm run gate:gpu` draws all eight above both 
         id in the two panels, `skin` to `face`, which is the same four characters. 1,417 tests over 94
         files, and the door is 226 values and 250 types, unchanged. `docs/SPECIFICATION.md` carries
         the record's new size in its fixture table.
-  - [ ] **5b. A point in space is named.** The eye sits at 2.3 above the plane looking at the origin,
+  - [x] **5b. A point in space is named.** The eye sits at 2.3 above the plane looking at the origin,
         so the cube's top face is seen at every angle the turn reaches. Its outline is a closed
         `polyline3` of four points, its middle a `dot3`, the direction it faces an `arrow3` along the
-        z axis, and a `text3` names it. **Measurement:** the marks added, and the drawn arrow read
-        back through the camera against the face's own normal.
+        z axis, and a `text3` names it. The four are painted over the cube rather than sorted with
+        it, since no cell of the cube is ever in front of them. **Measured:** the figure draws 1,070
+        marks at every named time against 1,065, the five being the rim, the disc, the shaft, the
+        head and the word, and what is seen at the four strip times is 853, 945, 1,054 and 1,070
+        against 848, 940, 1,049 and 1,065. The rim comes back as one closed run of four segments at
+        every angle over 241 readings of the turn, which is a face with no corner behind the eye and
+        none off the side. The shaft leaves the disc's own centre within 1e-12 and its direction is
+        the axis the face faces projected through the camera to within 2.2e-16 of a radian, which one
+        upright line at the panel's middle is, since the camera orbits that axis. The word is set at
+        0.26 against the title's 0.3677 and its capitals reach 4.26 against the title's letters
+        starting at 4.36. The record is 81,374 bytes to 92,012, 13.1 per cent, four of which is a
+        camera written out per node; the still is 354,696 to 355,877 and the strip 1,381,130 to
+        1,386,260. `npm run gate:gpu` draws all eight above both floors, `solids` at 1,070 marks and
+        13,833 triangles against 1,065 and 13,647, 18.0 per cent of its pixels inked against 17.9,
+        agreeing with the sheet over 96.50 per cent of them with its labels against 96.61 and 98.64
+        without them against 98.68, so one word of six characters cost 0.11 of a point against a
+        floor of 96.00. `npm run gate:record` writes 32 of 32 recordings. 1,417 tests over 94 files to
+        1,420.
   - [ ] **5c. The five wrappers with no room are held by agreement.** `cylinder3`, `torus3`,
         `surface3`, `vectorField3` and `curve3` each get a test holding their marks to the marks the
         spelling a committed figure draws gives for the same geometry. **Measurement:** the marks

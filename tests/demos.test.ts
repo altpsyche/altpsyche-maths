@@ -1927,15 +1927,15 @@ describe('the solids demo', () => {
   const seen = (seconds: number) => marksAt(solids, seconds).filter((mark) => (mark.opacity ?? 1) > 0.01);
 
   it('draws the same count of marks at every time and holds none of them back', () => {
-    for (const seconds of [0, ...SOLIDS_FRAMES]) expect(marksAt(solids, seconds)).toHaveLength(1065);
+    for (const seconds of [0, ...SOLIDS_FRAMES]) expect(marksAt(solids, seconds)).toHaveLength(1070);
   });
 
   it('opens on nothing and arrives one solid and one piece of curve at a time', () => {
     expect(seen(0)).toHaveLength(0);
-    expect(seen(SOLIDS_FRAMES[0])).toHaveLength(848);
-    expect(seen(SOLIDS_FRAMES[1])).toHaveLength(940);
-    expect(seen(SOLIDS_FRAMES[2])).toHaveLength(1049);
-    expect(seen(SOLIDS_STILL)).toHaveLength(1065);
+    expect(seen(SOLIDS_FRAMES[0])).toHaveLength(853);
+    expect(seen(SOLIDS_FRAMES[1])).toHaveLength(945);
+    expect(seen(SOLIDS_FRAMES[2])).toHaveLength(1054);
+    expect(seen(SOLIDS_STILL)).toHaveLength(1070);
   });
 
   it('cuts each solid into the cells its own steps ask for', () => {
@@ -1986,6 +1986,50 @@ describe('the solids demo', () => {
     };
     expect(spread('can', 'coil')).toEqual({ run: 396, between: 300 });
     expect(spread('ring', 'knot')).toEqual({ run: 444, between: 324 });
+  });
+
+  it('marks the cube`s top face, and the eye is above that face at every angle', () => {
+    for (const seconds of SOLIDS_FRAMES) {
+      const marks = marksAt(solids, seconds);
+      const of = (part: string) => marks.find((mark) => mark.id === `solids/box/${part}`);
+      const rim = of('rim/run');
+      // A face with a corner behind the eye comes back as an open run, and one
+      // with a corner off the side comes back as more than one.
+      expect(rim?.kind === 'path' && rim.path).toHaveLength(1);
+      expect(rim?.kind === 'path' && rim.path[0].curves).toHaveLength(4);
+      expect(of('middle/disc')).toBeDefined();
+      expect(of('normal/head')).toBeDefined();
+      expect(of('says/label')).toBeDefined();
+    }
+  });
+
+  it('stands the arrow on the middle of that face, pointing the way the face faces', () => {
+    for (const seconds of SOLIDS_FRAMES) {
+      const marks = marksAt(solids, seconds);
+      const disc = marks.find((mark) => mark.id === 'solids/box/middle/disc');
+      const shaft = marks.find((mark) => mark.id === 'solids/box/normal/shaft');
+      if (disc?.kind !== 'path' || shaft?.kind !== 'path') throw new Error('the face is not drawn');
+      const bounds = boundsOfMarks([disc]);
+      if (!bounds) throw new Error('the face`s middle is not drawn');
+      const middle = centreOf(bounds);
+      const run = shaft.path[0];
+      const tip = run.curves[run.curves.length - 1].to;
+      expect(Math.hypot(run.start.x - middle.x, run.start.y - middle.y)).toBeLessThan(1e-12);
+      // The camera orbits the axis the face faces along, so that axis projects to
+      // one upright line however far round the turn has gone.
+      expect(Math.abs(tip.x - run.start.x)).toBeLessThan(1e-12);
+      expect(tip.y - run.start.y).toBeGreaterThan(0.3);
+    }
+  });
+
+  it('sets the face`s name under the letters of the title', async () => {
+    const font = await shippedFont();
+    const marks = marksAt(solids, SOLIDS_STILL);
+    const label = marks.find((mark) => mark.id === 'solids/box/says/label');
+    const title = marks.find((mark) => mark.id === 'solids/title');
+    if (label?.kind !== 'text' || title?.kind !== 'text') throw new Error('the names are not drawn');
+    expect(label.size).toBeLessThan(title.size);
+    expect(label.at.y + (label.size * font.capHeight) / font.unitsPerEm).toBeLessThan(title.at.y);
   });
 
   it('winds the trefoil on the torus it is drawn round, at the standoff it is lifted by', () => {

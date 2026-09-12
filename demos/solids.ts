@@ -35,7 +35,7 @@ import {
   type Camera3Record,
   resolveFigure,
 } from '../index.js';
-import { EMBER, INK, MIST, SHADE_THEME, SKY, shadeOf } from './palette.js';
+import { AMBER, EMBER, INK, MIST, SHADE_THEME, SKY, shadeOf } from './palette.js';
 import { stripOf } from './strip.js';
 import { TYPE } from './typeface.js';
 
@@ -43,6 +43,7 @@ const ink = { colour: INK };
 const edge = { colour: MIST, width: 0.008 };
 const coil = { colour: EMBER, width: 0.05 };
 const knot = { colour: SKY, width: 0.05 };
+const mark = { colour: AMBER, width: 0.03 };
 
 const over = (operator: '+' | '-' | '*' | '/', left: Expression, right: Expression): Expression => ({
   kind: 'arithmetic',
@@ -160,19 +161,82 @@ const trefoil: Point3Record = {
   z: over('*', TORUS.tube + LIFT.knot, call('sin', turns(3))),
 };
 
+export const TEXT = textScale(0.26);
+
+/** Where the cube's top face lies, which is half an edge above the middle. */
+const TOP = CUBE / 2;
+
+/**
+ * How far the arrow on the top face reaches along the direction that face faces.
+ *
+ * The title's own letters start 4.36 up the figure and the panel has nothing
+ * above them, so the arrow and the word over it are cut to clear that line. The
+ * face's middle is drawn 3.48 up, a unit along the axis is 1.36 up the page at
+ * this camera, and the word's letters reach 4.26 at the size a name inside a
+ * panel is set in.
+ */
+const NORMAL = 0.4;
+
+/** The four corners of the cube's top face, in the order that walks its rim. */
+const RIM: readonly Point3Record[] = [
+  vec3(-TOP, -TOP, TOP),
+  vec3(TOP, -TOP, TOP),
+  vec3(TOP, TOP, TOP),
+  vec3(-TOP, TOP, TOP),
+];
+
+/**
+ * What is drawn on the cube's top face: its rim, its middle, the direction it
+ * faces, and the name of that direction.
+ *
+ * The eye sits above the top face at every angle the turn reaches, since it is
+ * 2.3 up and the face is half an edge up, so no cell of the cube is ever in
+ * front of these and they are painted over the solid rather than sorted with it.
+ * The arrow's tip stays below the eye as well, so it points away rather than
+ * back at the reader.
+ */
+const FACE: readonly NodeRecord[] = [
+  { kind: 'polyline3', name: 'rim', points: RIM, camera, options: { stroke: mark, close: true } },
+  { kind: 'dot3', name: 'middle', at: vec3(0, 0, TOP), radius: 0.06, fill: { colour: AMBER }, camera },
+  {
+    kind: 'arrow3',
+    name: 'normal',
+    from: vec3(0, 0, TOP),
+    to: vec3(0, 0, TOP + NORMAL),
+    camera,
+    options: { stroke: mark, head: 0.18, spread: 0.55 },
+  },
+  {
+    kind: 'text3',
+    name: 'says',
+    at: vec3(0, 0, TOP + NORMAL),
+    content: 'normal',
+    size: TEXT.tick,
+    camera,
+    options: { fill: { colour: AMBER }, align: 'middle', offset: vec2(0, 0.05) },
+  },
+];
+
 /** The body of a panel whose curve is wound on its solid: one scene holding both,
  * so the curve's pieces and the solid's cells are ordered against each other. */
 const sorted = (items: readonly SceneItemRecord[]): NodeRecord => ({ kind: 'scene3', name: 'body', camera, items });
 
 /** One panel: a body sorted against nothing outside itself, moved to its quarter
  * of the figure, with its name under it. */
-function panel(name: string, at: { x: number; y: number }, body: NodeRecord, label: string): NodeRecord {
+function panel(
+  name: string,
+  at: { x: number; y: number },
+  body: NodeRecord,
+  label: string,
+  over: readonly NodeRecord[] = []
+): NodeRecord {
   return {
     kind: 'group',
     name,
     transform: mat3.translation(vec2(at.x, at.y)),
     children: [
       body,
+      ...over,
       {
         kind: 'text',
         name: 'name',
@@ -187,8 +251,6 @@ function panel(name: string, at: { x: number; y: number }, body: NodeRecord, lab
 
 /** How wide and how tall one panel is in the figure's own units. */
 const PANEL = { across: 4.3, down: 4.5 };
-
-export const TEXT = textScale(0.26);
 
 const extent: Extent = { width: 8.8, height: 9.4 };
 
@@ -206,7 +268,8 @@ export const scene: NodeRecord = {
       'box',
       { x: PANEL.across / 2, y: PANEL.down / 2 + 0.2 },
       { kind: 'cube3', name: 'body', centre: vec3(0, 0, 0), size: CUBE, camera, options: { ...skin, resolution: STEPS.cube } },
-      'a cube'
+      'a cube',
+      FACE
     ),
     panel('can', { x: -PANEL.across / 2, y: -PANEL.down / 2 + 0.2 }, sorted([
       {

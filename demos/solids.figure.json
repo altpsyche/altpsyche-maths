@@ -461,6 +461,363 @@
               "size": 1.7
             },
             {
+              "camera": {
+                "eye": {
+                  "x": {
+                    "kind": "arithmetic",
+                    "left": 4.6,
+                    "operator": "*",
+                    "right": {
+                      "arguments": [
+                        {
+                          "kind": "arithmetic",
+                          "left": 6.283185307179586,
+                          "operator": "*",
+                          "right": {
+                            "kind": "track",
+                            "name": "turn"
+                          }
+                        }
+                      ],
+                      "kind": "call",
+                      "name": "cos"
+                    }
+                  },
+                  "y": {
+                    "kind": "arithmetic",
+                    "left": 4.6,
+                    "operator": "*",
+                    "right": {
+                      "arguments": [
+                        {
+                          "kind": "arithmetic",
+                          "left": 6.283185307179586,
+                          "operator": "*",
+                          "right": {
+                            "kind": "track",
+                            "name": "turn"
+                          }
+                        }
+                      ],
+                      "kind": "call",
+                      "name": "sin"
+                    }
+                  },
+                  "z": 2.3
+                },
+                "projection": {
+                  "fov": 0.6283185307179586,
+                  "height": 4.2,
+                  "kind": "perspective",
+                  "near": 0.2
+                },
+                "target": {
+                  "x": 0,
+                  "y": 0,
+                  "z": 0
+                },
+                "up": {
+                  "x": 0,
+                  "y": 0,
+                  "z": 1
+                }
+              },
+              "kind": "polyline3",
+              "name": "rim",
+              "options": {
+                "close": true,
+                "stroke": {
+                  "colour": {
+                    "a": 1,
+                    "b": 9,
+                    "g": 83,
+                    "name": "amber",
+                    "r": 180
+                  },
+                  "width": 0.03
+                }
+              },
+              "points": [
+                {
+                  "x": -0.85,
+                  "y": -0.85,
+                  "z": 0.85
+                },
+                {
+                  "x": 0.85,
+                  "y": -0.85,
+                  "z": 0.85
+                },
+                {
+                  "x": 0.85,
+                  "y": 0.85,
+                  "z": 0.85
+                },
+                {
+                  "x": -0.85,
+                  "y": 0.85,
+                  "z": 0.85
+                }
+              ]
+            },
+            {
+              "at": {
+                "x": 0,
+                "y": 0,
+                "z": 0.85
+              },
+              "camera": {
+                "eye": {
+                  "x": {
+                    "kind": "arithmetic",
+                    "left": 4.6,
+                    "operator": "*",
+                    "right": {
+                      "arguments": [
+                        {
+                          "kind": "arithmetic",
+                          "left": 6.283185307179586,
+                          "operator": "*",
+                          "right": {
+                            "kind": "track",
+                            "name": "turn"
+                          }
+                        }
+                      ],
+                      "kind": "call",
+                      "name": "cos"
+                    }
+                  },
+                  "y": {
+                    "kind": "arithmetic",
+                    "left": 4.6,
+                    "operator": "*",
+                    "right": {
+                      "arguments": [
+                        {
+                          "kind": "arithmetic",
+                          "left": 6.283185307179586,
+                          "operator": "*",
+                          "right": {
+                            "kind": "track",
+                            "name": "turn"
+                          }
+                        }
+                      ],
+                      "kind": "call",
+                      "name": "sin"
+                    }
+                  },
+                  "z": 2.3
+                },
+                "projection": {
+                  "fov": 0.6283185307179586,
+                  "height": 4.2,
+                  "kind": "perspective",
+                  "near": 0.2
+                },
+                "target": {
+                  "x": 0,
+                  "y": 0,
+                  "z": 0
+                },
+                "up": {
+                  "x": 0,
+                  "y": 0,
+                  "z": 1
+                }
+              },
+              "fill": {
+                "colour": {
+                  "a": 1,
+                  "b": 9,
+                  "g": 83,
+                  "name": "amber",
+                  "r": 180
+                }
+              },
+              "kind": "dot3",
+              "name": "middle",
+              "radius": 0.06
+            },
+            {
+              "camera": {
+                "eye": {
+                  "x": {
+                    "kind": "arithmetic",
+                    "left": 4.6,
+                    "operator": "*",
+                    "right": {
+                      "arguments": [
+                        {
+                          "kind": "arithmetic",
+                          "left": 6.283185307179586,
+                          "operator": "*",
+                          "right": {
+                            "kind": "track",
+                            "name": "turn"
+                          }
+                        }
+                      ],
+                      "kind": "call",
+                      "name": "cos"
+                    }
+                  },
+                  "y": {
+                    "kind": "arithmetic",
+                    "left": 4.6,
+                    "operator": "*",
+                    "right": {
+                      "arguments": [
+                        {
+                          "kind": "arithmetic",
+                          "left": 6.283185307179586,
+                          "operator": "*",
+                          "right": {
+                            "kind": "track",
+                            "name": "turn"
+                          }
+                        }
+                      ],
+                      "kind": "call",
+                      "name": "sin"
+                    }
+                  },
+                  "z": 2.3
+                },
+                "projection": {
+                  "fov": 0.6283185307179586,
+                  "height": 4.2,
+                  "kind": "perspective",
+                  "near": 0.2
+                },
+                "target": {
+                  "x": 0,
+                  "y": 0,
+                  "z": 0
+                },
+                "up": {
+                  "x": 0,
+                  "y": 0,
+                  "z": 1
+                }
+              },
+              "from": {
+                "x": 0,
+                "y": 0,
+                "z": 0.85
+              },
+              "kind": "arrow3",
+              "name": "normal",
+              "options": {
+                "head": 0.18,
+                "spread": 0.55,
+                "stroke": {
+                  "colour": {
+                    "a": 1,
+                    "b": 9,
+                    "g": 83,
+                    "name": "amber",
+                    "r": 180
+                  },
+                  "width": 0.03
+                }
+              },
+              "to": {
+                "x": 0,
+                "y": 0,
+                "z": 1.25
+              }
+            },
+            {
+              "at": {
+                "x": 0,
+                "y": 0,
+                "z": 1.25
+              },
+              "camera": {
+                "eye": {
+                  "x": {
+                    "kind": "arithmetic",
+                    "left": 4.6,
+                    "operator": "*",
+                    "right": {
+                      "arguments": [
+                        {
+                          "kind": "arithmetic",
+                          "left": 6.283185307179586,
+                          "operator": "*",
+                          "right": {
+                            "kind": "track",
+                            "name": "turn"
+                          }
+                        }
+                      ],
+                      "kind": "call",
+                      "name": "cos"
+                    }
+                  },
+                  "y": {
+                    "kind": "arithmetic",
+                    "left": 4.6,
+                    "operator": "*",
+                    "right": {
+                      "arguments": [
+                        {
+                          "kind": "arithmetic",
+                          "left": 6.283185307179586,
+                          "operator": "*",
+                          "right": {
+                            "kind": "track",
+                            "name": "turn"
+                          }
+                        }
+                      ],
+                      "kind": "call",
+                      "name": "sin"
+                    }
+                  },
+                  "z": 2.3
+                },
+                "projection": {
+                  "fov": 0.6283185307179586,
+                  "height": 4.2,
+                  "kind": "perspective",
+                  "near": 0.2
+                },
+                "target": {
+                  "x": 0,
+                  "y": 0,
+                  "z": 0
+                },
+                "up": {
+                  "x": 0,
+                  "y": 0,
+                  "z": 1
+                }
+              },
+              "content": "normal",
+              "kind": "text3",
+              "name": "says",
+              "options": {
+                "align": "middle",
+                "fill": {
+                  "colour": {
+                    "a": 1,
+                    "b": 9,
+                    "g": 83,
+                    "name": "amber",
+                    "r": 180
+                  }
+                },
+                "offset": {
+                  "x": 0,
+                  "y": 0.05
+                }
+              },
+              "size": 0.26
+            },
+            {
               "at": {
                 "x": 0,
                 "y": -2.07
