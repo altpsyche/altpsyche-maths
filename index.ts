@@ -42,6 +42,7 @@ export { clipTriangles, strokeTrianglesOf, triangleArea, trianglesOf } from './f
 export type { TriangleOptions } from './figure/triangles.js';
 export { readFont, shippedFont } from './figure/font.js';
 export { glyphPath } from './figure/glyph.js';
+export { outlineText, textAdvance, textOutlines, textWidth } from './figure/text-outline.js';
 export type { Font } from './figure/font.js';
 export { gpuFrame } from './figure/gpu-frame.js';
 export type { GpuFrame, GpuFrameOptions } from './figure/gpu-frame.js';

@@ -1507,12 +1507,15 @@ The suite is 1,372 tests over 91 files and the door is 217 values and 247 types.
       itself; a quadratic and the cubic it becomes agree to twelve places at eleven parameters over
       every segment of an `o`; `a` and `o` carry two contours and `é` carries one more than `e`, the
       same counts `fontTools` reads. 1,389 tests over 93 files.
-- [ ] **3. A label becomes outlines.** `textOutlines(marks, font)` turns each `TextMark` into a
-      `PathMark` carrying the label's glyphs at the mark's size, with its `align` and `baseline`
-      honoured and its fill, opacity and clip carried across, the way `outlinedMarks` already carries
-      a tapered stroke's. **Measurement:** the laid-out width of each of the demos' 74 labels against
-      the summed advances; the three `align` cases and the three `baseline` cases as offsets of that
-      width and of the font's own ascent; and the mark count before and after.
+- [x] **3. A label becomes outlines.** `textOutlines`, `outlineText`, `textWidth` and `textAdvance`.
+      A baseline is dropped by a metric the font declares rather than by a share of an em chosen by
+      eye: nothing for `alphabetic`, half the x-height of 536 for `middle`, the cap height of 714 for
+      `hanging`. **Measured:** all 74 of the demos' labels outline, none drawing nothing, 5,827 curves
+      in total, and no label's ink reaches past the advances that placed it, worst 0.000000 figure
+      units; the three `align` cases start the pen at the anchor, half a width back and a width back
+      to twelve places; the missing-glyph box keeps its outline, so a character the subset does not
+      cover draws a box rather than silence, which took the font from 15,148 bytes to 15,188. The
+      door is 224 values and 248 types. 1,401 tests over 94 files.
 - [ ] **4. The card draws the labels.** `gpuSurface` loads the font and `paintGpu` outlines the text
       before it builds the frame, so `gpuFrame` names no text mark as refused. **Measurement:** the
       refused count per figure, 74 across the eight before and the count after; the triangle count per

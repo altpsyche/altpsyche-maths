@@ -1417,8 +1417,9 @@ frame round a picture is a shape.
   each one, and `loca` and `glyf` for where each outline sits. A file whose version word is neither
   TrueType's nor `true` is refused by name, and so is a missing table.
 - `Font` — the `unitsPerEm` a glyph's coordinates are measured in, the `glyphCount`, the `ascent` and
-  `descent` of a line as positive numbers of font units, `glyphFor(codePoint)` and
-  `advanceOf(glyph)`, and the `bytes` and `outlines` a glyph reader takes.
+  `descent` of a line as positive numbers of font units, the `xHeight` and `capHeight` a baseline is
+  placed against, `glyphFor(codePoint)` and `advanceOf(glyph)`, and the `bytes` and `outlines` a
+  glyph reader takes.
 - `shippedFont()` — the typeface this package carries, which is Noto Sans subset to Latin-1 and the
   punctuation a figure writes, 15,148 bytes over 205 glyphs under the SIL Open Font License 1.1. The
   bytes are behind a call rather than an import at the top of a file, so a consumer who never draws a
@@ -1431,6 +1432,21 @@ frame round a picture is a shape.
   halfway between its last and its first, and a composite glyph is its components read and placed
   under their own two-by-two transforms. A glyph with no outline gives an empty path, which is what a
   space is.
+- `textAdvance(font, text)` — how far the pen walks across a label, in font units, which is its
+  glyphs' advances summed. There is no kerning in it and none in the shipped subset, which is what
+  lets a browser setting the same font with its kerning off put the same label in the same place.
+- `textWidth(font, text, size)` — the same walk in the figure's own units, at the size the label is
+  written at. A size is the em, so a label at twice the size is twice as wide.
+- `outlineText(mark, font)` — one `TextMark` as the `PathMark` its glyphs draw, or nothing where the
+  label draws no shape. The pen starts at the anchor and `align` moves it back by half the width or
+  by the whole of it; `baseline` drops it by a metric the font declares, nothing for `alphabetic`,
+  half the x-height for `middle` and the cap height for `hanging`. The glyphs are turned over, since
+  a font counts y up from the baseline and a figure counts it down. The mark's `family` and `weight`
+  are what a page's own painter reads and neither reaches this: the shipped typeface is the one face
+  a card has, so a label naming another family is drawn in it rather than left out.
+- `textOutlines(marks, font)` — every mark with its labels turned into the shapes that draw them, in
+  the order they were painted, the way `outlinedMarks` turns a tapered stroke into its fill. A label
+  that draws no shape is left out rather than kept as an empty path.
 - `gpuFrame(marks, view, options)` — a list of marks as `@altpsyche/engine`'s own `FrameGraph`, which
   is a value rather than a drawing. The geometry is triangles in clip space and the shade is a colour
   per vertex, so a mark's opacity is in its alpha and its clip is in its triangles, and the whole

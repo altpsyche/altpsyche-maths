@@ -35,6 +35,12 @@ export interface Font {
   readonly ascent: number;
   /** How far the bottom sits below it, as a positive number of font units. */
   readonly descent: number;
+  /** How tall a lower-case letter with no ascender stands, in font units, which
+   * is what a label centred on its own middle is centred on. */
+  readonly xHeight: number;
+  /** How tall a capital stands, in font units, which is where a label hung from
+   * its top hangs from. */
+  readonly capHeight: number;
   /** Which glyph draws a code point, and 0 where the font has none, which is the
    * missing-glyph box every TrueType font keeps at that index. */
   glyphFor(codePoint: number): number;
@@ -179,6 +185,13 @@ export function readFont(bytes: Uint8Array): Font {
   const advances: number[] = [];
   for (let index = 0; index < metrics; index += 1) advances.push(view.getUint16(hmtx.at + index * 4));
 
+  // The two heights sit in OS/2 from its second version onwards. A font written
+  // to an older version leaves them at the shares of an em they usually take.
+  const os2 = tableOf(tables, 'OS/2');
+  const version = view.getUint16(os2.at);
+  const xHeight = version >= 2 ? view.getInt16(os2.at + 86) : Math.round(unitsPerEm * 0.52);
+  const capHeight = version >= 2 ? view.getInt16(os2.at + 88) : Math.round(unitsPerEm * 0.7);
+
   const characters = unicodeCmap(view, tableOf(tables, 'cmap'));
   const outlines = locations(view, tableOf(tables, 'loca'), tableOf(tables, 'glyf'), glyphCount, longLoca);
 
@@ -187,6 +200,8 @@ export function readFont(bytes: Uint8Array): Font {
     glyphCount,
     ascent,
     descent,
+    xHeight,
+    capHeight,
     bytes,
     outlines,
     glyphFor: (codePoint) => characters.get(codePoint) ?? 0,

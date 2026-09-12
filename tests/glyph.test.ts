@@ -95,8 +95,10 @@ describe('glyphPath', () => {
       if (path.length === 0) empty += 1;
     }
     expect(read).toBe(205);
-    // The space and the two other glyphs the subset keeps with no outline.
-    expect(empty).toBe(3);
+    // The space and one other glyph the subset keeps with no outline. The
+    // missing-glyph box keeps its own, so a character the subset does not cover
+    // draws something a reader can see.
+    expect(empty).toBe(2);
   });
 
   it('reaches the four edges every glyph declares for itself', async () => {
@@ -110,7 +112,7 @@ describe('glyphPath', () => {
       for (let edge = 0; edge < 4; edge += 1) worst = Math.max(worst, Math.abs(drawn[edge] - declared[edge]));
       checked += 1;
     }
-    expect(checked).toBe(202);
+    expect(checked).toBe(203);
     // A flattening at a fiftieth of a font unit can only fall short of a curve's
     // far edge, and every edge here is a point the outline passes through, so the
     // two boxes are the same box.

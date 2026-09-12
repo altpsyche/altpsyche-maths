@@ -27,6 +27,9 @@ execFileSync('pyftsubset', [
   `--unicodes=${RANGES}`,
   '--layout-features=',
   '--no-hinting',
+  // The missing-glyph box keeps its outline, so a character the subset does not
+  // cover draws something a reader can see rather than nothing at all.
+  '--notdef-outline',
   '--desubroutinize',
   `--drop-tables+=${DROPPED}`,
   `--output-file=${subset}`,
