@@ -172,6 +172,10 @@ describe('gpuFrame', () => {
     const corners = vertices(built);
     // Half the square is cut away, so no vertex reaches the right of the middle.
     for (let at = 0; at * 6 < corners.length; at += 1) expect(corners[at * 6]).toBeLessThanOrEqual(0);
+    // A scissor is pass state, so a frame using one would carry a pass per run of
+    // marks sharing a box rather than one pass over every mark.
+    expect(built.frame.passes).toHaveLength(1);
+    expect(built.frame.passes[0]).not.toHaveProperty('scissor');
   });
 
   it('holds every mark in the order it was painted, which is what carries depth', () => {

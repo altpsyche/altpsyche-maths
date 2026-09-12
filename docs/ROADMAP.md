@@ -271,7 +271,9 @@ feature lands where it belongs and a workaround is not a landing. Six of the rea
 worked around inside `paint/gpu.ts` and `gates/gpu.mjs`: the painter translates WGSL to GLSL by hand,
 gathers the offering and selects a backend itself, builds a fresh canvas per figure, names a mark
 refused rather than blending it, cuts a rectangle into the geometry rather than naming a scissor, and
-the gate screenshots a canvas it cannot read back.
+the gate screenshots a canvas it cannot read back. **Two of those six are not workarounds and 2.9.0's
+planning is where that was read**: the gate has never screenshotted, and cutting the geometry places
+a clip edge where a scissor's whole pixels cannot.
 
 **The engine answered all six, in its 0.5.0 of 2026-09-12, and taking them out is 2.9.0.**
 `openRenderer` carries a backend selection through to a renderer and translates on the way, so the
@@ -1480,11 +1482,16 @@ sheet over 98.70 per cent of its pixels.
       canvases to 1; the redrawn figure 87.51 per cent equal against 87.51 with its worst channel 126
       against 126; the eight readings identical to step 3; and the drawing 300 milliseconds over the
       eight to 251, since one renderer holds one program cache across every figure.
-- [ ] **5. A scissor against a cut, decided by the reading.** The three clipped figures are drawn both
-      ways and compared with the SVG painter. The form that agrees is what the frame keeps, and the
-      form that loses is written down with its number. **Measurement:** `matrix`, `surface` and
-      `tangent` at their still times, equal share and within-8 share and worst channel under each
-      form, and the pass count, 8 over the eight figures against 12.
+- [x] **5. A scissor against a cut, decided by the reading.** The cut stays and the reading is what
+      says so, and the reading is not the one the plan named: two of the three clip boxes cannot be
+      written as a scissor at all, so there is no second picture to compare. A scissor is whole
+      pixels and the engine's validator refuses a rectangle that is not. **Measured:** across the
+      eight figures at their still times, `matrix`'s box runs from 94.2857 to 608.5714 pixels and
+      12.8571 to 527.1429, and `surface`'s from 230.6250 to 474.3750 and 356.2500 to 539.0625, so
+      rounding moves an edge by up to 0.4286 of a pixel and 0.3750; `tangent`'s box lands on whole
+      pixels at 668, 948, 12 and 138 and would round to itself. Cutting the geometry places each edge
+      exactly and leaves the four samples to resolve it, so the cut is the accurate form rather than
+      the workaround this row called it.
 - [ ] **6. The version is cut.** `package.json` reads 2.9.0, the done-criteria below are verified line
       by line, and the ladder's 2.9.0 row is deleted. **Measurement:** the eight figures' readings, the
       door's value and type counts, and the suite, type-check and build.
@@ -1504,7 +1511,8 @@ sheet over 98.70 per cent of its pixels.
    either side of the step and comparing its shares compares two different pictures.
 7. `paint/gpu.ts` calls `openRenderer` and names none of the five selection calls step 3 lists.
 8. `gates/gpu.mjs` makes one canvas for all eight figures.
-9. The scissor reading is in this file with both shares, and the frame keeps the form that agreed.
+9. The scissor reading is in this file with the pixel each box's edges fall on, and the frame keeps
+   the cut, which is the form that can place them.
 10. The per-frame translation that stays is written into the found list, in the sentence the engine's
     roadmap takes.
 11. The door is 217 values and 247 types, since this version takes nothing out of it and adds nothing

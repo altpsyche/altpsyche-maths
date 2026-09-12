@@ -110,7 +110,13 @@ function along(
 }
 
 /** One mark's triangles in the figure's own units, its fill and its stroke both,
- * with its clip already cut into them. */
+ * with its clip already cut into them.
+ *
+ * A scissor rectangle is the other way to clip and it draws a different picture:
+ * it is whole pixels, so a box whose edge falls between two of them is refused
+ * until it is rounded, and it keeps or drops a whole pixel where cutting the
+ * geometry lets the four samples resolve the clipped edge the way they resolve
+ * every other one. */
 function trianglesFor(mark: Mark, options: TriangleOptions): { corners: Vec2[]; fill: Fill }[] {
   if (mark.kind !== 'path') return [];
   const pieces: { corners: Vec2[]; fill: Fill }[] = [];
