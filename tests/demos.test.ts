@@ -122,10 +122,14 @@ import {
   THEME,
 } from '../demos/palette.js';
 import {
+  CENTRE as TURN_CENTRE,
+  EXTENT as TURN_EXTENT,
   FRAMES as TURN_FRAMES,
+  GESTURE_AT,
   GIVEN,
   LOCAL,
   OWN,
+  SWELL,
   SWING,
   TIMES as TURN_TIMES,
   TURN,
@@ -174,7 +178,7 @@ describe("every demo's view", () => {
       'turns',
       turns,
       [turns.still, durationOf(turns)],
-      [103.448276, 0, 0, 0, -103.448276, 0, 485.172414, 291.724138, 1],
+      [42.553191, 0, 0, 0, -42.553191, 0, 518.297872, 122.12766, 1],
     ],
   ];
 
@@ -1269,10 +1273,11 @@ describe('the rotation demo', () => {
     return mark;
   };
 
-  it('draws the same eight marks at every time', () => {
-    // Two panels of four, the pivot and the shape with the word riding it and the
-    // words underneath, and nothing arrives or leaves at any time.
-    for (const seconds of [0, ...TURN_FRAMES, TURN]) expect(marksAt(turns, seconds)).toHaveLength(8);
+  it('draws the same twenty marks at every time', () => {
+    // Two turns of four, the pivot and the shape with the word riding it and the
+    // caption underneath, then four gestures of three that carry no word, and
+    // nothing arrives or leaves at any time.
+    for (const seconds of [0, ...TURN_FRAMES, TURN]) expect(marksAt(turns, seconds)).toHaveLength(20);
   });
 
   it('lands where it began after the whole turn, which is why it declares a loop', () => {
@@ -1332,6 +1337,72 @@ describe('the rotation demo', () => {
     for (const seconds of [0, ...TURN_FRAMES, TURN]) expect(width(seconds)).toBe(0.04);
   });
 
+  it('swells the grown panel out and lets it back, about its own middle', () => {
+    const box = (seconds: number) => {
+      const bounds = boundsOfMarks(marksAt(turns, seconds).filter((mark) => mark.id === 'turns/bigger/rider/ell'));
+      if (!bounds) throw new Error('the grown shape is not drawn');
+      return { width: bounds.x.to - bounds.x.from, height: bounds.y.to - bounds.y.from, at: centreOf(bounds) };
+    };
+    const rest = box(0);
+    const widest = box(TURN / 2);
+    expect(widest.width / rest.width).toBeCloseTo(SWELL, 12);
+    expect(widest.height / rest.height).toBeCloseTo(SWELL, 12);
+    // The span back counts to the reciprocal, so the two halves are mirrors and
+    // the shape is its own size again at the end.
+    expect(box(TURN).width).toBeCloseTo(rest.width, 12);
+    expect(box((3 * TURN) / 4).width).toBeCloseTo(box(TURN / 4).width, 12);
+    for (const seconds of [0, TURN / 4, TURN / 2, TURN]) {
+      expect(box(seconds).at.x).toBeCloseTo(GESTURE_AT.bigger.x, 12);
+      expect(box(seconds).at.y).toBeCloseTo(GESTURE_AT.bigger.y, 12);
+    }
+  });
+
+  it('walks the L into the box round it and walks it back', () => {
+    const area = (seconds: number) => {
+      const mark = marksAt(turns, seconds).find((each) => each.id === 'turns/walked/rider/ell');
+      if (mark?.kind !== 'path') throw new Error('the walked shape is a path');
+      return areaOf(mark.path);
+    };
+    // The L is two arms of 1.2 by 0.4 and the box round it is 1.2 by 1.6, so the
+    // walk is a reading against two numbers this test states.
+    expect(area(0)).toBeCloseTo(0.96, 12);
+    expect(area(TURN / 2)).toBeCloseTo(1.92, 12);
+    expect(area(TURN)).toBeCloseTo(0.96, 12);
+    expect(area((3 * TURN) / 4)).toBeCloseTo(area(TURN / 4), 12);
+  });
+
+  it('crosses the rippled panel with a wave that is at rest at both ends', () => {
+    const top = (seconds: number) => {
+      const bounds = boundsOfMarks(marksAt(turns, seconds).filter((mark) => mark.id === 'turns/rippled/rider/ell'));
+      if (!bounds) throw new Error('the rippled shape is not drawn');
+      return bounds.y.to;
+    };
+    const rest = top(0);
+    expect(top(TURN)).toBe(rest);
+    let highest = rest;
+    for (let step = 0; step <= 600; step += 1) highest = Math.max(highest, top((TURN * step) / 600));
+    // A wave pushes a point by the amplitude at the middle of its band and by
+    // nothing at either edge, so the highest the shape reaches is that amplitude.
+    expect(highest - rest).toBeCloseTo(0.34, 5);
+  });
+
+  it('rocks the rocked panel and leaves it where it was', () => {
+    const corner = (seconds: number) => {
+      const mark = marksAt(turns, seconds).find((each) => each.id === 'turns/rocked/rider/ell');
+      if (mark?.kind !== 'path') throw new Error('the rocked shape is a path');
+      return mark.path[0].start;
+    };
+    const rest = corner(0);
+    expect(corner(TURN).x).toBeCloseTo(rest.x, 12);
+    expect(corner(TURN).y).toBeCloseTo(rest.y, 12);
+    let moved = 0;
+    for (let step = 0; step <= 600; step += 1) {
+      const now = corner((TURN * step) / 600);
+      moved = Math.max(moved, Math.hypot(now.x - rest.x, now.y - rest.y));
+    }
+    expect(moved).toBeGreaterThan(0.2);
+  });
+
   it('keeps every mark inside the frame it declares', () => {
     for (const seconds of [0, ...TURN_FRAMES, TURN]) {
       for (const mark of marksAt(turns, seconds)) {
@@ -1340,8 +1411,8 @@ describe('the rotation demo', () => {
             ? mark.path.flatMap((subpath) => [subpath.start, ...subpath.curves.map((piece) => piece.to)])
             : [mark.at];
         for (const point of points) {
-          expect(Math.abs(point.x)).toBeLessThanOrEqual(5.4);
-          expect(Math.abs(point.y)).toBeLessThanOrEqual(3);
+          expect(Math.abs(point.x - TURN_CENTRE.x)).toBeLessThanOrEqual(TURN_EXTENT.width / 2);
+          expect(Math.abs(point.y - TURN_CENTRE.y)).toBeLessThanOrEqual(TURN_EXTENT.height / 2);
         }
       }
     }
@@ -1390,7 +1461,7 @@ describe('the rotation strip', () => {
 
   it('carries every frame with no two marks sharing an id', () => {
     const { marks } = turnStripMarks(TURN_FRAMES, 2);
-    expect(marks).toHaveLength(8 * TURN_FRAMES.length);
+    expect(marks).toHaveLength(20 * TURN_FRAMES.length);
     expect(new Set(marks.map((mark) => mark.id)).size).toBe(marks.length);
   });
 

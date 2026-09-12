@@ -78,18 +78,24 @@ const written: GroupRecord = {
 
 const fromRecords: Figure = { ...turns, scene: resolveNode(written) };
 
+/** The demo's own marks for the two panels this file writes out by hand, which
+ * is what a record built here is compared against. The four gestures under those
+ * panels are not written here, so they are not read here either. */
+const theirs = (seconds: number) =>
+  marksAt(turns, seconds).filter((mark) => mark.id.startsWith('turns/own/') || mark.id.startsWith('turns/given/'));
+
 describe('a scene built from records', () => {
-  it('draws the rotation demo mark for mark at each frame of its strip', () => {
+  it('draws the rotation demo`s two turns mark for mark at each frame of its strip', () => {
     expect(FRAMES).toHaveLength(4);
     for (const seconds of FRAMES) {
-      const drawn = marksAt(turns, seconds);
+      const drawn = theirs(seconds);
       expect(drawn).toHaveLength(8);
       expect(sameMarks(marksAt(fromRecords, seconds), drawn)).toBe(true);
     }
   });
 
   it('gives every mark the id the tree gives it', () => {
-    expect(marksAt(fromRecords, 0).map((mark) => mark.id)).toEqual(marksAt(turns, 0).map((mark) => mark.id));
+    expect(marksAt(fromRecords, 0).map((mark) => mark.id)).toEqual(theirs(0).map((mark) => mark.id));
   });
 
   it('hands the family down from a group record the way the tree does', () => {

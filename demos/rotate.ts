@@ -1,5 +1,5 @@
 /**
- * The rotation demo: one shape turned a whole circle, about two different points.
+ * The span demo: one shape carried six ways over one span, two of them turns.
  *
  * A turn has no picture in a graph of a function, where nothing turns, and none
  * on a surface either, where an orbit turns the camera and a surface spinning in
@@ -16,9 +16,16 @@
  * and a label that stays readable while the thing it names turns is what a
  * figure wants anyway.
  *
+ * The row under the two turns is what else a span does to a flat list of marks:
+ * a swell out and back, a walk into another shape and back, a wave crossing the
+ * shape, and a rock in place. None of the four carries the riding word, since
+ * that word is there to show a label staying upright through a turn.
+ *
  * This is the first figure here to declare itself a loop. Nothing fades in and
  * nothing is driven by a track, so the picture at the end of the turn is the
- * picture at the start of it and a recording runs it round without a jump.
+ * picture at the start of it and a recording runs it round without a jump. Every
+ * gesture here has to end where it began for that to hold, which a wave and a
+ * rock do by construction and a swell and a walk do by being given a span back.
  */
 import {
   TEXT_RATIO,
@@ -31,6 +38,7 @@ import {
   type FigureRecord,
   type Mark,
   type NodeRecord,
+  type PathRecord,
   type Vec2,
 } from '../index.js';
 import { DEEP, EMBER, INK, PEACH } from './palette.js';
@@ -43,18 +51,23 @@ const wash = { colour: PEACH };
 const marker = { colour: EMBER };
 
 /**
- * Two panels across, and tall enough for the swing of the right one with the
- * word that rides round outside it.
+ * Two turns across the top and the four other gestures across the row under
+ * them, tall enough for the swing of the right turn with the word that rides
+ * round outside it.
  *
  * The frame is shaped and placed from what the picture reaches over the whole
- * turn, which is x -4.44 to 5.51 and y -2.83 to 2.77 once the captions and the
+ * turn, which is x -4.44 to 5.46 and y -11.12 to 2.75 once every caption and the
  * riding word are counted at their own sizes. It is off the origin because only
- * the right panel swings, so the marks stand further right than left, and a
- * frame centred on the origin would leave the whole of that difference bare down
- * the left edge.
+ * the right turn swings and only the rows below reach down, so a frame centred
+ * on the origin would leave the whole of both differences bare down two edges.
+ *
+ * It is the width it was before the four gestures were added, since the rows are
+ * two across rather than four. That width is what sets how big a glyph reads on
+ * the page, and this figure's type is pinned to a reading rather than to a
+ * number.
  */
-export const CENTRE = vec2(0.53, -0.08);
-const extent: Extent = { width: 10.15, height: 5.8, centre: CENTRE };
+export const CENTRE = vec2(0.51, -4.18);
+export const EXTENT: Extent = { width: 10.15, height: 14.1, centre: CENTRE };
 
 /**
  * The shape, written about its own box centre.
@@ -103,37 +116,50 @@ export const OWN = vec2(-PANEL, SHAPE_Y);
 export const GIVEN = vec2(PANEL, SHAPE_Y);
 export const SWING = 1.6;
 
-function panel(name: string, pivot: Vec2, swing: number, label: string): NodeRecord {
+/**
+ * Where the four panels below the turns stand, and what each one is called.
+ *
+ * Two to a row rather than four, because a caption is what sets how much room a
+ * panel needs and every one of these is wider than the shape it names. Four
+ * across left each caption lying over its neighbours, and two across gives every
+ * one of them the whole 5.2 between the columns. None of the four carries the
+ * riding word: that word is there to show a label staying upright through a turn,
+ * and under a swell or a ripple it says nothing.
+ */
+const ROW = { swell: -5.4, ripple: -9.4 };
+const CAPTION = { swell: -7, ripple: -11 };
+
+function panel(name: string, pivot: Vec2, swing: number, label: string, captionY: number, word?: string): NodeRecord {
   const centre = vec2(pivot.x + swing, pivot.y);
+  const shape: NodeRecord = {
+    kind: 'shape',
+    name: 'ell',
+    path: { kind: 'polygon', points: LOCAL.map((point) => vec2.add(point, centre)) },
+    style: { fill: wash, stroke: edge },
+  };
+  const rides: readonly NodeRecord[] = word
+    ? [
+        shape,
+        {
+          kind: 'text',
+          name: 'word',
+          at: vec2.add(centre, RIDER),
+          content: word,
+          size: TEXT.label,
+          options: { fill: ink, align: 'middle' },
+        },
+      ]
+    : [shape];
   return {
     kind: 'group',
     name,
     children: [
       { kind: 'dot', name: 'pivot', at: pivot, radius: 0.07, fill: marker },
-      {
-        kind: 'group',
-        name: 'rider',
-        children: [
-          {
-            kind: 'shape',
-            name: 'ell',
-            path: { kind: 'polygon', points: LOCAL.map((point) => vec2.add(point, centre)) },
-            style: { fill: wash, stroke: edge },
-          },
-          {
-            kind: 'text',
-            name: 'word',
-            at: vec2.add(centre, RIDER),
-            content: 'upright',
-            size: TEXT.label,
-            options: { fill: ink, align: 'middle' },
-          },
-        ],
-      },
+      { kind: 'group', name: 'rider', children: rides },
       {
         kind: 'text',
         name: 'label',
-        at: vec2(pivot.x, LABEL_Y),
+        at: vec2(pivot.x, captionY),
         content: label,
         size: TEXT.note,
         options: { fill: ink, align: 'middle' },
@@ -142,15 +168,60 @@ function panel(name: string, pivot: Vec2, swing: number, label: string): NodeRec
   };
 }
 
+/** The four gestures under the turns, each in the column the turn above it
+ * stands in. */
+const GESTURES = [
+  { name: 'bigger', label: 'grown and back', at: vec2(-PANEL, ROW.swell), caption: CAPTION.swell },
+  { name: 'walked', label: 'walked into its box', at: vec2(PANEL, ROW.swell), caption: CAPTION.swell },
+  { name: 'rippled', label: 'a wave across it', at: vec2(-PANEL, ROW.ripple), caption: CAPTION.ripple },
+  { name: 'rocked', label: 'rocked in place', at: vec2(PANEL, ROW.ripple), caption: CAPTION.ripple },
+] as const;
+
+export const GESTURE_AT = Object.fromEntries(GESTURES.map((one) => [one.name, one.at])) as Record<
+  (typeof GESTURES)[number]['name'],
+  Vec2
+>;
+
+/**
+ * The shape the walked panel is walked into: the box round the L, written with
+ * the six points the L has and in the same order.
+ *
+ * A walk pairs the points of one path with the points of another by their place
+ * in the list, so two paths of one count walk corner to corner and nothing is
+ * resampled on the way. A target whose corners run in a different order round
+ * the middle crosses those pairings, and the shape halfway along collapses: the
+ * L walked into a hexagon of its own size stood 0.56 tall at the half against
+ * the 1.60 it starts at. The box keeps three of the L's corners where they are
+ * and opens the other three out to the edge, so nothing crosses.
+ */
+const BOX: readonly Vec2[] = [
+  vec2(-0.6, -0.8),
+  vec2(0.6, -0.8),
+  vec2(0.6, 0),
+  vec2(0.6, 0.8),
+  vec2(0, 0.8),
+  vec2(-0.6, 0.8),
+];
+
 export const scene: NodeRecord = {
   kind: 'group',
   name: 'turns',
-  children: [panel('own', OWN, 0, 'about its centre'), panel('given', GIVEN, SWING, 'about a given point')],
+  children: [
+    panel('own', OWN, 0, 'about its centre', LABEL_Y, 'upright'),
+    panel('given', GIVEN, SWING, 'about a given point', LABEL_Y, 'upright'),
+    ...GESTURES.map((one) => panel(one.name, one.at, 0, one.label, one.caption)),
+  ],
   style: TYPE,
 };
 
 /** How long the whole circle takes. */
 export const TURN = 6;
+
+/** How big the swelling panel gets at the half, and the two paths the walked
+ * panel steps between, each written as the record a shape is drawn from. */
+export const SWELL = 1.34;
+const ell: PathRecord = { kind: 'polygon', points: LOCAL.map((point) => vec2.add(point, GESTURE_AT.walked)) };
+const box: PathRecord = { kind: 'polygon', points: BOX.map((point) => vec2.add(point, GESTURE_AT.walked)) };
 
 /**
  * Both panels turn together, at one pace.
@@ -160,13 +231,43 @@ export const TURN = 6;
  * read as a stutter once a second time round.
  */
 export const written: FigureRecord = {
-  extent,
+  extent: EXTENT,
   scene,
   timeline: {
     spans: [
       { entry: { kind: 'rotate', target: 'turns/own/rider', angle: 2 * Math.PI }, from: 0, to: TURN, curve: 'linear' },
       {
         entry: { kind: 'rotate', target: 'turns/given/rider', angle: 2 * Math.PI, options: { pivot: GIVEN } },
+        from: 0,
+        to: TURN,
+        curve: 'linear',
+      },
+      // A swell and a walk each need a span out and a span back, since both end
+      // their own span where they were sent rather than where they started, and
+      // this figure draws the same picture at the end of the turn as at the
+      // start of it. A wave and a rock are at rest at both ends already.
+      { entry: { kind: 'scale', target: 'turns/bigger/rider/ell', to: SWELL }, from: 0, to: TURN / 2 },
+      // The span back counts to the reciprocal, since a scale multiplies the
+      // marks it is handed and the span before it left them at the swell.
+      { entry: { kind: 'scale', target: 'turns/bigger/rider/ell', to: 1 / SWELL }, from: TURN / 2, to: TURN },
+      {
+        entry: { kind: 'morph', target: 'turns/walked/rider/ell', into: box },
+        from: 0,
+        to: TURN / 2,
+      },
+      {
+        entry: { kind: 'morph', target: 'turns/walked/rider/ell', into: ell },
+        from: TURN / 2,
+        to: TURN,
+      },
+      {
+        entry: { kind: 'wave', target: 'turns/rippled/rider/ell', options: { amplitude: 0.34, covers: 0.45 } },
+        from: 0,
+        to: TURN,
+        curve: 'linear',
+      },
+      {
+        entry: { kind: 'wiggle', target: 'turns/rocked/rider/ell', options: { factor: 1.22, angle: 0.16, rocks: 3 } },
         from: 0,
         to: TURN,
         curve: 'linear',
@@ -190,7 +291,7 @@ export const turns: Figure = resolveFigure(written);
  * as a row of four panels.
  */
 export const SLOT = 14;
-export const DOWN = 6.6;
+export const DOWN = 14.6;
 
 /**
  * Several times of one figure laid out together, as one list of marks, each

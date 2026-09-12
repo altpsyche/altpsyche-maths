@@ -23,7 +23,7 @@ describe('a figure built from one record', () => {
     expect(FRAMES).toHaveLength(4);
     for (const seconds of [...FRAMES, turns.still]) {
       const drawn = marksAt(turns, seconds);
-      expect(drawn).toHaveLength(8);
+      expect(drawn).toHaveLength(20);
       expect(sameMarks(marksAt(built, seconds), drawn)).toBe(true);
     }
   });
@@ -78,10 +78,10 @@ describe('a figure built from one record', () => {
     });
     const own = marksAt(resolveFigure(turning), 0);
     const withPanel = marksAt(built, 0);
-    // Six of the figure's eight marks reach the panel, since it shows a window
+    // Ten of the figure's twenty marks reach the panel, since it shows a window
     // two units by one and a mark clear of that window is not copied into it.
-    expect(own).toHaveLength(8);
-    expect(withPanel).toHaveLength(14);
+    expect(own).toHaveLength(20);
+    expect(withPanel).toHaveLength(30);
     for (const mark of withPanel.slice(own.length)) {
       expect(mark.id.startsWith('panel/')).toBe(true);
       expect(mark.clip).toEqual(rectangle);

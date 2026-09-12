@@ -1644,7 +1644,7 @@ door is 226 values and 250 types. `npm run gate:gpu` draws all eight above both 
         way, agreeing over 97.54 per cent of them with its labels against 97.55 and 98.28 without
         them either way. `npm run gate:record` writes 32 of 32, each portrait file holding 222 frames
         against 162. 1,425 tests over 94 files to 1,426.
-  - [ ] **6b. The turn demo shows what else a span does to a shape.** `scale`, `morph`, `wave` and
+  - [x] **6b. The turn demo shows what else a span does to a shape.** `scale`, `morph`, `wave` and
         `wiggle` beside the two turns. **This was two steps and is one, on 2026-09-13.** `wave` was
         to go in the flat demo beside the four indications it already drives, and `wave` pushes the
         points of a path: the parabola there has a shaded area drawn under it and a field of slopes
@@ -1655,8 +1655,22 @@ door is 226 values and 250 types. `npm run gate:gpu` draws all eight above both 
         needs a span out and one back, and `morph` needs a second span walking the shape into the one
         it started as, since a morph reads the marks it is handed. **The call this commit makes** is
         whether the demo keeps the name `rotate` once it draws four things rather than one.
-        **Measurement:** the figure's marks at its frame times, the reading that says it is still a
-        loop, and the sheets' bytes.
+        **Measured:** 20 marks at every named time against 8, and the figure is still a loop to 1e-9.
+        The swell reaches 1.34 of the shape's own width and height at the half and is back to 1.000
+        at the end, both within 1e-12, and its middle never leaves the panel's own place. The walk
+        takes the L from an area of 0.96 to 1.92, which is the rectangle round it, and back to 0.96,
+        each within 1e-12; the two quarters read the same. The wave lifts the outline by 0.34000,
+        which is the amplitude it is given, and leaves it where it was at both ends. The rock moves a
+        corner 0.29 at its widest and returns it within 1e-12. The frame is 10.15 by 14.1 against
+        10.15 by 5.8, so the smallest glyph still reads 21.0 pixels on the page and the flat demo's
+        21.33 is still the largest. The record is 8,257 bytes to 22,789, the still 23,764 to 27,396
+        and the strip 31,566 to 47,089. `npm run gate:gpu` draws all eight above both floors,
+        `rotate` at 20 marks and 3,642 triangles against 8 and 1,535, 3.5 per cent of its pixels
+        inked against 6.4, agreeing over 98.26 per cent of them with its labels against 97.06 and
+        99.69 without them against 99.69. `npm run gate:record` writes 32 of 32, each rotate file
+        holding 180 frames as before. 1,426 tests over 94 files to 1,430.
+        **The name stays `rotate`,** and the demo now draws four things that are not turns, so the
+        name under-describes it. Renaming is its own finding and is queued below.
 - [ ] **7. The version is cut.** `package.json` reads 2.11.0, the done-criteria below are verified
       line by line, and the ladder's 2.11.0 row is deleted. **Measurement:** both gates' readings,
       the door's counts, and the suite, type-check and build.
@@ -1689,6 +1703,14 @@ are what makes the pictures right and steps 3 to 6 are what makes them complete.
 12. The ladder's 2.11.0 row is deleted and the Now section carries what the version landed.
 
 ## Found while working, not yet queued
+
+- **The span demo is still called `rotate`.** It draws two turns, a swell, a walk into another
+  shape, a wave and a rock, and a reader meets the name before the picture. **What closes it** is a
+  rename of `demos/rotate.ts`, `demos/rotate.figure.json`, `docs/rotate.svg` and
+  `docs/rotate-strip.svg`, with the references in `demos/render.ts`, `tests/demos.test.ts`,
+  `docs/SPECIFICATION.md`, the README and the guide following. The figure's own root is `turns`,
+  which is the same question one level down. Nothing measures worse for the name being wrong, so this
+  is a reading of the writing rather than of the picture, and it is one commit.
 
 - **The guide carries 3,696,150 bytes of pictures over fourteen images**, of which `solids-strip.svg`
   is 1,381,130 and `surface-strip.svg` 624,371. A strip is that big because it draws every cell of

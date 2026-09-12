@@ -216,7 +216,7 @@ describe('the rotation demo as a committed file', () => {
     const read = readFigure(committed);
     for (const seconds of [...FRAMES, turns.still]) {
       const drawn = marksAt(turns, seconds);
-      expect(drawn).toHaveLength(8);
+      expect(drawn).toHaveLength(20);
       expect(sameMarks(marksAt(read, seconds), drawn)).toBe(true);
     }
   });
@@ -272,7 +272,7 @@ describe('a figure read back from a file', () => {
     expect(FRAMES).toHaveLength(4);
     for (const seconds of [...FRAMES, turns.still]) {
       const drawn = marksAt(turns, seconds);
-      expect(drawn).toHaveLength(8);
+      expect(drawn).toHaveLength(20);
       expect(sameMarks(marksAt(read, seconds), drawn)).toBe(true);
     }
   });

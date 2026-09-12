@@ -422,12 +422,20 @@ first derivative is larger.
 unless the figure names one. It is read from the marks as they arrive rather than after the turn has
 moved them.
 
-<img src="rotate.svg" width="720" alt="Two panels side by side, each an L-shaped block turned part way round with a dot marking the point it turns about.">
+<img src="rotate.svg" width="720" alt="Six panels in three rows of two: an L-shaped block turned about its own middle and about a given point, then the same block grown, walked into the rectangle round it, crossed by a wave and rocked off square.">
 
 A rotation does not thicken a line. A stroke width is multiplied by the transform's scale factor,
 which for a rotation is one.
 
-<img src="rotate-strip.svg" width="820" alt="Four frames in two rows, each showing both panels, at nothing, a quarter, a half and three quarters of the way round.">
+The four panels under the turns are the rest of what a span does to a flat list of marks. `scale`
+multiplies the marks it is handed about a pivot, so a swell that comes back counts to the reciprocal
+of the swell rather than to one. `morph` walks a path into another path by pairing their points in
+order, so two paths of one count walk corner to corner: the L here walks into the rectangle round it,
+which keeps three of its corners where they are. `wave` pushes every point of a path along a
+direction, by a band that crosses the marks over the span and pushes nothing at either edge of
+itself. `wiggle` swells and rocks about a pivot and is at nothing at both ends of its span.
+
+<img src="rotate-strip.svg" width="820" alt="Four frames in two rows, each showing all six panels, at nothing, a quarter, a half and three quarters of the way round.">
 
 The quarters of the turn. The full turn is omitted, since this figure declares itself a loop and its
 frame at the duration is its frame at zero.

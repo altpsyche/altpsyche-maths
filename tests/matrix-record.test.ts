@@ -127,7 +127,7 @@ describe('the three kinds through the checker', () => {
   it('refuses a map whose matrix is not nine numbers', () => {
     const short = { ...entry, matrix: [1, 0, 0, 0, 1, 0] };
     expect(() => checkFigure(JSON.parse(JSON.stringify(carrying(node, short))))).toThrow(
-      'timeline.spans.2.entry.matrix is a list of 9 and holds 6',
+      'timeline.spans.8.entry.matrix is a list of 9 and holds 6',
     );
   });
 
