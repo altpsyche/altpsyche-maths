@@ -83,7 +83,7 @@ describe('a walk of the flat demo', () => {
       );
       // The tangent is one of the fills rather than one of the strokes, since a
       // stroke of two widths is drawn as the filled outline of its own path.
-      expect(counted.fills).toBe(44);
+      expect(counted.fills).toBe(86);
       expect(counted.strokes).toBe(93);
       expect(counted.texts).toBe(12);
       // Every mark is one element and one drawing call, so the two painters

@@ -1514,13 +1514,26 @@ door is 226 values and 250 types. `npm run gate:gpu` draws all eight above both 
       sheets were shown and 16 are, and every source the guide names is a sheet this tree writes. The
       README carries 8 pictures over 856,583 bytes and the guide 14 over 3,696,150, of which
       `solids-strip.svg` is 1,381,130 and `surface-strip.svg` 624,371. 1,411 tests over 94 files.
-- [ ] **3. The flat demo measures the area it shades.** `riemannBars` under the parabola, refining as
-      the walk runs, with a `numberLine` carrying the reading. **Measurement:** the demo's marks at
-      named times before and after, and the bars' total area against the integral the shading
-      already draws.
-- [ ] **4. A figure points at what it is talking about.** `arrow` and `callout` in the flat demo, and
-      `table` beside the matrix demo's map. **Measurement:** the three demos' marks at named times,
-      and the table's columns against the matrix's own numbers.
+- [x] **3. The flat demo measures the area it shades.** Three runs of `riemannBars` stand under the
+      parabola over the same interval, at six bars, twelve and twenty-four, each arriving as the one
+      before it leaves while the dot walks. A bar is filled and not outlined, so it stays one mark,
+      one drawing call and one element, and what a reader sees between a bar's top and the curve is
+      the wash the sum is short by. **The number line moved to step 4 and this is where that was
+      read:** the flat figure's bands are taken, the top by the reading, the rule and the lens and
+      the strip under the graph by the axis labels, so a line drawn in either would stand on
+      something. **Measured:** the demo draws 191 marks at every time against 149, the 42 being the
+      three runs, and its inset 35 to 53 against 34 to 43; the file is 408,625 bytes against 404,014.
+      The drawn rectangles carry the sum a reader could work out: 6.875 graph units at six bars,
+      7.90625 at twelve and 8.445313 at twenty-four against the 9 the shaded region holds, each
+      within 1.776e-15 of the closed form, so what is left over is 2.125, then 1.09375, then
+      0.554688. The frame is 1,577 triangles against 1,489. 1,412 tests over 94 files.
+- [ ] **4. A figure points at what it is talking about, and reads one number off a line.** `arrow`
+      and `callout` in the flat demo, and `table` and `numberLine` beside the matrix demo's map. The
+      line carries the determinant, which is the area of the parallelogram that demo already draws,
+      and the matrix figure has the band for it: its panel stops at the reach and its captions sit at
+      -3.5, where the flat figure has no band left. **Measurement:** the two demos' marks at named
+      times, the table's columns against the matrix's own numbers, and the place the line's marker
+      stands at against the determinant of the map at that time.
 - [ ] **5. The solid demo writes its space nodes the short way.** `arrow3`, `dot3`, `polyline3`,
       `text3`, `curve3`, `surface3`, `vectorField3` and the four solids in the spelling that takes a
       camera. **Measurement:** the marks each spelling draws against the marks the cell spelling

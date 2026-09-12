@@ -193,8 +193,8 @@ describe('the demos cut into triangles', () => {
   it('covers every fill of the flat demo to its own area', () => {
     const cut = cutting(marksAt(tangent, 5));
     expect(cut.rules).toEqual(['nonzero']);
-    expect(cut.fills).toBe(48);
-    expect(cut.triangles).toBe(1056);
+    expect(cut.fills).toBe(97);
+    expect(cut.triangles).toBe(1142);
     // The area a fill rule encloses and the area its triangles cover are the
     // same number to a part in ten thousand of a millionth of a figure unit.
     expect(cut.worst).toBeLessThan(1e-10);
@@ -482,10 +482,10 @@ describe('the demos clipped', () => {
     const cut = clipping(marksAt(tangent, 5));
     // Twelve of the forty carry text, which has no outline until a card has a
     // source of glyphs.
-    expect(cut.clipped).toBe(42);
-    expect(cut.paths).toBe(30);
-    expect(cut.before).toBe(321);
-    expect(cut.after).toBe(248);
+    expect(cut.clipped).toBe(49);
+    expect(cut.paths).toBe(37);
+    expect(cut.before).toBe(329);
+    expect(cut.after).toBe(258);
     expect(cut.worst).toBeLessThan(1e-9);
   });
 

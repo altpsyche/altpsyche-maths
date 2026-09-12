@@ -82,7 +82,19 @@ import {
   stripMarks as solidStripMarks,
 } from '../demos/surface.js';
 import { descents, eyeAt, saddle, section } from './solid-forms.js';
-import { FIELD, FRAMES, TIMES, coords, curve, slopeField, stripMarks, tangent, walk } from '../demos/tangent.js';
+import {
+  BARS,
+  FIELD,
+  FRAMES,
+  TIMES,
+  barsSum,
+  coords,
+  curve,
+  slopeField,
+  stripMarks,
+  tangent,
+  walk,
+} from '../demos/tangent.js';
 import {
   AMBER,
   CREAM,
@@ -498,19 +510,46 @@ describe('the flat demo', () => {
     }
   });
 
-  it('draws the same 149 marks at every time, and an inset of between 34 and 43', () => {
-    // Forty-two of the 149 are the field's twenty-one arrows, fifteen the two
-    // rules, two the inset's own panel and one the light that runs along the
-    // tangent, which is in the list at every time and holds no path outside its
-    // own span. Nothing arrives or leaves part way through, so every time alike. What the inset draws is not: it magnifies a
-    // window that moves, so what falls inside the window changes as the dot walks.
+  it('draws the same 191 marks at every time, and an inset of between 35 and 53', () => {
+    // Forty-two of the 191 are the three runs of bars, which are all in the list
+    // whichever one is showing, another forty-two the field's twenty-one arrows,
+    // fifteen the two rules, two the inset's own panel and one the light that runs
+    // along the tangent, which is in the list at every time and holds no path
+    // outside its own span. Nothing arrives or leaves part way through, so every
+    // time alike. What the inset draws is not: it magnifies a window that moves,
+    // so what falls inside the window changes as the dot walks.
     for (const seconds of [0, ...FRAMES, durationOf(tangent)]) {
       const marks = marksAt(tangent, seconds);
       const lens = marks.filter((mark) => mark.id.startsWith('tangent/lens/'));
-      expect(marks.length - lens.length).toBe(149);
-      expect(lens.length).toBeGreaterThanOrEqual(34);
-      expect(lens.length).toBeLessThanOrEqual(43);
+      expect(marks.length - lens.length).toBe(191);
+      expect(lens.length).toBeGreaterThanOrEqual(35);
+      expect(lens.length).toBeLessThanOrEqual(53);
     }
+  });
+
+  it('stands each run of bars under the curve at the area its own sum comes to', () => {
+    // The bars are read against the shaded region rather than against a number of
+    // figure units, since both are the same integral drawn two ways: the region
+    // is the 9 the curve encloses over the run and each run of bars is the sum a
+    // reader could work out from the rectangles in front of them.
+    const marks = marksAt(tangent, durationOf(tangent));
+    const region = marks.find((mark) => mark.id === 'tangent/area');
+    if (region?.kind !== 'path') throw new Error('the shaded region is a path');
+    const shaded = Math.abs(areaOf(region.path));
+    for (const count of BARS) {
+      const bars = marks.filter((mark) => mark.id.startsWith(`tangent/bars${count}/`));
+      expect(bars).toHaveLength(count);
+      const drawn = bars.reduce(
+        (total, mark) => total + (mark.kind === 'path' ? Math.abs(areaOf(mark.path)) : 0),
+        0
+      );
+      expect((drawn / shaded) * 9).toBeCloseTo(barsSum(count), 12);
+    }
+    // Read at the left edge under a curve that climbs, so every run is short, and
+    // halving the width of a bar takes very nearly half of what is left away.
+    const short = BARS.map((count) => 9 - barsSum(count));
+    expect(short).toEqual([2.125, 1.09375, 0.5546875]);
+    for (let at = 1; at < short.length; at += 1) expect(short[at - 1] / short[at]).toBeGreaterThan(1.94);
   });
 
   it('drops a dashed guide from the dot to each axis, with its foot on that axis', () => {
@@ -909,10 +948,10 @@ describe('the flat demo', () => {
 describe('the strip of frames', () => {
   it('carries every frame with no two marks sharing an id', () => {
     const { marks } = stripMarks(FRAMES);
-    // Four frames of 149 own marks, and the four insets between them draw 150:
+    // Four frames of 191 own marks, and the four insets between them draw 179:
     // each magnifies a window that has moved, so no two of them hold the same
     // number of marks.
-    expect(marks).toHaveLength(149 * FRAMES.length + 150);
+    expect(marks).toHaveLength(191 * FRAMES.length + 179);
     expect(new Set(marks.map((mark) => mark.id)).size).toBe(marks.length);
   });
 

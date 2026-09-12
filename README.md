@@ -25,7 +25,7 @@ A **painter** consumes marks. `viewMatrix` builds the single affine transform ta
 a surface of a given size. It inverts the y axis, since a figure counts upward and both painters
 count downward from the top. No conversion to device units occurs anywhere else.
 
-<img src="https://raw.githubusercontent.com/altpsyche/altpsyche-maths/master/docs/tangent.svg" width="720" alt="A parabola on a labelled grid over a field of small blue arrows, the region under it shaded to a point on the curve, the tangent at that point drawn, a dashed guide dropped from the point to each axis, and the slope written as a number under the typeset rule it comes from.">
+<img src="https://raw.githubusercontent.com/altpsyche/altpsyche-maths/master/docs/tangent.svg" width="720" alt="A parabola on a labelled grid over a field of small blue arrows, the region under it shaded to a point on the curve, twenty-four pale blue bars standing under the curve in a staircase with the shaded wash showing between their tops and the curve, the tangent at that point drawn, a dashed guide dropped from the point to each axis, and the slope written as a number under the typeset rule it comes from.">
 
 The figure above is evaluated at t = 7.86 s of a 10.25 s duration. Its extent is 10.8 by 6 units and
 its marks number 186 there, counting the inset it draws.

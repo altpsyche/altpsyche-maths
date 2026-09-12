@@ -299,7 +299,7 @@ pointOf(coords, 2, 4);
 axis at a time, in either direction. The mapping is a value the caller holds rather than state read
 back out of a drawn group, so a curve drawn over axes that were never drawn works.
 
-<img src="tangent.svg" width="720" alt="A parabola on a labelled grid, the region under it shaded to a point on the curve, the tangent at that point drawn, and the slope written as a number under the typeset rule it comes from.">
+<img src="tangent.svg" width="720" alt="A parabola on a labelled grid, the region under it shaded to a point on the curve, twenty-four pale blue bars standing under the curve in a staircase, the tangent at that point drawn, and the slope written as a number under the typeset rule it comes from.">
 
 `numberPlane` draws the grid, `axes` draws both axes with their arrow heads, and `numberLine` draws
 one axis alone. A **tick** is one mark along an axis together with the number it stands for.
@@ -324,7 +324,10 @@ rather than drawing a line across the picture.
 
 `areaUnder` closes the region between a plotted curve and a level line, taking the path the caller
 drew, so the region's top and the curve are one geometry. `riemannBars` draws the bars whose limit
-that region is. `tangentAt` clips the tangent line to the graph analytically, since a straight line
+that region is, each read at its own left edge, right edge or middle. The flat demo above draws three
+runs of them over the same interval, at six bars, twelve and twenty-four, read at the left edge: they
+sum to 6.875, 7.90625 and 8.445313 of the 9 the region holds, so halving the width of a bar takes
+very nearly half of what is left over away. `tangentAt` clips the tangent line to the graph analytically, since a straight line
 crosses each edge once. All three readers take the plotted path rather than the function behind it:
 `slopeOf` reads the slope off the cubic covering the x it is asked for, and hands back `NaN` where
 the curve does not reach that x.
@@ -394,7 +397,7 @@ const timeline = Timeline.empty()
 `play` runs one animation after the previous span. `together` runs several over one span. `stagger`
 offsets a row of them so the parts arrive in succession.
 
-<img src="tangent-strip.svg" width="820" alt="Four frames of the same figure in two rows, the point walking up the curve over the field of slope arrows with a dashed guide to each axis following it, the shaded region growing behind it, and a brace measuring the rise in the last frame.">
+<img src="tangent-strip.svg" width="820" alt="Four frames of the same figure in two rows, the point walking up the curve over the field of slope arrows with a dashed guide to each axis following it, the shaded region growing behind it, a run of pale blue bars under the curve that is finer in each frame, and a brace measuring the rise in the last frame.">
 
 Four times of one figure. A moving picture needs a GIF and this package has no encoder, so a still
 shows motion as a strip: several times of one figure laid out side by side. Every strip on this page

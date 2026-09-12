@@ -59,7 +59,7 @@ describe('the timeline as data', () => {
 
   it('reads the flat demo thirty-two spans as numbers rather than as the calls that made them', () => {
     const spans = tangent.timeline!.spans;
-    expect(spans).toHaveLength(32);
+    expect(spans).toHaveLength(37);
     // Its entrance is everything up to the walk, which is where the first span
     // that starts after the entrance has finished begins.
     const entrance = spans.filter((span) => span.from < 3.5);

@@ -62,7 +62,7 @@ import {
   type Track,
   type Vec2,
 } from '../index.js';
-import { AMBER, CREAM, DEEP, EMBER, HAZE, INK, MIST, PANEL, PEACH, STEEL } from './palette.js';
+import { AMBER, CREAM, DEEP, EMBER, GLAZE, HAZE, INK, MIST, PANEL, PEACH, STEEL } from './palette.js';
 import { stripOf } from './strip.js';
 import { TYPE } from './typeface.js';
 import { ADVANCE } from './cover.js';
@@ -205,6 +205,51 @@ const wash: Fill = {
     ],
   },
 };
+
+/**
+ * The three runs of bars under the curve, each twice as fine as the one before
+ * it, and where each one stands.
+ *
+ * Every run is read at its own left edge, which is the reading that is always
+ * short under a curve climbing the way this one does. Six bars sum to 6.875
+ * against the 9 the region holds, twelve to 7.90625 and twenty-four to 8.445313,
+ * so what is left over is 2.125, then 1.09375, then 0.554688, and halving the
+ * width of a bar takes very nearly half of it away.
+ */
+export const BARS = [6, 12, 24] as const;
+const BARS_OVER = { from: 0, to: 3 };
+
+/** What the sum of a run of bars read at its left edges is, which is the sum a
+ * reader could work out from the drawn rectangles. */
+export const barsSum = (count: number): number => {
+  const step = (BARS_OVER.to - BARS_OVER.from) / count;
+  let total = 0;
+  for (let bar = 0; bar < count; bar += 1) total += curve(BARS_OVER.from + bar * step) * step;
+  return total;
+};
+
+/**
+ * The bars are painted over the wash and under the curve, and they are opaque.
+ *
+ * What a translucent bar would show is the wash it stands on, and what an opaque
+ * one leaves showing is the wash between its top and the curve, which is what
+ * the sum is short by. So the picture a reader is looking at is the error
+ * itself.
+ *
+ * A bar is filled and not outlined, so it is one mark, one drawing call and one
+ * element the way every other mark in this figure is. What tells one bar from
+ * the next is the step at its top, since two bars of one colour meeting along a
+ * vertical edge are a staircase rather than a block.
+ */
+const barFill: Fill = { colour: GLAZE };
+
+const barsAt = (name: string, count: number): NodeRecord => ({
+  kind: 'riemannBars',
+  name,
+  coords,
+  of: squared,
+  options: { bars: count, over: BARS_OVER, height: 'left', fill: barFill },
+});
 
 /**
  * The direction the curve has at a place, which is one across and the curve's
@@ -416,6 +461,7 @@ export const scene: NodeRecord = {
       },
       style: { fill: wash },
     },
+    ...BARS.map((count) => barsAt(`bars${count}`, count)),
     {
       kind: 'vectorField',
       name: 'field',
@@ -545,7 +591,24 @@ const DURATION = RISE_SPAN.to;
  * away from the middle they turn at. That is why the beat is linear, and the
  * flash with it.
  */
+/** Each run of bars arrives as the one before it leaves, so the reader sees one
+ * run at a time and the last of them is what the still holds. */
+const BARS_IN = 0.5;
+const BARS_HOLD = 1.2;
+const barsSpans: readonly SpanRecord[] = BARS.flatMap((count, at): SpanRecord[] => {
+  const from = WALK_FROM + 0.1 + at * BARS_HOLD;
+  const arrive: SpanRecord = {
+    entry: { kind: 'fadeIn', target: `tangent/bars${count}` },
+    from,
+    to: from + BARS_IN,
+  };
+  if (at === BARS.length - 1) return [arrive];
+  const leaves = from + BARS_HOLD;
+  return [arrive, { entry: { kind: 'fadeOut', target: `tangent/bars${count}` }, from: leaves, to: leaves + BARS_IN }];
+});
+
 const spans: readonly SpanRecord[] = [
+  ...barsSpans,
   {
     entry: { kind: 'followView', target: 'tangent/point', options: { within: REACH, room: ROOM, axis: 'x' } },
     from: 0,
