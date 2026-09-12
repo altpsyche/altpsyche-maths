@@ -1547,10 +1547,20 @@ The suite is 1,372 tests over 91 files and the door is 217 values and 247 types.
       24.0 against 24.4 and 19.6 against 20.3. The readback is the cost, at 845 to 12,016
       milliseconds against the painter's 99 to 3,856, measured against a software WebGL 2 rather than
       a card. The door is 226 values and 250 types. 1,409 tests over 94 files.
-- [ ] **7. The recorder runs with no page.** The recording gate records the eight in a worker on an
-      `OffscreenCanvas`, with no document anywhere in the call. **Measurement:** the eight files'
-      bytes and frame counts recorded in a worker against the same eight recorded in the page, and
-      the last frame's inked share either way.
+- [x] **7. The recorder runs with no page.** The recording gate records each figure four ways: both
+      painters in the page and both again in a worker on `OffscreenCanvas`, where `typeof document`
+      is `undefined`. The server rewrites the built package's bare names to what is installed as it
+      hands each file over, since an import map belongs to the realm that declared it and a worker
+      can read none. Neither `videoSink` nor `gpuSurface` needed widening. **Measured:** 16
+      recordings before and 32 after, every one holding exactly the frames the walk counted, the
+      worker's 16 with `document` undefined and its 8 off a card refusing 0 marks on WebGL 2. A file
+      recorded in the worker is the size of the one recorded in the page to within 0.176 per cent,
+      worst on `frame` off a card at 139,320 bytes against 139,565, and the last frame's inked share
+      is the same to a tenth of a point in all 16 pairs: 3.7 and 3.6 per cent on `boolean`, 81.9 and
+      81.9 on `frame`, 42.1 and 41.9 on `matrix`, 7.8 and 6.6 on `portrait`, 5.2 and 5.0 on `rotate`,
+      16.9 and 16.7 on `solids`, 24.4 and 24.0 on `surface`, 20.3 and 19.6 on `tangent`. The worker
+      costs nothing: 100 to 3,827 milliseconds against the page's 101 to 3,822 through the painter,
+      and 856 to 12,518 against 862 to 12,365 off a card.
 - [ ] **8. The version is cut.** `package.json` reads 2.10.0, the done-criteria below are verified
       line by line, and the ladder's 2.10.0 row is deleted. **Measurement:** both gates' readings, the
       door's value and type counts, and the suite, type-check and build.

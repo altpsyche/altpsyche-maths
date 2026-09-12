@@ -7,20 +7,22 @@
  * becomes a file that plays is gated the way every claim about pixels in this
  * family of packages is: with a device in the loop.
  *
- * What runs in the page is the built package itself, served over a local
+ * What runs in the browser is the built package itself, served over a local
  * address and loaded as modules, so the gate measures what a consumer installs
  * rather than a copy of it. The encoder is a bare name inside a dynamic import,
  * which a browser cannot resolve on its own, and the engine's two doors are
- * more, so the page carries an import map pointing each at what is installed.
- * The encoder is mapped to its own bundle rather than to its module tree, since
- * that tree imports `node:fs/promises` for the target that writes a file and a
- * browser refuses the whole graph for it.
+ * more, so the server rewrites each one to what is installed as it hands the
+ * file over. An import map would do the same for the page and nothing for the
+ * worker, since a map belongs to the realm that declared it. The encoder is
+ * mapped to its own bundle rather than to its module tree, since that tree
+ * imports `node:fs/promises` for the target that writes a file and a browser
+ * refuses the whole graph for it.
  *
- * Each figure is recorded twice, through the two-dimensional painter and off a
- * card, which is what holds a recording painted by either to the same walk. The
- * card draws on its own canvas and its frames reach the encoder's canvas as the
- * pixels `painterGpu` reads back, so the two recordings differ in how a frame was
- * painted and in nothing else.
+ * Each figure is recorded four ways: through the two-dimensional painter and off
+ * a card, each of those in the page and again in a worker that has no document.
+ * The card draws on its own canvas and its frames reach the encoder's canvas as
+ * the pixels `painterGpu` reads back, so two recordings of one figure differ in
+ * how a frame was painted and in where it ran, and in nothing else.
  *
  * The file is read back afterwards in Node, which needs no encoder: reading a
  * container apart is arithmetic, and only writing the pictures inside it needs
@@ -54,16 +56,26 @@ const TYPES = {
 
 const page_html = `<!doctype html>
 <meta charset="utf-8">
-<script type="importmap">
-{"imports": {
-  "mediabunny": "/node_modules/mediabunny/dist/bundles/mediabunny.mjs",
-  "@altpsyche/engine": "/node_modules/@altpsyche/engine/dist/index.js",
-  "@altpsyche/engine/maths": "/node_modules/@altpsyche/engine/dist/scene/maths.js"
-}}
-</script>
 <canvas id="surface"></canvas>
 <canvas id="card"></canvas>
 `;
+
+/** Where each bare name the built package imports is installed. */
+const INSTALLED = {
+  mediabunny: '/node_modules/mediabunny/dist/bundles/mediabunny.mjs',
+  '@altpsyche/engine': '/node_modules/@altpsyche/engine/dist/index.js',
+  '@altpsyche/engine/maths': '/node_modules/@altpsyche/engine/dist/scene/maths.js',
+};
+
+/** The built package with each bare name rewritten to the path it is installed
+ * at, which is the one resolution a page and a worker both read. A name nothing
+ * here maps is left as it was written, since the typesetter's imports are never
+ * reached by a recording. */
+function resolved(source) {
+  return source.replace(/(from |import\()'([^']+)'/g, (whole, lead, name) =>
+    INSTALLED[name] ? `${lead}'${INSTALLED[name]}'` : whole
+  );
+}
 
 /** The repository over a local address, so the page loads the built package and
  * the installed encoder by path rather than by bare name. */
@@ -83,8 +95,10 @@ function serve() {
       return;
     }
     try {
-      const body = readFileSync(file);
-      response.writeHead(200, { 'content-type': TYPES[path.extname(file)] ?? 'text/plain' });
+      const type = TYPES[path.extname(file)] ?? 'text/plain';
+      const built = asked.startsWith('/dist/') && asked.endsWith('.js');
+      const body = built ? resolved(readFileSync(file, 'utf8')) : readFileSync(file);
+      response.writeHead(200, { 'content-type': type });
       response.end(body);
     } catch {
       response.writeHead(404).end();
@@ -116,6 +130,42 @@ async function openCard(page, origin) {
       return window.surface.backend;
     },
     { origin, width: WIDTH, height: HEIGHT }
+  );
+}
+
+/** The worker every recording with no page runs in, opened once, with the card
+ * it draws on opened inside it. */
+async function openWorker(page, origin) {
+  return page.evaluate(
+    async ({ origin, width, height }) => {
+      window.worker = new Worker(`${origin}/gates/record-worker.mjs`, { type: 'module' });
+      // One question at a time, each answer matched to the question by an id, so
+      // a reply never reaches the wrong waiting promise.
+      window.ask = (request) =>
+        new Promise((done, failed) => {
+          const id = `${window.asked = (window.asked ?? 0) + 1}`;
+          const hear = (event) => {
+            if (event.data.id !== id) return;
+            window.worker.removeEventListener('message', hear);
+            if (event.data.error) failed(new Error(event.data.error));
+            else done(event.data.answer);
+          };
+          window.worker.addEventListener('message', hear);
+          window.worker.postMessage({ ...request, id });
+        });
+      return window.ask({ kind: 'open', width, height });
+    },
+    { origin, width: WIDTH, height: HEIGHT }
+  );
+}
+
+/** One figure recorded in the worker, which paints and encodes with no document
+ * anywhere in the call. */
+async function recordInWorker(page, origin, name, through) {
+  return page.evaluate(
+    ({ origin, name, through, fps, width, height }) =>
+      window.ask({ kind: 'record', origin, name, through, fps, width, height }),
+    { origin, name, through, fps: FPS, width: WIDTH, height: HEIGHT }
   );
 }
 
@@ -172,6 +222,7 @@ async function record(page, origin, name, through) {
         took: Math.round(performance.now() - started),
         refused: [...refused],
         triangles,
+        document: typeof document,
       };
     },
     { origin, name, fps: FPS, width: WIDTH, height: HEIGHT, through }
@@ -206,30 +257,44 @@ page.on('console', (message) => {
 });
 await page.goto(`${origin}/`);
 const backend = await openCard(page, origin);
+const worker = await openWorker(page, origin);
+
+// Where each recording runs and what paints it, which is the four a figure is
+// recorded as.
+const PASSES = [
+  { where: 'page', through: 'canvas', suffix: '' },
+  { where: 'page', through: 'card', suffix: '.card' },
+  { where: 'worker', through: 'canvas', suffix: '.worker' },
+  { where: 'worker', through: 'card', suffix: '.worker.card' },
+];
 
 mkdirSync(out, { recursive: true });
 let failed = 0;
 for (const name of figures) {
-  for (const through of ['canvas', 'card']) {
-    const stem = through === 'card' ? `${name}.card` : name;
+  for (const pass of PASSES) {
+    const stem = `${name}${pass.suffix}`;
     try {
-      const answer = await record(page, origin, name, through);
+      const answer =
+        pass.where === 'worker'
+          ? await recordInWorker(page, origin, name, pass.through)
+          : await record(page, origin, name, pass.through);
       const bytes = Buffer.from(answer.bytes, 'base64');
       const file = path.join(out, `${stem}.mp4`);
       writeFileSync(file, bytes);
       const held = await inside(file);
+      const wanted = pass.where === 'worker' ? 'undefined' : 'object';
       const agrees =
         answer.frames === answer.walked &&
         held.packets === answer.frames &&
         answer.inked > 0 &&
-        answer.refused.length === 0;
+        answer.refused.length === 0 &&
+        answer.document === wanted;
       console.log(
         `${stem}.mp4 ${bytes.length} bytes, ${answer.frames} frames of ${answer.walked} walked, ` +
           `${held.packets} in the file, ${held.duration.toFixed(4)}s of ${held.size} ${held.codec}, ` +
-          `${(answer.inked * 100).toFixed(1)}% of the last frame drawn, ${answer.took}ms` +
-          (through === 'card'
-            ? `, ${answer.refused.length} marks refused on ${backend}`
-            : '') +
+          `${(answer.inked * 100).toFixed(1)}% of the last frame drawn, ${answer.took}ms, ` +
+          `document is ${answer.document}` +
+          (pass.through === 'card' ? `, ${answer.refused.length} marks refused on ${backend}` : '') +
           `, ${agrees ? 'the file holds the walk' : 'THE FILE DISAGREES WITH THE WALK'}`
       );
       if (!agrees) failed += 1;
@@ -242,8 +307,10 @@ for (const name of figures) {
 
 await browser.close();
 server.close();
+const asked = figures.length * PASSES.length;
 console.log(
-  `${figures.length * 2 - failed} of ${figures.length * 2} recordings written into ${out}, ` +
-    `each figure through the two-dimensional painter and off a ${backend} card`
+  `${asked - failed} of ${asked} recordings written into ${out}, each figure through the ` +
+    `two-dimensional painter and off a ${backend} card, in the page and again in a worker ` +
+    `on ${worker.backend} whose document is ${worker.document}`
 );
 process.exit(failed === 0 ? 0 : 1);
