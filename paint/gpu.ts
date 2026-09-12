@@ -95,9 +95,12 @@ function sizedFor(canvas: GpuCanvas, options: GpuSurfaceOptions): GpuFrameOption
  * empty picture, since what a backend is asked for is the language the shaders
  * are written in and the smooth edge they need, and neither depends on the marks.
  *
- * A device is asked for before the choosing rather than after, because a browser
- * was measured reporting WebGPU and then handing back nothing when asked for a
- * card, and the engine's own comment says so.
+ * `openRenderer` gathers what the machine offers, chooses the backend, asks for a
+ * card only where that choice wants one, and translates the frame it is opened
+ * with. It reads a frame for the language it is written in rather than for what
+ * it requires, so the smooth edge this frame asks for is not checked against the
+ * chosen backend; both backends have four samples a pixel wherever they run at
+ * all.
  */
 export async function gpuSurface(
   canvas: GpuCanvas,
@@ -106,49 +109,24 @@ export async function gpuSurface(
   const engine = await import('@altpsyche/engine');
   const empty = gpuFrame([], mat3.scaling(vec2(1, 1)), sizedFor(canvas, options)).frame;
 
-  const device = options.backend === 'webgl2' ? null : await engine.requestWebGPUDevice();
-  const chosen =
-    options.backend ??
-    (() => {
-      const selection = engine.resolve(empty, {
-        webgpu: device ? engine.webgpuCapabilities(device.features) : null,
-        // A canvas with no WebGL 2 context refuses the renderer below rather than
-        // here, since asking for a context is what answers that and the engine's
-        // own door takes the answer rather than the question.
-        webgl2: engine.webgl2Capabilities([]),
-      });
-      return 'backend' in selection ? selection.backend : null;
-    })();
-
-  if (!chosen) {
-    options.onRefused?.('no backend can draw a figure on this device');
-    return null;
-  }
-
   // The engine's door names the DOM's own canvas types and this package declares
   // no browser library, so what satisfies the parts a renderer reads is handed
   // over as the canvas it is, under the type that door already states.
-  type EngineCanvas = Parameters<typeof engine.createFrameRenderer>[0];
-  // A canvas that cannot give the backend its context makes the engine throw
-  // where its own signature answers nothing, so the throw is turned back into the
-  // nothing this call promises.
-  const renderer = await engine
-    .createFrameRenderer(canvas as unknown as EngineCanvas, {
-      backend: chosen,
-      device: device ?? undefined,
-      onRefused: options.onRefused,
-    })
-    .catch(() => null);
-  if (!renderer) {
-    options.onRefused?.(`the ${chosen} backend gave no renderer for this canvas`);
+  type EngineCanvas = Parameters<typeof engine.openRenderer>[0];
+  const opened = await engine.openRenderer(canvas as unknown as EngineCanvas, empty, {
+    ...(options.backend ? { backend: options.backend } : {}),
+    onRefused: options.onRefused,
+  });
+  if ('refusal' in opened) {
+    options.onRefused?.(opened.refusal);
     return null;
   }
 
-  // The engine's `resolve` says WebGL 2 draws a WGSL frame that carries a baked
-  // translation, and its WebGL 2 backend refuses one by name: the translating is
-  // the caller's, through the engine's own `glslFrameOf`.
+  // A renderer opened for one frame draws every later frame the caller hands it,
+  // and the WebGL 2 backend throws on a WGSL frame however the renderer was
+  // opened, so the translation the door did once is done here for each of them.
   const asDrawn =
-    renderer.backend === 'webgl2'
+    opened.renderer.backend === 'webgl2'
       ? (frame: FrameGraph) => {
           const glsl = engine.glslFrameOf(frame as WgslFrameGraph);
           if (!glsl) throw new Error('the frame carries no GLSL translation for WebGL 2 to draw');
@@ -157,12 +135,12 @@ export async function gpuSurface(
       : (frame: FrameGraph) => frame;
 
   const held: Held = {
-    backend: renderer.backend,
+    backend: opened.renderer.backend,
     canvas,
-    renderer,
+    renderer: opened.renderer,
     options,
     asDrawn,
-    dispose: () => renderer.dispose(),
+    dispose: () => opened.renderer.dispose(),
   };
   return held;
 }

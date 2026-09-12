@@ -28,15 +28,15 @@ const square: Mark = {
 };
 
 describe('gpuSurface', () => {
-  it('answers nothing and names why where no canvas can give a context', () => {
-    // Node has no WebGPU adapter and a canvas of two numbers has no WebGL 2
-    // context, so both arms of the choosing run out and the refusal is named
-    // rather than thrown.
+  it('answers nothing and names why where no machine offers a backend', () => {
+    // Node has no WebGPU adapter and no document to take a WebGL 2 context from,
+    // so both arms of the choosing run out and the refusal is the engine's own
+    // sentence rather than a throw.
     const said: string[] = [];
     return gpuSurface(contextless(64), { onRefused: (message) => said.push(message) }).then((surface) => {
       expect(surface).toBeNull();
       expect(said).toHaveLength(1);
-      expect(said[0]).toContain('webgl2');
+      expect(said[0]).toContain('no backend can draw a wgsl frame');
     });
   });
 
@@ -47,7 +47,7 @@ describe('gpuSurface', () => {
       onRefused: (message) => said.push(message),
     });
     expect(surface).toBeNull();
-    expect(said[0]).toBe('the webgl2 backend gave no renderer for this canvas');
+    expect(said[0]).toContain('no backend can draw a wgsl frame');
   });
 });
 

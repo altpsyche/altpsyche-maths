@@ -1467,11 +1467,13 @@ sheet over 98.70 per cent of its pixels.
       drawable reading are one reading. Whole against whole, `tangent` 95.02 per cent within 8 to
       98.52, `portrait` 96.24 to 98.28, `matrix` 97.04 to 98.29, `surface` 97.51 to 97.75, and the
       four figures with no mark under full opacity within 0.02. 1,372 tests over 91 files.
-- [ ] **3. The door that opens a renderer.** `gpuSurface` calls `openRenderer` and names none of
+- [x] **3. The door that opens a renderer.** `gpuSurface` calls `openRenderer` and names none of
       `requestWebGPUDevice`, `webgpuCapabilities`, `webgl2Capabilities`, `resolve` or
-      `createFrameRenderer`. The refusal a caller sees is the engine's own sentence where it has one.
-      **Measurement:** the line count of `paint/gpu.ts` before and after, the two refusal tests'
-      sentences, and the eight figures' readings unchanged from step 2.
+      `createFrameRenderer`, and the refusal a caller sees is the engine's own sentence.
+      **Measured:** `paint/gpu.ts` 214 lines to 192, the eight figures' readings identical to step 2
+      to the last digit, and 1,372 tests over 91 files. Three readings about that door went to the
+      found list below: the per-frame translation that stays, the `requires` check that leaves with
+      `resolve`, and a refusal naming a backend the caller excluded.
 - [ ] **4. One canvas for the whole gate.** `gates/gpu.mjs` makes one canvas and one surface for all
       eight figures, since disposing a renderer leaves the canvas alone as of 0.5.0.
       **Measurement:** canvases made, 8 before and 1 after; a surface disposed and a second one opened
@@ -1510,6 +1512,31 @@ sheet over 98.70 per cent of its pixels.
     with no page behind it and a canvas that satisfies the recorder's seam as 2.9.0 read 2.10.0.
 
 ## Found while working, not yet queued
+
+- **A renderer `openRenderer` opened for a translated frame still leaves every later frame to the
+  caller.** That door translates the frame it is handed and answers it beside the renderer, and the
+  WebGL 2 backend throws `WebGL 2 was handed a wgsl frame to draw` on any frame that reaches it
+  untranslated. A painter opens a renderer once and draws a new frame per time, since the geometry
+  is the marks at that time, so `gpuSurface` opens through the door and `paintGpu` still calls
+  `glslFrameOf` on every frame. **What closes it** is the renderer translating what it is given,
+  which it has the frame's `authored` and its own backend to decide by. This is a reading for
+  `@altpsyche/engine` rather than work here.
+
+- **`openRenderer` reads a frame's language and not what it requires.** `resolve` takes a frame's
+  `requires` against each backend's capabilities and `selectBackend` reads `authored` and
+  `translated` alone, and the door that replaced the four steps a caller took calls the second. So a
+  painter that used to be refused by name for a capability the chosen backend lacks is now selected
+  onto it and finds out when the backend refuses. Nothing is lost here today, since this frame
+  requires `msaa` alone and both backends have four samples a pixel wherever they run. This is a
+  reading for `@altpsyche/engine`.
+
+- **A refusal from `openRenderer` names a backend the caller excluded.** `gpuSurface` asking for
+  `backend: 'webgl2'` on a machine offering neither is refused with `no backend can draw a wgsl
+  frame: WebGPU returned no adapter on this device`. `RendererOptions.backend` is a narrowing, so
+  WebGPU was never a candidate and the gap the sentence names is one the caller cannot act on.
+  `selectBackend` keeps the first candidate that was not offered and the candidate table is walked
+  richest first, so the excluded backend is the one it keeps. This is a reading for
+  `@altpsyche/engine`.
 
 - **A tapered stroke's dash is dropped and nothing says so.** `outlinedMarks` turns a stroke whose
   width is a `Taper` into a fill, carrying the colour, the opacity and the clip across and leaving
