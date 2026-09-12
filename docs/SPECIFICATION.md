@@ -772,7 +772,7 @@ renderer is conformant inside that band and wrong outside it in either direction
 | `demos/boolean.figure.json` | 14,444 | the three boolean operations through no crossing, one, two and containment |
 | `demos/rotate.figure.json` | 8,257 | a rotation about a box's middle and about a named place, and a loop |
 | `demos/frame.figure.json` | 6,373 | a mark placed against the frame beside one placed in the figure's own units |
-| `demos/portrait.figure.json` | 23,402 | a parametric closed orbit, two polar spirals and two implicit nullclines over a field |
+| `demos/portrait.figure.json` | 25,603 | a parametric closed orbit with a dot carried round it, two polar spirals and two implicit nullclines over a field |
 | `demos/solids.figure.json` | 92,012 | two solids drawn alone, two handed to a scene with a curve in space cut into pieces it sorts, and a face marked with its rim, its middle, the way it faces and a name |
 
 **Each carries `format` 0 and reads with no renderer at all.** A reader in another language that draws

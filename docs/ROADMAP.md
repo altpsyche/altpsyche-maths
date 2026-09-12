@@ -1629,11 +1629,21 @@ door is 226 values and 250 types. `npm run gate:gpu` draws all eight above both 
       the dot begins to walk. **Split into three on 2026-09-13**, since the five land in three demos
       and one commit carries one finding. **Measurement:** each demo's marks at the times the
       animation runs over, and 0 of the format's animations left undrawn.
-  - [ ] **6a. The limit cycle carries a dot round it.** `moveAlong` in the phase portrait, over the
+  - [x] **6a. The limit cycle carries a dot round it.** `moveAlong` in the phase portrait, over the
         path record the `cycle` shape is already drawn from, so the figure names that form once. The
-        cycle is where both spirals end up and a dot riding it is what says so. **Measurement:** the
-        demo's marks at its four strip times, and the dot's place read back against the orbit it is
-        carried along at each of them.
+        cycle is where both spirals end up and a dot riding it is what says so. **Measured:** 306
+        marks at every named time against 305, and what is seen at the four strip times is 300, 302,
+        303 and 306 against 300, 302, 303 and 305. The figure runs 7.4 seconds against 5.4 and its
+        still stands at 6.1 against 4.8, which is halfway along the ride, so the rider is drawn at
+        -1, 0 in the graph's own numbers where the figure writes it at 1, 0, both within 1e-12. Over
+        401 readings of the ride the rider is never further than 4.29e-7 from the unit circle, which
+        is the path's own sampling: the orbit is drawn as cubics through 96 places and a ride reads
+        the drawn path. The record is 23,402 bytes to 25,603, the still 131,625 to 131,866 and the
+        strip 375,398 to 376,513. `npm run gate:gpu` draws all eight above both floors, `portrait` at
+        306 marks and 2,664 triangles against 305 and 2,634, 8.1 per cent of its pixels inked either
+        way, agreeing over 97.54 per cent of them with its labels against 97.55 and 98.28 without
+        them either way. `npm run gate:record` writes 32 of 32, each portrait file holding 222 frames
+        against 162. 1,425 tests over 94 files to 1,426.
   - [ ] **6b. Two indications join the family they belong to.** `wave` and `wiggle` in the flat demo,
         which already drives `indicate`, `flash`, `circumscribe` and `showPassingFlash`. Both leave
         their marks where they found them at either end of their span, so neither moves the still.

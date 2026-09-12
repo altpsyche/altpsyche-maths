@@ -21,6 +21,7 @@
 import {
   coordsOf,
   interval,
+  pointOf,
   scaleOf,
   vec2,
   type Expression,
@@ -29,6 +30,7 @@ import {
   type FigureRecord,
   type Mark,
   type NodeRecord,
+  type PathRecord,
   resolveFigure,
   textScale,
 } from '../index.js';
@@ -45,11 +47,11 @@ const nullcline = { colour: MOSS, width: 0.026 };
 
 /** How far the graph counts each way, which is far enough to hold the limit cycle
  * with the field around it and near enough that the arrows are not scratches. */
-const REACH = 2.2;
+export const REACH = 2.2;
 
 /** Where that run lands in the figure's own units. Both axes count at one rate,
  * since a phase portrait read at two rates draws a circular orbit as an ellipse. */
-const SPAN = 2.6;
+export const SPAN = 2.6;
 
 export const coords = coordsOf(
   scaleOf(interval(-REACH, REACH), interval(-SPAN, SPAN)),
@@ -115,6 +117,17 @@ const orbit: Expression = {
   kind: 'point',
   x: calls('cos', reads('t')),
   y: calls('sin', reads('t')),
+};
+
+/** The orbit as a path, which the cycle is drawn from and the rider is carried
+ * along, so the figure writes that form once. */
+const ORBIT: PathRecord = {
+  kind: 'parametric',
+  coords,
+  of: orbit,
+  over: { from: 0, to: 2 * Math.PI },
+  resolution: 96,
+  closed: true,
 };
 
 /** How many turns each spiral is drawn over. Two brings a run from 0.15 to within
@@ -205,12 +218,10 @@ export const scene: NodeRecord = {
     nullclineAt('nullY', 'y'),
     spiralAt('inward', SEEDS.inward),
     spiralAt('outward', SEEDS.outward),
-    {
-      kind: 'shape',
-      name: 'cycle',
-      path: { kind: 'parametric', coords, of: orbit, over: { from: 0, to: 2 * Math.PI }, resolution: 96, closed: true },
-      style: { stroke: cycle },
-    },
+    { kind: 'shape', name: 'cycle', path: ORBIT, style: { stroke: cycle } },
+    // The rider is written where the orbit starts, since what carries it along a
+    // path moves it by how far that path has gone from its own first point.
+    { kind: 'dot', name: 'rider', at: pointOf(coords, CYCLE, 0), radius: 0.085, fill: { colour: EMBER } },
     {
       kind: 'text',
       name: 'title',
@@ -223,8 +234,13 @@ export const scene: NodeRecord = {
   style: TYPE,
 };
 
-export const DURATION = 5.4;
-export const STILL = 4.8;
+export const DURATION = 7.4;
+export const STILL = 6.1;
+
+/** When the rider sets off and how long one turn of the cycle takes it. The still
+ * stands halfway along, so the rider is drawn on the far side of the cycle from
+ * where the figure writes it. */
+export const RIDE = { from: 4.8, to: 7.4 };
 
 export const written: FigureRecord = {
   extent,
@@ -248,7 +264,9 @@ export const written: FigureRecord = {
       { entry: { kind: 'fadeIn', target: 'portrait/outward' }, from: 2.8, to: 2.9 },
       { entry: { kind: 'draw', target: 'portrait/cycle' }, from: 3.9, to: 4.8 },
       { entry: { kind: 'fadeIn', target: 'portrait/cycle' }, from: 3.9, to: 4.0 },
-      { entry: { kind: 'fadeIn', target: 'portrait/title' }, from: 4.6, to: DURATION },
+      { entry: { kind: 'fadeIn', target: 'portrait/title' }, from: 4.6, to: 5.4 },
+      { entry: { kind: 'fadeIn', target: 'portrait/rider' }, from: 4.5, to: 4.8 },
+      { entry: { kind: 'moveAlong', target: 'portrait/rider', path: ORBIT }, ...RIDE, curve: 'linear' },
     ],
     duration: DURATION,
   },
@@ -262,7 +280,7 @@ export const portrait: Figure = resolveFigure(written);
 const SLOT = { across: 6.9, down: 6.9 };
 
 /** The times the strip shows: the field alone, the nullclines drawn, the two
- * spirals walking in, and the cycle they settle on. */
+ * spirals walking in, and the rider halfway round the cycle they settle on. */
 export const FRAMES = [1.6, 2.7, 3.9, STILL] as const;
 
 export function stripMarks(

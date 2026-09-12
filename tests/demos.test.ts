@@ -58,8 +58,12 @@ import {
 } from '../demos/render.js';
 import { ADVANCE, CAP, bareShare } from '../demos/cover.js';
 import {
+  CYCLE as PORTRAIT_CYCLE,
   FRAMES as PORTRAIT_FRAMES,
+  REACH as PORTRAIT_REACH,
+  RIDE,
   SEEDS as PORTRAIT_SEEDS,
+  SPAN as PORTRAIT_SPAN,
   STILL as PORTRAIT_STILL,
   coords as portraitCoords,
   portrait,
@@ -1825,7 +1829,7 @@ describe('the portrait demo', () => {
     // A mark an animation introduces exists at every fraction, at no opacity
     // where it is not yet drawn, so a frame-to-frame comparison reports nothing
     // arriving.
-    for (const seconds of [0, ...PORTRAIT_FRAMES]) expect(marksAt(portrait, seconds)).toHaveLength(305);
+    for (const seconds of [0, ...PORTRAIT_FRAMES]) expect(marksAt(portrait, seconds)).toHaveLength(306);
   });
 
   it('opens on nothing and arrives one piece at a time', () => {
@@ -1833,7 +1837,35 @@ describe('the portrait demo', () => {
     expect(seen(PORTRAIT_FRAMES[0])).toHaveLength(300);
     expect(seen(PORTRAIT_FRAMES[1])).toHaveLength(302);
     expect(seen(PORTRAIT_FRAMES[2])).toHaveLength(303);
-    expect(seen(PORTRAIT_STILL)).toHaveLength(305);
+    expect(seen(PORTRAIT_STILL)).toHaveLength(306);
+  });
+
+  it('carries the rider round the orbit the cycle is drawn from', () => {
+    // The rider is written where the orbit starts, so a reading taken back
+    // through the graph's own scale says both that it is on the cycle and how
+    // far round it has gone.
+    const graph = (seconds: number) => {
+      const dot = named(seconds, 'rider');
+      expect(dot).toHaveLength(1);
+      const bounds = boundsOfMarks(dot);
+      if (!bounds) throw new Error('the rider is not drawn');
+      const at = centreOf(bounds);
+      return vec2((at.x * PORTRAIT_REACH) / PORTRAIT_SPAN, (at.y * PORTRAIT_REACH) / PORTRAIT_SPAN);
+    };
+    const start = graph(0);
+    expect(start.x).toBeCloseTo(PORTRAIT_CYCLE, 12);
+    expect(start.y).toBeCloseTo(0, 12);
+    const half = graph(PORTRAIT_STILL);
+    expect(half.x).toBeCloseTo(-PORTRAIT_CYCLE, 12);
+    expect(half.y).toBeCloseTo(0, 12);
+    let worst = 0;
+    for (let step = 0; step <= 400; step += 1) {
+      const at = graph(RIDE.from + ((RIDE.to - RIDE.from) * step) / 400);
+      worst = Math.max(worst, Math.abs(Math.hypot(at.x, at.y) - PORTRAIT_CYCLE));
+    }
+    // What is left is the path's own sampling: the orbit is drawn as cubics
+    // through 96 places and a ride reads the drawn path rather than the orbit.
+    expect(worst).toBeLessThan(5e-7);
   });
 
   it('draws the limit cycle as one closed run that no function of x could write', () => {
