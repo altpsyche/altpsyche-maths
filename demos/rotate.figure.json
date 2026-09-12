@@ -5,9 +5,9 @@
     "extent": {
       "centre": {
         "x": 0.51,
-        "y": -4.18
+        "y": -6.18
       },
-      "height": 14.1,
+      "height": 18,
       "width": 10.15
     },
     "loop": true,
@@ -692,6 +692,112 @@
           ],
           "kind": "group",
           "name": "rocked"
+        },
+        {
+          "children": [
+            {
+              "at": {
+                "x": 0,
+                "y": -13.4
+              },
+              "fill": {
+                "colour": {
+                  "a": 1,
+                  "b": 12,
+                  "g": 65,
+                  "name": "ember",
+                  "r": 194
+                }
+              },
+              "kind": "dot",
+              "name": "pivot",
+              "radius": 0.07
+            },
+            {
+              "children": [
+                {
+                  "kind": "shape",
+                  "name": "ell",
+                  "path": {
+                    "kind": "polygon",
+                    "points": [
+                      {
+                        "x": -0.6,
+                        "y": -14.200000000000001
+                      },
+                      {
+                        "x": 0.6,
+                        "y": -14.200000000000001
+                      },
+                      {
+                        "x": 0.6,
+                        "y": -13.8
+                      },
+                      {
+                        "x": -0.2,
+                        "y": -13.8
+                      },
+                      {
+                        "x": -0.2,
+                        "y": -12.6
+                      },
+                      {
+                        "x": -0.6,
+                        "y": -12.6
+                      }
+                    ]
+                  },
+                  "style": {
+                    "fill": {
+                      "colour": {
+                        "a": 1,
+                        "b": 116,
+                        "g": 186,
+                        "name": "peach",
+                        "r": 253
+                      }
+                    },
+                    "stroke": {
+                      "colour": {
+                        "a": 1,
+                        "b": 161,
+                        "g": 105,
+                        "name": "deep",
+                        "r": 3
+                      },
+                      "width": 0.04
+                    }
+                  }
+                }
+              ],
+              "kind": "group",
+              "name": "rider"
+            },
+            {
+              "at": {
+                "x": 0,
+                "y": -15
+              },
+              "content": "moved and moved back",
+              "kind": "text",
+              "name": "label",
+              "options": {
+                "align": "middle",
+                "fill": {
+                  "colour": {
+                    "a": 1,
+                    "b": 27,
+                    "g": 27,
+                    "name": "ink",
+                    "r": 27
+                  }
+                }
+              },
+              "size": 0.41860721446243615
+            }
+          ],
+          "kind": "group",
+          "name": "nudged"
         }
       ],
       "kind": "group",
@@ -848,6 +954,30 @@
             "target": "turns/rocked/rider/ell"
           },
           "from": 0,
+          "to": 6
+        },
+        {
+          "entry": {
+            "kind": "moveBy",
+            "offset": {
+              "x": 0.9,
+              "y": 0
+            },
+            "target": "turns/nudged/rider/ell"
+          },
+          "from": 0,
+          "to": 3
+        },
+        {
+          "entry": {
+            "kind": "moveBy",
+            "offset": {
+              "x": -0.9,
+              "y": 0
+            },
+            "target": "turns/nudged/rider/ell"
+          },
+          "from": 3,
           "to": 6
         }
       ]

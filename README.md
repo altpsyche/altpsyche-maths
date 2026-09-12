@@ -164,7 +164,7 @@ points where a plane cuts a parametric surface, closing a run whose ends meet.
 
 ## Time and motion
 
-<img src="https://raw.githubusercontent.com/altpsyche/altpsyche-maths/master/docs/rotate.svg" width="720" alt="Six panels in three rows of two. The top row is an L-shaped block turned part way round, with a dot marking the point it turns about: at the middle of the block's own box on the left, off to one side on the right so the block swings round it. Below them the same block is drawn grown larger, walked part way into the rectangle round it, crossed by a wave that pushes its outline up, and rocked a little off square.">
+<img src="https://raw.githubusercontent.com/altpsyche/altpsyche-maths/master/docs/rotate.svg" width="720" alt="Seven panels. The top row is an L-shaped block turned part way round, with a dot marking the point it turns about: at the middle of the block's own box on the left, off to one side on the right so the block swings round it. Below them the same block is drawn grown larger, walked part way into the rectangle round it, crossed by a wave that pushes its outline up, rocked a little off square, and moved to one side.">
 
 <img src="https://raw.githubusercontent.com/altpsyche/altpsyche-maths/master/docs/matrix.svg" width="720" alt="A square panel of grid lines sheared over by a linear map, with the two axes through the origin carried with them and the unit square drawn as a filled parallelogram. Beside the panel the map is written as a two by two matrix in brackets, its four numbers at the values the grid has reached, over a table holding where each basis vector lands and a number line whose marker stands at the determinant.">
 

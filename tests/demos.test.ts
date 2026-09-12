@@ -127,6 +127,7 @@ import {
   FRAMES as TURN_FRAMES,
   GESTURE_AT,
   GIVEN,
+  NUDGE,
   LOCAL,
   OWN,
   SWELL,
@@ -178,7 +179,7 @@ describe("every demo's view", () => {
       'turns',
       turns,
       [turns.still, durationOf(turns)],
-      [42.553191, 0, 0, 0, -42.553191, 0, 518.297872, 122.12766, 1],
+      [33.333333, 0, 0, 0, -33.333333, 0, 523, 94, 1],
     ],
   ];
 
@@ -1273,11 +1274,11 @@ describe('the rotation demo', () => {
     return mark;
   };
 
-  it('draws the same twenty marks at every time', () => {
+  it('draws the same twenty-three marks at every time', () => {
     // Two turns of four, the pivot and the shape with the word riding it and the
-    // caption underneath, then four gestures of three that carry no word, and
+    // caption underneath, then five gestures of three that carry no word, and
     // nothing arrives or leaves at any time.
-    for (const seconds of [0, ...TURN_FRAMES, TURN]) expect(marksAt(turns, seconds)).toHaveLength(20);
+    for (const seconds of [0, ...TURN_FRAMES, TURN]) expect(marksAt(turns, seconds)).toHaveLength(23);
   });
 
   it('lands where it began after the whole turn, which is why it declares a loop', () => {
@@ -1403,6 +1404,22 @@ describe('the rotation demo', () => {
     expect(moved).toBeGreaterThan(0.2);
   });
 
+  it('moves the nudged panel out and moves it back, by the offset it is given', () => {
+    const at = (seconds: number) => {
+      const bounds = boundsOfMarks(marksAt(turns, seconds).filter((mark) => mark.id === 'turns/nudged/rider/ell'));
+      if (!bounds) throw new Error('the nudged shape is not drawn');
+      return centreOf(bounds);
+    };
+    const rest = at(0);
+    // The span back takes the offset negated, so the two halves are mirrors and
+    // the shape is where it started at the end.
+    expect(at(TURN / 2).x - rest.x).toBeCloseTo(NUDGE.x, 12);
+    expect(at(TURN / 2).y - rest.y).toBeCloseTo(NUDGE.y, 12);
+    expect(at(TURN).x).toBeCloseTo(rest.x, 12);
+    expect(at(TURN).y).toBeCloseTo(rest.y, 12);
+    expect(at((3 * TURN) / 4).x).toBeCloseTo(at(TURN / 4).x, 12);
+  });
+
   it('keeps every mark inside the frame it declares', () => {
     for (const seconds of [0, ...TURN_FRAMES, TURN]) {
       for (const mark of marksAt(turns, seconds)) {
@@ -1461,7 +1478,7 @@ describe('the rotation strip', () => {
 
   it('carries every frame with no two marks sharing an id', () => {
     const { marks } = turnStripMarks(TURN_FRAMES, 2);
-    expect(marks).toHaveLength(20 * TURN_FRAMES.length);
+    expect(marks).toHaveLength(23 * TURN_FRAMES.length);
     expect(new Set(marks.map((mark) => mark.id)).size).toBe(marks.length);
   });
 

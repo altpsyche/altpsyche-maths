@@ -1671,7 +1671,7 @@ door is 226 values and 250 types. `npm run gate:gpu` draws all eight above both 
         holding 180 frames as before. 1,426 tests over 94 files to 1,430.
         **The name stays `rotate`,** and the demo now draws four things that are not turns, so the
         name under-describes it. Renaming is its own finding and is queued below.
-  - [ ] **6c. The straight move gets a picture.** `moveBy` is the one animation of the twenty-one
+  - [x] **6c. The straight move gets a picture.** `moveBy` is the one animation of the twenty-one
         that no committed figure drives. `demos/strip.ts` calls the function directly at a fraction
         of one to carry each frame into its slot, so every one of the eight committed strips is built
         with it, but the record kind is resolved by no figure and only tests reach that path. It
@@ -1686,7 +1686,17 @@ door is 226 values and 250 types. `npm run gate:gpu` draws all eight above both 
         at 21.0 pixels on the page, and the strip's `DOWN` follows it. **Measurement:** the panel's
         marks against the offset at the half and against where they started at the end, both within
         1e-12; the reading that says the figure is still a loop; the marks at every named time; the
-        sheets' bytes; and both gates.
+        sheets' bytes; and both gates. **Measured:** 23 marks at every named time against 20, and the
+        figure is still a loop to 1e-9. The panel stands at nothing across, is drawn 0.900000000000
+        across at the half, which is the offset it is given, and is back at nothing at the end with
+        no error at all; the two quarters read the same. The frame is 10.15 by 18 against 10.15 by
+        14.1, so the smallest glyph still reads 21.0 pixels on the page. The record is 22,789 bytes
+        to 26,211, the still 27,396 to 28,303 and the strip 47,089 to 51,057. `npm run gate:gpu`
+        draws all eight above both floors, `rotate` at 23 marks and 4,381 triangles against 20 and
+        3,642, 2.8 per cent of its pixels inked against 3.5, agreeing over 98.50 per cent of them
+        with its labels against 98.26 and 99.71 without them against 99.69. `npm run gate:record`
+        writes 32 of 32, each rotate file holding 180 frames. 1,430 tests over 94 files to 1,431.
+        **0 of the format's twenty-one animations are left without a committed figure driving them.**
 
 - [ ] **7. The version is cut.** `package.json` reads 2.11.0, the done-criteria below are verified
       line by line, and the ladder's 2.11.0 row is deleted. **Measurement:** both gates' readings,

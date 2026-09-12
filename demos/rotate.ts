@@ -16,16 +16,18 @@
  * and a label that stays readable while the thing it names turns is what a
  * figure wants anyway.
  *
- * The row under the two turns is what else a span does to a flat list of marks:
- * a swell out and back, a walk into another shape and back, a wave crossing the
- * shape, and a rock in place. None of the four carries the riding word, since
- * that word is there to show a label staying upright through a turn.
+ * The rows under the two turns are what else a span does to a flat list of
+ * marks: a swell out and back, a walk into another shape and back, a wave
+ * crossing the shape, a rock in place, and a straight move out and back. None of
+ * the five carries the riding word, since that word is there to show a label
+ * staying upright through a turn.
  *
  * This is the first figure here to declare itself a loop. Nothing fades in and
  * nothing is driven by a track, so the picture at the end of the turn is the
  * picture at the start of it and a recording runs it round without a jump. Every
  * gesture here has to end where it began for that to hold, which a wave and a
- * rock do by construction and a swell and a walk do by being given a span back.
+ * rock do by construction and a swell, a walk and a move do by being given a span
+ * back.
  */
 import {
   TEXT_RATIO,
@@ -56,7 +58,7 @@ const marker = { colour: EMBER };
  * round outside it.
  *
  * The frame is shaped and placed from what the picture reaches over the whole
- * turn, which is x -4.44 to 5.46 and y -11.12 to 2.75 once every caption and the
+ * turn, which is x -4.44 to 5.46 and y -15.12 to 2.75 once every caption and the
  * riding word are counted at their own sizes. It is off the origin because only
  * the right turn swings and only the rows below reach down, so a frame centred
  * on the origin would leave the whole of both differences bare down two edges.
@@ -66,8 +68,8 @@ const marker = { colour: EMBER };
  * the page, and this figure's type is pinned to a reading rather than to a
  * number.
  */
-export const CENTRE = vec2(0.51, -4.18);
-export const EXTENT: Extent = { width: 10.15, height: 14.1, centre: CENTRE };
+export const CENTRE = vec2(0.51, -6.18);
+export const EXTENT: Extent = { width: 10.15, height: 18, centre: CENTRE };
 
 /**
  * The shape, written about its own box centre.
@@ -126,8 +128,8 @@ export const SWING = 1.6;
  * riding word: that word is there to show a label staying upright through a turn,
  * and under a swell or a ripple it says nothing.
  */
-const ROW = { swell: -5.4, ripple: -9.4 };
-const CAPTION = { swell: -7, ripple: -11 };
+const ROW = { swell: -5.4, ripple: -9.4, nudge: -13.4 };
+const CAPTION = { swell: -7, ripple: -11, nudge: -15 };
 
 function panel(name: string, pivot: Vec2, swing: number, label: string, captionY: number, word?: string): NodeRecord {
   const centre = vec2(pivot.x + swing, pivot.y);
@@ -175,6 +177,9 @@ const GESTURES = [
   { name: 'walked', label: 'walked into its box', at: vec2(PANEL, ROW.swell), caption: CAPTION.swell },
   { name: 'rippled', label: 'a wave across it', at: vec2(-PANEL, ROW.ripple), caption: CAPTION.ripple },
   { name: 'rocked', label: 'rocked in place', at: vec2(PANEL, ROW.ripple), caption: CAPTION.ripple },
+  // The fifth gesture stands alone between the two columns, where its caption has
+  // the whole width of the figure rather than half of it.
+  { name: 'nudged', label: 'moved and moved back', at: vec2(0, ROW.nudge), caption: CAPTION.nudge },
 ] as const;
 
 export const GESTURE_AT = Object.fromEntries(GESTURES.map((one) => [one.name, one.at])) as Record<
@@ -220,6 +225,9 @@ export const TURN = 6;
 /** How big the swelling panel gets at the half, and the two paths the walked
  * panel steps between, each written as the record a shape is drawn from. */
 export const SWELL = 1.34;
+
+/** How far the nudged panel is moved before it is moved back. */
+export const NUDGE = vec2(0.9, 0);
 const ell: PathRecord = { kind: 'polygon', points: LOCAL.map((point) => vec2.add(point, GESTURE_AT.walked)) };
 const box: PathRecord = { kind: 'polygon', points: BOX.map((point) => vec2.add(point, GESTURE_AT.walked)) };
 
@@ -272,6 +280,15 @@ export const written: FigureRecord = {
         to: TURN,
         curve: 'linear',
       },
+      // The span back takes the offset negated rather than the place it started
+      // from, since a straight move carries the marks it is handed by the offset
+      // times how far along the span has gone.
+      { entry: { kind: 'moveBy', target: 'turns/nudged/rider/ell', offset: NUDGE }, from: 0, to: TURN / 2 },
+      {
+        entry: { kind: 'moveBy', target: 'turns/nudged/rider/ell', offset: vec2(-NUDGE.x, -NUDGE.y) },
+        from: TURN / 2,
+        to: TURN,
+      },
     ],
     duration: TURN,
   },
@@ -291,7 +308,7 @@ export const turns: Figure = resolveFigure(written);
  * as a row of four panels.
  */
 export const SLOT = 14;
-export const DOWN = 14.6;
+export const DOWN = 18.6;
 
 /**
  * Several times of one figure laid out together, as one list of marks, each
