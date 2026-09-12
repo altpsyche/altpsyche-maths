@@ -409,7 +409,6 @@ is left, since 2.1.0 through 2.8.0 are cut.
 
 | version | what lands | what it changes | steps | cut against | depends on | plan |
 | --- | --- | --- | --- | --- | --- | --- |
-| 2.9.0 | the engine at 0.5.0, and the workarounds the GPU painter carries taken out | nothing in the format; the peer range moves to `^0.5.0`, which a consumer on 0.4.0 has to ask for | 6 | both demos on a card, with fewer marks refused than the 105 of 2.8.0 | `@altpsyche/engine` 0.5.0 | below |
 | 2.10.0 | text on a GPU, and the recorder running without a page | nothing in the format | to plan | every demo recorded off a card | a font file and a reader for it, 2.9.0, 2.6.0, and a canvas with no page behind it if `mediabunny` takes nothing else | to plan |
 | 3.0.0 | depth, so a figure in space keeps it, and a figure naming the painters that can draw it | what a `Mark` may ask for, which breaks the format's own version | to plan | the solid demo, whose crossing curve is drawn in the right order rather than the tree's | `@altpsyche/engine` | to plan |
 | 3.1.0 | a clip that is a path rather than a rectangle | what a `Mark` may ask for | to plan | nothing yet, which is why it is last of the marks | nothing now, since `@altpsyche/engine` 0.5.0 counts a winding | to plan |
@@ -435,7 +434,7 @@ typesetter hands back outlines for an equation in its own font, and a plain labe
 family the painter hands to the platform, so the two are different shapes. True outlines need font
 bytes inside the figure, which is a value type this band of the ladder is in front of. A write
 sweeps a rectangular clip across the label instead and takes how far it runs as a number. **What
-still waits on outlines** is a plain label on a card, which is 2.9.0, and a column width measured
+still waits on outlines** is a plain label on a card, which is 2.10.0, and a column width measured
 rather than given.
 
 **The engine's roadmap carries the other half of this table**, as a record of which version above
@@ -557,6 +556,43 @@ README that plays a video on load is a README nobody can read.
 
 ## Now
 
+**2.9.0 is cut and unpublished, and its twelve done-criteria are verified line by line in the cut's
+own commit.** `@altpsyche/engine` moves to 0.5.0 in both the peer range and the dev range, and four
+of the six workarounds the GPU painter carried are gone: `gpuSurface` opens its renderer through
+`openRenderer` rather than gathering the offering and choosing a backend itself, no mark is refused
+for its opacity, the gate draws all eight figures on one canvas, and the baked GLSL stage negates
+clip-space y. The door is 217 values and 247 types, unchanged, since this version adds no name and
+takes none away.
+
+**The move alone drew every figure upside down, and that was the version's real finding.** The WebGL
+2 backend renders into a colour target of its own and blits it onto the canvas as of 0.5.0, which is
+what lets it give a WGSL frame the top-left framebuffer origin that language counts rows from, and it
+reads `framebufferOrigin` off the frame to decide whether to apply the flip. `glslFrameOf` stamps
+`top-left` on everything it translates, because every stage the engine's own build bakes carries the
+clip-space y negation. This package bakes its GLSL by hand and that stage left y alone, so it claimed
+a negation it did not carry: `npm run gate:gpu` went from 8 of 8 figures agreeing to 1 of 8, with
+`surface` at 61.00 per cent of its pixels within 8 of 255 against 97.51, and every disagreeing
+figure's inked share up by about half, which is a picture drawn over its own mirror.
+
+**Two of the six were not workarounds and the planning session is where that was read.** The gate has
+never screenshotted a canvas: that reading describes the spike, and `gates/gpu.mjs` has read through
+`FrameRenderer.frame` since it was written. And cutting a clip into the geometry places an edge a
+scissor cannot: a scissor is whole pixels and the engine's validator refuses a rectangle that is not,
+where `matrix`'s box runs from 94.2857 to 608.5714 pixels across and `surface`'s from 230.6250 to
+474.3750, so rounding moves an edge by up to 0.4286 of a pixel.
+
+**What the eight figures read now, against what they read at 2.8.0**, whole figure against whole
+figure, since taking the refusal out puts the blended marks into the drawable list and that list is
+not the same list either side: `tangent` 95.02 per cent within 8 to 98.52 with its worst channel 252
+to 126, `portrait` 96.24 to 98.28, `matrix` 97.04 to 98.29, `surface` 97.51 to 97.75, and `boolean`,
+`frame`, `rotate` and `solids` within 0.02 of where they were. 105 marks were refused across the
+eight and 0 are now. The gate draws them in 251 milliseconds against 300, since one renderer holds
+one program cache across every figure.
+
+**The solid demo gained nothing at this version and that is a fact rather than a gap.** It carries no
+mark under full opacity and no clip, so what it checks here is that 1,060 marks and 11,117 triangles
+still agree with the sheet over 98.68 per cent of its pixels.
+
 **2.8.0 is cut and unpublished, and its eleven done-criteria are verified line by line in the cut's
 own commit.** A dash is drawn as geometry rather than handed to a platform. `dashPath` cuts a path
 into the runs a pattern draws by the SVG specification's own rule, `strokeTrianglesOf` cuts before it
@@ -642,7 +678,7 @@ on and lights both branches of the crossing over the first quarter of the turn.
 on.** The package holds no font, so a write sweeps a rectangular clip across a label and takes how
 far it runs as a number the figure gives. A letter arrives whole from its left edge and the SVG
 painter keeps writing the label as text. What still wants outlines is a plain label drawn on a card,
-which is 2.9.0.
+which is 2.10.0.
 
 **2.3.0 is cut and unpublished, and its eight done-criteria are verified line by line in the cut's own
 commit.** A figure may write a matrix whose every entry answers to a name, a table whose columns are
@@ -1372,155 +1408,6 @@ and `difference = A less the overlap` to 1.776e-15. Two circles crossed at every
 tolerance being an absolute distance. Two 400-piece paths unite in 48ms, so the crossing search needs
 no box test in front of it and the quadratic over piece pairs is not worth removing.
 
-## The items
-
-### 2.9.0 The engine at 0.5.0, and the workarounds the painter carries taken out
-
-**The GPU painter works around what `@altpsyche/engine` 0.4.0 could not express, and 0.5.0 expresses
-most of it.** The step list is below, written on 2026-09-12. Six workarounds are named in the gaps
-section above. This planning session read each one against the tree and against the engine's 0.5.0
-door, and the reading moves two of them: one is not in the tree at all, and one is a measurement
-rather than a removal.
-
-**What the painter and the gate do today.** `gpuSurface` asks for a card with `requestWebGPUDevice`,
-reads both backends' capabilities with `webgpuCapabilities` and `webgl2Capabilities`, calls the
-engine's `resolve` over an empty frame, builds a renderer with `createFrameRenderer`, and wraps the
-drawing calls in a translation through `glslFrameOf` because the WebGL 2 backend throws on a WGSL
-frame. `unblended` names every mark under full opacity as refused on WebGL 2, since that backend
-applied no blend. `gpuFrame` cuts each clip box into the mark's triangles with `clipTriangles`. The
-gate builds a fresh canvas for each figure, because disposing a renderer used to lose the canvas's
-context for good.
-
-**Today's reading, which is what the steps quote.** `npm run gate:gpu` draws all eight committed
-figures on `webgl2` and all eight agree: within 8 of 255 over 95.02 per cent of the pixels at worst,
-which is the flat demo, and over 99.83 at best, which is `frame`. 105 marks are refused across the
-eight, and every one of them is refused by `unblended`: `matrix` 12, `portrait` 24, `surface` 6 and
-`tangent` 63, with `boolean`, `frame`, `rotate` and `solids` refusing none. Counting the marks
-directly gives the same 105 under full opacity, so nothing else is being refused. The suite is 1,371
-tests over 91 files and the door is 217 values and 247 types.
-
-**The blend is the workaround with a number behind it.** WebGL 2 applies the blend a pipeline names
-as of 0.5.0, measured there against WebGPU at 0 of 1,440,000 channels differing over nine of ten
-presets. So `unblended` is a refusal for a defect that is fixed, and taking it out takes the refused
-count from 105 to 0 and makes each figure's whole reading its drawable reading. The flat demo is
-where that shows most: 87.42 per cent of its pixels are exactly equal over the whole figure against
-92.96 over the drawable marks, and 95.02 per cent within 8 against 98.56.
-
-**Two of the six are not removals, and saying which is what this session is for.**
-
-**The gate does not screenshot a canvas.** That line describes the spike, which read every pixel that
-way because no readback was at the door. `gates/gpu.mjs` has read through `pixelsGpu` since it was
-written, and `pixelsGpu` calls `FrameRenderer.frame`, which draws and reads in one step. `Surface.read()`
-is new in 0.5.0 and belongs to the live surface `createSurface` runs a loop behind, which is not the
-shape this painter has: a painter draws one named time on demand and owns no loop. So there is
-nothing to take out here and nothing to take up, and the gaps section is corrected rather than worked.
-
-**The scissor is a measurement before it is a removal.** `RenderPassSpec.scissor` is new in 0.5.0 and
-is pass state, where a clip is a property of one mark, so a scissor costs one pass per run of
-consecutive marks sharing a clip. Across the eight figures at their still times, 120 of 1,872 marks
-carry a clip, there are 3 distinct boxes, and the marks fall into 12 such runs, so the frame goes
-from 8 passes over the eight figures to 12. That cost is small and the accuracy is the question
-instead. `clipTriangles` cuts the geometry at the box edge in figure units, so the cut edge is
-antialiased by the same four samples the rest of the picture is, where a scissor keeps whole pixels
-and the engine's own validator refuses a rectangle that is no whole number of pixels. A clip box in
-figure units lands on a fractional pixel in general. So step 5 draws the clipped figures both ways,
-compares each against the SVG painter, and keeps the form that agrees. **What would change the
-answer** is a clipped figure whose triangles are so many that cutting them costs more than the pass
-does, and nothing in the demos is near that: the three clipped figures draw 136, 2,209 and 1,432
-triangles.
-
-**One workaround shrinks rather than leaving.** `openRenderer` answers the selection and translates
-the frame it is opened with, and the WebGL 2 backend still throws `WebGL 2 was handed a wgsl frame to
-draw` on any later frame, so a painter that opens once and draws many times still calls `glslFrameOf`
-per frame. The selection code goes; the per-frame translation stays. That residue is a reading for
-the engine's roadmap rather than a second attempt here.
-
-**The peer range moves and a consumer has to ask for it.** A caret range on a `0.x` version tracks the
-last number alone, so a consumer on `^0.4.0` picks up nothing here until it names `^0.5.0`. The engine
-calls 0.5.0 breaking: `StencilMode` and `Capability` each gain two members, `dispose()` no longer
-takes the canvas with it, and four frame descriptions that used to draw are now refused by name. This
-package names none of those types and its frame names `requires: ['msaa']` and draws with
-`{ instances: 1 }` on a pipeline that carries geometry, which is the form the engine kept.
-
-**Which step the demos gain from is step 2**, and it is the only one that changes what a card draws:
-the flat demo has 63 marks under full opacity and the solid demo has none. **The solid demo gains
-nothing at this version**, which is a fact rather than a gap. It carries no mark under full opacity
-and no clip, so what it checks here is that 1,060 marks and 11,117 triangles still agree with the
-sheet over 98.70 per cent of its pixels.
-
-**The steps.** Each is one commit and each names the measurement its commit quotes.
-
-- [x] **1. The engine moves to 0.5.0.** Both ranges name `^0.5.0`, and the baked GLSL vertex stage
-      negates clip-space y, which the move made necessary: the WebGL 2 backend renders into a target
-      of its own and blits it now, and it reads a baked translation as carrying that negation
-      already, so a hand-written stage that left y alone drew the picture upside down. The range
-      alone took the gate from 8 of 8 agreeing to 1 of 8, with `surface` at 61.00 per cent within 8
-      against its 97.51 and every disagreeing figure's inked share up by about half, which is a
-      picture drawn over its own mirror. **Measured:** with the negation, 8 of 8 agree again and the
-      whole-figure readings are better than 0.4.0's everywhere the blend reaches, since the backend
-      now applies it: `tangent` 95.02 per cent within 8 to 98.52 with its worst channel 252 to 126,
-      `portrait` 96.24 to 98.28, `matrix` 97.04 to 98.29, `surface` 97.51 to 97.75. `boolean`,
-      `frame`, `rotate` and `solids` have no mark under full opacity and read within 0.02 of what
-      they read before. Refused is still 105, which step 2 is. 1,372 tests over 91 files, type-check
-      and build clean.
-- [x] **2. A mark under full opacity is drawn rather than refused.** `unblended` is out of
-      `paint/gpu.ts`, since the backend under it applies the blend a pipeline names. **Measured:**
-      105 refused across the eight figures before and 0 after, so every figure's whole reading and
-      drawable reading are one reading. Whole against whole, `tangent` 95.02 per cent within 8 to
-      98.52, `portrait` 96.24 to 98.28, `matrix` 97.04 to 98.29, `surface` 97.51 to 97.75, and the
-      four figures with no mark under full opacity within 0.02. 1,372 tests over 91 files.
-- [x] **3. The door that opens a renderer.** `gpuSurface` calls `openRenderer` and names none of
-      `requestWebGPUDevice`, `webgpuCapabilities`, `webgl2Capabilities`, `resolve` or
-      `createFrameRenderer`, and the refusal a caller sees is the engine's own sentence.
-      **Measured:** `paint/gpu.ts` 214 lines to 192, the eight figures' readings identical to step 2
-      to the last digit, and 1,372 tests over 91 files. Three readings about that door went to the
-      found list below: the per-frame translation that stays, the `requires` check that leaves with
-      `resolve`, and a refusal naming a backend the caller excluded.
-- [x] **4. One canvas for the whole gate.** `gates/gpu.mjs` makes one canvas and one surface for all
-      eight figures, since disposing a renderer leaves the canvas alone as of 0.5.0, and the last
-      figure is drawn again through a second surface opened on that same canvas. **Measured:** 8
-      canvases to 1; the redrawn figure 87.51 per cent equal against 87.51 with its worst channel 126
-      against 126; the eight readings identical to step 3; and the drawing 300 milliseconds over the
-      eight to 251, since one renderer holds one program cache across every figure.
-- [x] **5. A scissor against a cut, decided by the reading.** The cut stays and the reading is what
-      says so, and the reading is not the one the plan named: two of the three clip boxes cannot be
-      written as a scissor at all, so there is no second picture to compare. A scissor is whole
-      pixels and the engine's validator refuses a rectangle that is not. **Measured:** across the
-      eight figures at their still times, `matrix`'s box runs from 94.2857 to 608.5714 pixels and
-      12.8571 to 527.1429, and `surface`'s from 230.6250 to 474.3750 and 356.2500 to 539.0625, so
-      rounding moves an edge by up to 0.4286 of a pixel and 0.3750; `tangent`'s box lands on whole
-      pixels at 668, 948, 12 and 138 and would round to itself. Cutting the geometry places each edge
-      exactly and leaves the four samples to resolve it, so the cut is the accurate form rather than
-      the workaround this row called it.
-- [ ] **6. The version is cut.** `package.json` reads 2.9.0, the done-criteria below are verified line
-      by line, and the ladder's 2.9.0 row is deleted. **Measurement:** the eight figures' readings, the
-      door's value and type counts, and the suite, type-check and build.
-
-**Done-criteria.**
-
-1. `package.json` names `@altpsyche/engine` at `^0.5.0` in both `peerDependencies` and
-   `devDependencies`, and the installed copy answers 0.5.0.
-2. `npm test`, `npm run type-check` and `npm run build` are green, with the test count quoted.
-3. `unblended` is gone from `paint/gpu.ts` and no mark is refused there for its opacity.
-4. `npm run gate:gpu` reports 0 marks refused across the eight figures, against 105 today.
-5. Every figure's whole reading and drawable reading are the same numbers, since nothing is refused.
-6. Each of the eight figures agrees within 8 of 255 over at least the 97 per cent floor, and no
-   figure's whole-figure share is below the whole-figure share it reads today. **The comparison is
-   whole against whole rather than drawable against drawable**, which step 2 corrected: taking the
-   refusal out puts the blended marks into the drawable list, so that list is not the same list
-   either side of the step and comparing its shares compares two different pictures.
-7. `paint/gpu.ts` calls `openRenderer` and names none of the five selection calls step 3 lists.
-8. `gates/gpu.mjs` makes one canvas for all eight figures.
-9. The scissor reading is in this file with the pixel each box's edges fall on, and the frame keeps
-   the cut, which is the form that can place them.
-10. The per-frame translation that stays is written into the found list, in the sentence the engine's
-    roadmap takes.
-11. The door is 217 values and 247 types, since this version takes nothing out of it and adds nothing
-    to it.
-12. The gaps section says the gate reads through `FrameRenderer.frame` rather than screenshotting, and
-    the three lines naming a label on a card, a recorder
-    with no page behind it and a canvas that satisfies the recorder's seam as 2.9.0 read 2.10.0.
-
 ## Found while working, not yet queued
 
 - **A renderer `openRenderer` opened for a translated frame still leaves every later frame to the
@@ -1741,7 +1628,7 @@ sheet over 98.70 per cent of its pixels.
   `FrameFiller` there is `fill(target, seconds, index, clipSeconds)` with `settle` and `dispose`,
   which is the parameterised sink the 2.6.0 entry above argues for, in a tree that ships. Taking it
   means `CanvasLike` in place of `CanvasRenderingContext2D`, which is what lets a canvas with no page
-  behind it satisfy the same seam at 2.9.0. **The walk has already drifted**: that file counts
+  behind it satisfy the same seam at 2.10.0. **The walk has already drifted**: that file counts
   `Math.floor(duration * fps)` frames where `frameTimesOf` counts `Math.max(1, Math.round(duration *
   fps))`, so a figure of 1.999 seconds at 30 frames a second is 59 frames there and 60 here.
 
