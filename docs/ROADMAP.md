@@ -1448,11 +1448,19 @@ sheet over 98.70 per cent of its pixels.
 
 **The steps.** Each is one commit and each names the measurement its commit quotes.
 
-- [ ] **1. The engine moves to 0.5.0.** `peerDependencies` and `devDependencies` both name `^0.5.0`,
-      and nothing else changes, so what the gate reports afterwards is the engine's own doing.
-      **Measurement:** each of the eight figures' equal share, within-8 share, worst channel, refused
-      count and triangle count, before and after; and the suite, the type-check and the build, with
-      the test count quoted.
+- [x] **1. The engine moves to 0.5.0.** Both ranges name `^0.5.0`, and the baked GLSL vertex stage
+      negates clip-space y, which the move made necessary: the WebGL 2 backend renders into a target
+      of its own and blits it now, and it reads a baked translation as carrying that negation
+      already, so a hand-written stage that left y alone drew the picture upside down. The range
+      alone took the gate from 8 of 8 agreeing to 1 of 8, with `surface` at 61.00 per cent within 8
+      against its 97.51 and every disagreeing figure's inked share up by about half, which is a
+      picture drawn over its own mirror. **Measured:** with the negation, 8 of 8 agree again and the
+      whole-figure readings are better than 0.4.0's everywhere the blend reaches, since the backend
+      now applies it: `tangent` 95.02 per cent within 8 to 98.52 with its worst channel 252 to 126,
+      `portrait` 96.24 to 98.28, `matrix` 97.04 to 98.29, `surface` 97.51 to 97.75. `boolean`,
+      `frame`, `rotate` and `solids` have no mark under full opacity and read within 0.02 of what
+      they read before. Refused is still 105, which step 2 is. 1,372 tests over 91 files, type-check
+      and build clean.
 - [ ] **2. A mark under full opacity is drawn rather than refused.** `unblended` goes out of
       `paint/gpu.ts`, since the backend under it applies the blend a pipeline names.
       **Measurement:** the refused count per figure, 105 across the eight before and the count after;

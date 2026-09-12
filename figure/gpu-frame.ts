@@ -189,7 +189,13 @@ fn fragmentMain(painted: Painted) -> @location(0) vec4f {
 `;
 
 /** The same two stages in GLSL ES 3.00, which is what lets a device with no
- * WebGPU draw the frame on WebGL 2. */
+ * WebGPU draw the frame on WebGL 2.
+ *
+ * The vertex stage negates clip-space y, which is the first half of the only way
+ * WebGL 2 has of giving a WGSL frame its own top-left framebuffer origin, and the
+ * winding inversion the backend applies is the second. A baked translation is
+ * read as carrying both, so a stage leaving y alone draws the picture upside
+ * down. */
 const GLSL_VERTEX = `#version 300 es
 layout(location = 0) in vec2 position;
 layout(location = 1) in vec4 shade;
@@ -197,7 +203,7 @@ out vec4 painted;
 
 void main() {
   painted = shade;
-  gl_Position = vec4(position, 0.0, 1.0);
+  gl_Position = vec4(position.x, -position.y, 0.0, 1.0);
 }
 `;
 

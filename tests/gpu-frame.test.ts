@@ -203,6 +203,16 @@ describe('gpuFrame', () => {
     const pipeline = built.frame.pipelines[0];
     expect(pipeline.kind === 'render' && 'wgsl' in pipeline.source && pipeline.source.glsl).toBeDefined();
   });
+
+  it('negates clip-space y in the baked stage, so both backends draw the same way up', () => {
+    // A baked translation is read as carrying the negation the top-left origin
+    // needs, and the backend inverts the winding to match rather than flipping
+    // the picture back afterwards.
+    const built = gpuFrame([], straight, TINY);
+    const pipeline = built.frame.pipelines[0];
+    const vertex = pipeline.kind === 'render' && 'wgsl' in pipeline.source ? pipeline.source.glsl?.vertex : undefined;
+    expect(vertex).toContain('-position.y');
+  });
 });
 
 describe('the demos as a frame description', () => {
