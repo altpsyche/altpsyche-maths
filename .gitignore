@@ -10,3 +10,7 @@ recordings/
 # What `npm pack` leaves behind, which is the thing that gets published rather
 # than something to commit.
 *.tgz
+
+# The subset the font generator cuts, which is the same bytes the generated
+# module already carries.
+font/*.ttf

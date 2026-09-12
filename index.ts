@@ -40,6 +40,8 @@ export type { BooleanOptions } from './figure/boolean.js';
 export { containsPoint, flattenPath, nearestEdge, windingAt } from './figure/inside.js';
 export { clipTriangles, strokeTrianglesOf, triangleArea, trianglesOf } from './figure/triangles.js';
 export type { TriangleOptions } from './figure/triangles.js';
+export { readFont, shippedFont } from './figure/font.js';
+export type { Font } from './figure/font.js';
 export { gpuFrame } from './figure/gpu-frame.js';
 export type { GpuFrame, GpuFrameOptions } from './figure/gpu-frame.js';
 export { gpuSurface, paintGpu, pixelsGpu } from './paint/gpu.js';

@@ -1411,6 +1411,18 @@ frame round a picture is a shape.
   triangles. A rectangle given either way round on either axis names the same box.
 - `triangleArea(corners)` — how much area a list of triangles covers, which is what a triangulation
   is held to.
+- `readFont(bytes)` — a TrueType file read into the `Font` a label is drawn from. The tables read are
+  the ones a label needs: `head` for how many units an em is divided into, `maxp` for how many glyphs
+  there are, `cmap` for which glyph a code point is, `hhea` and `hmtx` for how far the pen moves after
+  each one, and `loca` and `glyf` for where each outline sits. A file whose version word is neither
+  TrueType's nor `true` is refused by name, and so is a missing table.
+- `Font` — the `unitsPerEm` a glyph's coordinates are measured in, the `glyphCount`, the `ascent` and
+  `descent` of a line as positive numbers of font units, `glyphFor(codePoint)` and
+  `advanceOf(glyph)`, and the `bytes` and `outlines` a glyph reader takes.
+- `shippedFont()` — the typeface this package carries, which is Noto Sans subset to Latin-1 and the
+  punctuation a figure writes, 15,148 bytes over 205 glyphs under the SIL Open Font License 1.1. The
+  bytes are behind a call rather than an import at the top of a file, so a consumer who never draws a
+  label never fetches them, and one reading is held however often it is asked for.
 - `gpuFrame(marks, view, options)` — a list of marks as `@altpsyche/engine`'s own `FrameGraph`, which
   is a value rather than a drawing. The geometry is triangles in clip space and the shade is a colour
   per vertex, so a mark's opacity is in its alpha and its clip is in its triangles, and the whole

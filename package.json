@@ -31,6 +31,7 @@
   "files": [
     "dist",
     "LICENSE",
+    "font/LICENSE-NotoSans.txt",
     "README.md"
   ],
   "scripts": {
@@ -40,7 +41,8 @@
     "gate:record": "npm run build && node gates/record.mjs",
     "type-check": "tsc --noEmit -p tsconfig.json",
     "prepack": "npm run build",
-    "gate:gpu": "npm run build && node gates/gpu.mjs"
+    "gate:gpu": "npm run build && node gates/gpu.mjs",
+    "font": "node font/build.mjs"
   },
   "devDependencies": {
     "@altpsyche/engine": "^0.5.0",

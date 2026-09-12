@@ -1489,12 +1489,16 @@ The suite is 1,372 tests over 91 files and the door is 217 values and 247 types.
 
 **The steps.** Each is one commit and each names the measurement its commit quotes.
 
-- [ ] **1. The font ships and its tables are read.** The subset lands as a generated module of base64
-      bytes with its licence beside it, and `readFont` gives the units an em is divided into, how many
-      glyphs there are, which glyph a code point is, and how far each glyph advances.
-      **Measurement:** the module's byte count and the font's; the glyph count; every one of the 38
-      characters the demos write resolving to a glyph that is not the missing-glyph one; and the
-      advance of a known letter against what `fontTools` reads from the same file.
+- [x] **1. The font ships and its tables are read.** `figure/font-bytes.ts` is the subset as base64,
+      written by `npm run font` and not by hand, with the licence at `font/LICENSE-NotoSans.txt` and in
+      `package.json`'s `files`. `readFont` reads `head`, `maxp`, `cmap`, `hhea`, `hmtx` and `loca`,
+      and `shippedFont` holds one reading behind a dynamic import. **Measured:** 15,148 bytes of font,
+      20,200 characters of base64, a 22,882-byte module; 1,000 units to the em over 205 glyphs, an
+      ascent of 1,069 and a descent of 293, every number the same as `fontTools` reads from the same
+      file, and the same for the glyph index and advance of `m` at 78 and 935, `i` at 74 and 258, the
+      space at 1 and 260, `0` at 17 and 572 and `a` at 66 and 561; all 38 characters the demos write
+      resolving to a glyph past the missing-glyph box. The door is 219 values and 248 types. 1,382
+      tests over 92 files.
 - [ ] **2. A glyph's outline as a path.** `glyphPath` gives a glyph's contours as this package's own
       cubic path in font units, for a simple glyph and for a composite one under its transform, with
       each quadratic converted to the cubic that is the same curve. **Measurement:** a quadratic
