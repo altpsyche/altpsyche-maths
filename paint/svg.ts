@@ -95,6 +95,17 @@ export interface SvgMarkupOptions {
    * em, which is a rule no font states and no other painter can read.
    */
   font?: Font;
+  /**
+   * Whether the font named above is carried in the sheet, as a `@font-face` rule
+   * whose source is the font's own bytes.
+   *
+   * A sheet read inside an `<img>` fetches nothing: no stylesheet, no script and
+   * no font file. So a family named in a mark is set only where the reader's
+   * machine already has it, and the bytes written here are the one way the
+   * letters are the same letters on every machine. They cost what the font
+   * weighs, once per sheet.
+   */
+  carryFont?: boolean;
 }
 
 /** The `d` attribute: a move to the start, a cubic per segment, and a close
@@ -324,9 +335,30 @@ function plainValue(value: string): boolean {
   return !/[<>&{};"]/.test(value);
 }
 
+/** A font's bytes as base64, which is what a `url(data:...)` carries. The
+ * characters are gathered one at a time because a spread of fifteen thousand
+ * arguments overflows a call stack. */
+function base64Of(bytes: Uint8Array): string {
+  let binary = '';
+  for (let at = 0; at < bytes.length; at += 1) binary += String.fromCharCode(bytes[at]);
+  return btoa(binary);
+}
+
 /**
- * The theme and the ground as a `<style>` element, the light half on `:root` and
- * the dark one behind `prefers-color-scheme`.
+ * The font as a face of the sheet's own, so a label is set in it wherever the
+ * sheet is read rather than only where the family is installed.
+ *
+ * A family whose name would need escaping is dropped rather than written, since
+ * a quote or a brace inside the rule closes the declaration and then the element.
+ */
+function faceRule(font: Font | undefined): string {
+  if (!font || !plainValue(font.family) || font.family.includes("'")) return '';
+  return `@font-face{font-family:'${font.family}';src:url(data:font/ttf;base64,${base64Of(font.bytes)}) format('truetype')}`;
+}
+
+/**
+ * The theme, the ground and the face as one `<style>` element, the light half of
+ * the theme on `:root` and the dark one behind `prefers-color-scheme`.
  *
  * An entry whose name or either colour would need escaping is left out, which
  * leaves the mark on the colour written inside its own `var()` rather than on a
@@ -334,19 +366,23 @@ function plainValue(value: string): boolean {
  * escaping is dropped whole, since half a ground is a sheet painted on white by
  * accident.
  */
-function themeStyle(theme: SvgTheme | undefined, ground: SvgColour | undefined): string {
+function sheetStyle(theme: SvgTheme | undefined, ground: SvgColour | undefined, face: string): string {
   const names = theme
     ? Object.keys(theme).filter(
         (name) => PROPERTY.test(name) && plainValue(theme[name].light) && plainValue(theme[name].dark)
       )
     : [];
   const painted = ground && plainValue(ground.light) && plainValue(ground.dark) ? ground : undefined;
-  if (names.length === 0 && painted === undefined) return '';
+  if (names.length === 0 && painted === undefined && face === '') return '';
   const block = (side: 'light' | 'dark') => {
     const properties = theme ? names.map((name) => `--${name}:${theme[name][side]}`) : [];
     return [...properties, ...(painted ? [`background:${painted[side]}`] : [])].join(';');
   };
-  return `<style>:root{${block('light')}}@media(prefers-color-scheme:dark){:root{${block('dark')}}}</style>`;
+  const colours =
+    names.length === 0 && painted === undefined
+      ? ''
+      : `:root{${block('light')}}@media(prefers-color-scheme:dark){:root{${block('dark')}}}`;
+  return `<style>${face}${colours}</style>`;
 }
 
 /**
@@ -362,7 +398,7 @@ export function svgMarkup(
   height: number,
   options: SvgMarkupOptions = {}
 ): string {
-  const style = themeStyle(options.theme, options.ground);
+  const style = sheetStyle(options.theme, options.ground, options.carryFont ? faceRule(options.font) : '');
   const written = (element: SvgElement): string => {
     const attributes = Object.entries(element.attributes)
       .map(([name, value]) => `${name}="${escaped(value)}"`)

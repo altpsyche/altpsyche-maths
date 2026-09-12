@@ -38,6 +38,7 @@ import {
   widthAt,
   type Figure,
   pointOn,
+  shippedFont,
   type Mark,
   type Taper,
   type Vec2,
@@ -288,7 +289,7 @@ describe('the committed pictures', () => {
     }
   });
 
-  it('name a face the reader already has, since a sheet in an image loads nothing', () => {
+  it('fetch nothing, since a sheet read inside an image loads no external resource', () => {
     // A generic name is what the browser answers with when none of the families
     // is installed, so the stack ending in one is what makes it resolve offline.
     const generic = ['serif', 'sans-serif', 'monospace', 'cursive', 'fantasy', 'system-ui'];
@@ -297,12 +298,26 @@ describe('the committed pictures', () => {
     for (const entry of named) expect(entry).toMatch(/^(?:[A-Za-z][A-Za-z0-9-]*|'[A-Za-z][A-Za-z0-9 -]*')$/);
     for (const sheet of sheets) {
       const markup = sheet.markup();
-      expect(markup).not.toContain('@font-face');
       expect(markup).not.toContain('@import');
-      // A gradient's fill is `url(#id)`, which names an element of the sheet
-      // itself, so what is forbidden is a reference reaching outside it.
-      expect(markup).not.toMatch(/url\((?!#)/);
+      // A gradient's fill is `url(#id)` and the face's source is `url(data:...)`,
+      // and both are the sheet's own bytes. What is forbidden is a reference
+      // reaching outside it, which is every other form.
+      expect(markup).not.toMatch(/url\((?!#|data:)/);
       expect(markup).not.toContain('<link');
+    }
+  });
+
+  it('carry the face they name, so the letters are the same letters on every machine', async () => {
+    const font = await shippedFont();
+    for (const sheet of sheets) {
+      const markup = sheet.markup();
+      expect(markup, sheet.file).toContain(`@font-face{font-family:'${font.family}'`);
+      expect(markup, sheet.file).toContain('src:url(data:font/ttf;base64,');
+      // A baseline placed from the font's own metrics is written into the y, and
+      // a sheet that named one to the browser instead would be read in whatever
+      // that browser takes the name to mean.
+      expect(markup, sheet.file).not.toContain('dominant-baseline');
+      expect(markup, sheet.file).toContain('font-kerning="none"');
     }
   });
 

@@ -10,6 +10,7 @@ import {
   marksAt,
   extentAt,
   readFigure,
+  shippedFont,
   svgMarkup,
   writeFigure,
   viewAt,
@@ -72,6 +73,10 @@ export const SHOWN_AT_STRIP = 820;
  * surface's own ramp, which follows the ground the way the rest do. */
 const SHEET_THEME = { ...THEME, ...SHADE_THEME };
 
+/** The typeface every sheet is written in and carries. It is read once here
+ * rather than per sheet, since one reading answers for all sixteen. */
+const FONT = await shippedFont();
+
 /** The floor in written units, from the floor on the page and how far the sheet
  * is scaled to reach the width it is shown at. */
 function writtenFloor(width: number, shownAt: number): number {
@@ -83,6 +88,8 @@ export function stillMarkup(figure: Figure, seconds: number, width = WIDTH, heig
     theme: SHEET_THEME,
     ground: GROUND,
     minTextSize: writtenFloor(width, SHOWN_AT),
+    font: FONT,
+    carryFont: true,
   });
 }
 
@@ -145,6 +152,8 @@ export function markupFor(drawn: Drawn): string {
     theme: SHEET_THEME,
     ground: GROUND,
     minTextSize: writtenFloor(drawn.width, drawn.shownAt),
+    font: FONT,
+    carryFont: true,
   });
 }
 

@@ -1495,11 +1495,17 @@ door is 226 values and 250 types. `npm run gate:gpu` draws all eight above both 
 
 **The steps.** Each is one commit and each names the measurement its commit quotes.
 
-- [ ] **1. A sheet carries the face it names.** `SvgMarkupOptions` gains a field that writes the
-      shipped face into the sheet's own `<style>` as a rule whose source is the font's bytes, beside
-      the theme that element already carries, and `demos/render.ts` asks for it and passes `font`.
-      **Measurement:** each of the sixteen sheets' bytes before and after, how many of the 74 labels
-      carry a `y` from the font's metrics rather than a `dominant-baseline`, and the door's counts.
+- [x] **1. A sheet carries the face it names.** `SvgMarkupOptions` gains `carryFont`, which writes
+      the font into the sheet's own `<style>` as a `@font-face` whose source is the font's bytes,
+      beside the theme that element already carries, and `demos/render.ts` asks for it and passes
+      `font`. **Measured:** 0 of the sixteen sheets carried a face and 16 do, each holding exactly the
+      15,188 bytes of `font/noto-sans-latin.ttf` and each still parsing as XML; 275 of the 374 labels
+      named their baseline to the browser as a `dominant-baseline` and 0 do, every one now placed from
+      the font's metrics and written into its `y`, with kerning off. The face costs a flat 20,280
+      bytes a sheet whatever that sheet writes: 3,422,780 bytes over the sixteen to 3,748,183, which
+      is 9.5 per cent, from 1.5 per cent on `solids-strip.svg` at 1,360,393 to 1,381,130 to 1,030.7
+      per cent on `frame.svg` at 1,977 to 22,354. The door is 226 values and 250 types, unchanged,
+      since `carryFont` is a field of an interface already at the door. 1,410 tests over 94 files.
 - [ ] **2. Every committed sheet is shown.** The README gains the `frame` demo, and the four strips
       nothing shows are placed beside the feature each one shows. **Measurement:** sheets committed
       against sheets referenced, and each page's total image weight.
