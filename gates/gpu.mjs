@@ -28,10 +28,8 @@
  *
  * Each figure is read twice. The whole figure is one reading, and the figure with
  * the marks the painter named as refused taken out is the other, which is what
- * measures this painter rather than the backend under it. On WebGL 2 that removes
- * every mark under partial opacity, since that backend applies no blend at all,
- * and the difference between the two readings is the size of that gap. The floor
- * below is against the second reading and the first is printed beside it.
+ * measures this painter rather than the backend under it. The floor below is
+ * against the second reading and the first is printed beside it.
  *
  * Run it with `npm run gate:gpu`. It writes nothing.
  */

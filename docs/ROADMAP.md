@@ -1461,11 +1461,12 @@ sheet over 98.70 per cent of its pixels.
       `frame`, `rotate` and `solids` have no mark under full opacity and read within 0.02 of what
       they read before. Refused is still 105, which step 2 is. 1,372 tests over 91 files, type-check
       and build clean.
-- [ ] **2. A mark under full opacity is drawn rather than refused.** `unblended` goes out of
-      `paint/gpu.ts`, since the backend under it applies the blend a pipeline names.
-      **Measurement:** the refused count per figure, 105 across the eight before and the count after;
-      and each figure's whole reading against its own drawable reading, which the two readings being
-      the same list makes equal.
+- [x] **2. A mark under full opacity is drawn rather than refused.** `unblended` is out of
+      `paint/gpu.ts`, since the backend under it applies the blend a pipeline names. **Measured:**
+      105 refused across the eight figures before and 0 after, so every figure's whole reading and
+      drawable reading are one reading. Whole against whole, `tangent` 95.02 per cent within 8 to
+      98.52, `portrait` 96.24 to 98.28, `matrix` 97.04 to 98.29, `surface` 97.51 to 97.75, and the
+      four figures with no mark under full opacity within 0.02. 1,372 tests over 91 files.
 - [ ] **3. The door that opens a renderer.** `gpuSurface` calls `openRenderer` and names none of
       `requestWebGPUDevice`, `webgpuCapabilities`, `webgl2Capabilities`, `resolve` or
       `createFrameRenderer`. The refusal a caller sees is the engine's own sentence where it has one.
@@ -1493,7 +1494,10 @@ sheet over 98.70 per cent of its pixels.
 4. `npm run gate:gpu` reports 0 marks refused across the eight figures, against 105 today.
 5. Every figure's whole reading and drawable reading are the same numbers, since nothing is refused.
 6. Each of the eight figures agrees within 8 of 255 over at least the 97 per cent floor, and no
-   figure's share is below the drawable share it reads today.
+   figure's whole-figure share is below the whole-figure share it reads today. **The comparison is
+   whole against whole rather than drawable against drawable**, which step 2 corrected: taking the
+   refusal out puts the blended marks into the drawable list, so that list is not the same list
+   either side of the step and comparing its shares compares two different pictures.
 7. `paint/gpu.ts` calls `openRenderer` and names none of the five selection calls step 3 lists.
 8. `gates/gpu.mjs` makes one canvas for all eight figures.
 9. The scissor reading is in this file with both shares, and the frame keeps the form that agreed.

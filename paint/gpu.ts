@@ -176,34 +176,18 @@ function heldBy(surface: GpuSurface): Held {
 }
 
 /**
- * What one backend cannot draw of a list of marks, beyond what the description
- * itself leaves out.
- *
- * The WebGL 2 backend applies no blend: its whole module names `blend` nowhere,
- * where the WebGPU one carries a pipeline's `targets[].blend` through. So a mark
- * under partial opacity is written straight through there rather than mixed with
- * what is behind it, and naming it is what keeps the difference from being
- * silent.
- */
-function unblended(surface: Held, marks: readonly Mark[]): string[] {
-  if (surface.backend !== 'webgl2') return [];
-  return marks.filter((mark) => mark.opacity !== undefined && mark.opacity < 1).map((mark) => mark.id);
-}
-
-/**
  * One list of marks drawn on a card, at the size the surface's canvas is now.
  *
  * What comes back is what the frame left out rather than the picture, since the
  * picture is on the canvas. A text mark is left out because a card has no text
- * vocabulary, and on WebGL 2 a mark under partial opacity is drawn without its
- * blend.
+ * vocabulary, and that is the only reason either backend leaves one out.
  */
 export function paintGpu(surface: GpuSurface, marks: readonly Mark[], view: Transform2D): GpuPainting {
   const held = heldBy(surface);
   const built = gpuFrame(marks, view, sizedFor(held.canvas, held.options));
   held.renderer.resize(held.canvas.width, held.canvas.height);
   held.renderer.draw(held.asDrawn(built.frame), {});
-  return { refused: [...built.refused, ...unblended(held, marks)], triangles: built.triangles };
+  return { refused: built.refused, triangles: built.triangles };
 }
 
 /**
@@ -225,6 +209,6 @@ export async function pixelsGpu(
   const pixels = await held.renderer.frame(held.asDrawn(built.frame), {});
   return {
     pixels,
-    painting: { refused: [...built.refused, ...unblended(held, marks)], triangles: built.triangles },
+    painting: { refused: built.refused, triangles: built.triangles },
   };
 }
