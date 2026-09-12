@@ -1671,6 +1671,23 @@ door is 226 values and 250 types. `npm run gate:gpu` draws all eight above both 
         holding 180 frames as before. 1,426 tests over 94 files to 1,430.
         **The name stays `rotate`,** and the demo now draws four things that are not turns, so the
         name under-describes it. Renaming is its own finding and is queued below.
+  - [ ] **6c. The straight move gets a picture.** `moveBy` is the one animation of the twenty-one
+        that no committed figure drives. `demos/strip.ts` calls the function directly at a fraction
+        of one to carry each frame into its slot, so every one of the eight committed strips is built
+        with it, but the record kind is resolved by no figure and only tests reach that path. It
+        belongs beside the four gestures, since a straight move and a move along a path are the same
+        family and the turn demo is where a span carrying marks is the subject. **The shape of it:**
+        a fifth gesture panel named `nudged`, captioned `moved and moved back`, driven by two
+        `moveBy` spans, the second taking the negated offset, since the figure declares itself a loop
+        and `moveBy` translates the marks it is handed. The gesture rows are then two, two and one:
+        `bigger` beside `walked`, `rippled` beside `rocked`, and `nudged` alone on the row under them
+        at the middle between the two columns, where it has the whole width for its caption. The
+        frame grows by about 4 in height and stays 10.15 wide, which is what holds the smallest glyph
+        at 21.0 pixels on the page, and the strip's `DOWN` follows it. **Measurement:** the panel's
+        marks against the offset at the half and against where they started at the end, both within
+        1e-12; the reading that says the figure is still a loop; the marks at every named time; the
+        sheets' bytes; and both gates.
+
 - [ ] **7. The version is cut.** `package.json` reads 2.11.0, the done-criteria below are verified
       line by line, and the ladder's 2.11.0 row is deleted. **Measurement:** both gates' readings,
       the door's counts, and the suite, type-check and build.
@@ -1690,7 +1707,10 @@ are what makes the pictures right and steps 3 to 6 are what makes them complete.
 5. No node of the figure format carrying geometry of its own is left without a committed figure that
    draws it, and the count is quoted against today's twenty-two. A node whose resolution is one call
    over a spelling a committed figure already draws is held by criterion 7 instead, and the five are
-   `cylinder3`, `torus3`, `surface3`, `vectorField3` and `curve3`.
+   `cylinder3`, `torus3`, `surface3`, `vectorField3` and `curve3`. `sphereCells` and `cubeCells` are
+   the same reading the other way round: step 5a wrote the two panels that hold one solid as
+   `sphere3` and `cube3`, which resolve to those cells and draw them at every frame, so no committed
+   file names the two kinds and `tests/solid3.test.ts` holds both as records.
 6. No animation of the figure format is left without a committed figure that drives it.
 7. Each new node's marks agree with the marks its other spelling draws for the same geometry, by
    tolerance rather than by hash.
