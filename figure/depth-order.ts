@@ -468,6 +468,17 @@ function straightTo(from: Vec2, to: Vec2): Cubic {
 function cutMark(mark: Mark, lines: readonly Depth[], at: number): Piece[] {
   const depth = mark.depth as Depth;
   if (lines.length === 0 || mark.kind === 'text') return [pieceOf(mark, depth, at)];
+  // A shape carrying both is cut twice, since the two are cut differently: the
+  // fill is closed along the line and the stroke is not, and one path cut as a
+  // fill would draw the stroke along every cut as well. The two leave two marks
+  // the way a tapered stroke does, the fill under its own id and the stroke under
+  // that id with the stroke's name on the end.
+  if (mark.fill && mark.stroke) {
+    return [
+      ...cutMark({ ...mark, stroke: undefined }, lines, at),
+      ...cutMark({ ...mark, id: `${mark.id}/stroke`, fill: undefined }, lines, at),
+    ];
+  }
   const dash = mark.stroke?.dash;
   const measure = dash !== undefined && dash.length > 0;
   let parts: Run[][] = [mark.path.map((subpath) => ({ subpath, offset: 0 }))];

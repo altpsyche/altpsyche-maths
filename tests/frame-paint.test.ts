@@ -126,10 +126,10 @@ describe('a walk of the solid demo', () => {
       expect(counted.texts).toBe(11);
       expect(counted.fills + counted.strokes).toBeGreaterThan(own.length - 11);
       // The two painters draw the same pieces, so what one saw is what the other
-      // wrote. A pane of glass carries a fill and a stroke, so the drawing calls
-      // outnumber both.
+      // wrote. A pane of glass carries a fill and a stroke and is painted twice,
+      // until a cut parts the two and leaves each its own piece.
       expect(counted.painted).toBe(counted.elements);
-      expect(counted.fills + counted.strokes + counted.texts).toBeGreaterThan(counted.elements);
+      expect(counted.fills + counted.strokes + counted.texts).toBeGreaterThanOrEqual(counted.elements);
     }
   });
 
@@ -140,7 +140,11 @@ describe('a walk of the solid demo', () => {
     const painted = [...markup.matchAll(/data-mark="([^"]+)"/g)].map((found) => found[1]);
     expect(painted.length).toBeGreaterThan(frame.marks.length);
     for (const id of painted) {
-      expect(ids.has(id) || ids.has(id.slice(0, id.lastIndexOf('/')))).toBe(true);
+      // A piece carries its mark's id with the number of the piece on the end,
+      // and a shape carrying both a fill and a stroke carries the stroke's name
+      // before that, since the two are cut apart.
+      const came = id.replace(/\/\d+$/, '').replace(/\/stroke$/, '');
+      expect(ids.has(came)).toBe(true);
     }
   });
 

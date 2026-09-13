@@ -1616,7 +1616,7 @@ draws all eight figures above both floors, 0.97 without labels and 0.96 with the
       throws it, a figure naming none answers nothing for all three painters, and a caller naming no
       painter is not asked. 8 of 8 demos draw unrefused and `npm run demos` regenerates all sixteen
       sheets to the committed bytes. 1,445 tests over 96 files, from 1,438 over 95.
-- [ ] **5. The flat painters meet the depth rule by cutting.** A new module takes the list of marks
+- [x] **5. The flat painters meet the depth rule by cutting.** A new module takes the list of marks
       and hands back the list a painter draws in order. It splits the list into stretches at every
       mark carrying no depth, since a mark carrying none clears the depths before it, and inside a
       stretch it cuts and sorts. Two marks carrying a depth are equal along a straight line on the
@@ -1628,12 +1628,28 @@ draws all eight figures above both floors, 0.97 without labels and 0.96 with the
       are cut, which is what keeps a grid of cells from being cut by every other cell of it.
       **The demo's own lift lands here**, since a curve on a surface is what the cut has nothing to
       decide between until one of them is lifted, and step 3 measured the number: 0.00348 figure
-      units for this saddle at twelve cells across. **Measurement:** the crossing's 62 sampled points
-      drawn over the saddle at the still against 9, and over the orbit against 9.2 per cent mean and
-      25.8 per cent worst; the lower contour against 23.0 per cent mean and 44.2 per cent worst; the
-      559 of 10,583 places showing the wrong one of the saddle and the plane at the still; the solid
-      demo's mark count against 328 and the time it takes to build one frame against the 33 ms a
-      frame has at 30 frames a second.
+      units for this saddle at twelve cells across. **Three things the plan did not name and the
+      commit did.** Only one mark of a pair is cut, since a piece lying wholly on one side of the
+      line already has one order against the whole of the other. Which of two pieces is nearer is
+      read at the middle of each and, where those disagree, over the whole of whichever piece does
+      not straddle the line. And two marks are compared only where their convex hulls meet rather
+      than where their boxes do, because an order between two shapes that never meet is an order
+      about nothing and enough of them run in rings: 383 rings at the still before that test and 60
+      after, and a ring that is left is broken at the order resting on the smallest difference of
+      depths. **Measured**, sampling each run along itself and casting a ray at the saddle for what
+      the reader should see, at the still and over twelve turns. The crossing is drawn over the
+      saddle at 0 of the 9 places behind it at the still, from 9 of 9, and at 12 of 108 over the
+      orbit, from 108 of 108, four of those where no cell of the twelve-cell mesh covers the place at
+      all. The lower contour is 0 of 14 and 4 of 108, the upper 0 of 5 and 4 of 24, the runs of
+      descent 0 of 7 and 18 of 179, each from all of them. The widest a piece stands against the rule
+      falls from 7.23e-2 to 2.90e-4. Of the 10,583 places a reader sees at the still, the order shows
+      the further of the saddle and the plane at 29, from 576, and at 100 of 32,453 over the orbit,
+      from 1,465; what is left of the 1,118 places showing the wrong surface is the mesh's own, since
+      the depths the marks carry name the right surface there. The 328 marks are cut into 685 pieces
+      and ordering them is 15.7 ms a frame against the 33 ms a frame has at 30 frames a second. The
+      sixteen sheets are 1,345,465 bytes of stills and 3,120,474 of strips, from 693,133 and
+      2,728,660. 1,462 tests over 97 files, from 1,448 over 96, and the door is 229 values and 252
+      types.
 - [ ] **6. The GPU painter keeps a depth buffer.** `gpuFrame` gains a depth texture at four samples,
       a `less-equal` compare with the write on for marks carrying a depth, and a seventh float a
       vertex carrying the depth the three numbers give at that corner. A mark with no depth is drawn
