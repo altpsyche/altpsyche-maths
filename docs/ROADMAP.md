@@ -1550,10 +1550,12 @@ demo was 328 marks at its still, of which 0 carried a depth. `npm run gate:gpu` 
 figures above both floors, 0.97 without labels and 0.96 with them, and `npm run gate:record` wrote 32
 of 32 recordings.
 
-**The reading steps 6 and 7 quote, after step 5.** `npm test` is 1,462 tests over 97 files and the
-door is 229 values and 252 types. The eight stills are 1,635,654 bytes written and the eight strips
-3,177,590. The solid demo is 328 marks at its still, of which 316 carry a depth, and the flat
-painters cut those into 688 pieces in 17.7 ms. Neither gate has been run since step 4.
+**The reading steps 6 and 7 quote, after step 5.** `npm test` is 1,466 tests over 97 files and the
+door is 229 values and 252 types. The eight stills are 1,613,926 bytes written and the eight strips
+3,191,507. The solid demo is 328 marks at its still, of which 278 carry a depth, and the flat
+painters cut those into 727 pieces in 14.9 ms. **Neither gate has been run since step 4**, and the
+GPU gate is what step 6 is measured by, so running it against this tree is the first thing that step
+does.
 
 **The steps.** Each is one commit and each names the measurement its commit quotes.
 
@@ -1650,13 +1652,19 @@ painters cut those into 688 pieces in 17.7 ms. Neither gate has been run since s
       falls from 7.23e-2 to 2.90e-4. Of the 10,583 places a reader sees at the still, the order shows
       the further of the saddle and the plane at 29, from 576, and at 100 of 32,453 over the orbit,
       from 1,465; what is left of the 1,118 places showing the wrong surface is the mesh's own, since
-      the depths the marks carry name the right surface there. The 328 marks are cut into 688 pieces
-      and ordering them is 17.7 ms a frame against the 33 ms a frame has at 30 frames a second. The
-      sixteen sheets are 1,635,654 bytes of stills and 3,177,590 of strips, from 693,133 and
-      2,728,660. 1,462 tests over 97 files, from 1,448 over 96, and the door is 229 values and 252
-      types. **A defect this step found and the commit after it fixed:** a shape carrying both a fill
-      and a stroke had one path cut as a fill and then stroked, so the panes of glass gained a line
-      across each cell wherever the saddle crossed it; the two are cut apart now and leave two marks.
+      the depths the marks carry name the right surface there. The 328 marks are cut into 727 pieces
+      and ordering them is 14.9 ms a frame against the 33 ms a frame has at 30 frames a second. The
+      sixteen sheets are 1,613,926 bytes of stills and 3,191,507 of strips, from 693,133 and
+      2,728,660. 1,466 tests over 97 files, from 1,448 over 96, and the door is 229 values and 252
+      types. **Four defects this step's own picture found, each fixed in a commit of its own.** A
+      shape carrying both a fill and a stroke had one path cut as a fill and then stroked, so the
+      panes of glass gained a line across each cell. A stroked path was cut as a loop wherever its
+      own path was written closed. A ring of pieces that could not be walked back to its start
+      stopped the drain loop and dropped every piece not yet drawn, which is what put a hole through
+      the plane. And pieces of one mark were folded together by the index of the mark rather than by
+      the id of the piece, so a stroke's pieces were folded into the fill's mark and drawn again as
+      fill. The picture is the gate that found all four and no measurement did, which is the reading
+      to carry into step 6.
 - [ ] **6. The GPU painter keeps a depth buffer.** `gpuFrame` gains a depth texture at four samples,
       a `less-equal` compare with the write on for marks carrying a depth, and a seventh float a
       vertex carrying the depth the three numbers give at that corner. A mark with no depth is drawn
