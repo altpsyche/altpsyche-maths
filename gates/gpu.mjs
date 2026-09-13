@@ -208,7 +208,10 @@ async function compare(page, origin, name) {
         const sheet = document.createElement('canvas');
         sheet.width = width;
         sheet.height = height;
-        const context = sheet.getContext('2d');
+        // A canvas the card accelerates answers getImageData with zeros wherever the
+        // browser is drawing to a real display, so the sheet is read off one the
+        // browser keeps in ordinary memory.
+        const context = sheet.getContext('2d', { willReadFrequently: true });
         context.fillStyle = '#ffffff';
         context.fillRect(0, 0, width, height);
         context.drawImage(image, 0, 0, width, height);
