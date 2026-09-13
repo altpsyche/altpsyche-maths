@@ -1544,11 +1544,16 @@ carrying depth makes the order of the list no longer the order of painting, whic
 an existing field means rather than a field added, and the specification's own rule makes that a new
 version. The eight committed figure files are rewritten with `"format": 1` in the step that bumps it.
 
-**Today's reading, which is what the steps quote.** `npm test` is 1,431 tests over 94 files and the
-door is 226 values and 250 types. The eight stills are 693,133 bytes written and the eight strips
-2,728,660. The solid demo is 328 marks at its still, of which 0 carry a depth. `npm run gate:gpu`
-draws all eight figures above both floors, 0.97 without labels and 0.96 with them, and
-`npm run gate:record` writes 32 of 32 recordings.
+**The reading steps 1 to 4 quoted.** `npm test` was 1,431 tests over 94 files and the door 226 values
+and 250 types. The eight stills were 693,133 bytes written and the eight strips 2,728,660. The solid
+demo was 328 marks at its still, of which 0 carried a depth. `npm run gate:gpu` drew all eight
+figures above both floors, 0.97 without labels and 0.96 with them, and `npm run gate:record` wrote 32
+of 32 recordings.
+
+**The reading steps 6 and 7 quote, after step 5.** `npm test` is 1,462 tests over 97 files and the
+door is 229 values and 252 types. The eight stills are 1,635,654 bytes written and the eight strips
+3,177,590. The solid demo is 328 marks at its still, of which 316 carry a depth, and the flat
+painters cut those into 688 pieces in 17.7 ms. Neither gate has been run since step 4.
 
 **The steps.** Each is one commit and each names the measurement its commit quotes.
 
@@ -1645,11 +1650,13 @@ draws all eight figures above both floors, 0.97 without labels and 0.96 with the
       falls from 7.23e-2 to 2.90e-4. Of the 10,583 places a reader sees at the still, the order shows
       the further of the saddle and the plane at 29, from 576, and at 100 of 32,453 over the orbit,
       from 1,465; what is left of the 1,118 places showing the wrong surface is the mesh's own, since
-      the depths the marks carry name the right surface there. The 328 marks are cut into 685 pieces
-      and ordering them is 15.7 ms a frame against the 33 ms a frame has at 30 frames a second. The
-      sixteen sheets are 1,345,465 bytes of stills and 3,120,474 of strips, from 693,133 and
+      the depths the marks carry name the right surface there. The 328 marks are cut into 688 pieces
+      and ordering them is 17.7 ms a frame against the 33 ms a frame has at 30 frames a second. The
+      sixteen sheets are 1,635,654 bytes of stills and 3,177,590 of strips, from 693,133 and
       2,728,660. 1,462 tests over 97 files, from 1,448 over 96, and the door is 229 values and 252
-      types.
+      types. **A defect this step found and the commit after it fixed:** a shape carrying both a fill
+      and a stroke had one path cut as a fill and then stroked, so the panes of glass gained a line
+      across each cell wherever the saddle crossed it; the two are cut apart now and leave two marks.
 - [ ] **6. The GPU painter keeps a depth buffer.** `gpuFrame` gains a depth texture at four samples,
       a `less-equal` compare with the write on for marks carrying a depth, and a seventh float a
       vertex carrying the depth the three numbers give at that corner. A mark with no depth is drawn
@@ -1663,7 +1670,7 @@ draws all eight figures above both floors, 0.97 without labels and 0.96 with the
 - [ ] **7. The demos, the README and the guide say what the version draws.** The sixteen sheets are
       regenerated, the solid demo's still and strip carry the cut crossing, and the guide gains the
       section on depth and on a figure's painters. **Measurement:** the sixteen sheets' bytes against
-      693,133 and 2,728,660, every sheet still shown, and the test count.
+      1,635,654 and 3,177,590, every sheet still shown, and the test count.
 - [ ] **8. The version is cut.** `package.json` reads 3.0.0, the done-criteria below are verified line
       by line, and the ladder's 3.0.0 row is deleted. **Measurement:** both gates' readings, the
       door's counts, and the suite, type-check and build.
@@ -1681,12 +1688,20 @@ on, and step 7 is where a reader sees any of it.
    the other, and what `painters` is, and it says so before the code that reads it.
 4. A `Figure` carries `painters`, absent meaning all three, and each painter refuses a figure that
    does not name it, by name.
-5. No point of the solid demo's crossing is drawn over the saddle at any turn of the orbit, quoted
-   against today's 9 of 62 at the still and 25.8 per cent at its worst.
-6. No point of either contour and no run of descent is drawn over the saddle at any turn, quoted
-   against today's 23.0 per cent mean on the lower contour.
-7. No place a reader sees shows the wrong one of the saddle and the plane, in the flat painters by
-   cutting and on a card by the depth buffer, quoted against today's 559 of 10,583 at the still.
+5. No point of the solid demo's crossing that the drawn saddle hides is drawn over it at any turn of
+   the orbit, quoted against the 9 of 9 at the still and the 108 of 108 over twelve turns that the
+   uncut painter drew. **The criterion says the drawn saddle rather than the saddle**, which step 5
+   corrected: the saddle is drawn as twelve cells across and its silhouette is a cell coarser than
+   the surface's, so a place the surface hides and no cell covers is a place no painter can hide.
+   Four of the twelve places still drawn over after step 5 are that.
+6. The same for either contour and for the three runs of descent, quoted against the 14 of 14, 5 of 5
+   and 7 of 7 at the still that the uncut painter drew.
+7. No place a reader sees shows the wrong one of the saddle and the plane for want of an order, in
+   the flat painters by cutting and on a card by the depth buffer, quoted against the 576 of 10,583
+   at the still the uncut painter showed. **For want of an order** is the same correction: of the
+   1,118 places still showing the wrong surface after step 5, the depths the marks carry name the
+   right surface at all but 29, and what differs there is the twelve-cell mesh rather than the
+   order.
 8. `npm run demos` regenerates all sixteen sheets with no browser and no card, and the demos gate
    compares the regenerated bytes against the committed files, as it does today.
 9. The door's value and type counts are quoted, with each new name at `index.ts`.
@@ -1698,6 +1713,24 @@ on, and step 7 is where a reader sees any of it.
 13. The ladder's 3.0.0 row is deleted and the Now section carries what the version landed.
 
 ## Found while working, not yet queued
+
+- **What the reader sees wrong in the solid demo is now the mesh rather than the order.** After step
+  5 of 3.0.0, 1,118 of 10,583 sampled places at the still show the further of the saddle and the
+  plane, and the depths the marks carry name the right surface at all but 29 of them. The saddle is
+  drawn as twelve flat cells across and the plane cuts it along a curve, so the drawn crossing is
+  twelve straight pieces where the true one is a hyperbola, and the band between the two is what
+  shows the wrong surface. **What closes it** is a finer mesh, and the reading that would choose the
+  number is what a cell of the saddle costs against the true surface inside it: 1.088e-3 at twelve
+  cells across in the values a perspective depth is fitted in. Every cell is a path in the committed
+  sheets, so the size of the pictures is the other half of that reading.
+
+- **A cut piece's id is not stable across frames and `Mark` says every id is.** `depthOrder` gives a
+  piece its mark's id with the number of the piece on the end, and how many pieces a mark is cut into
+  changes as the eye moves. Nothing reads those ids today, since the cut is inside the two flat
+  painters and `marksAt` hands out the uncut list that hit testing and frame comparison read.
+  **What closes it** is either a piece id built from what cut it rather than from a count, or a
+  sentence in the specification saying a painter's own pieces are not marks and carry no stable id.
+  The second is the cheaper and is probably the true one.
 
 - **The span demo is still called `rotate`.** It draws two turns, a swell, a walk into another
   shape, a wave and a rock, and a reader meets the name before the picture. **What closes it** is a
