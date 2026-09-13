@@ -450,6 +450,7 @@ const SHAPES: Readonly<Record<string, Shape>> = {
     names: may(fields('the names of three axes', { x: may(text), y: may(text), z: may(text) })),
     family: may(text),
     weight: may(number),
+    over: may(flag),
   }),
   sectionOptions: fields('what a section takes', {
     over: may(fields('the runs of a surface', { u: may(ref('interval')), v: may(ref('interval')) })),

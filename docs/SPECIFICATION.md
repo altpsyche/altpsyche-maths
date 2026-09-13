@@ -534,6 +534,13 @@ a `lift` of the sagitta carries the curve clear of the cell it lies on. This is 
 calls a polygon offset, and it moves only the depth: where the run is drawn on the page does not
 change.
 
+**`axes3` takes `over`, which is whether the axes are drawn over the picture rather than inside it.**
+Their marks then carry no depth, so nothing in the scene hides a line or a tick number, and the rule
+that a mark carrying no depth clears the depths before it is what makes that so. A number a surface
+covers cannot be read, and the axes are what a reader measures the surface against, so a figure
+drawing a solid over its own middle sets this. Left out, the axes stand in the scene like anything
+else and a surface in front of one hides it.
+
 **A dot in space keeps its `radius` in figure units and does not shrink with distance**, since a dot
 marks where something is rather than how big it is. A label in space keeps its size and stays
 upright for the same reason, and its `options` is a text node's with `offset` beside it, which is how
@@ -856,7 +863,7 @@ renderer is conformant inside that band and wrong outside it in either direction
 | file | bytes | what it exercises |
 | --- | --- | --- |
 | `demos/tangent.figure.json` | 410,650 | the graph domain, a moving view, an inset, two typeset rules, a brace, a field, three runs of bars, an arrow and a callout |
-| `demos/surface.figure.json` | 275,267 | a surface, a plane, a section, streamlines, axes in space and an orbiting camera |
+| `demos/surface.figure.json` | 275,293 | a surface, a plane, a section, streamlines, axes in space and an orbiting camera |
 | `demos/boolean.figure.json` | 14,444 | the three boolean operations through no crossing, one, two and containment |
 | `demos/rotate.figure.json` | 26,211 | a rotation about a box's middle and about a named place, a swell, a walk into another shape, a wave, a rock, a straight move, and a loop |
 | `demos/frame.figure.json` | 6,373 | a mark placed against the frame beside one placed in the figure's own units |

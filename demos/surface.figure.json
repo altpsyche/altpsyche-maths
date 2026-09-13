@@ -2282,6 +2282,7 @@
               "y": "y",
               "z": "z"
             },
+            "over": true,
             "size": 0.22,
             "stroke": {
               "colour": {

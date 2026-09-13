@@ -238,9 +238,9 @@ describe('what a cut leaves', () => {
     const tilted: Mark = { kind: 'path', id: 'tilted', path: circle(vec2(0, 0), 1), fill: ink, depth: leans };
     const drawn = depthOrder([flat, tilted]);
     for (const whole of [flat, tilted]) {
-      const pieces = drawn.filter((mark) => mark.id.startsWith(whole.id) && mark.kind === 'path');
-      const area = pieces.reduce((sum, mark) => sum + Math.abs(areaOf((mark as { path: never }).path)), 0);
-      expect(area).toBeCloseTo(Math.abs(areaOf((whole as { path: never }).path)), 9);
+      const pieces = drawn.filter((mark) => mark.id.startsWith(whole.id));
+      const area = pieces.reduce((sum, mark) => sum + (mark.kind === 'path' ? Math.abs(areaOf(mark.path)) : 0), 0);
+      expect(area).toBeCloseTo(whole.kind === 'path' ? Math.abs(areaOf(whole.path)) : 0, 9);
     }
   });
 

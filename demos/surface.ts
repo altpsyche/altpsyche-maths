@@ -405,6 +405,7 @@ export const scene: NodeRecord = {
         tickLength: 0.08,
         ticks: 4,
         names: { x: 'x', y: 'y', z: 'z' },
+        over: true,
       },
     },
     {

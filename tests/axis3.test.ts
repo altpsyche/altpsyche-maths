@@ -30,6 +30,16 @@ const child = (node: Node, name: string): GroupNode => {
 describe('axes3', () => {
   const looking = camera3({ eye: vec3(4, 3, 5), target: vec3(0, 0, 0), projection: orthographic() });
 
+  it('stands in the scene by default and over the picture where asked', () => {
+    const inside = flatten(axes3('axes', looking, STYLE));
+    expect(inside.every((mark) => mark.depth !== undefined)).toBe(true);
+    const over = flatten(axes3('axes', looking, { ...STYLE, over: true }));
+    expect(over.some((mark) => mark.depth !== undefined)).toBe(false);
+    // Nothing else about the axes moves: the two draw the same marks in the same
+    // places under the same names.
+    expect(over.map((mark) => mark.id)).toEqual(inside.map((mark) => mark.id));
+  });
+
   it('marks each axis with the ticks the flat axes would give it', () => {
     const wanted = ticksOn(RANGE, 5).length;
     const drawn = axes3('axes', looking, STYLE);

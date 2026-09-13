@@ -43,6 +43,16 @@ export interface Axes3Options {
   names?: { x?: string; y?: string; z?: string };
   family?: string;
   weight?: number;
+  /**
+   * Whether the axes are drawn over the picture rather than inside it.
+   *
+   * Their marks then carry no depth, so nothing in the scene hides a line or a
+   * tick number. A number a surface covers cannot be read, and the axes are what
+   * a reader measures the surface against, so a figure drawing a solid over its
+   * own middle asks for this. Left out, the axes stand in the scene like anything
+   * else and a surface in front of one hides it.
+   */
+  over?: boolean;
 }
 
 const ALONG: Record<'x' | 'y' | 'z', Vec3> = {
@@ -140,9 +150,22 @@ function oneAxis(which: 'x' | 'y' | 'z', bounds: Interval, camera: Camera3, opti
  */
 export function axes3(name: string, camera: Camera3, options: Axes3Options): GroupNode {
   const span = interval(-1, 1);
-  return group(name, [
+  const drawn = group(name, [
     oneAxis('x', options.x ?? span, camera, options),
     oneAxis('y', options.y ?? span, camera, options),
     oneAxis('z', options.z ?? span, camera, options),
   ]);
+  return options.over ? (withoutDepth(drawn) as GroupNode) : drawn;
+}
+
+/** The same nodes with the depth every space builder fitted taken off, which is
+ * what a mark drawn over the picture carries: a mark with no depth is painted
+ * over everything before it and nothing earlier comes back over it. */
+function withoutDepth(node: Node): Node {
+  if (node.kind === 'group') {
+    const { style, ...rest } = node;
+    const kept = style ? { ...style, depth: undefined } : undefined;
+    return { ...rest, ...(kept ? { style: kept } : {}), children: node.children.map(withoutDepth) };
+  }
+  return { ...node, depth: undefined };
 }

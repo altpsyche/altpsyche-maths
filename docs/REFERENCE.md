@@ -1126,6 +1126,10 @@ animations reach a picture in space and a picture on a graph.
   - `names` — what each axis is called, written past its far end under `name`. An axis this does not
     name carries no name.
   - `family`, `weight` — the font the labels are asked for.
+  - `over` — whether the axes are drawn over the picture rather than inside it. Their marks then carry
+    no depth, so nothing in the scene hides a line or a tick number, and a mark carrying no depth
+    clears the depths of the marks before it. Left out, the axes stand in the scene like anything else
+    and a surface in front of one hides it.
 - `curveOf3(of, options)` — the places a curve in space passes through, in order, both ends of the run
   included, so the count is one more than the resolution. Nothing here draws them: `polyline3` draws one
   run, and a scene sorts a run against the solid it lies on.
