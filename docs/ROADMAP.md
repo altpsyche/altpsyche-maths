@@ -1553,8 +1553,9 @@ figures above both floors, 0.97 without labels and 0.96 with them, and `npm run 
 of 32 recordings.
 
 **The reading step 7 quotes, after step 6.** `npm test` is 1,477 tests over 97 files and the door is
-229 values and 252 types. The eight stills are 1,613,926 bytes written and the eight strips
-3,191,507. The solid demo is 328 marks at its still, of which 278 carry a depth, and the flat
+229 values and 252 types. The eight stills are 1,620,080 bytes written and the eight strips
+3,183,373, which is the tree rather than step 5's own reading: the axes that may be drawn over the
+picture moved every sheet in space after step 5 measured them. The solid demo is 328 marks at its still, of which 278 carry a depth, and the flat
 painters cut those into 727 pieces in 14.9 ms. `npm run gate:gpu` draws 8 of 8 figures above both
 floors. **`npm run gate:record` has not been run since step 4**, and done-criterion 11 is what asks
 for it, so the version is not cut until it has been.
@@ -1733,7 +1734,7 @@ figures, so a frame trading the smooth edge for a depth test pays for it where t
 - [ ] **7. The demos, the README and the guide say what the version draws.** The sixteen sheets are
       regenerated, the solid demo's still and strip carry the cut crossing, and the guide gains the
       section on depth and on a figure's painters. **Measurement:** the sixteen sheets' bytes against
-      1,635,654 and 3,177,590, every sheet still shown, and the test count.
+      1,620,080 and 3,183,373, every sheet still shown, and the test count.
 - [ ] **8. The version is cut.** `package.json` reads 3.0.0, the done-criteria below are verified line
       by line, and the ladder's 3.0.0 row is deleted. **Measurement:** both gates' readings, the
       door's counts, and the suite, type-check and build.
