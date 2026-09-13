@@ -19,6 +19,7 @@
 import { CURVE_NAMES } from '../values/ease.js';
 import { EXPRESSION_FUNCTIONS, FRAME_MEASURES } from './expression.js';
 import type { FigureRecord } from './figure-record.js';
+import { PAINTER_NAMES } from './figure.js';
 
 /** One field of a record, and whether a figure has to carry it. */
 interface Field {
@@ -825,6 +826,7 @@ const SHAPES: Readonly<Record<string, Shape>> = {
     still: need(number),
     loop: may(flag),
     insets: may(list(ref('inset'))),
+    painters: may(list(named('a painter', [...PAINTER_NAMES]))),
   }),
 };
 

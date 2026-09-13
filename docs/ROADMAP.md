@@ -1603,13 +1603,19 @@ draws all eight figures above both floors, 0.97 without labels and 0.96 with the
       middle, so that lift wrongly clears 8 of 4,016 occluded places, which is 0.2 per cent and all
       of them within 0.0035 units of the surface's own silhouette. `npm run demos` regenerates all
       sixteen sheets to the committed bytes. 1,438 tests over 95 files, from 1,431 over 94.
-- [ ] **4. A figure names the painters that can draw it.** `Figure` gains `painters`, absent meaning
-      all three, `checkFigure` validates it, and `svgMarkup`, `paintSvg`, `paintCanvas` and `paintGpu`
-      each refuse a figure that does not name them, by name and with what was asked for. Every demo
-      leaves it out, since after steps 5 and 6 all three painters meet the depth rule and no figure
-      here needs one painter over another. **Measurement:** the door's value and type counts against
-      226 and 250, a figure naming `gpu` alone refused by the SVG painter with the painter in the
-      message, 8 of 8 demos drawing unrefused, and the test count.
+- [x] **4. A figure names the painters that can draw it.** `Figure` gains `painters`, absent meaning
+      all three, and `checkFigure` validates it. **The refusal is at `marksAt` rather than inside a
+      painter,** since all three painters are handed a list of marks and never see a figure, so a
+      refusal written into one of them would have nothing to read. `marksAt` takes who is asking and
+      refuses a figure that does not name them. `demos/render.ts` asks as `svg` and `gates/gpu.mjs`
+      as `gpu`, so the seam is walked by everything that draws here. Every demo leaves the field out,
+      since after steps 5 and 6 all three painters meet the depth rule and no figure here needs one
+      painter over another. **Measured:** the door is 228 values and 252 types, from 226 and 251, the
+      three names being `PAINTER_NAMES`, `painterRefusal` and `PainterName`. A figure naming `gpu`
+      alone answers `this figure is drawn by gpu and the svg painter asked for it` and `marksAt`
+      throws it, a figure naming none answers nothing for all three painters, and a caller naming no
+      painter is not asked. 8 of 8 demos draw unrefused and `npm run demos` regenerates all sixteen
+      sheets to the committed bytes. 1,445 tests over 96 files, from 1,438 over 95.
 - [ ] **5. The flat painters meet the depth rule by cutting.** Two marks carrying a depth cross along
       a straight line on the page, because the difference of two affine functions is affine, so each
       is cut by the half-plane where it is the nearer one and the pieces are painted in any order.

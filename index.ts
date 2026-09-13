@@ -238,10 +238,20 @@ export { lengthOf, pointAlong } from './figure/length.js';
 export { dashPath } from './figure/dash.js';
 export { pathWindow, trimPath } from './figure/trim.js';
 export { alignPaths, lerpPath } from './figure/morph.js';
-export { durationOf, extentAt, figureTime, isLoop, marksAt, sameMarks, viewAt } from './figure/figure.js';
+export {
+  PAINTER_NAMES,
+  durationOf,
+  extentAt,
+  figureTime,
+  isLoop,
+  marksAt,
+  painterRefusal,
+  sameMarks,
+  viewAt,
+} from './figure/figure.js';
 export { frameTimesOf, framesOf } from './figure/frames.js';
 export type { Frame, FrameStep, FramesOptions } from './figure/frames.js';
-export type { Figure, TrackValues } from './figure/figure.js';
+export type { Figure, PainterName, TrackValues } from './figure/figure.js';
 export { resolveFigure } from './figure/figure-record.js';
 export type { FigureRecord } from './figure/figure-record.js';
 export { checkFigure } from './figure/figure-check.js';

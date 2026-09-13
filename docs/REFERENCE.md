@@ -1294,11 +1294,18 @@ a group of that name.
   - `loop` — whether it ends where it began, which a recording can loop without a jump. `isLoop` is
     what holds that rather than trust.
   - `insets` — the second views of the figure drawn into rectangles of its own frame.
+  - `painters` — the painters that may draw it. Left out, every painter may.
+- `PainterName` — `svg`, `canvas` or `gpu`, which is the name a figure turns a painter away with. The
+  three differ in what they can meet rather than in what they draw: only a card resolves a depth per
+  pixel, and the other two meet the same rule by cutting the geometry.
+- `PAINTER_NAMES` — the three of them, in that order.
+- `painterRefusal(figure, painter)` — the sentence the figure turns that painter away with, or
+  nothing where it may draw. A figure naming no painters names every painter.
 - `TrackValues` — every sampled value by name, which is what a scene function is handed.
 - `FigureRecord` — a whole figure written as data: the `extent` as an `ExtentRecord`, the `fit`, the
   `scene` as a `NodeRecord`, its `tracks`, the `timeline` as a `TimelineRecord`, the `duration`, the
-  `still` time, the `loop` flag, and its `insets` as `InsetRecord`s. `extent`, `scene` and `still`
-  are required and the other six are optional, which is what `Figure` itself holds.
+  `still` time, the `loop` flag, its `insets` as `InsetRecord`s, and its `painters`. `extent`, `scene`
+  and `still` are required and the other seven are optional, which is what `Figure` itself holds.
 - `resolveFigure(record)` — the figure a record describes. The scene is read again at each time with
   the sampled track values as its bindings, so a scene a track drives stays a record rather than a
   closure. An animation's parameters are read once, since a figure carries one timeline and every
@@ -1324,14 +1331,15 @@ a group of that name.
   is not a JSON document, a document that is not an object, a file with no `format` and a file with
   no `figure` are each refused with what was found. What it parsed goes through `checkFigure`, so a
   field of the wrong shape is refused with its path before anything is drawn.
-- `marksAt(figure, seconds, aspect)` — the marks a figure shows at a time. A tapered stroke is
+- `marksAt(figure, seconds, aspect, painter)` — the marks a figure shows at a time. A tapered stroke is
   turned into its filled outline after the timeline has run, so an animation that trims a path trims
   the centreline and the outline follows it. The aspect is the shape of the surface the marks are
   headed for, and it is what a scene placing a mark against the frame is answered from: the extent
   the figure declares, resolved at that aspect. A figure whose declared extent is already an extent
   has the same frame at every aspect and may be asked with none, and a figure whose declared extent
   is a function has no frame without one, so a `frame` expression under it is refused with the
-  measure named.
+  measure named. The painter is who is asking, and a figure that does not name it refuses rather than
+  handing back marks that painter would draw wrongly. A caller naming none is not asked.
 - `extentAt(figure, seconds, aspect)` — how much of the world a figure shows at a time, after its
   view entries. The extent a figure declares is the base those entries are folded over rather than
   the answer, so this is the call that says where the frame is. A scene placing a mark against the

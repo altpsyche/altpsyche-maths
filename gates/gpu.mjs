@@ -180,7 +180,7 @@ async function compare(page, origin, name) {
       const figure = readFigure(text);
       const seconds = figure.still;
       const view = viewAt(figure, seconds, width, height);
-      const everything = marksAt(figure, seconds, width / height);
+      const everything = marksAt(figure, seconds, width / height, 'gpu');
       const marks = everything;
       const ground = colourFrom('#ffffff');
 

@@ -24,6 +24,18 @@ import type { Mark } from './mark.js';
  * frame. */
 export type TrackValues = Record<string, TrackValue>;
 
+/**
+ * A painter, by the name a figure turns one away with.
+ *
+ * `svg` writes elements, `canvas` draws into a two-dimensional context and `gpu`
+ * draws on a card. The three differ in what they can meet rather than in what
+ * they draw: only a card resolves a depth per pixel, and the other two meet the
+ * same rule by cutting the geometry.
+ */
+export type PainterName = 'svg' | 'canvas' | 'gpu';
+
+export const PAINTER_NAMES: readonly PainterName[] = ['svg', 'canvas', 'gpu'];
+
 export interface Figure {
   /** How much of the world the figure shows, in its own units. */
   extent: ExtentChoice;
@@ -49,6 +61,21 @@ export interface Figure {
   /** The second views of this figure drawn into rectangles of its own frame,
    * each magnifying the part of the picture a reader should be looking at. */
   insets?: readonly Inset[];
+  /** The painters that may draw this figure. Left out, every painter may. A
+   * painter not named is turned away by name, which is what keeps a figure
+   * asking for something one painter has from being drawn wrongly by another. */
+  painters?: readonly PainterName[];
+}
+
+/**
+ * The sentence a figure turns a painter away with, or nothing where it may draw.
+ *
+ * A figure naming no painters names every painter, since a figure that asks for
+ * nothing one painter has is drawn the same way by all three.
+ */
+export function painterRefusal(figure: Figure, painter: PainterName): string | undefined {
+  if (!figure.painters || figure.painters.includes(painter)) return undefined;
+  return `this figure is drawn by ${figure.painters.join(' and ')} and the ${painter} painter asked for it`;
 }
 
 export function durationOf(figure: Figure): number {
@@ -98,7 +125,16 @@ function frameOf(figure: Figure, seconds: number, aspect: number | undefined): E
  * no surface in hand leaves it out, and every figure whose marks are in its own
  * units draws the same picture either way.
  */
-export function marksAt(figure: Figure, seconds: number, aspect?: number): readonly Mark[] {
+export function marksAt(
+  figure: Figure,
+  seconds: number,
+  aspect?: number,
+  painter?: PainterName,
+): readonly Mark[] {
+  if (painter) {
+    const refusal = painterRefusal(figure, painter);
+    if (refusal) throw new Error(refusal);
+  }
   const drawn = ownMarks(figure, seconds, aspect);
   if (!figure.insets) return drawn;
   // Every inset reads the figure's own marks and none of them reads another's, so

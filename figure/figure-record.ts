@@ -15,7 +15,7 @@ import { resolveNode, type NodeRecord } from './node-record.js';
 import { resolveTimeline, type TimelineRecord } from './timeline-record.js';
 import { resolveExtentChoice, resolveInset, type ExtentRecord, type InsetRecord } from './view-record.js';
 import type { Fit } from './extent.js';
-import type { Figure } from './figure.js';
+import type { Figure, PainterName } from './figure.js';
 import type { Tracks } from '../timing/track.js';
 
 /** A whole figure as data, which is the nine fields `Figure` carries with each
@@ -30,6 +30,7 @@ export interface FigureRecord {
   readonly still: number;
   readonly loop?: boolean;
   readonly insets?: readonly InsetRecord[];
+  readonly painters?: readonly PainterName[];
 }
 
 /**
@@ -51,5 +52,6 @@ export function resolveFigure(record: FigureRecord): Figure {
     still: record.still,
     loop: record.loop,
     insets: record.insets?.map(resolveInset),
+    painters: record.painters,
   };
 }
