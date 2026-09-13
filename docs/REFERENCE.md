@@ -389,13 +389,22 @@ numbers and a pointwise map of a shape.
 
 ## Marks
 
-A mark is what a painter draws. It may request only what both painters implement, so there are no
-filters and no blend modes, and a clip is a rectangle and no other shape.
+A mark is what a painter draws. A figure names the painters that may draw it, so a mark may ask for
+what one painter has and a painter not named refuses the figure rather than drawing it wrongly. There
+are still no filters and no blend modes, and a clip is a rectangle and no other shape.
 
 - `Colour` — `Rgba`, plus:
   - `name` — the CSS custom property a page overrides the channels under. The SVG painter writes
     `var(--name, #rrggbb)` where a colour has one and the hex alone where it does not, and every
     other painter reads the channels and ignores the name.
+- `Depth` — how far a mark is from the eye, as a function of where on the page it is being drawn. The
+  depth at the page point (x, y) is `a·x + b·y + c` and the smaller number is the nearer mark. Three
+  numbers carry it exactly because a mark in space is a flat piece of the world: the depth of a plane
+  is affine on the page under a parallel projection, and under a perspective projection the reciprocal
+  of that depth is, which is the quantity a card interpolates across a triangle. Under a perspective
+  projection the value is the negative of that reciprocal, which keeps the smaller number the nearer
+  mark either way.
+  - `a`, `b`, `c` — the coefficients, read against the page in figure units.
 - `Fill` — how an inside is painted.
   - `colour` — the one colour this fill has, which is what anything needing a single colour reads, a
     contrast reading included.

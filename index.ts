@@ -53,7 +53,19 @@ export { cutPath } from './figure/cut.js';
 export type { Cut, CutOptions } from './figure/cut.js';
 export { curveCrossings } from './figure/intersect.js';
 export type { Crossing, CrossingOptions } from './figure/intersect.js';
-export type { Colour, Fill, Gradient, Mark, PathMark, Stop, Stroke, Taper, TextMark, Width } from './figure/mark.js';
+export type {
+  Colour,
+  Depth,
+  Fill,
+  Gradient,
+  Mark,
+  PathMark,
+  Stop,
+  Stroke,
+  Taper,
+  TextMark,
+  Width,
+} from './figure/mark.js';
 export { byAspect, fractionOf, matchingAspect, resolveExtent, viewMatrix } from './figure/extent.js';
 export type { Extent, ExtentChoice, Fit, ViewAnimation, ViewChange } from './figure/extent.js';
 export { followView, frameView, moveView } from './figure/view.js';

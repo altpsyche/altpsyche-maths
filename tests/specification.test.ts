@@ -371,7 +371,10 @@ describe('the specification as one document', () => {
   });
 
   it('holds the format version to the one the reader carries', () => {
-    expect(specification).toContain(`version ${FIGURE_FORMAT_VERSION}`);
+    // The document names every version it has had, so a plain search for the
+    // reader's own number finds the history rather than the declaration.
+    expect(specification).toContain(`**The version is one whole number and it is ${FIGURE_FORMAT_VERSION} today.**`);
+    expect(specification).toContain(`**Each carries \`format\` ${FIGURE_FORMAT_VERSION} and reads with no renderer at all.**`);
   });
 });
 

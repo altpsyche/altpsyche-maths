@@ -2,12 +2,13 @@
  * One drawn item, resolved: its geometry is in the figure's own units with every
  * transform already applied, and its style is settled rather than inherited.
  *
- * What a mark may ask for is the intersection of what an SVG element and a
- * two-dimensional canvas can both do, rather than the union. A figure reaching
- * for something only one of them has would look right on the page and lose it
- * without a word in a recording, which is the worst way to find out. So there
- * are no filters and no blend modes here, and adding one means adding it to
- * both painters in the same change.
+ * What a mark may ask for was once the intersection of what an SVG element and a
+ * two-dimensional canvas can both do, so that a figure could not reach for
+ * something one painter has and lose it without a word in another. A figure now
+ * names the painters that may draw it instead, which keeps that purpose and lets
+ * a mark ask for what one painter has: a painter not named refuses the figure
+ * rather than drawing it wrongly. There are still no filters and no blend modes
+ * here, since no figure has asked for one.
  *
  * A clip is a rectangle and no other shape. An arbitrary path clip is a stencil
  * on a card and needs a winding number counted, where a box is the scissor test
@@ -99,6 +100,25 @@ export interface Fill {
   rule?: 'nonzero' | 'evenodd';
 }
 
+/**
+ * How far a mark is from the eye, as a function of where on the page it is being
+ * drawn.
+ *
+ * The depth at the page point (x, y) is a·x + b·y + c, and the mark with the
+ * smaller depth there is the nearer one. Three numbers carry it exactly because a
+ * mark in space is a flat piece of the world: the depth of a plane is an affine
+ * function of the page under a parallel projection, and under a perspective
+ * projection the reciprocal of that depth is, which is the quantity a card
+ * interpolates across a triangle. Under a perspective projection the value is the
+ * negative of that reciprocal, which is what keeps the smaller number the nearer
+ * mark under both projections.
+ */
+export interface Depth {
+  a: number;
+  b: number;
+  c: number;
+}
+
 interface Common {
   /**
    * Stable across frames, and built from the names on the way down the tree.
@@ -109,6 +129,16 @@ interface Common {
    */
   id: string;
   opacity?: number;
+  /**
+   * How far this mark is from the eye across the page, absent on every mark a
+   * flat figure draws.
+   *
+   * Where two marks carrying one overlap, the nearer of the two at a point is
+   * drawn over the further one there, whatever order the list gives. Where one
+   * of the two carries none, and where both are at the same depth, the order of
+   * the list decides instead.
+   */
+  depth?: Depth;
   /**
    * The rectangle this mark is drawn inside, in the figure's own units, with
    * everything of it outside that rectangle cut away.

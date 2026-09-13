@@ -1567,16 +1567,20 @@ draws all eight figures above both floors, 0.97 without labels and 0.96 with the
       of a plane is affine on the page under a parallel projection and its reciprocal is under a
       perspective one. **Measured:** the specification names version 1 and states the rule, and
       `npm test` is unchanged at 1,431 tests over 94 files, since no code moved.
-- [ ] **2. A mark may carry a depth, and the format's version is 1.** `Mark` gains `depth` as the
+- [x] **2. A mark may carry a depth, and the format's version is 1.** `Mark` gains `depth` as the
       three numbers, absent on every flat figure. `FIGURE_FORMAT_VERSION` reads 1, the reader's
       refusal names both numbers, and the eight committed figure files are rewritten. Nothing fits a
-      depth yet, so no demo draws differently. **This step tightens a test that passes for the wrong
-      reason:** `tests/specification.test.ts` holds the specification to containing the text
-      `version ${FIGURE_FORMAT_VERSION}`, and the document now names both 0 and 1, so the check
-      passes whichever number the reader carries. **Measurement:** the solid demo is 328 marks at its
-      still with 0 carrying a depth, all eight figure files read at version 1, a file written at
-      version 0 is refused with both numbers named, the eight stills' bytes are unchanged, and the
-      test count.
+      depth yet, so no demo draws differently. The header of `figure/mark.ts` carried the rule the
+      fourth decision overturned and now says what keeps that rule's purpose instead. **This step
+      tightened a test that passed for the wrong reason:** `tests/specification.test.ts` held the
+      document to containing the text `version ${FIGURE_FORMAT_VERSION}`, and the document names
+      every version it has had, so the check found the history whichever number the reader carried;
+      it matches the two declarations by their whole sentences now. **Measured:** the solid demo is
+      328 marks at its still and 0 of them carry a depth, unchanged. All eight figure files read at
+      version 1, each byte for byte what it was apart from the version, and a file written at version
+      0 is refused with both numbers named. `npm run demos` regenerates all sixteen sheets to the
+      committed bytes, so no picture moved. The door is 226 values and 251 types, from 226 and 250,
+      the one name being `Depth`. 1,431 tests over 94 files, unchanged.
 - [ ] **3. The space builders fit the depth of what they draw.** `polyline3`, `dot3`, `text3`,
       `arrow3`, `curve3`, `section3`, `streamline3`, `axes3` and the seven item producers fit the
       three numbers through the points in space each was drawn from, by least squares where a piece

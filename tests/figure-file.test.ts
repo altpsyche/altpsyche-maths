@@ -58,7 +58,7 @@ describe('a figure written as a file', () => {
     const text = writeFigure(turning);
     expect(keysAtDepth(text, 2)).toEqual(['format', 'figure']);
     expect(JSON.parse(text).format).toBe(FIGURE_FORMAT_VERSION);
-    expect(FIGURE_FORMAT_VERSION).toBe(0);
+    expect(FIGURE_FORMAT_VERSION).toBe(1);
   });
 
   it('ends in a newline and parses as the record it was given', () => {
@@ -299,9 +299,9 @@ describe('a figure read back from a file', () => {
   });
 
   it('refuses a version it does not read, naming both numbers', () => {
-    const text = writeFigure(turning).replace('"format": 0', '"format": 1');
+    const text = writeFigure(turning).replace('"format": 1', '"format": 0');
     expect(() => readFigure(text)).toThrow(
-      'this reads version 0 of the format and the file is written in version 1',
+      'this reads version 1 of the format and the file is written in version 0',
     );
   });
 
@@ -309,7 +309,7 @@ describe('a figure read back from a file', () => {
     expect(() => readFigure('{"figure": {}}')).toThrow(
       'a file names the version of the format it is written in, and format is missing',
     );
-    expect(() => readFigure('{"format": 0}')).toThrow('a file carries a figure, and figure is missing');
+    expect(() => readFigure('{"format": 1}')).toThrow('a file carries a figure, and figure is missing');
   });
 
   it('refuses a field the vocabulary does not carry, by path, before it draws', () => {
