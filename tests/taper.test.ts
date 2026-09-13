@@ -125,6 +125,13 @@ describe('a tapered stroke on its way to a painter', () => {
     expect(drawn[1].kind === 'path' && hexOf(drawn[1].fill!.colour)).toBe('#ee0000');
   });
 
+  it('carries the depth the stroke was made with onto the outline that replaces it', () => {
+    const depth = { a: 0.25, b: -0.5, c: 1.75 };
+    const drawn = outlinedMarks([{ ...tapered(), depth }]);
+    expect(drawn).toHaveLength(1);
+    expect(drawn[0].depth).toEqual(depth);
+  });
+
   it('hands back a stroke of one width as it stands, and changes nothing on a second pass', () => {
     const plain: Mark = { kind: 'path', id: 'fig/line', path: line(vec2(0, 0), vec2(2, 0)), stroke: { colour: colourFrom('#000'), width: 0.1 } };
     expect(outlinedMarks([plain])[0]).toBe(plain);

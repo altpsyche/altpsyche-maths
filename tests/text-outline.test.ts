@@ -118,10 +118,17 @@ describe('textOutlines', () => {
     expect(outlined[1].kind).toBe('path');
   });
 
-  it('keeps the order the marks were painted in, which is what carries depth', async () => {
+  it('keeps the order the marks were painted in', async () => {
     const font = await shippedFont();
     const marks: Mark[] = [label('a', { id: 'first' }), { kind: 'path', id: 'second', path: [], fill: black }, label('b', { id: 'third' })];
     expect(textOutlines(marks, font).map((mark) => mark.id)).toEqual(['first', 'second', 'third']);
+  });
+
+  it('carries the depth the label stood at onto the shapes that draw it', async () => {
+    const font = await shippedFont();
+    const depth = { a: 0.5, b: 0.125, c: -3 };
+    expect(textOutlines([label('a', { depth })], font)[0].depth).toEqual(depth);
+    expect(textOutlines([label('a')], font)[0].depth).toBeUndefined();
   });
 
   it('drops a label that draws no shape rather than keeping an empty path', async () => {

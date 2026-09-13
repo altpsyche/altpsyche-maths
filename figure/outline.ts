@@ -424,6 +424,9 @@ export function outlinePath(path: Path, width: Width, options: OutlineOptions = 
  * A shape carrying a fill as well leaves two marks, the fill under its own id
  * and the outline under that id with the stroke's name on the end, because one
  * mark holds one fill and the outline needs its own.
+ *
+ * The outline covers the ground the stroke covered, so it carries the stroke's
+ * own depth and is ordered against the rest of the picture where the stroke was.
  */
 export function outlinedMarks(marks: readonly Mark[]): readonly Mark[] {
   const drawn: Mark[] = [];
@@ -440,6 +443,7 @@ export function outlinedMarks(marks: readonly Mark[]): readonly Mark[] {
       path: outlinePath(mark.path, stroke.width, { cap: stroke.cap, join: stroke.join }),
       fill: { colour: stroke.colour },
       opacity: mark.opacity,
+      depth: mark.depth,
       clip: mark.clip,
     });
   }

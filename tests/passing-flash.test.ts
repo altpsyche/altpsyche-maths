@@ -54,6 +54,12 @@ describe('a light travelling a path', () => {
     expect(lengthOf(lightAt(0.95, 0.3).path)).toBeLessThan(lengthOf(lightAt(0.5, 0.3).path));
   });
 
+  it('runs at the depth of the path it travels', () => {
+    const depth = { a: -0.125, b: 0.5, c: 2.25 };
+    const lit = showPassingFlash('demo', { stroke })([{ ...ring, depth }], 0.5);
+    expect(lit.find((mark) => mark.id === 'demo/ring/passing')?.depth).toEqual(depth);
+  });
+
   it('passes over a text mark, which carries no path to run along', () => {
     const label: Mark = {
       kind: 'text',

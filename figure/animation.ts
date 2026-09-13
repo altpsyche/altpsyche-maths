@@ -774,6 +774,9 @@ export interface PassingFlashOptions {
  * something that changed.
  *
  * A text mark carries no path for a light to run along and is passed over.
+ *
+ * The light runs along the path it is given, so it stands at that path's own
+ * depth rather than over everything the picture has drawn so far.
  */
 export function showPassingFlash(target: string, options: PassingFlashOptions): Animation {
   const covers = Math.min(1, Math.max(0, options.covers ?? 0.2));
@@ -787,6 +790,7 @@ export function showPassingFlash(target: string, options: PassingFlashOptions): 
         id: `${mark.id}/passing`,
         path: pathWindow(mark.path, far - covers, far),
         stroke: options.stroke,
+        depth: mark.depth,
         clip: mark.clip,
       });
     }

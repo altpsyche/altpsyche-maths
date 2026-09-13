@@ -97,6 +97,7 @@ export function outlineText(mark: TextMark, font: Font): PathMark | null {
     path,
     fill: mark.fill,
     ...(mark.opacity !== undefined ? { opacity: mark.opacity } : {}),
+    ...(mark.depth ? { depth: mark.depth } : {}),
     ...(mark.clip ? { clip: mark.clip } : {}),
   };
 }
