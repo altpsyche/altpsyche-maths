@@ -1527,6 +1527,30 @@ session plans it, which is a session of its own that touches no code.
 
 ## Found while working, not yet queued
 
+- **The GPU gate has never run on WebGPU and the reason was read wrongly, twice.** The first reading
+  said this machine has no WebGPU at all, because `navigator.gpu` was undefined in every browser
+  tried. It was undefined because the probes reached the page through `setContent`, which leaves the
+  document on an opaque origin, and WebGPU is offered only to a secure context. Over
+  `http://127.0.0.1` it is there. **What actually opens an adapter** is
+  `--enable-unsafe-webgpu --enable-features=Vulkan --disable-gpu-sandbox --ignore-gpu-blocklist`.
+  Headless gives a SwiftShader adapter and headed on a display gives the NVIDIA card, so a gate
+  wanting a real card wants a headed browser. The second reading, that a card gate here could only
+  ever be WebGL 2, is wrong with it.
+
+- **The engine draws on WebGPU and cannot read back from it.** With the flags above the gate picks
+  `webgpu`, and `renderer.draw` draws the solid demo's 2,658 triangles, depth attachment and all. The
+  readback throws for all eight figures: `AbortError: Failed to execute 'mapAsync' on 'GPUBuffer': A
+  valid external Instance reference no longer exists.` **The environment is not what is wrong**, and
+  that was measured rather than assumed: the same browser, the same flags and the same origin read a
+  64 by 64 texture back through `copyTextureToBuffer` and `mapAsync` with no engine in the path, and
+  the cleared pixel comes back 255,0,0,255. **One theory was tested and is wrong.** The engine's
+  `gpu/webgpu-device.js` drops the adapter it made the device from, on the reasoning that an adapter
+  is spent by the device, and Chromium's adapter owns the instance handle; but holding an adapter
+  alive for the life of the page changes nothing, so the collected adapter is not the cause. The fix
+  is the engine's and the reading above is what it starts from. **What it blocks here** is the card
+  gate's comparison and `painterGpu` on WebGPU, since both read pixels back; nothing a figure draws
+  is blocked.
+
 - **What the reader sees wrong in the solid demo is now the mesh rather than the order.** After step
   5 of 3.0.0, 1,118 of 10,583 sampled places at the still show the further of the saddle and the
   plane, and the depths the marks carry name the right surface at all but 29 of them. The saddle is
