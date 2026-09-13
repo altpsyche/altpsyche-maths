@@ -1616,22 +1616,32 @@ draws all eight figures above both floors, 0.97 without labels and 0.96 with the
       throws it, a figure naming none answers nothing for all three painters, and a caller naming no
       painter is not asked. 8 of 8 demos draw unrefused and `npm run demos` regenerates all sixteen
       sheets to the committed bytes. 1,445 tests over 96 files, from 1,438 over 95.
-- [ ] **5. The flat painters meet the depth rule by cutting.** Two marks carrying a depth cross along
-      a straight line on the page, because the difference of two affine functions is affine, so each
-      is cut by the half-plane where it is the nearer one and the pieces are painted in any order.
-      `figure/boolean.ts` is what cuts them and it is held to 1.776e-15 already. Only overlapping
-      pairs are tested, which the bounds each mark already carries decide. **Measurement:** the
-      crossing's 62 sampled points drawn over the saddle at the still against 9, and over the orbit
-      against 9.2 per cent mean and 25.8 per cent worst; the lower contour against 23.0 per cent mean
-      and 44.2 per cent worst; the 559 of 10,583 places showing the wrong one of the saddle and the
-      plane at the still; the solid demo's mark count against 328 and the time it takes to build one
-      frame against the 33 ms a frame has at 30 frames a second.
+- [ ] **5. The flat painters meet the depth rule by cutting.** A new module takes the list of marks
+      and hands back the list a painter draws in order. It splits the list into stretches at every
+      mark carrying no depth, since a mark carrying none clears the depths before it, and inside a
+      stretch it cuts and sorts. Two marks carrying a depth are equal along a straight line on the
+      page, because the difference of two affine functions is affine and its zero set is a line, so
+      each mark is cut by that line wherever it overlaps another and every piece then has one depth
+      order against every piece it overlaps. The pieces of a stretch are painted furthest first.
+      `figure/boolean.ts` cuts a filled path and is held to 1.776e-15 already; a stroked path is cut
+      at its centreline, since a stroke follows the line it is given. Only pairs whose bounds overlap
+      are cut, which is what keeps a grid of cells from being cut by every other cell of it.
+      **The demo's own lift lands here**, since a curve on a surface is what the cut has nothing to
+      decide between until one of them is lifted, and step 3 measured the number: 0.00348 figure
+      units for this saddle at twelve cells across. **Measurement:** the crossing's 62 sampled points
+      drawn over the saddle at the still against 9, and over the orbit against 9.2 per cent mean and
+      25.8 per cent worst; the lower contour against 23.0 per cent mean and 44.2 per cent worst; the
+      559 of 10,583 places showing the wrong one of the saddle and the plane at the still; the solid
+      demo's mark count against 328 and the time it takes to build one frame against the 33 ms a
+      frame has at 30 frames a second.
 - [ ] **6. The GPU painter keeps a depth buffer.** `gpuFrame` gains a depth texture at four samples,
       a `less-equal` compare with the write on for marks carrying a depth, and a seventh float a
       vertex carrying the depth the three numbers give at that corner. A mark with no depth is drawn
       by a second pipeline that neither tests nor writes one, since a flat figure's marks are painted
       in the order the list gives and a translucent mark blended under a depth write would hide what
-      is behind it. **Measurement:** the 559 of 10,583 sampled places showing the wrong surface at
+      is behind it. **A stretch is where the depth attachment is cleared**, so the card draws what
+      the cutting painter draws rather than letting a mark from before a flat one come back through a
+      mark after it. **Measurement:** the 559 of 10,583 sampled places showing the wrong surface at
       the still against 0 on a card; both floors of `npm run gate:gpu` for all eight figures; the
       frame's triangle count and bytes against today's reading for the solid demo.
 - [ ] **7. The demos, the README and the guide say what the version draws.** The sixteen sheets are
