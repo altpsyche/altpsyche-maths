@@ -73,6 +73,9 @@ interface Piece {
   /** Where the mark it came from stood in the list, which is what decides the
    * order of two pieces at one depth. */
   readonly at: number;
+  /** The id of the mark it was cut from, which two pieces share only where one
+   * mark holds both of them and they are drawn the same way. */
+  readonly from: string;
 }
 
 /** The difference of two depths, which is the affine function whose zero set is
@@ -199,9 +202,9 @@ function middleOf(points: readonly Vec2[]): Vec2 {
 }
 
 /** One piece of a mark, with the ground it covers measured once. */
-function pieceOf(mark: Mark, depth: Depth, at: number): Piece {
+function pieceOf(mark: Mark, depth: Depth, at: number, from: string): Piece {
   const reach = reachOf(mark);
-  return { mark, depth, box: footprintOf(mark), where: middleOf(reach.corners), reach, at };
+  return { mark, depth, box: footprintOf(mark), where: middleOf(reach.corners), reach, at, from };
 }
 
 /**
@@ -376,21 +379,32 @@ function sideOf(from: Vec2, curve: Cubic, difference: Depth): number {
  * Sutherland and Hodgman's clip, with the pieces cut at their crossings first so
  * that a curve is kept as the curve it was.
  *
- * An open run is not joined up, since a stroke follows the line it is given and
- * a run cut in two is two runs.
+ * A stroke is not joined up, whether or not its path was written closed, since a
+ * stroke follows the line it is given and a run cut in two is two runs. What
+ * decides is whether the mark has a fill rather than whether the subpath is
+ * closed: a loop that is stroked and not filled is a line that comes back to
+ * where it started, and closing its pieces along the clip would draw a stroke
+ * down the cut.
  */
-function keptSide(runs: readonly Run[], difference: Depth, side: number, measure: boolean): Run[] {
+function keptSide(runs: readonly Run[], difference: Depth, side: number, measure: boolean, close: boolean): Run[] {
   const kept: Run[] = [];
   for (const run of runs) {
     if (run.subpath.curves.length === 0) continue;
     const cuts = cutSubpath(run.subpath, difference);
+    // A run lying along the line itself falls on neither side, and keeping it on
+    // both would draw it twice. It goes to one of them, since which one is a
+    // choice about a shape with no width rather than about what is drawn.
+    if (cuts.every((cut) => cut.side === 0)) {
+      if (side > 0) kept.push(run);
+      continue;
+    }
     const wanted = cuts.filter((cut) => cut.side === side || cut.side === 0);
     if (wanted.length === 0) continue;
     if (wanted.length === cuts.length) {
       kept.push(run);
       continue;
     }
-    if (run.subpath.closed) {
+    if (close) {
       kept.push({ subpath: closedRun(wanted), offset: run.offset });
       continue;
     }
@@ -467,7 +481,7 @@ function straightTo(from: Vec2, to: Vec2): Cubic {
  */
 function cutMark(mark: Mark, lines: readonly Depth[], at: number): Piece[] {
   const depth = mark.depth as Depth;
-  if (lines.length === 0 || mark.kind === 'text') return [pieceOf(mark, depth, at)];
+  if (lines.length === 0 || mark.kind === 'text') return [pieceOf(mark, depth, at, mark.id)];
   // A shape carrying both is cut twice, since the two are cut differently: the
   // fill is closed along the line and the stroke is not, and one path cut as a
   // fill would draw the stroke along every cut as well. The two leave two marks
@@ -481,12 +495,13 @@ function cutMark(mark: Mark, lines: readonly Depth[], at: number): Piece[] {
   }
   const dash = mark.stroke?.dash;
   const measure = dash !== undefined && dash.length > 0;
+  const close = mark.fill !== undefined;
   let parts: Run[][] = [mark.path.map((subpath) => ({ subpath, offset: 0 }))];
   for (const line of lines) {
     const next: Run[][] = [];
     for (const part of parts) {
       for (const side of [1, -1]) {
-        const kept = keptSide(part, line, side, measure);
+        const kept = keptSide(part, line, side, measure, close);
         if (kept.length > 0) next.push(kept);
       }
     }
@@ -495,14 +510,14 @@ function cutMark(mark: Mark, lines: readonly Depth[], at: number): Piece[] {
   // A mark every line missed comes back whole, under the id it arrived with,
   // since a piece numbered off a mark that was never cut is a new id for nothing.
   if (parts.length === 1 && parts[0].length === mark.path.length && parts[0].every((run, step) => run.subpath === mark.path[step])) {
-    return [pieceOf(mark, depth, at)];
+    return [pieceOf(mark, depth, at, mark.id)];
   }
   const pieces: Piece[] = [];
   let index = 0;
   for (const part of parts) {
     for (const drawn of markPieces(mark, part, index, measure)) {
       index += 1;
-      pieces.push(pieceOf(drawn, depth, at));
+      pieces.push(pieceOf(drawn, depth, at, mark.id));
     }
   }
   return pieces;
@@ -659,9 +674,12 @@ function furthestFirst(pieces: readonly Piece[]): readonly Mark[] {
     if (ready.empty) {
       while (next < count && done[next] === 1) next += 1;
       if (next >= count) break;
+      // Every piece is drawn, whatever the orders among them say, so a ring that
+      // cannot be walked back to its start leaves the piece it started from
+      // holding nothing rather than leaving the rest of the list undrawn.
       const freed = breakRing(next, pieces, after, before, waiting, done);
-      if (freed < 0) break;
-      ready.add(freed);
+      if (freed < 0) waiting[next] = 0;
+      ready.add(freed < 0 ? next : freed);
     }
     const taken = ready.take();
     if (done[taken] === 1) continue;
@@ -690,7 +708,7 @@ function join(drawn: Mark[], piece: Piece, last: Piece | undefined): void {
   const mark = piece.mark;
   const before = drawn[drawn.length - 1];
   const dashed = mark.kind === 'path' && mark.stroke?.dash !== undefined && mark.stroke.dash.length > 0;
-  if (!last || last.at !== piece.at || mark.kind !== 'path' || before?.kind !== 'path' || dashed) {
+  if (!last || last.from !== piece.from || mark.kind !== 'path' || before?.kind !== 'path' || dashed) {
     drawn.push(mark);
     return;
   }
@@ -710,8 +728,8 @@ function join(drawn: Mark[], piece: Piece, last: Piece | undefined): void {
 function breakRing(
   from: number,
   pieces: readonly Piece[],
-  after: readonly number[][],
-  before: readonly number[][],
+  after: number[][],
+  before: number[][],
   waiting: Int32Array,
   done: Uint8Array,
 ): number {
@@ -749,6 +767,8 @@ function breakRing(
   const holder = ring[(weakest + 1) % ring.length];
   const edge = after[holder].indexOf(held);
   if (edge >= 0) after[holder].splice(edge, 1);
+  const back = before[held].indexOf(holder);
+  if (back >= 0) before[held].splice(back, 1);
   waiting[held] -= 1;
   return waiting[held] === 0 ? held : breakRing(held, pieces, after, before, waiting, done);
 }

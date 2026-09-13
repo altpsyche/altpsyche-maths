@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import {
+  areaOf,
   boundsOf,
   circle,
   colourFrom,
@@ -224,6 +225,54 @@ describe('a stretch of many marks', () => {
       expect(pieces.some((mark) => mark.kind === 'path' && containsPoint(mark.path, vec2(at + 0.5, 0.5)))).toBe(true);
       const box = boundsOf(pieces.flatMap((mark) => (mark.kind === 'path' ? mark.path : [])));
       expect(box).not.toBeNull();
+    }
+  });
+});
+
+describe('what a cut leaves', () => {
+  const across: Depth = { a: 0, b: 0, c: 0 };
+  const leans = leaning(0, 1);
+
+  it('adds back up to the mark it was cut from, piece by piece', () => {
+    const flat: Mark = { kind: 'path', id: 'flat', path: rect(vec2(-1, -1), 2, 2), fill: ink, depth: across };
+    const tilted: Mark = { kind: 'path', id: 'tilted', path: circle(vec2(0, 0), 1), fill: ink, depth: leans };
+    const drawn = depthOrder([flat, tilted]);
+    for (const whole of [flat, tilted]) {
+      const pieces = drawn.filter((mark) => mark.id.startsWith(whole.id) && mark.kind === 'path');
+      const area = pieces.reduce((sum, mark) => sum + Math.abs(areaOf((mark as { path: never }).path)), 0);
+      expect(area).toBeCloseTo(Math.abs(areaOf((whole as { path: never }).path)), 9);
+    }
+  });
+
+  it('keeps a shape carrying both a fill and a stroke apart, so no stroke runs down a cut', () => {
+    const flat: Mark = { kind: 'path', id: 'flat', path: rect(vec2(-1, -1), 2, 2), fill: ink, depth: across };
+    const both: Mark = { kind: 'path', id: 'both', path: rect(vec2(-1, -1), 2, 2), fill: ink, stroke: pen, depth: leans };
+    const pieces = depthOrder([both, flat]).filter((mark) => mark.id.startsWith('both'));
+    expect(pieces.length).toBeGreaterThan(1);
+    for (const piece of pieces) {
+      if (piece.kind !== 'path') throw new Error('a piece of a path is a path');
+      expect(piece.fill !== undefined && piece.stroke !== undefined).toBe(false);
+      // The stroke's pieces are runs rather than loops, since a stroke closed
+      // along the cut would draw a line the mark never had.
+      if (piece.stroke) expect(piece.path.every((subpath) => !subpath.closed)).toBe(true);
+    }
+  });
+
+  it('draws every piece it made, even where the orders among them run in a ring', () => {
+    const cells: Mark[] = [];
+    for (let at = 0; at < 12; at += 1) {
+      const turn = (at / 12) * Math.PI * 2;
+      cells.push({
+        kind: 'path',
+        id: `ring/${at}`,
+        path: rect(vec2(Math.cos(turn) - 0.6, Math.sin(turn) - 0.6), 1.2, 1.2),
+        fill: ink,
+        depth: { a: Math.cos(turn), b: Math.sin(turn), c: at * 1e-3 },
+      });
+    }
+    const drawn = depthOrder(cells);
+    for (let at = 0; at < 12; at += 1) {
+      expect(drawn.some((mark) => mark.id.startsWith(`ring/${at}`))).toBe(true);
     }
   });
 });
