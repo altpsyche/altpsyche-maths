@@ -1534,9 +1534,11 @@ painter keeps a depth buffer, which is what two surfaces passing through each ot
 names the painters that can draw it, which is the fourth decision above, so a painter that cannot
 draw what a figure asks for refuses by name rather than drawing it wrongly.
 
-**What the engine already has, so nothing waits on it.** `@altpsyche/engine` 0.5.0 carries `depth` on
-a pipeline, as a compare and a write beside the stencil half, and `depth` on a pass as the texture it
-keeps what it drew in. Both are at the door and `gpuFrame` names neither today.
+**What the engine has at the door.** `@altpsyche/engine` 0.5.0 carries `depth` on a pipeline, as a
+compare and a write beside the stencil half, and `depth` on a pass as the texture it keeps what it
+drew in. Both are at the door and `gpuFrame` names neither today. **What one of its two backends does
+not have** is either of those beside a colour attachment at four samples, which step 6 measured on a
+card and which the reading below states.
 
 **Why the format's version goes from 0 to 1.** The specification says a figure in space is drawn in
 the order its scene sorts and that two renderers agreeing on the marks agree on the order. A mark
@@ -1550,12 +1552,40 @@ demo was 328 marks at its still, of which 0 carried a depth. `npm run gate:gpu` 
 figures above both floors, 0.97 without labels and 0.96 with them, and `npm run gate:record` wrote 32
 of 32 recordings.
 
-**The reading steps 6 and 7 quote, after step 5.** `npm test` is 1,466 tests over 97 files and the
+**The reading steps 6 and 7 quote, after step 5.** `npm test` is 1,467 tests over 97 files and the
 door is 229 values and 252 types. The eight stills are 1,613,926 bytes written and the eight strips
 3,191,507. The solid demo is 328 marks at its still, of which 278 carry a depth, and the flat
 painters cut those into 727 pieces in 14.9 ms. **Neither gate has been run since step 4**, and the
 GPU gate is what step 6 is measured by, so running it against this tree is the first thing that step
 does.
+
+**What the GPU gate reads against this tree, which is what step 6 starts from.** Seven of the eight
+figures are above both floors and the solid demo is below both, at 87.26 per cent of its pixels
+within 8 of 255 with its labels and 88.03 without them. The sheet cuts by depth after step 5 and the
+card still paints in the order of the list, which is the disagreement step 6 closes. The other seven
+carry no depth and are unmoved.
+
+**What step 6 found before it wrote anything, and the gap is the engine's rather than this
+package's.** `gpuFrame` draws into a colour attachment at four samples and resolves it, and the
+WebGL 2 backend refuses a depth attachment beside one. A frame keeping four samples of the depth is
+refused with `keeps several samples of the depth in resource 3, and this backend keeps one`, and a
+frame keeping one sample of it beside the four-sample colour is refused with `tests depth against the
+multisample target resource 0, which this backend does not`. Both readings are off a card rather than
+off the source: each frame was built by hand and handed to a renderer that backend opened. The
+engine's own words put the first outside item 80's scope, and say of the second that a single-sample
+depth renderbuffer cannot share a framebuffer with a multisample colour target. Its validator says
+WebGPU draws a multisampled depth attachment, so one backend of the two has the gap.
+
+**The gate has no WebGPU to fall back to.** Chromium as playwright launches it answers `no
+navigator.gpu`, with `--enable-unsafe-webgpu --enable-features=Vulkan` as without them. So every
+figure in the readings above was drawn on WebGL 2 and every figure step 6 draws will be.
+
+**Giving up the four samples is what a depth test costs on that backend, and it costs it in figures
+that carry no depth.** Drawn into a single-sample attachment presented directly, with no depth test
+at all, the gate reads 3 of 8 figures above both floors rather than 7 of 8. Without their labels,
+tangent falls from 98.51 per cent of its pixels within 8 of 255 to 94.02, portrait from 98.28 to
+95.45, solids from 98.49 to 97.12 and matrix from 98.17 to 97.00. Four of those five are flat
+figures, so a frame trading the smooth edge for a depth test pays for it where the test does nothing.
 
 **The steps.** Each is one commit and each names the measurement its commit quotes.
 
