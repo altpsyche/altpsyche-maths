@@ -30,7 +30,10 @@ class Counter implements CanvasLike {
   font = '';
   textAlign: CanvasLike['textAlign'] = 'start';
   textBaseline: CanvasLike['textBaseline'] = 'alphabetic';
-  save() {}
+  saves = 0;
+  save() {
+    this.saves += 1;
+  }
   restore() {}
   beginPath() {}
   rect() {}
@@ -57,7 +60,7 @@ const countOf = (markup: string, tag: string) => markup.split(`<${tag}`).length 
 function drawn(
   frame: Frame,
   marks: readonly Mark[] = frame.marks
-): { fills: number; strokes: number; texts: number; elements: number } {
+): { fills: number; strokes: number; texts: number; painted: number; elements: number } {
   const target = new Counter();
   paintCanvas(target, marks, frame.view);
   const markup = svgMarkup(marks, frame.view, WIDTH, HEIGHT);
@@ -65,6 +68,9 @@ function drawn(
     fills: target.fills,
     strokes: target.strokes,
     texts: target.texts,
+    // One save wraps each thing the canvas painter draws, so this is what that
+    // painter saw against what the other one wrote.
+    painted: target.saves,
     elements: countOf(markup, 'path') + countOf(markup, 'text'),
   };
 }
@@ -114,16 +120,27 @@ describe('a walk of the solid demo', () => {
       // window on a saddle that turns, so the count there changes frame to frame.
       const own = frame.marks.filter((mark) => !mark.id.startsWith('solid/lens/'));
       const counted = drawn(frame, own);
-      // The three runs of descent are among the fills rather than the strokes,
-      // since a stroke of two widths is drawn as the filled outline of its path.
-      expect(counted.fills).toBe(197);
-      expect(counted.strokes).toBe(61);
+      // A mark in space is cut where its depth crosses another's and painted as
+      // the pieces the cut leaves, so a frame draws more than it holds. A label
+      // is never cut, since the shapes that draw one are the machine's.
       expect(counted.texts).toBe(11);
-      // Sixteen more calls than marks, which are the panes of glass: a mark
-      // carrying both a fill and a stroke is painted twice and written once.
-      expect(counted.fills + counted.strokes + counted.texts).toBe(own.length + 16);
-      const whole = drawn(frame);
-      expect(whole.elements).toBe(frame.marks.length);
+      expect(counted.fills + counted.strokes).toBeGreaterThan(own.length - 11);
+      // The two painters draw the same pieces, so what one saw is what the other
+      // wrote. A pane of glass carries a fill and a stroke, so the drawing calls
+      // outnumber both.
+      expect(counted.painted).toBe(counted.elements);
+      expect(counted.fills + counted.strokes + counted.texts).toBeGreaterThan(counted.elements);
+    }
+  });
+
+  it('cuts its marks into pieces that carry the ids they were cut from', () => {
+    const frame = frames[Math.round(frames.length * 0.18)];
+    const markup = svgMarkup(frame.marks, frame.view, WIDTH, HEIGHT);
+    const ids = new Set(frame.marks.map((mark) => mark.id));
+    const painted = [...markup.matchAll(/data-mark="([^"]+)"/g)].map((found) => found[1]);
+    expect(painted.length).toBeGreaterThan(frame.marks.length);
+    for (const id of painted) {
+      expect(ids.has(id) || ids.has(id.slice(0, id.lastIndexOf('/')))).toBe(true);
     }
   });
 

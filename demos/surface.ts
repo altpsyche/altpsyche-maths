@@ -284,6 +284,20 @@ export const CELLS = 12;
 export const PANES = 4;
 
 /**
+ * How far toward the eye a curve drawn on the saddle is moved before its depth
+ * is fitted, in figure units.
+ *
+ * Every curve here lies on the saddle, and the saddle is drawn as flat cells, so
+ * the cell a piece of curve sits on stands as far from the true surface as that
+ * cell's own sagitta and the two have nothing to decide between them. At twelve
+ * cells across, a cell is 1.088e-3 away from the surface inside it in the values
+ * a perspective depth is fitted in, and the lift that clears it everywhere over
+ * the orbit is this. The smallest gap to a genuine occluder is 0.00158 over the
+ * same turn, so the lift stays under what would let a hidden piece through.
+ */
+export const LIFT = 0.00348;
+
+/**
  * Which way the light comes from, over the shoulder and to one side.
  *
  * Straight down the z axis is nearly parallel to every normal this saddle has,
@@ -359,14 +373,14 @@ export const scene: NodeRecord = {
       runs: SEEDS.map((seed) => ({ of: descent, from: seed, options: { step: STEP, steps: STEPS, within: { x: OVER, y: OVER } } })),
       on: saddle,
       camera,
-      options: { stroke: fall },
+      options: { stroke: fall, lift: LIFT },
     },
     {
       kind: 'section3',
       name: 'cut',
       curve: { of: saddle, plane: { point: vec3(0, 0, HEIGHT), normal: vec3(0, 0, 1) }, options: { ...spread, resolution: 48 } },
       camera,
-      options: { stroke: cut },
+      options: { stroke: cut, lift: LIFT },
       style: { opacity: 1 },
     },
     ...CONTOURS.map((height, at) => ({
@@ -374,7 +388,7 @@ export const scene: NodeRecord = {
       name: `contour${at}`,
       curve: { of: saddle, plane: { point: vec3(0, 0, height), normal: vec3(0, 0, 1) }, options: { ...spread, resolution: 48 } },
       camera,
-      options: { stroke: contour },
+      options: { stroke: contour, lift: LIFT },
       style: { opacity: 0.55 },
     })),
     {

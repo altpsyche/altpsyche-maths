@@ -1592,6 +1592,7 @@
             }
           },
           "options": {
+            "lift": 0.00348,
             "stroke": {
               "colour": {
                 "a": 1,
@@ -1876,6 +1877,7 @@
           "kind": "section3",
           "name": "cut",
           "options": {
+            "lift": 0.00348,
             "stroke": {
               "colour": {
                 "a": 1,
@@ -2026,6 +2028,7 @@
           "kind": "section3",
           "name": "contour0",
           "options": {
+            "lift": 0.00348,
             "stroke": {
               "colour": {
                 "a": 1,
@@ -2180,6 +2183,7 @@
           "kind": "section3",
           "name": "contour1",
           "options": {
+            "lift": 0.00348,
             "stroke": {
               "colour": {
                 "a": 1,

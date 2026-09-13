@@ -376,6 +376,17 @@ numbers and a pointwise map of a shape.
   list with no taper comes out unchanged and running it twice changes nothing. A shape carrying a
   fill as well leaves two marks, the fill under its own id and the outline under that id with
   `/stroke` on the end. Both painters run this over the marks they are given.
+- `depthOrder(marks)` — the list a painter with no depth buffer draws, in the order it draws it. The
+  list is split into stretches at every mark carrying no depth, since a mark carrying none clears the
+  depths before it, and inside a stretch the marks are cut where their depths cross and the pieces
+  painted furthest first. Two depths are equal along a straight line on the page, because the
+  difference of two affine functions is affine, so a mark cut by that line has one depth order against
+  everything it overlaps. A filled path is cut and closed along the line, by Sutherland and Hodgman's
+  clip with the pieces split at their crossings first; a stroked path is cut at its centreline, and a
+  dashed one leaves one mark per run carrying the length before it as its own offset. A piece carries
+  its mark's id with the number of the piece on the end. A label is never cut and takes its place from
+  the depth at its own anchor. A list holding no depth is handed back as it stands. Both flat painters
+  run this over the marks they are given, after `outlinedMarks`.
 - `OutlineOptions` — what outlining takes. The caps, the joins and the miter limit are the SVG
   specification's, and so are the defaults.
   - `cap` — what the two ends of an open stroke are finished with: `butt`, `round` or `square`.

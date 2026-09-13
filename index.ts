@@ -32,6 +32,7 @@ export { pathFromData } from './figure/path-data.js';
 export { TOLERANCE } from './figure/tolerance.js';
 export { areaOf } from './figure/area.js';
 export { outlinePath, outlinedMarks } from './figure/outline.js';
+export { depthOrder } from './figure/depth-order.js';
 export type { OutlineOptions } from './figure/outline.js';
 export { widestWidth, widthAt } from './figure/width.js';
 export { transformFill, transformGradient } from './figure/gradient.js';

@@ -20,6 +20,7 @@ import { hexOf, type Colour } from '../values/colour.js';
 import type { Fill, Mark, PathMark, TextMark } from '../figure/mark.js';
 import type { Path } from '../figure/path.js';
 import { outlinedMarks } from '../figure/outline.js';
+import { depthOrder } from '../figure/depth-order.js';
 import { baselineDrop } from '../figure/text-outline.js';
 import type { Font } from '../figure/font.js';
 import { widestWidth } from '../figure/width.js';
@@ -311,8 +312,9 @@ function textLift(marks: readonly Mark[], scale: number, floor: number): number 
 export function svgElements(marks: readonly Mark[], view: Transform2D, options: SvgMarkupOptions = {}): SvgElement[] {
   const scale = mat3.scaleFactor(view);
   // A stroke of two widths is no attribute an element carries, so it arrives here
-  // as the filled outline it is drawn as before any of it is written out.
-  const drawn = outlinedMarks(marks);
+  // as the filled outline it is drawn as before any of it is written out, and the
+  // outline is the shape the depth order cuts.
+  const drawn = depthOrder(outlinedMarks(marks));
   const lift = textLift(drawn, scale, options.minTextSize ?? 0);
   const prefix = options.prefix ?? '';
   const defs = defsElement(drawn, view, prefix);

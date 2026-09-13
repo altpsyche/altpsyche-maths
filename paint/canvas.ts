@@ -18,6 +18,7 @@ import type { Frame } from '../figure/frames.js';
 import type { Fill, Mark, PathMark, TextMark } from '../figure/mark.js';
 import type { Path } from '../figure/path.js';
 import { outlinedMarks } from '../figure/outline.js';
+import { depthOrder } from '../figure/depth-order.js';
 import { widestWidth } from '../figure/width.js';
 
 /**
@@ -179,8 +180,9 @@ function paintText(context: CanvasLike, mark: TextMark, view: Transform2D, scale
 export function paintCanvas(context: CanvasLike, marks: readonly Mark[], view: Transform2D): void {
   const scale = mat3.scaleFactor(view);
   // A stroke of two widths is no setting a context holds, so it arrives here as
-  // the filled outline it is drawn as before any of it is traced.
-  for (const mark of outlinedMarks(marks)) {
+  // the filled outline it is drawn as before any of it is traced, and the outline
+  // is the shape the depth order cuts.
+  for (const mark of depthOrder(outlinedMarks(marks))) {
     context.save();
     context.globalAlpha = mark.opacity ?? 1;
     clipTo(context, mark, view);
