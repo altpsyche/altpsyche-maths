@@ -486,9 +486,13 @@ and the reasons in this document are unchanged. What was wrong was the size writ
 **Two renderers conform if they draw the same marks at the same times, compared by tolerance.** That
 is a gate this repository already runs, and it is the oracle the format gets for free.
 
-It covers a flat figure. It covers nothing a depth buffer does, because a renderer using depth does
-not go through marks. The second half needs an answer of its own, and it is a question for the
-planning session rather than a thing to solve now.
+It covered a flat figure and nothing a depth buffer does, because a renderer using depth does not go
+through marks. **That second half is answered, on 2026-09-13, and the answer is that the depth goes
+through the marks too.** A mark carries the depth it is drawn at as a function of the page, and the
+rule says the nearer mark wins where two of them overlap. A depth buffer is one way to meet that rule
+and cutting the geometry along the line where the two depths cross is the other, so a renderer with
+no card is conformant and the comparison of two lists is still the oracle. The section below says why
+the function is three numbers.
 
 The comparison is by tolerance and never by hash, for the reason `CLAUDE.md` already gives:
 `Math.sin`, `Math.cos` and `Math.pow` are not specified to the last bit and differ between engines.
@@ -538,6 +542,41 @@ an oversight to a renderer written in another language and would have each of th
 
 **What would change the answer** is a use for a morph between two implicit curves. There is none, and
 the picture that wanted one would need a pairing rule of its own before the count could be fixed for it.
+
+## Why a depth is three numbers rather than one, and why it is not a z on every point
+
+**One number a mark cannot work, and the solid demo is what measures it.** A depth per mark is the
+same information the scene's own sort already has, so a renderer given it draws what the sort drew.
+The saddle and the plane of `demos/surface.ts` pass through each other, and cells either side of
+their crossing interpenetrate: 559 of 10,583 places a reader sees at the still show the wrong one of
+the two surfaces, 5.3 per cent, and no ordering of whole marks fixes a pair of marks that each cover
+the other in part.
+
+**A z on every point of a path is the other end and it costs the path.** A path is points and
+controls on the page, and every builder, every operation and every animation in this format reads
+one. Carrying a third coordinate through all of them to serve the marks a space builder makes is a
+change to the whole vocabulary for one kind of figure.
+
+**Three numbers sit between the two and are exact for what they have to be exact for.** A piece of
+the world drawn as a mark is flat: a cell of a surface, a face of a solid, a segment of a run. The
+depth of a plane is an affine function of the page under a parallel projection, and under a
+perspective projection the reciprocal of that depth is, which is the standard result a card's
+perspective-correct interpolation rests on. So `a`, `b` and `c` carry a plane's depth over the whole
+page with nothing left over, and a curved cell is as wrong as the flat cell standing for it already
+was.
+
+**What it buys the renderer with no card.** Two affine functions cross along a straight line, because
+their difference is affine and its zero set is a line. So a flat painter cuts each of two overlapping
+marks by the half-plane where it is the nearer one and paints the pieces in any order, which is the
+same picture a depth buffer draws and needs boolean path operations this repository already holds to
+1.776e-15.
+
+**What it costs.** A curve lying on a surface is at that surface's depth, so the two functions agree
+and nothing decides between them. The builder that draws the curve moves it nearer by the cell's own
+sagitta, which is the offset a card calls a polygon offset. A global offset chosen without knowing
+which surface a curve sits on does not work and that was measured: at the still the offset needed to
+carry a piece over the cell it lies on is 0.1958 and the nearest genuine occluder allows 0.1874, and
+over 360 turns the two cross at 202 of them.
 
 ## Why a curve on a solid is an entry of a scene rather than a node over one
 

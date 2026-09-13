@@ -47,23 +47,30 @@ consumer already has them.
 A figure declares which version of the format it is written in. A renderer declares which versions it
 reads. Neither number is this package's.
 
-**The version is one whole number and it is 0 today.** A renderer refuses a version it does not read
+**The version is one whole number and it is 1 today.** A renderer refuses a version it does not read
 and names both numbers, its own and the file's. A field added to a kind that leaves what every
 existing figure means alone keeps the version. A change to what a field means, a field removed and a
 kind removed are each a new version.
+
+**Version 1 is depth, and what it changed is the order a renderer paints in.** Under version 0 the
+order of the list of marks was the order they were painted in, and a figure in space was drawn in the
+order its own scene sorted. A mark may now carry a depth, and where two marks carrying one overlap
+the nearer is drawn over the further whatever order the list gives. That is a change to what an
+existing field means rather than a field added, so it is a version. A figure written under version 0
+draws the same picture under a version 1 renderer, since no mark of it carries a depth.
 
 ## The file
 
 **A file is a JSON document carrying two fields.** `format` is the version of this specification the
 figure is written in, and `figure` is the figure.
 
-**A figure carries nine fields and three of them are required.** `extent` is how much of the world
+**A figure carries ten fields and three of them are required.** `extent` is how much of the world
 the figure shows in its own units, `scene` is the tree of nodes, and `still` is the one time a reader
-who asked for reduced motion is shown. The other six are optional: `fit` is how the extent meets a
+who asked for reduced motion is shown. The other seven are optional: `fit` is how the extent meets a
 frame of a different shape, `tracks` is every value over time by name, `timeline` is the spans,
 `duration` is how long the figure runs where that is past the end of its last span, `loop` says the
-figure ends where it began, and `insets` is the second views drawn into rectangles of the figure's
-own frame.
+figure ends where it began, `insets` is the second views drawn into rectangles of the figure's own
+frame, and `painters` is which painters may draw the figure.
 
 **A reader takes the fields of an object in any order.** The writer in this package sorts them, so
 the bytes of a file are a function of the figure rather than of the order its fields were built in,
@@ -725,11 +732,64 @@ it holds.
 time is read the same way its marks are, and an inset carries one view change applied in full at
 every time rather than a span.
 
+## The depth
+
+**A depth is how far a mark is from the eye, and it is a function of where on the page the mark is
+being drawn rather than one number for the whole mark.** A mark carrying a depth carries three
+numbers, `a`, `b` and `c`, and its depth at the page point (x, y) is `a·x + b·y + c`. The mark with
+the smaller depth at a point is the nearer one there.
+
+**Three numbers are enough because that function is affine on the page for a flat piece of the
+world.** Under a parallel projection the value is the distance along the direction the eye looks, and
+that distance is an affine function of the page for any plane in the world. Under a perspective
+projection the affine quantity is the reciprocal of that distance, so the value is the negative of
+the reciprocal, which keeps the smaller number the nearer one. This is the same quantity a card
+interpolates across a triangle, and the reason a card interpolates it rather than the distance itself
+is the same reason: the reciprocal is what a divide by the depth leaves affine.
+
+**Which marks carry a depth.** A mark a space builder made carries one, fitted through the points in
+space it was drawn from. A mark of a flat figure carries none, and nothing about how a flat figure is
+drawn changed when this field arrived.
+
+**The rule, which is the whole of what a depth is for.** Where two marks carrying a depth overlap on
+the page, the nearer of the two at a point is drawn over the further at that point. Where a mark
+carrying a depth overlaps a mark carrying none, the order of the list decides. Where two marks
+carrying a depth are at the same depth at a point, the order of the list decides there too, so a
+curve drawn on a surface wins by standing later in the list.
+
+**A renderer may meet the rule two ways and both draw the same picture.** One is a depth buffer: the
+depth is written and tested per pixel, which is what a card does. The other is cutting the geometry
+before it is painted: two marks whose depths cross do so along a straight line on the page, because
+the difference of two affine functions is affine, so each mark is cut by the half-plane where it is
+the nearer one and the pieces are painted in any order. A renderer with no depth buffer is conformant
+by the second.
+
+**A curve drawn on a surface is at the surface's own depth, and the builder that draws it moves it
+nearer by the surface's own flatness.** A cell of a surface is a flat piece standing for a curved
+one, so the cell's depth and the surface's true depth differ by the sagitta of that cell, and a curve
+lying on the surface is inside that difference. The builder subtracts it, which is the offset a card
+calls a polygon offset and applies for the same reason.
+
+**Two spaces in one figure have depths that cannot be compared.** A depth is measured against one
+camera, so two cameras give two scales. A figure drawing two spaces keeps them apart on the page, and
+a figure whose two spaces overlap is asking a question the format does not answer.
+
+**A scene in space still sorts what it holds.** The sort settles the order of the list, which is what
+decides where two marks are at one depth and what a renderer with neither a depth buffer nor a cut
+falls back to. What the depth adds is the answer where the sort has none: a curve lying on the
+surface it was cut from, and two surfaces passing through each other.
+
 ## The figure
 
-**A figure carries nine fields and three of them are required**, which the file section above states.
-`extent`, `scene` and `still` are required; `fit`, `tracks`, `timeline`, `duration`, `loop` and
-`insets` are not.
+**A figure carries ten fields and three of them are required**, which the file section above states.
+`extent`, `scene` and `still` are required; `fit`, `tracks`, `timeline`, `duration`, `loop`, `insets`
+and `painters` are not.
+
+**`painters` is the painters that may draw the figure**, as a list of the names `svg`, `canvas` and
+`gpu`. Left out, every painter may. A painter not named refuses the figure and says which painter it
+is, rather than drawing a picture the figure did not ask for. What the field is for is a figure
+asking for something one painter has and another does not, which the rule about a mark's depth is the
+first candidate for and no figure in this repository needs yet.
 
 **`scene` is a node and never a function.** A figure whose shape follows a value reaches it through an
 expression in that node, which is what keeps a figure a file.
@@ -753,9 +813,14 @@ two pictures, and it needs no screen.
 last bit in every language, so two renderers computing the same circle differ in the last places of
 its control points. A hash makes that a failure with nothing to say what moved.
 
-**What conformance covers is a flat figure.** A figure in space is drawn in the order its scene sorts,
-which is the painter's algorithm, and two renderers agreeing on the marks agree on the order. What it
-does not cover is anything a depth buffer would decide, since the format has none.
+**A figure in space is covered too, and the depth is what covers it.** The order the scene sorts is
+the order of the list, and the depth section above says what happens where two marks carrying one
+overlap. So two renderers agreeing on the marks agree on the picture whether one of them keeps a
+depth buffer and the other cuts the geometry, since both meet the same rule.
+
+**A depth is compared by tolerance like everything else.** The three numbers of one are fitted
+through points a projection produced, so two renderers differ in their last places for the same
+reason their circles do.
 
 **A cubic quarter of a circle is the one place a tolerance is named rather than chosen.** The control
 distance leaves the drawn edge between 2.6 and 2.8 parts in ten thousand of the true radius, so a
@@ -775,7 +840,7 @@ renderer is conformant inside that band and wrong outside it in either direction
 | `demos/portrait.figure.json` | 25,603 | a parametric closed orbit with a dot carried round it, two polar spirals and two implicit nullclines over a field |
 | `demos/solids.figure.json` | 92,012 | two solids drawn alone, two handed to a scene with a curve in space cut into pieces it sorts, and a face marked with its rim, its middle, the way it faces and a name |
 
-**Each carries `format` 0 and reads with no renderer at all.** A reader in another language that draws
+**Each carries `format` 1 and reads with no renderer at all.** A reader in another language that draws
 the same marks at these figures' named times, inside the tolerances above, is conformant.
 
 ## The design behind it
