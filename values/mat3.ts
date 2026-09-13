@@ -80,9 +80,39 @@ function scaleFactor(m: Transform2D): number {
   return (Math.hypot(m0, m1) + Math.hypot(m3, m4)) / 2;
 }
 
+/**
+ * The matrix that undoes this one, or nothing where it undoes nothing.
+ *
+ * A mark's depth is an affine function of the page, so a transform above the mark
+ * moves that function by its inverse: the depth at a moved point is the depth the
+ * function gave at the point it came from. A transform that collapses the plane
+ * has no inverse and a figure carrying one draws nothing to read a depth at.
+ */
+function invert(m: Transform2D): Transform2D | undefined {
+  const [m0, m1, m2, m3, m4, m5, m6, m7, m8] = m;
+  const c0 = m4 * m8 - m5 * m7;
+  const c1 = m5 * m6 - m3 * m8;
+  const c2 = m3 * m7 - m4 * m6;
+  const det = m0 * c0 + m1 * c1 + m2 * c2;
+  if (det === 0) return undefined;
+  const k = 1 / det;
+  return [
+    c0 * k,
+    (m2 * m7 - m1 * m8) * k,
+    (m1 * m5 - m2 * m4) * k,
+    c1 * k,
+    (m0 * m8 - m2 * m6) * k,
+    (m2 * m3 - m0 * m5) * k,
+    c2 * k,
+    (m1 * m6 - m0 * m7) * k,
+    (m0 * m4 - m1 * m3) * k,
+  ];
+}
+
 export const mat3 = {
   IDENTITY,
   multiply,
+  invert,
   translation,
   scaling,
   rotation,

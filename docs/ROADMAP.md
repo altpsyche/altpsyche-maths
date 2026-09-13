@@ -1581,16 +1581,28 @@ draws all eight figures above both floors, 0.97 without labels and 0.96 with the
       0 is refused with both numbers named. `npm run demos` regenerates all sixteen sheets to the
       committed bytes, so no picture moved. The door is 226 values and 251 types, from 226 and 250,
       the one name being `Depth`. 1,431 tests over 94 files, unchanged.
-- [ ] **3. The space builders fit the depth of what they draw.** `polyline3`, `dot3`, `text3`,
-      `arrow3`, `curve3`, `section3`, `streamline3`, `axes3` and the seven item producers fit the
-      three numbers through the points in space each was drawn from, by least squares where a piece
-      has more than three points and exactly where it has three. A curve drawn on a surface is moved
-      nearer by the sagitta of the cell it lies on, which is the offset a card calls a polygon
-      offset. `scene3` keeps its own sort, so the pictures are unchanged and what lands is the
-      number. **Measurement:** how many of the solid demo's 328 marks at the still carry a depth
-      against 0; each fitted depth against `camera.project` at the points it was built from, worst
-      difference quoted, exact to 1e-12 for a cell of the plane since a plane is what the form is
-      exact for; and the eight stills' bytes unchanged.
+- [x] **3. The space builders fit the depth of what they draw.** `polyline3`, `dot3`, `text3` and
+      `arrow3` fit the three numbers through the points in space each was drawn from, and `scene3`
+      does it for every item it is handed, which covers the seven item producers at once and reaches
+      `curve3`, `section3`, `streamline3` and `axes3` through `polyline3`. The fit is least squares
+      with the constant taken out, and points that land on one line on the page take the member of
+      the family whose gradient lies along that line. `mat3.invert` is what carries a depth through a
+      group's transform, since the depth at a moved place is what the function gave where it came
+      from. A `Projection` names its kind, which is what says whether the affine quantity is the
+      depth or its reciprocal. A run takes a `lift`, which moves it toward the eye before the fit and
+      not on the page. `scene3` keeps its own sort, so no picture moved. **Measured:** 1,375 of the
+      2,035 marks at the still times of seven demos carry a depth, from 0, the solid demo 310 of 328
+      and the solids demo 1,065 of 1,070, and every flat figure carries none. The fit is exact for a
+      plane: worst 2.776e-17 over a cell of the plane at its own corners, the same over a cell of the
+      saddle, whose four corners are coplanar because the saddle is a sum of a function of x and one
+      of y, and 1.110e-16 over a whole branch of the crossing, which lies in the level plane it was
+      cut with. A cell of the saddle against the true surface inside it is 1.088e-3 in the values a
+      perspective depth is fitted in, which is the flatness a curve lying on it has to clear. The
+      lift that clears it is 0.00348 figure units at its worst over the orbit, against gaps to a
+      genuine occluder of 0.00158 at the smallest, 0.00809 at one in a hundred and 0.59908 at the
+      middle, so that lift wrongly clears 8 of 4,016 occluded places, which is 0.2 per cent and all
+      of them within 0.0035 units of the surface's own silhouette. `npm run demos` regenerates all
+      sixteen sheets to the committed bytes. 1,438 tests over 95 files, from 1,431 over 94.
 - [ ] **4. A figure names the painters that can draw it.** `Figure` gains `painters`, absent meaning
       all three, `checkFigure` validates it, and `svgMarkup`, `paintSvg`, `paintCanvas` and `paintGpu`
       each refuse a figure that does not name them, by name and with what was asked for. Every demo

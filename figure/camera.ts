@@ -27,6 +27,10 @@ import type { Vec2 } from '../values/vec2.js';
  * has no place on the page at all.
  */
 export type Projection = {
+  /** Which of the two this is. A depth reads it, since the quantity that is an
+   * affine function of the page is the depth itself under a parallel projection
+   * and the reciprocal of the depth under a perspective one. */
+  kind: 'perspective' | 'orthographic';
   near: number;
   place: (view: Vec3) => Vec2;
 };
@@ -47,6 +51,7 @@ export type OrthographicChoice = {
  */
 export function orthographic({ scale = 1 }: OrthographicChoice = {}): Projection {
   return {
+    kind: 'orthographic',
     near: -Infinity,
     place: (view) => ({ x: view.x * scale, y: view.y * scale }),
   };
@@ -79,6 +84,7 @@ export function perspective({
 }: PerspectiveChoice = {}): Projection {
   const matrix = mat4.perspective({ fov, aspect: 1, near, far });
   return {
+    kind: 'perspective',
     near,
     place: (view) => {
       const clip = mat4.transformPoint(matrix, view);

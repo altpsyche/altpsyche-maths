@@ -12,13 +12,15 @@
 import { vec3, type Vec3 } from '../values/vec3.js';
 import type { Vec2 } from '../values/vec2.js';
 import { circle, line, polygon, polyline } from './path.js';
-import type { Fill } from './mark.js';
+import type { Depth, Fill } from './mark.js';
 import { group, shape, text, type GroupNode, type Node, type Style, type TextOptions } from './node.js';
 import { arrow, type ArrowOptions } from './annotate.js';
 import type { Camera3 } from './camera.js';
+import { depthOf } from './depth.js';
 
-/** A run the eye can see, and whether it is all of what the author gave. */
-type Run = { points: Vec2[]; whole: boolean };
+/** A run the eye can see, the places in space it was drawn from, and whether it
+ * is all of what the author gave. */
+type Run = { points: Vec2[]; from: Vec3[]; whole: boolean };
 
 /**
  * Where along a segment the near plane is crossed.
@@ -45,25 +47,32 @@ function visibleRuns(points: readonly Vec3[], camera: Camera3): Run[] {
   const uncut = seen.every((point) => point.inFront);
   const runs: Run[] = [];
   let current: Vec2[] = [];
+  let from: Vec3[] = [];
 
   for (let i = 0; i < points.length; i += 1) {
     const here = seen[i];
     if (here.inFront) {
       if (i > 0 && !seen[i - 1].inFront) {
         const along = crossingAt(seen[i - 1].depth, here.depth, near);
-        current.push(camera.project(vec3.lerp(points[i - 1], points[i], along)).at);
+        const cut = vec3.lerp(points[i - 1], points[i], along);
+        current.push(camera.project(cut).at);
+        from.push(cut);
       }
       current.push(here.at);
+      from.push(points[i]);
       continue;
     }
     if (i > 0 && seen[i - 1].inFront) {
       const along = crossingAt(seen[i - 1].depth, here.depth, near);
-      current.push(camera.project(vec3.lerp(points[i - 1], points[i], along)).at);
+      const cut = vec3.lerp(points[i - 1], points[i], along);
+      current.push(camera.project(cut).at);
+      from.push(cut);
     }
-    if (current.length > 1) runs.push({ points: current, whole: false });
+    if (current.length > 1) runs.push({ points: current, from, whole: false });
     current = [];
+    from = [];
   }
-  if (current.length > 1) runs.push({ points: current, whole: uncut });
+  if (current.length > 1) runs.push({ points: current, from, whole: uncut });
   return runs;
 }
 
@@ -72,16 +81,24 @@ export type Polyline3Options = Style & {
    * cut comes back open however this is set, since closing it would draw an edge
    * that is nowhere in the world. */
   close?: boolean;
+  /** How far toward the eye this run is moved before its depth is fitted, in
+   * figure units. A run drawn on a surface is at that surface's own depth and
+   * needs the sagitta of the cell it lies on to clear it. Where the run is drawn
+   * on the page does not move. */
+  lift?: number;
 };
 
 /** A run of straight segments through points in space. */
 export function polyline3(name: string, points: readonly Vec3[], camera: Camera3, options: Polyline3Options = {}): GroupNode {
-  const { close = false, ...style } = options;
+  const { close = false, lift, ...style } = options;
   const runs = visibleRuns(points, camera);
   return group(
     name,
     runs.map((run) =>
-      shape('run', close && run.whole ? polygon(run.points) : polyline(run.points), style),
+      shape('run', close && run.whole ? polygon(run.points) : polyline(run.points), {
+        ...style,
+        depth: depthOf(run.from, camera, { lift }),
+      }),
     ),
   );
 }
@@ -91,7 +108,7 @@ export function polyline3(name: string, points: readonly Vec3[], camera: Camera3
  * big it is. */
 export function dot3(name: string, at: Vec3, radius: number, fill: Fill, camera: Camera3): GroupNode {
   const seen = camera.project(at);
-  return group(name, seen.inFront ? [shape('disc', circle(seen.at, radius), { fill })] : []);
+  return group(name, seen.inFront ? [shape('disc', circle(seen.at, radius), { fill, depth: depthOf([at], camera) })] : []);
 }
 
 export type Text3Options = TextOptions & {
@@ -113,7 +130,7 @@ export function text3(
   const { offset, ...style } = options;
   const seen = camera.project(at);
   const anchor = offset ? { x: seen.at.x + offset.x, y: seen.at.y + offset.y } : seen.at;
-  return group(name, seen.inFront ? [text('label', anchor, content, size, style)] : []);
+  return group(name, seen.inFront ? [text('label', anchor, content, size, { ...style, depth: depthOf([at], camera) })] : []);
 }
 
 /** A drawn piece and the points in space it was drawn from, which are what say
@@ -122,6 +139,14 @@ export type SpaceItem = {
   points: readonly Vec3[];
   node: Node;
 };
+
+/** The same node with a depth on it, which a group carries in the style it hands
+ * down and a shape or a label carries itself. */
+function atDepth(node: Node, depth: Depth | undefined): Node {
+  if (!depth) return node;
+  if (node.kind === 'group') return { ...node, style: { ...node.style, depth } };
+  return { ...node, depth };
+}
 
 /**
  * The mean of a piece's own depths, so a piece is ordered by where its middle is
@@ -148,7 +173,10 @@ function middleDepth(points: readonly Vec3[], camera: Camera3): number {
  * top between frames would flicker.
  */
 export function scene3(name: string, items: readonly SpaceItem[], camera: Camera3): GroupNode {
-  const measured = items.map((item) => ({ node: item.node, depth: middleDepth(item.points, camera) }));
+  const measured = items.map((item) => ({
+    node: atDepth(item.node, depthOf(item.points, camera)),
+    depth: middleDepth(item.points, camera),
+  }));
   measured.sort((a, b) => b.depth - a.depth);
   return group(name, measured.map((item) => item.node));
 }
@@ -175,9 +203,11 @@ export function arrow3(name: string, from: Vec3, to: Vec3, camera: Camera3, opti
     const along = crossingAt(start.depth, end.depth, camera.projection.near);
     return camera.project(vec3.lerp(from, to, along)).at;
   };
-  if (!end.inFront) return group(name, [shape('shaft', line(start.at, cut()), { stroke: options.stroke })]);
+  if (!end.inFront) {
+    return group(name, [shape('shaft', line(start.at, cut()), { stroke: options.stroke, depth: depthOf([from, to], camera) })]);
+  }
 
   const tail = start.inFront ? start.at : cut();
   if (tail.x === end.at.x && tail.y === end.at.y) return group(name, []);
-  return arrow(name, tail, end.at, options);
+  return atDepth(arrow(name, tail, end.at, options), depthOf([from, to], camera)) as GroupNode;
 }

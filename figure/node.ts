@@ -13,10 +13,16 @@ import { vec2, type Vec2 } from '../values/vec2.js';
 import { scaledWidth, widestWidth } from './width.js';
 import { transformFill } from './gradient.js';
 import { boundsOf, grownBy, overlapOf, type Bounds } from './bounds.js';
-import type { Fill, Mark, Stroke } from './mark.js';
+import type { Depth, Fill, Mark, Stroke } from './mark.js';
+import { transformDepth } from './depth.js';
 
 /** What a group hands down and a child may override. */
 export interface Style {
+  /** How far what is drawn under here is from the eye, as the affine function of
+   * the page a space builder fitted. A node naming none takes the one handed
+   * down, so a builder that hands back a group of runs at one depth names it
+   * once. */
+  depth?: Depth;
   fill?: Fill;
   stroke?: Stroke;
   opacity?: number;
@@ -89,6 +95,7 @@ export const LEADING = 1.2;
 
 function inherited(parent: Style, own: Style): Style {
   return {
+    depth: own.depth ?? parent.depth,
     fill: own.fill ?? parent.fill,
     stroke: own.stroke ?? parent.stroke,
     family: own.family ?? parent.family,
@@ -173,6 +180,7 @@ function walk(
       fill: settled.fill ? transformFill(settled.fill, transform) : undefined,
       stroke: settled.stroke ? { ...settled.stroke, width: scaledWidth(settled.stroke.width, scale) } : undefined,
       opacity,
+      depth: settled.depth ? transformDepth(settled.depth, transform) : undefined,
       clip: inside,
     });
     return;
@@ -197,6 +205,7 @@ function walk(
       baseline: node.baseline,
       fill: transformFill(fill, transform),
       opacity,
+      depth: settled.depth ? transformDepth(settled.depth, transform) : undefined,
       clip: inside,
     });
   });

@@ -1,4 +1,4 @@
-# The AltPsyche figure format, version 0
+# The AltPsyche figure format, version 1
 
 **A figure format is a declarative description of a picture over time.** It carries nodes, a timeline,
 value types and expressions, and a program reads one rather than running it.
@@ -139,6 +139,10 @@ child's: `multiply(a, b)` applies `b` to a point and then `a`.
 
 What a mark is painted with. Every field is optional: `fill`, `stroke`, `opacity`, `family` for the
 font, `weight` for it, and `clip` as a `Bounds`.
+
+**A `depth` is the seventh and a file never carries one.** A space builder puts it on what it draws,
+so it reaches a mark through the tree the way a fill does, and a figure that wrote one by hand is
+refused the way any field a kind does not carry is. The depth section below says what it is.
 
 **A colour is four channels and, where its author gave it one, a name.** `r`, `g` and `b` run from
 nothing to 255, `a` from nothing to one, and `name` is the name a page themes the colour under. A
@@ -519,8 +523,16 @@ holding above it, read in order so the last threshold a magnitude clears decides
 | `streamline3` | `runs`, `on`, `camera`, `options`, `style` |
 
 **A run of points cut by the near plane comes back as several runs**, and `options` for a run is a
-`Style` with `close` beside it. A run the near plane cut comes back open however `close` is set, since
-closing it would draw an edge that is nowhere in the world.
+`Style` with `close` and `lift` beside it. A run the near plane cut comes back open however `close` is
+set, since closing it would draw an edge that is nowhere in the world.
+
+**`lift` is how far toward the eye a run is moved before its depth is fitted, in the units the figure
+is drawn in, and a run drawn on a surface is what carries one.** A surface is drawn as flat cells and
+a curve lying on it is at the surface's own depth, so the two have nothing to decide between them.
+The cell stands for a piece of surface that bows away from it by at most the sagitta of that cell, so
+a `lift` of the sagitta carries the curve clear of the cell it lies on. This is the offset a card
+calls a polygon offset, and it moves only the depth: where the run is drawn on the page does not
+change.
 
 **A dot in space keeps its `radius` in figure units and does not shrink with distance**, since a dot
 marks where something is rather than how big it is. A label in space keeps its size and stays

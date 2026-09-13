@@ -422,6 +422,7 @@ const SHAPES: Readonly<Record<string, Shape>> = {
     weight: may(number),
     clip: may(ref('bounds')),
     close: may(flag),
+    lift: may(number),
   }),
   text3Options: fields('what a label in space takes', {
     fill: may(ref('fill')),
