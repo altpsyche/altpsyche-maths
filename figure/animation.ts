@@ -22,6 +22,7 @@ import { matchGlyphs, matchMarks } from './equation-match.js';
 import { pointAlong } from './length.js';
 import { scaledWidth } from './width.js';
 import { transformFill } from './gradient.js';
+import { transformDepth } from './depth.js';
 import { boundsOfMarks, centreOf, overlapOf, type Bounds } from './bounds.js';
 import { interval } from '../values/interval.js';
 import type { Colour, Fill, Mark, Stroke, TextMark, Width } from './mark.js';
@@ -302,15 +303,21 @@ export function fadeTo(target: string, opacity: number): Animation {
  *
  * The clip is left where the figure put it, so a mark an animation moves slides
  * through its own clip rather than carrying the window along with it.
+ *
+ * The depth goes through as well, the way a gradient's axis does. A depth is a
+ * function of the page, so one left as it stands reads the moved mark at the
+ * place the mark came from and names a distance nothing is at.
  */
 export function carried(mark: Mark, through: Transform2D): Mark {
   const scale = mat3.scaleFactor(through);
+  const depth = mark.depth ? transformDepth(mark.depth, through) : undefined;
   if (mark.kind === 'text') {
     return {
       ...mark,
       at: mat3.transformPoint(through, mark.at),
       size: mark.size * scale,
       fill: transformFill(mark.fill, through),
+      depth,
     };
   }
   return {
@@ -318,6 +325,7 @@ export function carried(mark: Mark, through: Transform2D): Mark {
     path: transformPath(mark.path, through),
     fill: mark.fill ? transformFill(mark.fill, through) : undefined,
     stroke: mark.stroke ? { ...mark.stroke, width: scaledWidth(mark.stroke.width, scale) } : undefined,
+    depth,
   };
 }
 

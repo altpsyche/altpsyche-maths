@@ -12,6 +12,10 @@ import { boundsOfMarks, circle, colourFrom, flatten, followView, group, insetMar
 
 const ink = { colour: colourFrom('#0f0') };
 
+/** A depth that leans across the page, which is what a mark made in space
+ * carries. */
+const leaning = { a: 0.5, b: -0.25, c: 2 };
+
 /** A picture 20 by 10 with a disc near the origin and a rule across it. */
 const scene = group('fig', [
   shape('disc', circle(vec2(1, 0.5), 0.5), { fill: ink }),
@@ -181,5 +185,23 @@ describe('a figure carrying an inset', () => {
     const boxes = [one, other].map((mark) => boundsOfMarks([mark])!);
     expect(boxes[0].x.to - boxes[0].x.from).toBeCloseTo(boxes[1].x.to - boxes[1].x.from, 12);
     expect(boxes[1].x.from - boxes[0].x.from).toBeCloseTo(-16, 12);
+  });
+});
+
+describe('a magnified copy of a mark made in space', () => {
+  it('reads the same depth at the place it was moved to', () => {
+    const deep: Mark = { kind: 'path', id: 'fig/disc', path: circle(vec2(1, 0.5), 0.5), fill: ink, depth: leaning };
+    const copies = insetMarks([deep], { shows, into, name: 'lens' });
+    expect(copies).toHaveLength(1);
+    const moved = copies[0].depth;
+    if (!moved) throw new Error('the copy carries no depth');
+    const through = insetMatrix(shows, into);
+    // The place the disc's own middle went to, and the depth read there against
+    // the depth the disc had where it came from.
+    const from = vec2(1, 0.5);
+    const to = mat3.transformPoint(through, from);
+    const here = leaning.a * from.x + leaning.b * from.y + leaning.c;
+    const there = moved.a * to.x + moved.b * to.y + moved.c;
+    expect(there).toBeCloseTo(here, 12);
   });
 });
