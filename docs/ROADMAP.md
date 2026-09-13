@@ -1552,12 +1552,12 @@ demo was 328 marks at its still, of which 0 carried a depth. `npm run gate:gpu` 
 figures above both floors, 0.97 without labels and 0.96 with them, and `npm run gate:record` wrote 32
 of 32 recordings.
 
-**The reading steps 6 and 7 quote, after step 5.** `npm test` is 1,467 tests over 97 files and the
-door is 229 values and 252 types. The eight stills are 1,613,926 bytes written and the eight strips
+**The reading step 7 quotes, after step 6.** `npm test` is 1,477 tests over 97 files and the door is
+229 values and 252 types. The eight stills are 1,613,926 bytes written and the eight strips
 3,191,507. The solid demo is 328 marks at its still, of which 278 carry a depth, and the flat
-painters cut those into 727 pieces in 14.9 ms. **Neither gate has been run since step 4**, and the
-GPU gate is what step 6 is measured by, so running it against this tree is the first thing that step
-does.
+painters cut those into 727 pieces in 14.9 ms. `npm run gate:gpu` draws 8 of 8 figures above both
+floors. **`npm run gate:record` has not been run since step 4**, and done-criterion 11 is what asks
+for it, so the version is not cut until it has been.
 
 **What the GPU gate reads against this tree, which is what step 6 starts from.** Seven of the eight
 figures are above both floors and the solid demo is below both, at 87.26 per cent of its pixels
@@ -1695,27 +1695,41 @@ figures, so a frame trading the smooth edge for a depth test pays for it where t
       the id of the piece, so a stroke's pieces were folded into the fill's mark and drawn again as
       fill. The picture is the gate that found all four and no measurement did, which is the reading
       to carry into step 6.
-- [ ] **6. The GPU painter keeps a depth buffer.** `gpuFrame` gains a depth texture at four samples,
+- [x] **6. The GPU painter keeps a depth buffer.** `gpuFrame` gains a depth texture at four samples,
       a `less-equal` compare with the write on for marks carrying a depth, and a seventh float a
       vertex carrying the depth the three numbers give at that corner. A mark with no depth is drawn
       by a second pipeline that neither tests nor writes one, since a flat figure's marks are painted
       in the order the list gives and a translucent mark blended under a depth write would hide what
       is behind it. **A stretch is where the depth attachment is cleared**, so the card draws what
       the cutting painter draws rather than letting a mark from before a flat one come back through a
-      mark after it. **This step waits on `@altpsyche/engine` and Siva's call of 2026-09-13 is that
-      the engine is fixed before it is taken**, since a depth attachment beside a four-sample colour
-      one is refused on the only backend there is here and the measurement below cannot be taken at
-      all until that changes. The reading is above. **What that backend needs** is a depth
-      renderbuffer it will multisample: it already calls `renderbufferStorageMultisample` for a
-      colour attachment, a depth format is that same call, and both are WebGL 2 core, so what stands
-      in the way is the scope of the item that gave it multisample colour rather than anything a card
-      lacks. **Measurement:** the 559 of 10,583 sampled places showing the wrong surface at the still
-      against 0 on a card; both floors of `npm run gate:gpu` for all eight figures; the frame's
-      triangle count and bytes against today's reading for the solid demo.
-
-      A stretch is a pass of its own, since a draw names no first vertex and a pipeline names its own
-      geometry, so each stretch carries a vertex resource and a pipeline. The eight committed figures
-      need 8 segments at worst and 1 each for the five flat ones, which is what they carry today.
+      mark after it. **The engine landed what this waited on** as its item 21, in 0.6.0, and both
+      carets here moved with it. **Three things the plan did not name and the commit did.** Every
+      pass averages its samples rather than only the last one doing it, since a pass writing an
+      attachment of several samples and averaging them nowhere is refused by both backends and the
+      attachment keeps what the pass before it drew. One pair of ends holds the whole frame, because
+      the map into the card's range is affine in the depth and the depth is affine in the page, so
+      the card still interpolates the function the mark carries, where rescaling each mark against
+      its own ends would order them by nothing. And a stroke is written a ten-thousandth of the range
+      ahead of the fill it goes round: the two stand at one depth, the card interpolates that one
+      distance across two different sets of triangles, the answers differ in the last bits, and the
+      stroke then loses at some of the samples of a pixel and comes out averaged with the fill under
+      it. **Measured.** `npm run gate:gpu` draws 8 of 8 figures above both floors, from 7 of 8. The
+      solid demo is 96.85 per cent of its pixels within 8 of 255 with its labels and 97.65 without
+      them, from 95.69 and 96.49. The solids demo is 96.18 and 98.32, from 96.35 and 98.49, the fall
+      being the four samples resolving a depth-tested edge where the sheet computes its coverage
+      exactly; without the step back for a stroke it was 95.94 and below the floor, and the 844 marks
+      of that demo carrying both a fill and a stroke are what made the difference. The other six are
+      unmoved. At the still, 68,200 places carry both the saddle and the plane and 9,654 of those
+      read as one of the two orders rather than as an arrow, a cell's stroke or an edge; of those the
+      card shows the further surface at 31 with a depth buffer and at 1,465 in the order of the list,
+      against the cutting painter's 29, so the two painters differ by two places and what is left of
+      both is the twelve-cell mesh. Against the sheet the depth buffer puts 7,975 pixels of the solid
+      demo right and 1,004 wrong, from 22,724 differing to 15,753. The solid demo is 2,145 triangles
+      and 180,180 bytes, from 154,440, over four passes and four draws at 23,328,000 transient bytes,
+      from one pass, one draw and 12,960,000, the depth attachment being 10,368,000 of that. The flat
+      demo is 1,596 triangles and 134,064 bytes, from 114,912, and is still one pass and one draw at
+      12,960,000, since a figure with no depth in it names no attachment for one. `npm run demos`
+      regenerates all sixteen sheets to the committed bytes. 1,477 tests over 97 files, from 1,467.
 - [ ] **7. The demos, the README and the guide say what the version draws.** The sixteen sheets are
       regenerated, the solid demo's still and strip carry the cut crossing, and the guide gains the
       section on depth and on a figure's painters. **Measurement:** the sixteen sheets' bytes against
