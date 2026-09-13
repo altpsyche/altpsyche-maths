@@ -107,8 +107,7 @@ only one painter has. **What would change this answer** is a refusal a page cann
 still frame a page puts in its exported HTML for a reader with no JavaScript is SVG and a refusal
 there is a hole in the page.
 
-**What it unblocks is 3.0.0**, which is depth, and that version is on the ladder to plan rather than
-blocked. The two answers it beat are the rule standing, which would have taken depth off the plan for
+**What it unblocked is 3.0.0**, which is depth, and that version is cut. The two answers it beat are the rule standing, which would have taken depth off the plan for
 good, and the rule going, which would have let a figure be silently wrong in SVG.
 
 **A sixth decision is answered and it is Siva's, taken on 2026-09-11. This package ships a font
@@ -409,13 +408,12 @@ is left, since 2.1.0 through 2.10.0 are cut.
 
 | version | what lands | what it changes | steps | cut against | depends on | plan |
 | --- | --- | --- | --- | --- | --- | --- |
-| 3.0.0 | depth, so a figure in space keeps it, and a figure naming the painters that can draw it | what a `Mark` may ask for, which breaks the format's own version | 8 | the solid demo, whose crossing curve is drawn in the right order rather than the tree's | `@altpsyche/engine` | below |
 | 3.1.0 | a clip that is a path rather than a rectangle | what a `Mark` may ask for | to plan | nothing yet, which is why it is last of the marks | nothing now, since `@altpsyche/engine` 0.5.0 counts a winding | to plan |
 | 4.0.0 | a figure a reader can act on | the shape of `Figure`, which gains input | to plan | nothing yet | nothing outside this package | to plan |
 
 **3.1.0 and 4.0.0 are consequences rather than plans**, written down so they are not rediscovered,
-and neither has a picture waiting, which is what a version needs before it is worked. 3.0.0 is a plan
-now that the fourth decision is answered, and the solid demo is the picture waiting for it.
+and neither has a picture waiting, which is what a version needs before it is worked. Both rows are
+what is left of the ladder, since 3.0.0 is cut.
 
 **What hit testing already gives 4.0.0, so it is not built twice.** `containsPoint`, `windingAt` and
 `nearestEdge` are at the door and a flat list of marks with stable ids is why hit testing is possible
@@ -554,6 +552,45 @@ the motion in a still. 2.6.0 is the version that ends that, and the strips stay 
 README that plays a video on load is a README nobody can read.
 
 ## Now
+
+**3.0.0 is cut and unpublished, and its thirteen done-criteria are verified line by line in the cut's
+own commit.** A figure in space threw its depth away the moment it was projected, and the order of
+the flat list was the whole of what a painter knew. A `Mark` may now carry a `depth`, which is three
+numbers giving how far the mark stands from the eye as a function of where on the page it is drawn,
+and the format's own version reads 1 because the order of the list is no longer the order of
+painting.
+
+**The two flat painters meet the depths by cutting and the card meets them with a depth
+attachment.** `depthOrder` cuts each mark where its depth crosses another's, which is a straight line
+on the page because the difference of two affine functions is affine, and paints the pieces furthest
+first. `gpuFrame` keeps a depth texture at four samples and parts the list into a pass for each
+stretch. Cutting cannot order two surfaces that pass through each other and a depth test can, which
+is why the version is both halves rather than either.
+
+**What the solid demo draws that it did not.** Of the crossing's 9 points at the still that the drawn
+saddle hides, 0 are drawn over it, from 9 of 9. Over twelve turns it is 12 of 108, from 108, and four
+of those twelve are places no cell of the twelve-cell mesh covers at all. The lower contour is 0 of
+14 at the still and the three runs of descent 0 of 7, each from all of them. On a card, of the 9,654
+places at the still that read as one of the two orders, 31 show the further of the saddle and the
+plane against 1,465 in the order of the list, and the cutting painter is at 29, so the two painters
+now differ by two places and what is left of both is the mesh.
+
+**A figure may name the painters that can draw it**, and the refusal is at `marksAt` rather than
+inside a painter, since all three painters are handed marks and never see the figure they came from.
+Every demo leaves the field out, because all three painters meet the depth rule and no figure here
+needs one painter over another.
+
+**The engine was what step 6 waited on and the fix landed there rather than here.** 0.5.0 refused a
+depth attachment beside a colour attachment at four samples, in two wordings on two paths, and
+dropping the four samples to buy the depth test was measured at 3 of 8 figures above both floors
+against 7 of 8, most of the loss falling on flat figures the test does nothing for. The engine closed
+it as its item 21 in 0.6.0 and both carets here moved with it.
+
+**Both gates and the suite.** `npm run gate:gpu` draws 8 of 8 figures above both floors, from 7 of 8.
+`npm run gate:record` writes 32 of 32 recordings, each file holding exactly the frames the walk
+counted. `npm run demos` writes 1,620,080 bytes of stills and 3,183,373 of strips, byte for byte what
+is committed, with no browser and no card. `npm test` is 1,477 tests over 97 files, from 1,431 when
+the version was planned, and the door is 229 values.
 
 **2.11.0 is cut and unpublished, and its twelve done-criteria are verified line by line in the cut's
 own commit.** A sheet read inside an `<img>` fetches nothing, so the letters were whatever the
@@ -1484,303 +1521,9 @@ no box test in front of it and the quadratic over piece pairs is not worth remov
 
 ## The items
 
-### 3.0.0 Depth, and a figure that names the painters that can draw it
-
-**A figure in space throws its depth away at the moment it is projected, and the tree's order is
-what decides which mark is painted over which.** The step list is below, written on 2026-09-13
-against the readings in this entry.
-
-**What a figure keeps today.** `camera.project` gives a point's depth and `scene3` uses it to sort
-the pieces it is handed, back to front. That is the painter's algorithm, and the sort is the last
-thing the depth is used for: a `Mark` has no depth field, so once the group is built the order of the
-flat list is the whole of what a painter knows. A mark outside the `scene3` that holds a surface
-therefore paints over every cell of it whatever the eye can see.
-
-**What the solid demo draws wrong because of that.** `demos/surface.ts` at its still, which is the
-orbit at turn 0.180, is 328 marks. The saddle is 144 cell marks and the plane 16, both inside the
-`scene3` named `body`. The crossing is 4 marks, the two contours 4 and the three runs of descent 3,
-and all eleven sit outside that group, so they are painted last. 22 axis marks are outside it too.
-Sampling the crossing at 62 places along its two branches, 9 of them are behind the saddle and drawn
-over it. Over the whole orbit that is 9.2 per cent of the crossing on average and 25.8 per cent at
-its worst, and the lower of the two contours is 23.0 per cent on average and 44.2 per cent at its
-worst.
-
-**Cutting the curve into pieces and handing them to the scene does not fix it, which is measured
-rather than assumed.** The crossing lies on the saddle, so a piece of it and the cell under it are at
-the same depth. Cut into 48 pieces a branch and sorted among the 144 cells by the mean depth of its
-own points, 30 of 60 pieces are painted behind the cell they lie on at the still, and 47.6 per cent
-over the orbit. A curve on a surface ties with it, and no comparison of depths breaks a tie.
-
-**No depth bias breaks it either.** A bias lifts a piece toward the eye before the sort. At the still
-the bias needed to carry a piece over the cell it lies on is 0.1958 and the largest the nearest
-genuine occluder allows is 0.1874, so the two cross and no single number is right. Over 360 turns
-they cross at 202 of them. A finer mesh narrows the gap and does not close it: no single bias is
-right at 222 turns of 360 with the saddle at 12 by 12 cells, 156 at 24 by 24, 124 at 48 by 48 and 56
-at 96 by 96, and that last is 9,216 cell marks for a picture still wrong one turn in six.
-
-**Two surfaces that pass through each other have no order at all, and the demo already draws a
-pair.** The plane at z = 0.35 cuts the saddle along the crossing, so the cells either side of that
-line interpenetrate. Casting a ray through 10,583 places the reader sees at the still and comparing
-which surface the sort paints last against which one is actually nearer, 559 of them show the wrong
-surface, which is 5.3 per cent. Over the orbit that is 5.3 per cent on average and 6.2 per cent at
-turn 0.736. Cutting curves does nothing for this one, and a depth test taken per pixel is what
-answers it.
-
-**So the version is both halves and Siva's call of 2026-09-13 is that it builds the feature-rich and
-correct answer.** A mark carries the depth the projection already computed. A run in space is cut
-where a surface hides it, which is exact and needs neither a card nor a browser, so the flat painters
-draw the right picture and the README keeps regenerating its stills with `npm run demos`. The GPU
-painter keeps a depth buffer, which is what two surfaces passing through each other need. A figure
-names the painters that can draw it, which is the fourth decision above, so a painter that cannot
-draw what a figure asks for refuses by name rather than drawing it wrongly.
-
-**What the engine has at the door.** `@altpsyche/engine` 0.5.0 carries `depth` on a pipeline, as a
-compare and a write beside the stencil half, and `depth` on a pass as the texture it keeps what it
-drew in. Both are at the door and `gpuFrame` names neither today. **What one of its two backends does
-not have** is either of those beside a colour attachment at four samples, which step 6 measured on a
-card and which the reading below states.
-
-**Why the format's version goes from 0 to 1.** The specification says a figure in space is drawn in
-the order its scene sorts and that two renderers agreeing on the marks agree on the order. A mark
-carrying depth makes the order of the list no longer the order of painting, which is a change to what
-an existing field means rather than a field added, and the specification's own rule makes that a new
-version. The eight committed figure files are rewritten with `"format": 1` in the step that bumps it.
-
-**The reading steps 1 to 4 quoted.** `npm test` was 1,431 tests over 94 files and the door 226 values
-and 250 types. The eight stills were 693,133 bytes written and the eight strips 2,728,660. The solid
-demo was 328 marks at its still, of which 0 carried a depth. `npm run gate:gpu` drew all eight
-figures above both floors, 0.97 without labels and 0.96 with them, and `npm run gate:record` wrote 32
-of 32 recordings.
-
-**The reading step 7 quotes, after step 6.** `npm test` is 1,477 tests over 97 files and the door is
-229 values and 252 types. The eight stills are 1,620,080 bytes written and the eight strips
-3,183,373, which is the tree rather than step 5's own reading: the axes that may be drawn over the
-picture moved every sheet in space after step 5 measured them. The solid demo is 328 marks at its still, of which 278 carry a depth, and the flat
-painters cut those into 727 pieces in 14.9 ms. `npm run gate:gpu` draws 8 of 8 figures above both
-floors. **`npm run gate:record` has not been run since step 4**, and done-criterion 11 is what asks
-for it, so the version is not cut until it has been.
-
-**What the GPU gate reads against this tree, which is what step 6 starts from.** Seven of the eight
-figures are above both floors and the solid demo is below both, at 87.26 per cent of its pixels
-within 8 of 255 with its labels and 88.03 without them. The sheet cuts by depth after step 5 and the
-card still paints in the order of the list, which is the disagreement step 6 closes. The other seven
-carry no depth and are unmoved.
-
-**What step 6 found before it wrote anything, and the gap is the engine's rather than this
-package's.** `gpuFrame` draws into a colour attachment at four samples and resolves it, and the
-WebGL 2 backend refuses a depth attachment beside one. A frame keeping four samples of the depth is
-refused with `keeps several samples of the depth in resource 3, and this backend keeps one`, and a
-frame keeping one sample of it beside the four-sample colour is refused with `tests depth against the
-multisample target resource 0, which this backend does not`. Both readings are off a card rather than
-off the source: each frame was built by hand and handed to a renderer that backend opened. The
-engine's own words put the first outside item 80's scope, and say of the second that a single-sample
-depth renderbuffer cannot share a framebuffer with a multisample colour target. Its validator says
-WebGPU draws a multisampled depth attachment, so one backend of the two has the gap.
-
-**The gate has no WebGPU to fall back to.** Chromium as playwright launches it answers `no
-navigator.gpu`, with `--enable-unsafe-webgpu --enable-features=Vulkan` as without them. So every
-figure in the readings above was drawn on WebGL 2 and every figure step 6 draws will be.
-
-**Giving up the four samples is what a depth test costs on that backend, and it costs it in figures
-that carry no depth.** Drawn into a single-sample attachment presented directly, with no depth test
-at all, the gate reads 3 of 8 figures above both floors rather than 7 of 8. Without their labels,
-tangent falls from 98.51 per cent of its pixels within 8 of 255 to 94.02, portrait from 98.28 to
-95.45, solids from 98.49 to 97.12 and matrix from 98.17 to 97.00. Four of those five are flat
-figures, so a frame trading the smooth edge for a depth test pays for it where the test does nothing.
-
-**The steps.** Each is one commit and each names the measurement its commit quotes.
-
-- [x] **1. The rule is written before the code.** `docs/SPECIFICATION.md` gains what a depth is, the
-      rule that decides which of two marks is drawn over the other, what `painters` is on a figure,
-      and the version going from 0 to 1 with what it breaks. The conformance section's sentence that
-      nothing a depth buffer would decide is covered is replaced by the rule that covers it.
-      `docs/FIGURE-FORMAT.md` gains the reasoning. **The call this commit made** is that a depth is a
-      function of the page rather than one number a mark: three numbers, with the depth at the page
-      point (x, y) being `a·x + b·y + c` and the smaller number the nearer mark. One number a mark is
-      the information the scene's own sort already has, so a renderer given it draws what the sort
-      drew and the 559 of 10,583 places showing the wrong surface stay wrong. A z on every point of a
-      path is the other end and it carries a third coordinate through every path builder, operation
-      and animation in the format for the sake of one kind of figure. Three numbers are exact for a
-      flat piece of the world, which is what a cell, a face and a segment each are, since the depth
-      of a plane is affine on the page under a parallel projection and its reciprocal is under a
-      perspective one. **Measured:** the specification names version 1 and states the rule, and
-      `npm test` is unchanged at 1,431 tests over 94 files, since no code moved.
-- [x] **2. A mark may carry a depth, and the format's version is 1.** `Mark` gains `depth` as the
-      three numbers, absent on every flat figure. `FIGURE_FORMAT_VERSION` reads 1, the reader's
-      refusal names both numbers, and the eight committed figure files are rewritten. Nothing fits a
-      depth yet, so no demo draws differently. The header of `figure/mark.ts` carried the rule the
-      fourth decision overturned and now says what keeps that rule's purpose instead. **This step
-      tightened a test that passed for the wrong reason:** `tests/specification.test.ts` held the
-      document to containing the text `version ${FIGURE_FORMAT_VERSION}`, and the document names
-      every version it has had, so the check found the history whichever number the reader carried;
-      it matches the two declarations by their whole sentences now. **Measured:** the solid demo is
-      328 marks at its still and 0 of them carry a depth, unchanged. All eight figure files read at
-      version 1, each byte for byte what it was apart from the version, and a file written at version
-      0 is refused with both numbers named. `npm run demos` regenerates all sixteen sheets to the
-      committed bytes, so no picture moved. The door is 226 values and 251 types, from 226 and 250,
-      the one name being `Depth`. 1,431 tests over 94 files, unchanged.
-- [x] **3. The space builders fit the depth of what they draw.** `polyline3`, `dot3`, `text3` and
-      `arrow3` fit the three numbers through the points in space each was drawn from, and `scene3`
-      does it for every item it is handed, which covers the seven item producers at once and reaches
-      `curve3`, `section3`, `streamline3` and `axes3` through `polyline3`. The fit is least squares
-      with the constant taken out, and points that land on one line on the page take the member of
-      the family whose gradient lies along that line. `mat3.invert` is what carries a depth through a
-      group's transform, since the depth at a moved place is what the function gave where it came
-      from. A `Projection` names its kind, which is what says whether the affine quantity is the
-      depth or its reciprocal. A run takes a `lift`, which moves it toward the eye before the fit and
-      not on the page. `scene3` keeps its own sort, so no picture moved. **Measured:** 1,375 of the
-      2,035 marks at the still times of seven demos carry a depth, from 0, the solid demo 310 of 328
-      and the solids demo 1,065 of 1,070, and every flat figure carries none. The fit is exact for a
-      plane: worst 2.776e-17 over a cell of the plane at its own corners, the same over a cell of the
-      saddle, whose four corners are coplanar because the saddle is a sum of a function of x and one
-      of y, and 1.110e-16 over a whole branch of the crossing, which lies in the level plane it was
-      cut with. A cell of the saddle against the true surface inside it is 1.088e-3 in the values a
-      perspective depth is fitted in, which is the flatness a curve lying on it has to clear. The
-      lift that clears it is 0.00348 figure units at its worst over the orbit, against gaps to a
-      genuine occluder of 0.00158 at the smallest, 0.00809 at one in a hundred and 0.59908 at the
-      middle, so that lift wrongly clears 8 of 4,016 occluded places, which is 0.2 per cent and all
-      of them within 0.0035 units of the surface's own silhouette. `npm run demos` regenerates all
-      sixteen sheets to the committed bytes. 1,438 tests over 95 files, from 1,431 over 94.
-- [x] **4. A figure names the painters that can draw it.** `Figure` gains `painters`, absent meaning
-      all three, and `checkFigure` validates it. **The refusal is at `marksAt` rather than inside a
-      painter,** since all three painters are handed a list of marks and never see a figure, so a
-      refusal written into one of them would have nothing to read. `marksAt` takes who is asking and
-      refuses a figure that does not name them. `demos/render.ts` asks as `svg` and `gates/gpu.mjs`
-      as `gpu`, so the seam is walked by everything that draws here. Every demo leaves the field out,
-      since after steps 5 and 6 all three painters meet the depth rule and no figure here needs one
-      painter over another. **Measured:** the door is 228 values and 252 types, from 226 and 251, the
-      three names being `PAINTER_NAMES`, `painterRefusal` and `PainterName`. A figure naming `gpu`
-      alone answers `this figure is drawn by gpu and the svg painter asked for it` and `marksAt`
-      throws it, a figure naming none answers nothing for all three painters, and a caller naming no
-      painter is not asked. 8 of 8 demos draw unrefused and `npm run demos` regenerates all sixteen
-      sheets to the committed bytes. 1,445 tests over 96 files, from 1,438 over 95.
-- [x] **5. The flat painters meet the depth rule by cutting.** A new module takes the list of marks
-      and hands back the list a painter draws in order. It splits the list into stretches at every
-      mark carrying no depth, since a mark carrying none clears the depths before it, and inside a
-      stretch it cuts and sorts. Two marks carrying a depth are equal along a straight line on the
-      page, because the difference of two affine functions is affine and its zero set is a line, so
-      each mark is cut by that line wherever it overlaps another and every piece then has one depth
-      order against every piece it overlaps. The pieces of a stretch are painted furthest first.
-      `figure/boolean.ts` cuts a filled path and is held to 1.776e-15 already; a stroked path is cut
-      at its centreline, since a stroke follows the line it is given. Only pairs whose bounds overlap
-      are cut, which is what keeps a grid of cells from being cut by every other cell of it.
-      **The demo's own lift lands here**, since a curve on a surface is what the cut has nothing to
-      decide between until one of them is lifted, and step 3 measured the number: 0.00348 figure
-      units for this saddle at twelve cells across. **Three things the plan did not name and the
-      commit did.** Only one mark of a pair is cut, since a piece lying wholly on one side of the
-      line already has one order against the whole of the other. Which of two pieces is nearer is
-      read at the middle of each and, where those disagree, over the whole of whichever piece does
-      not straddle the line. And two marks are compared only where their convex hulls meet rather
-      than where their boxes do, because an order between two shapes that never meet is an order
-      about nothing and enough of them run in rings: 383 rings at the still before that test and 60
-      after, and a ring that is left is broken at the order resting on the smallest difference of
-      depths. **Measured**, sampling each run along itself and casting a ray at the saddle for what
-      the reader should see, at the still and over twelve turns. The crossing is drawn over the
-      saddle at 0 of the 9 places behind it at the still, from 9 of 9, and at 12 of 108 over the
-      orbit, from 108 of 108, four of those where no cell of the twelve-cell mesh covers the place at
-      all. The lower contour is 0 of 14 and 4 of 108, the upper 0 of 5 and 4 of 24, the runs of
-      descent 0 of 7 and 18 of 179, each from all of them. The widest a piece stands against the rule
-      falls from 7.23e-2 to 2.90e-4. Of the 10,583 places a reader sees at the still, the order shows
-      the further of the saddle and the plane at 29, from 576, and at 100 of 32,453 over the orbit,
-      from 1,465; what is left of the 1,118 places showing the wrong surface is the mesh's own, since
-      the depths the marks carry name the right surface there. The 328 marks are cut into 727 pieces
-      and ordering them is 14.9 ms a frame against the 33 ms a frame has at 30 frames a second. The
-      sixteen sheets are 1,613,926 bytes of stills and 3,191,507 of strips, from 693,133 and
-      2,728,660. 1,466 tests over 97 files, from 1,448 over 96, and the door is 229 values and 252
-      types. **Four defects this step's own picture found, each fixed in a commit of its own.** A
-      shape carrying both a fill and a stroke had one path cut as a fill and then stroked, so the
-      panes of glass gained a line across each cell. A stroked path was cut as a loop wherever its
-      own path was written closed. A ring of pieces that could not be walked back to its start
-      stopped the drain loop and dropped every piece not yet drawn, which is what put a hole through
-      the plane. And pieces of one mark were folded together by the index of the mark rather than by
-      the id of the piece, so a stroke's pieces were folded into the fill's mark and drawn again as
-      fill. The picture is the gate that found all four and no measurement did, which is the reading
-      to carry into step 6.
-- [x] **6. The GPU painter keeps a depth buffer.** `gpuFrame` gains a depth texture at four samples,
-      a `less-equal` compare with the write on for marks carrying a depth, and a seventh float a
-      vertex carrying the depth the three numbers give at that corner. A mark with no depth is drawn
-      by a second pipeline that neither tests nor writes one, since a flat figure's marks are painted
-      in the order the list gives and a translucent mark blended under a depth write would hide what
-      is behind it. **A stretch is where the depth attachment is cleared**, so the card draws what
-      the cutting painter draws rather than letting a mark from before a flat one come back through a
-      mark after it. **The engine landed what this waited on** as its item 21, in 0.6.0, and both
-      carets here moved with it. **Three things the plan did not name and the commit did.** Every
-      pass averages its samples rather than only the last one doing it, since a pass writing an
-      attachment of several samples and averaging them nowhere is refused by both backends and the
-      attachment keeps what the pass before it drew. One pair of ends holds the whole frame, because
-      the map into the card's range is affine in the depth and the depth is affine in the page, so
-      the card still interpolates the function the mark carries, where rescaling each mark against
-      its own ends would order them by nothing. And a stroke is written a ten-thousandth of the range
-      ahead of the fill it goes round: the two stand at one depth, the card interpolates that one
-      distance across two different sets of triangles, the answers differ in the last bits, and the
-      stroke then loses at some of the samples of a pixel and comes out averaged with the fill under
-      it. **Measured.** `npm run gate:gpu` draws 8 of 8 figures above both floors, from 7 of 8. The
-      solid demo is 96.85 per cent of its pixels within 8 of 255 with its labels and 97.65 without
-      them, from 95.69 and 96.49. The solids demo is 96.18 and 98.32, from 96.35 and 98.49, the fall
-      being the four samples resolving a depth-tested edge where the sheet computes its coverage
-      exactly; without the step back for a stroke it was 95.94 and below the floor, and the 844 marks
-      of that demo carrying both a fill and a stroke are what made the difference. The other six are
-      unmoved. At the still, 68,200 places carry both the saddle and the plane and 9,654 of those
-      read as one of the two orders rather than as an arrow, a cell's stroke or an edge; of those the
-      card shows the further surface at 31 with a depth buffer and at 1,465 in the order of the list,
-      against the cutting painter's 29, so the two painters differ by two places and what is left of
-      both is the twelve-cell mesh. Against the sheet the depth buffer puts 7,975 pixels of the solid
-      demo right and 1,004 wrong, from 22,724 differing to 15,753. The solid demo is 2,145 triangles
-      and 180,180 bytes, from 154,440, over four passes and four draws at 23,328,000 transient bytes,
-      from one pass, one draw and 12,960,000, the depth attachment being 10,368,000 of that. The flat
-      demo is 1,596 triangles and 134,064 bytes, from 114,912, and is still one pass and one draw at
-      12,960,000, since a figure with no depth in it names no attachment for one. `npm run demos`
-      regenerates all sixteen sheets to the committed bytes. 1,477 tests over 97 files, from 1,467.
-- [x] **7. The demos, the README and the guide say what the version draws.** The sixteen sheets are
-      regenerated, the solid demo's still and strip carry the cut crossing, and the guide gains the
-      section on depth and on a figure's painters. **The sheets needed no regenerating**, since the
-      cut crossing landed in step 5 and nothing here moves a mark. **One sentence of the README was
-      wrong rather than short**: it said pieces that pierce each other and overlaps running in a ring
-      admit no correct order and that the answer is smaller pieces, which was the answer before a
-      mark carried a depth. **Measured:** `npm run demos` writes 1,620,080 bytes of stills and
-      3,183,373 of strips, byte for byte what is committed. The guide's gate counts 36 blocks, from
-      34, and compiles every one against the tree. 1,477 tests over 97 files, unchanged, with
-      type-check and build green.
-- [ ] **8. The version is cut.** `package.json` reads 3.0.0, the done-criteria below are verified line
-      by line, and the ladder's 3.0.0 row is deleted. **Measurement:** both gates' readings, the
-      door's counts, and the suite, type-check and build.
-
-**Which step the demos gain from.** Step 5 is what makes the solid demo right on the page, and step 6
-is what makes it right on a card. Steps 3 and 4 carry the numbers and the refusal the other two rest
-on, and step 7 is where a reader sees any of it.
-
-**Done-criteria.**
-
-1. A `Mark` carries a `depth` as three numbers giving an affine function of the page, absent on
-   every flat figure, and `FIGURE_FORMAT_VERSION` reads 1.
-2. A reader handed a file written at version 0 refuses it and names both numbers.
-3. The specification states what a depth is, the rule that decides which of two marks is drawn over
-   the other, and what `painters` is, and it says so before the code that reads it.
-4. A `Figure` carries `painters`, absent meaning all three, and each painter refuses a figure that
-   does not name it, by name.
-5. No point of the solid demo's crossing that the drawn saddle hides is drawn over it at any turn of
-   the orbit, quoted against the 9 of 9 at the still and the 108 of 108 over twelve turns that the
-   uncut painter drew. **The criterion says the drawn saddle rather than the saddle**, which step 5
-   corrected: the saddle is drawn as twelve cells across and its silhouette is a cell coarser than
-   the surface's, so a place the surface hides and no cell covers is a place no painter can hide.
-   Four of the twelve places still drawn over after step 5 are that.
-6. The same for either contour and for the three runs of descent, quoted against the 14 of 14, 5 of 5
-   and 7 of 7 at the still that the uncut painter drew.
-7. No place a reader sees shows the wrong one of the saddle and the plane for want of an order, in
-   the flat painters by cutting and on a card by the depth buffer, quoted against the 576 of 10,583
-   at the still the uncut painter showed. **For want of an order** is the same correction: of the
-   1,118 places still showing the wrong surface after step 5, the depths the marks carry name the
-   right surface at all but 29, and what differs there is the twelve-cell mesh rather than the
-   order.
-8. `npm run demos` regenerates all sixteen sheets with no browser and no card, and the demos gate
-   compares the regenerated bytes against the committed files, as it does today.
-9. The door's value and type counts are quoted, with each new name at `index.ts`.
-10. `npm run gate:gpu` draws all eight figures above both floors, 0.97 without labels and 0.96 with
-    them.
-11. `npm run gate:record` records every figure both ways, each file holding exactly the frames the
-    walk counted.
-12. `npm test`, `npm run type-check` and `npm run build` are green, with the test count quoted.
-13. The ladder's 3.0.0 row is deleted and the Now section carries what the version landed.
+**Nothing is planned.** 3.0.0 is cut and its entry is gone with it, and the two rows left on the
+ladder each say "to plan" because neither has a picture waiting. An item gets an entry here when a
+session plans it, which is a session of its own that touches no code.
 
 ## Found while working, not yet queued
 
