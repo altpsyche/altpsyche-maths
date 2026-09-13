@@ -1551,6 +1551,16 @@ session plans it, which is a session of its own that touches no code.
   gate's comparison and `painterGpu` on WebGPU, since both read pixels back; nothing a figure draws
   is blocked.
 
+- **The readback defect is older than the engine version that exposed it, and that was measured
+  rather than reasoned.** Held against 0.5.0 and against 0.6.0 in turn, the abort is the same one for
+  the same figures: the flat demo draws 2,744 triangles and fails the readback under both, and the
+  solid demo draws 2,658 and fails under both. So item 21 neither caused it nor made it worse, and
+  the WebGL 2 gate reads the same either side of the bump, at 7 of 8 figures with the solid demo at
+  87.26 and 88.03 per cent. **The defect is not about depth**, since the flat demo carries none and
+  fails alike. **And WebGPU drew a four-sample depth attachment before item 21 landed at all**, which
+  is what the engine's own validator said it would: the refusals that item took away were one
+  backend's.
+
 - **What the reader sees wrong in the solid demo is now the mesh rather than the order.** After step
   5 of 3.0.0, 1,118 of 10,583 sampled places at the still show the further of the saddle and the
   plane, and the depths the marks carry name the right surface at all but 29 of them. The saddle is
