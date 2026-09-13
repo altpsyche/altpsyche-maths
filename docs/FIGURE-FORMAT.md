@@ -567,9 +567,17 @@ was.
 
 **What it buys the renderer with no card.** Two affine functions cross along a straight line, because
 their difference is affine and its zero set is a line. So a flat painter cuts each of two overlapping
-marks by the half-plane where it is the nearer one and paints the pieces in any order, which is the
+marks by the line where the two depths are equal and paints the pieces furthest first, which is the
 same picture a depth buffer draws and needs boolean path operations this repository already holds to
 1.776e-15.
+
+**Why a mark carrying no depth clears the depths before it.** The two ways of meeting the rule would
+otherwise draw different pictures. A depth buffer keeps every depth it has written, so a mark from
+before the flat one comes back through a mark after it wherever it is nearer, while a renderer
+painting in order has already covered it. Neither is more right than the other, so the format says
+which: the flat mark clears, the list becomes a run of stretches, and the depth decides inside a
+stretch and nowhere else. On a card that is a clear of the depth attachment, which is one more
+attachment operation rather than one more pass.
 
 **What it costs.** A curve lying on a surface is at that surface's depth, so the two functions agree
 and nothing decides between them. The builder that draws the curve moves it nearer by the cell's own

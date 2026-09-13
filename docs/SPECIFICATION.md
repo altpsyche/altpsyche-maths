@@ -769,12 +769,23 @@ carrying a depth overlaps a mark carrying none, the order of the list decides. W
 carrying a depth are at the same depth at a point, the order of the list decides there too, so a
 curve drawn on a surface wins by standing later in the list.
 
+**A mark carrying no depth clears what the depths before it decided.** It is painted over everything
+earlier in the list, so nothing earlier can come back over it, and a mark carrying a depth that comes
+after it is compared only against the marks carrying a depth that also come after it. Without that
+rule the two ways of meeting the rule below would draw different pictures: a depth buffer would let a
+mark from before the flat one come back through a mark after it, and a renderer painting in order
+would not. On a card the rule is a clear of the depth attachment.
+
+**So the list is a run of stretches.** A stretch is a run of marks carrying a depth with no mark
+carrying none among them, and the depth decides inside a stretch and nowhere else. A flat figure is
+one stretch of nothing and is painted in the order it is given.
+
 **A renderer may meet the rule two ways and both draw the same picture.** One is a depth buffer: the
 depth is written and tested per pixel, which is what a card does. The other is cutting the geometry
 before it is painted: two marks whose depths cross do so along a straight line on the page, because
-the difference of two affine functions is affine, so each mark is cut by the half-plane where it is
-the nearer one and the pieces are painted in any order. A renderer with no depth buffer is conformant
-by the second.
+the difference of two affine functions is affine, so each mark is cut by the line where the two are
+equal and the pieces of a stretch are then painted furthest first. A renderer with no depth buffer is
+conformant by the second.
 
 **A curve drawn on a surface is at the surface's own depth, and the builder that draws it moves it
 nearer by the surface's own flatness.** A cell of a surface is a flat piece standing for a curved
