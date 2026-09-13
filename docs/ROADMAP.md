@@ -1702,9 +1702,20 @@ figures, so a frame trading the smooth edge for a depth test pays for it where t
       in the order the list gives and a translucent mark blended under a depth write would hide what
       is behind it. **A stretch is where the depth attachment is cleared**, so the card draws what
       the cutting painter draws rather than letting a mark from before a flat one come back through a
-      mark after it. **Measurement:** the 559 of 10,583 sampled places showing the wrong surface at
-      the still against 0 on a card; both floors of `npm run gate:gpu` for all eight figures; the
-      frame's triangle count and bytes against today's reading for the solid demo.
+      mark after it. **This step waits on `@altpsyche/engine` and Siva's call of 2026-09-13 is that
+      the engine is fixed before it is taken**, since a depth attachment beside a four-sample colour
+      one is refused on the only backend there is here and the measurement below cannot be taken at
+      all until that changes. The reading is above. **What that backend needs** is a depth
+      renderbuffer it will multisample: it already calls `renderbufferStorageMultisample` for a
+      colour attachment, a depth format is that same call, and both are WebGL 2 core, so what stands
+      in the way is the scope of the item that gave it multisample colour rather than anything a card
+      lacks. **Measurement:** the 559 of 10,583 sampled places showing the wrong surface at the still
+      against 0 on a card; both floors of `npm run gate:gpu` for all eight figures; the frame's
+      triangle count and bytes against today's reading for the solid demo.
+
+      A stretch is a pass of its own, since a draw names no first vertex and a pipeline names its own
+      geometry, so each stretch carries a vertex resource and a pipeline. The eight committed figures
+      need 8 segments at worst and 1 each for the five flat ones, which is what they carry today.
 - [ ] **7. The demos, the README and the guide say what the version draws.** The sixteen sheets are
       regenerated, the solid demo's still and strip carry the cut crossing, and the guide gains the
       section on depth and on a figure's painters. **Measurement:** the sixteen sheets' bytes against
