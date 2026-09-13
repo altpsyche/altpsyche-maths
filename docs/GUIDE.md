@@ -152,6 +152,26 @@ time and painted at another. `viewMatrix` takes an extent directly, for a caller
 reach both painters rounded to three decimal places. One test holds the two to the same geometry
 within a thousandth of a pixel, and to the same style exactly.
 
+**A figure may name the painters that can draw it.** `Figure.painters` is a list of their names and
+`PAINTER_NAMES` holds the three: `svg`, `canvas` and `gpu`. Leaving the field out means all three,
+which is what every figure in this repository does. Naming fewer is for a figure asking for something
+one painter draws and another does not.
+
+The refusal is at `marksAt` rather than inside a painter, because all three painters are handed a
+list of marks and never see the figure the marks came from. `marksAt` takes the name of whoever is
+asking and throws where the figure does not name them, so a caller reaches the refusal before it
+reaches a painter. A caller naming nobody is not asked.
+
+```ts
+import { marksAt, painterRefusal } from '@altpsyche/maths';
+
+// Nothing where this painter may draw the figure, and the engine's own words
+// where it may not.
+painterRefusal(figure, 'gpu');
+
+marksAt(figure, 0.5, 16 / 9, 'gpu');
+```
+
 ## Nodes and names
 
 A figure's `scene` is a tree of **nodes**. `shape` is one outline, `text` is one piece of text, and
@@ -976,6 +996,54 @@ marks at the end of the entrance against the marks one orbit later, mark for mar
 That is the solids demo, and what the turn shows is the sort: each curve passes behind its solid on
 the far side and in front of it on the near side at every frame, because `curvePieces3` cuts the curve
 into one entry per step and the scene sorts those pieces among the solid's own cells.
+
+## Depth
+
+A **depth** is how far a mark stands from the eye, written as a function of where on the page the
+mark is drawn. It is three numbers, and the depth at the page point (x, y) is a·x + b·y + c. Of two
+marks over one point, the one with the smaller depth there is the nearer, whatever order the list
+gives them in.
+
+Three numbers carry it exactly because a mark in space is a flat piece of the world. A cell of a
+surface, a face of a solid and a segment of a run are each flat, and the depth of a plane is an
+**affine** function of the page under a parallel projection, which is to say a constant plus a fixed
+amount for each step across and each step down. Under a perspective projection the reciprocal of the
+depth is the affine quantity instead, so what the three numbers hold there is the negative of that
+reciprocal, which keeps the smaller number the nearer mark under both projections.
+
+The builders in space fit the three numbers themselves. `polyline3`, `dot3`, `text3` and `arrow3` fit
+them through the points in space each was drawn from, and `scene3` fits them for every item it is
+handed, so `curve3`, `section3`, `streamline3` and `axes3` reach them through `polyline3`. Three
+points off a line settle the fit exactly and more are fitted by least squares, which is what a cell
+of a curved surface gets: the cell is flat and the surface it stands for is not, so the fit is as
+wrong as the cell already was. A flat figure carries no depth at all, and `Mark.depth` is absent on
+every mark of one.
+
+A run drawn on a surface shares that surface's depth, and no comparison of depths separates two
+things at one depth. `lift` moves a run toward the eye before its depth is fitted, and moves only the
+depth: where the run is drawn does not change. The saddle above is twelve cells across and a lift of
+0.00348 figure units clears the flatness of a cell, which is the number that demo uses.
+
+**A mark carrying no depth clears the depths before it.** The list parts into stretches at every such
+mark, and a mark is compared only against the marks of its own stretch. So a caption drawn after a
+surface covers it whatever the surface's depths say, and an axis drawn before one is covered.
+
+**What each painter does with the depths is its own.** `depthOrder` is what the two flat painters
+call: it cuts each mark where its depth crosses another's, which is along a straight line on the page
+because the difference of two affine functions is affine, and it then paints the pieces furthest
+first. The GPU painter keeps a depth attachment instead and lets the card compare at every pixel,
+which is what two surfaces passing through each other need, since neither one is behind the other
+anywhere they cross.
+
+```ts
+import { depthOrder, marksAt } from '@altpsyche/maths';
+import type { Mark } from '@altpsyche/maths';
+
+const inSpace: readonly Mark[] = marksAt(figure, 0.5);
+// The list a painter with no depth buffer draws, in the order it draws it. A
+// list holding no depth is handed back as it stands.
+depthOrder(inSpace);
+```
 
 ## Records
 

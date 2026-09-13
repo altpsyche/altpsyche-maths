@@ -156,11 +156,18 @@ therefore has no near plane. Every builder that works in space projects to figur
 the same node types a graph returns, so one animation reaches both.
 
 `scene3` orders children back to front by the depth of their sample points, which is the painter's
-algorithm. Mutually piercing pieces and cyclic overlaps admit no correct order. The answer is
-smaller pieces: `surface3` cuts a surface into four-cornered cells, so two surfaces sort against
-each other rather than as two groups. The sort is stable, so pieces at equal depth hold the order
-the author gave and a picture does not flicker between frames. `sectionOf` returns the runs of
-points where a plane cuts a parametric surface, closing a run whose ends meet.
+algorithm. `surface3` cuts a surface into four-cornered cells, so two surfaces sort against each
+other rather than as two groups. The sort is stable, so pieces at equal depth hold the order the
+author gave and a picture does not flicker between frames. `sectionOf` returns the runs of points
+where a plane cuts a parametric surface, closing a run whose ends meet.
+
+A sort alone leaves two cases with no right answer: pieces that pierce each other, and overlaps that
+run in a ring. So a mark carries a depth as well. `Mark.depth` is three numbers giving how far the
+mark stands from the eye as a function of where on the page it is drawn, and of two marks over one
+point the smaller number is the nearer. Three numbers are exact for a flat piece of the world, which
+is what a cell, a face and a segment each are. The builders in space fit them; a flat figure carries
+none, and a mark carrying none clears the depths before it, so a caption drawn after a surface
+covers it.
 
 ## Time and motion
 
@@ -193,6 +200,15 @@ two-dimensional context. Coordinates are written to three decimal places. That i
 screen or encoder resolves, and coarse enough that the last bits of a double never reach the output.
 One test paints a single mark list both ways and holds the two to the same geometry within a
 thousandth of a pixel, and to the same style exactly.
+
+The two flat painters meet the depths by cutting. `depthOrder` cuts each mark where its depth crosses
+another's, which is along a straight line on the page, and paints the pieces furthest first. The GPU
+painter keeps a depth attachment and lets the card compare at every pixel, which is what two surfaces
+passing through each other need.
+
+A figure may name the painters that can draw it. `Figure.painters` is a list of names and
+`PAINTER_NAMES` holds the three: `svg`, `canvas` and `gpu`. Left out, all three may. The refusal is
+at `marksAt`, since a painter is handed marks and never sees the figure they came from.
 
 ## Recording
 
@@ -234,7 +250,8 @@ each file back, and says how many pictures the file holds.
 
 ## Restrictions
 
-A mark may request only what both painters implement: no filters and no blend modes. A figure using
+A mark may request only what every painter that may draw the figure implements: no filters and no
+blend modes. Which painters those are is `Figure.painters`, and left out it is all three. A figure using
 an SVG filter would render correctly on a page and lose the effect silently in a recording.
 
 A clip is a rectangle and no other shape, and that exclusion is not the rule above. Both painters
