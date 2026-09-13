@@ -1537,29 +1537,33 @@ session plans it, which is a session of its own that touches no code.
   wanting a real card wants a headed browser. The second reading, that a card gate here could only
   ever be WebGL 2, is wrong with it.
 
-- **The engine draws on WebGPU and cannot read back from it.** With the flags above the gate picks
-  `webgpu`, and `renderer.draw` draws the solid demo's 2,658 triangles, depth attachment and all. The
-  readback throws for all eight figures: `AbortError: Failed to execute 'mapAsync' on 'GPUBuffer': A
-  valid external Instance reference no longer exists.` **The environment is not what is wrong**, and
-  that was measured rather than assumed: the same browser, the same flags and the same origin read a
-  64 by 64 texture back through `copyTextureToBuffer` and `mapAsync` with no engine in the path, and
-  the cleared pixel comes back 255,0,0,255. **One theory was tested and is wrong.** The engine's
-  `gpu/webgpu-device.js` drops the adapter it made the device from, on the reasoning that an adapter
-  is spent by the device, and Chromium's adapter owns the instance handle; but holding an adapter
-  alive for the life of the page changes nothing, so the collected adapter is not the cause. The fix
-  is the engine's and the reading above is what it starts from. **What it blocks here** is the card
-  gate's comparison and `painterGpu` on WebGPU, since both read pixels back; nothing a figure draws
-  is blocked.
+- **The gate draws on WebGPU and every figure passes, which is the first WebGPU reading this package
+  has had.** Headed with `--enable-unsafe-webgpu --enable-features=Vulkan --ignore-gpu-blocklist`,
+  `npm run gate:gpu` picks `webgpu` on the card and draws 8 of 8 figures above both floors. The solid
+  demo reads 96.84 per cent of its pixels within 8 of 255 with its labels and 97.66 without them,
+  against 96.85 and 97.65 on WebGL 2, so the depth attachment draws the same picture on both backends
+  to within two hundredths of a point. Readback is 5 to 39 ms a figure there against 22 to 99.
 
-- **The readback defect is older than the engine version that exposed it, and that was measured
-  rather than reasoned.** Held against 0.5.0 and against 0.6.0 in turn, the abort is the same one for
-  the same figures: the flat demo draws 2,744 triangles and fails the readback under both, and the
-  solid demo draws 2,658 and fails under both. So item 21 neither caused it nor made it worse, and
-  the WebGL 2 gate reads the same either side of the bump, at 7 of 8 figures with the solid demo at
-  87.26 and 88.03 per cent. **The defect is not about depth**, since the flat demo carries none and
-  fails alike. **And WebGPU drew a four-sample depth attachment before item 21 landed at all**, which
-  is what the engine's own validator said it would: the refusals that item took away were one
-  backend's.
+- **The readback abort was two defects wearing one error, and the engine's half was not a defect at
+  all.** The first is the browser's: under the headless software renderer the first
+  `getCurrentTexture()` spends the device, so every map after it is refused, and the engine's 0.6.1
+  names that where it happens rather than letting a bare `A valid external Instance reference no
+  longer exists` reach a caller. Headed on a card it does not happen. The second was this package's
+  own gate, which read its sheet off an accelerated 2d canvas whose `getImageData` answers with zeros
+  wherever there is a display; all 648,000 pixels came back black and the comparison read that as the
+  card's fault. **What made both hard to see is that they are opposite ways round**: headless the
+  sheet is right and the card cannot be read, headed the card is right and the sheet could not be, so
+  neither mode alone showed a working pair until the sheet was fixed. **Item 21 is cleared twice
+  over**: the abort reproduces identically on 0.5.0 and 0.6.0, it has nothing to do with depth since
+  a figure carrying none fails alike, and WebGPU drew a four-sample depth attachment before that item
+  landed at all, which is what the engine's own validator said it would.
+
+- **The card gate runs one backend and could run two.** It launches headless and takes whatever
+  `resolve` picks, which is WebGL 2 on this machine; the WebGPU reading above was taken by hand with
+  a headed launch and three flags. A gate naming its backend would make that reading repeatable
+  rather than a thing a session did once, and would say which of the two a number came from. **What
+  stands in the way** is that a headed run needs a display, which continuous integration has not, so
+  the two are not one gate run twice and the item has to say what each is for.
 
 - **What the reader sees wrong in the solid demo is now the mesh rather than the order.** After step
   5 of 3.0.0, 1,118 of 10,583 sampled places at the still show the further of the saddle and the
