@@ -1731,10 +1731,16 @@ figures, so a frame trading the smooth edge for a depth test pays for it where t
       demo is 1,596 triangles and 134,064 bytes, from 114,912, and is still one pass and one draw at
       12,960,000, since a figure with no depth in it names no attachment for one. `npm run demos`
       regenerates all sixteen sheets to the committed bytes. 1,477 tests over 97 files, from 1,467.
-- [ ] **7. The demos, the README and the guide say what the version draws.** The sixteen sheets are
+- [x] **7. The demos, the README and the guide say what the version draws.** The sixteen sheets are
       regenerated, the solid demo's still and strip carry the cut crossing, and the guide gains the
-      section on depth and on a figure's painters. **Measurement:** the sixteen sheets' bytes against
-      1,620,080 and 3,183,373, every sheet still shown, and the test count.
+      section on depth and on a figure's painters. **The sheets needed no regenerating**, since the
+      cut crossing landed in step 5 and nothing here moves a mark. **One sentence of the README was
+      wrong rather than short**: it said pieces that pierce each other and overlaps running in a ring
+      admit no correct order and that the answer is smaller pieces, which was the answer before a
+      mark carried a depth. **Measured:** `npm run demos` writes 1,620,080 bytes of stills and
+      3,183,373 of strips, byte for byte what is committed. The guide's gate counts 36 blocks, from
+      34, and compiles every one against the tree. 1,477 tests over 97 files, unchanged, with
+      type-check and build green.
 - [ ] **8. The version is cut.** `package.json` reads 3.0.0, the done-criteria below are verified line
       by line, and the ladder's 3.0.0 row is deleted. **Measurement:** both gates' readings, the
       door's counts, and the suite, type-check and build.
