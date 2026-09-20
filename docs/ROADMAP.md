@@ -443,7 +443,8 @@ consumer needing something and its stencil item stands on the WebGPU specificati
 `.github/workflows` in this tree, and 2.7.0 through 3.1.0 each carry a claim about what a device
 draws, which needs a browser gate and a card gate. The recorder's own browser gate is written and
 runs by hand, as `npm run gate:record`. `@altpsyche/engine` needed two workflows and seventeen gate
-scripts to have its two, and building the same here is unestimated.
+scripts to have its two, and building the same here is the item under The items, which is four
+commits and waits on Siva's call on whether this package gets continuous integration at all.
 
 **Two things on this plan are not versions and both have a deadline.** Composition and camera is
 done-criteria on steps 3.9 and 7 of the format, because a version in front of those would write
@@ -553,10 +554,12 @@ README that plays a video on load is a README nobody can read.
 
 ## Now
 
-**3.0.0 is cut and unpublished, and its thirteen done-criteria are verified line by line in the cut's
-own commit.** A figure in space threw its depth away the moment it was projected, and the order of
-the flat list was the whole of what a painter knew. A `Mark` may now carry a `depth`, which is three
-numbers giving how far the mark stands from the eye as a function of where on the page it is drawn,
+**3.0.0 is cut and published, and its thirteen done-criteria are verified line by line in the cut's
+own commit.** npm answers 3.0.0 for `latest` as of 2026-09-18, and the `v3.0.0` tag is on `0e3bf25`
+locally and is not pushed. A figure in space threw its depth away the moment it was projected, and
+the order of the flat list was the whole of what a painter knew. A `Mark` may now carry a `depth`,
+which is three numbers giving how far the mark stands from the eye as a function of where on the
+page it is drawn,
 and the format's own version reads 1 because the order of the list is no longer the order of
 painting.
 
@@ -1521,11 +1524,133 @@ no box test in front of it and the quadratic over piece pairs is not worth remov
 
 ## The items
 
-**Nothing is planned.** 3.0.0 is cut and its entry is gone with it, and the two rows left on the
-ladder each say "to plan" because neither has a picture waiting. An item gets an entry here when a
-session plans it, which is a session of its own that touches no code.
+### The three packages in step, and what this repository owes that job
+
+**The chain is `@altpsyche/engine` below this package and `altpsyche.dev` above it, and holding it
+in step is nobody's job today.** The engine is 0.6.1 on npm, this package is 3.0.0, and the site
+installs the engine at `^0.3.0` and this package at `^2.0.0`, which is where it has stood since
+2026-09-09. Both libraries are finished, gated and two majors ahead of the only thing that draws
+with them, and nothing said so.
+
+**The reading of 2026-09-19, so a later session takes none of it again.**
+
+- **The declared peer range is true at its floor, and this is the first time anything ran there.**
+  `@altpsyche/engine` 0.6.0 installed in place of 0.6.1 gives `npm test` 1,477 tests over 97 files,
+  `npm run type-check` clean, `npm run build` clean and `npm run gate:gpu` 8 of 8 figures above both
+  floors on WebGL 2. The solid demo reads 96.85 per cent of its pixels within 8 of 255 with its
+  labels and 97.65 without them, which are the two numbers the 0.6.1 row already quotes. So `^0.6.0`
+  is a dated measurement rather than an assertion, and nothing re-takes it.
+
+- **The peer range reached npm for the first time at 3.0.0.** `@altpsyche/maths` 1.6.0 and 2.0.0
+  declare no `peerDependencies` at all, and 2.0.0 is the version the site installs. So npm enforces
+  nothing between the two packages in the site's tree, and that site's two caret ranges are
+  unrelated numbers standing beside each other.
+
+- **The crossing to 3.0.0 stops at the install rather than drifting past it.** `@altpsyche/engine`
+  at `^0.3.0` with `@altpsyche/maths` at `^3.0.0` refuses to resolve: `Found:
+  @altpsyche/engine@0.3.0` against `peer @altpsyche/engine@"^0.6.0" from @altpsyche/maths@3.0.0`.
+  The site moves both ranges in one commit or moves neither, which is what the peer declaration was
+  written for.
+
+- **The engine's seventeen consumer checks read an install and never a version pairing.** They are
+  `gates/pack.sh` in that tree: the packed working tree, or a version named off the registry,
+  installed outside the repository and then imported by name in plain node, built through tsx and
+  bundled with esbuild. Nothing there reads a version of this package, so the range this package
+  declares is this package's to hold.
+
+- **No run anywhere notices a release.** There is no `.github` in this tree at all. The engine has
+  `gates.yml` and `publish.yml`, and the site has `e2e.yml` and two Firebase workflows. The site's
+  end-to-end run installs with `npm ci`, which reads the lock file, so it draws with the versions it
+  was built against whatever the registry holds. None of the three trees carries Renovate or
+  Dependabot.
+
+- **Nothing here reads the peer range.** `tests/reference.test.ts` holds every name at the door
+  against `docs/REFERENCE.md`, which is a promise about names. What a consumer's install is held to
+  is a separate promise and no test in this tree reads it.
+
+**What this repository owes is two things.** The range it declares is its own claim, so running
+against the bottom of that range belongs here. And the three gates are run by hand, so nothing holds
+a commit to them, which is the second. The steps below are those two and what follows from them.
+
+**What waits on this work, which is what orders the queue.** No picture waits. What waits is the
+site's crossing to 3.0.0, and that crossing is the first thing that exercises the declared range
+outside this tree.
+
+**Two decisions are Siva's and a session must not answer either.**
+
+- **Who bumps whom.** Does the site take a release as it lands, or do the libraries hold at a
+  version until the site is ready to cross? The present answer is an accident, and it is why the
+  site is two majors behind.
+- **Whether this package gets continuous integration at all**, and if it does, whether it mirrors
+  the engine's pattern: the gates on every push, and a publish from a tag with provenance and no npm
+  token anywhere. That pattern is `@altpsyche/engine`'s `.github/workflows`, one directory away.
+  Steps 2 and 3 wait on this answer; steps 1 and 4 do not.
+
+**The steps.** Each is one commit and each names the measurement its commit quotes. Steps 2 and 3
+wait on Siva's second decision above; steps 1 and 4 do not.
+
+- [ ] **1. The floor of the peer range is run rather than declared.** A script reads
+      `peerDependencies` out of `package.json`, takes the lowest version that range admits, installs
+      it in place of the dev dependency, runs `npm test`, `npm run type-check` and `npm run build`
+      against it, and puts the tree back whichever way the run went. The floor is read rather than
+      written into the script, so raising the range moves the check with it. **Measurement:** tests
+      over files at the floor, against 1,477 over 97 at the dev version.
+- [ ] **2. The gates run on a push.** `.github/workflows/gates.yml`, the shape `@altpsyche/engine`
+      already uses: `npm ci`, the gates that need nothing, then the browser its own dependency pins
+      rather than whatever the runner carries, and step 1's floor run as a job beside them.
+      **Measurement:** which gates a runner can run, taken on the runner. `gate:gpu` draws 8 of 8
+      headless on this machine, so a software renderer is enough for it; `gate:record` needs a
+      WebCodecs `VideoEncoder` in the runner's Chromium and that is unmeasured.
+- [ ] **3. A version is published from a tag.** The engine's `publish.yml`: on a release being
+      published, the gates, then `npm publish --provenance --access public` with `id-token: write`
+      and no npm token anywhere. What it costs is that the trust lives in a registry setting naming
+      the repository and the workflow file, so a renamed file stops publishing until the setting is
+      renamed with it. **Measurement:** the provenance attestation on the version the workflow
+      publishes.
+- [ ] **4. A release says what the floor drew.** `@altpsyche/engine` settled the same question at
+      its 0a47891 and the shape is taken rather than invented: one rule, with what nothing enforces
+      stated in the same place. The rule is that a release changing the peer range carries the
+      floor's `gate:gpu` reading or says that no card read the floor. **Measurement:** none, which
+      is why the rule states its own limit.
+
+**Done-criteria.**
+
+1. The floor the check runs against is derived from the declared peer range, and no version is
+   written into the check.
+2. `npm test`, `npm run type-check` and `npm run build` run against the installed floor, the run
+   prints which version is installed, and a floor that is not on the registry fails the run rather
+   than falling back to what is already there.
+3. The tree is left at the dev version whether the floor run passed or failed.
+4. Every push and every pull request runs the gates that need nothing, and the log carries the suite
+   over files.
+5. `gate:gpu` runs on a runner and its log carries the count of figures above both floors, or the
+   workflow states why a runner cannot run it and the gate stays by hand. The same for
+   `gate:record` and the count of files it wrote.
+6. A runner's reading is quoted beside this machine's, since a runner's renderer is not this card.
+7. The `v3.0.0` tag is pushed, since a release is made from a tag.
+8. A version published by the workflow shows provenance on the package page, and no npm token
+   exists in this tree or in its settings.
+9. The Releases section of `CLAUDE.md` carries the rule in at most three sentences, it names what
+   nothing enforces, which is that no gate reads a commit message, and it asks for a reading where a
+   card was available and a stated omission where none was.
+
+**What belongs elsewhere, so it is written down rather than worked around here.** Two pieces of this
+are the site's, and a session there is what lands them. The site depends on both packages directly
+and only the peer range is enforced, so its two ranges cross together or its install fails, which is
+the crossing to 3.0.0 measured above. And nothing surfaces a release to anybody, which a watcher in
+the site's own tree answers and no workflow here can.
 
 ## Found while working, not yet queued
+
+- **Nothing has ever asked an install of this package what it hands a consumer.** The three gates
+  read this tree, and `npm pack` is run only to put a tarball in the site's hands.
+  `@altpsyche/engine` has `gates/pack.sh`, which installs the packed tree or a named registry
+  version outside the repository and then imports it by name in plain node, builds it through tsx
+  and bundles it with
+  esbuild, and that gate is what found a `dist` only a bundler could load after every version until
+  then had shipped with one. This package's published versions have had no such reading. The peer
+  range is the one part of the manifest measured so far, and it is measured at 3.0.0: 1.6.0 and
+  2.0.0 carry no `peerDependencies` at all.
 
 - **The GPU gate has never run on WebGPU and the reason was read wrongly, twice.** The first reading
   said this machine has no WebGPU at all, because `navigator.gpu` was undefined in every browser
@@ -1751,9 +1876,10 @@ session plans it, which is a session of its own that touches no code.
   of them draws a figure: a shader playground, a shader background, a shader embed, a browser
   compiler for Slang, a video export and a thumbnail script. So it keeps that package after the
   painter lands here, and from 2.7.0 it depends on it twice, once directly and once through this
-  one. Both name `^0.3.0` today and a caret on a `0.x` tracks the last number alone, so the ranges
-  are identical now and split the moment either side moves a minor, at which point npm nests a
-  second copy under this package rather than hoisting one.
+  one. Both named `^0.3.0` when this was written and a caret on a `0.x` tracks the last number
+  alone, so the two split the moment either side moved a minor, which 3.0.0 did: the peer here reads
+  `^0.6.0` against the site's `^0.3.0` and the pair refuses to install. The reading is under The
+  items.
 
   **What two copies cost, read from that package rather than assumed.** It holds three pieces of
   module-level state: a `Set` that dedupes deprecation warnings, and two `WeakMap`s in `trace/trace.ts`
@@ -1780,11 +1906,6 @@ session plans it, which is a session of its own that touches no code.
   promise cannot be honoured through a dependency that does not make it. Either the version is pinned
   exactly and the churn is taken by hand, or that package reaches 1.0.0 first. **Siva's call**, and it
   is answered: it is 2.0.0, a clean break, and the decision is above.
-
-- **This repository has no continuous integration at all.** There is no `.github/workflows`, and the
-  three gates are run by hand. The decision above says the GPU painter carries a browser gate and a
-  card gate, and `@altpsyche/engine` needed two workflows and seventeen gate scripts to have those.
-  Building that here is unestimated and is plausibly the size of the painter.
 
 - **A card gate is a gate only one machine can run.** The engine's card gate is measured on an RTX
   5080, which is right for a renderer used in one place and is a maintenance problem for a package
