@@ -54,10 +54,10 @@ export function textWidth(font: Font, text: string, size: number): number {
 }
 
 /** A glyph's outline moved to where the pen is and scaled to the size the label
- * is written at, with its y turned over: a font counts y up from the baseline and
- * a figure counts it down. */
+ * is written at. Both count y up from the baseline, a font and a figure alike, so
+ * the outline keeps the direction the font gave it. */
 function placed(path: Path, at: Vec2, scale: number): Subpath[] {
-  const point = (corner: Vec2) => vec2(at.x + corner.x * scale, at.y - corner.y * scale);
+  const point = (corner: Vec2) => vec2(at.x + corner.x * scale, at.y + corner.y * scale);
   return path.map((subpath) => ({
     start: point(subpath.start),
     curves: subpath.curves.map((curve) => ({
@@ -80,7 +80,7 @@ function placed(path: Path, at: Vec2, scale: number): Subpath[] {
 export function outlineText(mark: TextMark, font: Font): PathMark | null {
   const scale = mark.size / font.unitsPerEm;
   const width = textAdvance(font, mark.text) * scale;
-  const pen = vec2(mark.at.x - width * alignShare(mark.align), mark.at.y + baselineDrop(font, mark.baseline) * scale);
+  const pen = vec2(mark.at.x - width * alignShare(mark.align), mark.at.y - baselineDrop(font, mark.baseline) * scale);
 
   const path: Subpath[] = [];
   let along = 0;

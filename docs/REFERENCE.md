@@ -1472,8 +1472,9 @@ frame round a picture is a shape.
 - `outlineText(mark, font)` — one `TextMark` as the `PathMark` its glyphs draw, or nothing where the
   label draws no shape. The pen starts at the anchor and `align` moves it back by half the width or
   by the whole of it; `baseline` drops it by a metric the font declares, nothing for `alphabetic`,
-  half the x-height for `middle` and the cap height for `hanging`. The glyphs are turned over, since
-  a font counts y up from the baseline and a figure counts it down. The mark's `family` and `weight`
+  half the x-height for `middle` and the cap height for `hanging`. The glyphs keep the direction the
+  font gave them, since a font counts y up from the baseline and so does a figure. The mark's `family`
+  and `weight`
   are what a page's own painter reads and neither reaches this: the shipped typeface is the one face
   a card has, so a label naming another family is drawn in it rather than left out.
 - `textOutlines(marks, font)` — every mark with its labels turned into the shapes that draw them, in

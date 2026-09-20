@@ -1,5 +1,20 @@
 import { describe, expect, it } from 'vitest';
-import { boundsOfMarks, colourFrom, outlineText, shippedFont, textAdvance, textOutlines, textWidth, vec2 } from '@altpsyche/maths';
+import {
+  boundsOfMarks,
+  colourFrom,
+  group,
+  mat3,
+  matchingAspect,
+  outlineText,
+  shippedFont,
+  svgElements,
+  text,
+  textAdvance,
+  textOutlines,
+  textWidth,
+  vec2,
+  viewAt,
+} from '@altpsyche/maths';
 import type { Font, Mark, TextMark } from '@altpsyche/maths';
 
 /**
@@ -52,24 +67,26 @@ describe('outlineText', () => {
 
   it('drops the baseline by a metric the font declares, for each of the three', async () => {
     const font = await shippedFont();
-    const topOf = (baseline: TextMark['baseline']) => boundsOfMarks([pathOf(label('x', { baseline }), font)])?.y.from ?? 0;
-    const alphabetic = topOf('alphabetic');
-    expect(topOf(undefined)).toBe(alphabetic);
-    // A figure's y counts down, so a baseline pushed down moves the letter down
-    // with it: half a lower-case letter for the middle, a whole capital for the
+    const bottomOf = (baseline: TextMark['baseline']) =>
+      boundsOfMarks([pathOf(label('x', { baseline }), font)])?.y.from ?? 0;
+    const alphabetic = bottomOf('alphabetic');
+    expect(bottomOf(undefined)).toBe(alphabetic);
+    // A figure counts y up, so a baseline dropped below the anchor is a smaller
+    // y: half a lower-case letter for the middle, a whole capital for the
     // hanging one.
-    expect(topOf('middle')).toBeCloseTo(alphabetic + font.xHeight / 2 / font.unitsPerEm, 12);
-    expect(topOf('hanging')).toBeCloseTo(alphabetic + font.capHeight / font.unitsPerEm, 12);
+    expect(bottomOf('middle')).toBeCloseTo(alphabetic - font.xHeight / 2 / font.unitsPerEm, 12);
+    expect(bottomOf('hanging')).toBeCloseTo(alphabetic - font.capHeight / font.unitsPerEm, 12);
   });
 
-  it('turns the font over, since a font counts y up from the baseline and a figure counts it down', async () => {
+  it('keeps the direction the font gave it, since a font and a figure both count y up', async () => {
     const font = await shippedFont();
     const box = boundsOfMarks([pathOf(label('x'), font)]);
-    // An x sits on the baseline at the anchor and stands up from it, which is
-    // upwards in a figure's own units and so a smaller y.
-    expect(box?.y.to).toBeCloseTo(0, 6);
-    expect(box?.y.from).toBeLessThan(0);
-    expect(box?.y.from).toBeCloseTo(-font.xHeight / font.unitsPerEm, 3);
+    // An x sits on the baseline at the anchor and stands up from it, which is a
+    // larger y in the figure's own units. An outline turned over here is drawn
+    // mirrored once the view turns the y axis over again.
+    expect(box?.y.from).toBeCloseTo(0, 6);
+    expect(box?.y.to).toBeGreaterThan(0);
+    expect(box?.y.to).toBeCloseTo(font.xHeight / font.unitsPerEm, 3);
   });
 
   it('draws a label at the size it names, with its width the sum the advances give', async () => {
@@ -134,5 +151,43 @@ describe('textOutlines', () => {
   it('drops a label that draws no shape rather than keeping an empty path', async () => {
     const font = await shippedFont();
     expect(textOutlines([label(' ')], font)).toHaveLength(0);
+  });
+});
+
+describe('a label written both ways', () => {
+  /**
+   * The same label through one view, once as an element and once as the shapes
+   * its glyphs draw.
+   *
+   * The view turns the y axis over for a surface, so an outline built the other
+   * way up is drawn mirrored about its own baseline while the element beside it
+   * stands upright. The two agreeing is what says the outline is in the figure's
+   * own units rather than the surface's.
+   */
+  const WIDTH = 400;
+  const HEIGHT = 200;
+  const SIZE = 10;
+
+  const figure = {
+    extent: matchingAspect(100),
+    fit: 'contain' as const,
+    scene: group('figure', [text('word', vec2(0, 0), 'x', SIZE, { fill: black, baseline: 'alphabetic' })]),
+    still: 0,
+  };
+
+  it('puts the ink on the same side of the baseline as the element does', async () => {
+    const font = await shippedFont();
+    const mark = label('x', { size: SIZE });
+    const view = viewAt(figure, 0, WIDTH, HEIGHT);
+    const [element] = svgElements([mark], view, { font });
+    const baseline = Number(element.attributes.y);
+
+    const box = boundsOfMarks([pathOf(mark, font)]);
+    const top = mat3.transformPoint(view, vec2(0, box?.y.to ?? 0)).y;
+    const bottom = mat3.transformPoint(view, vec2(0, box?.y.from ?? 0)).y;
+    // Both are read on the surface, where y counts down, so ink standing on the
+    // baseline is a smaller number than the baseline itself.
+    expect(bottom).toBeCloseTo(baseline, 6);
+    expect(top).toBeLessThan(baseline);
   });
 });
