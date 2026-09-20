@@ -1784,15 +1784,21 @@ the site's own tree answers and no workflow here can.
   fresh canvas per figure. Whether a renderer should lose the context it was handed is the engine's
   call.
 
-- **The engine's program cache is keyed on the vertex bytes, so a moving figure recompiles every
-  frame.** `frameKey(frame)` in `pipeline/cache.js` serialises `frame.resources`, and a GPU painter
-  puts its geometry in a `VertexResource`'s `data`, so every frame of an animation is a new key. The
-  renderer's own `WeakMap` misses too, since `gpuFrame` answers a fresh object per call. Reading the
-  code says a program is compiled per frame and 106632 bytes are serialised per frame for the flat
-  demo; what it costs is unmeasured, because measuring it needs a card. What would fix it here is
-  geometry the frame names rather than carries, and the engine's `VertexResource.source` is the field
-  that would name it. Nothing in 2.7.0 depends on the answer, since the version's claim is what a
-  frame draws rather than how fast a run of them draws.
+- **The engine's program cache is keyed on the vertex bytes, and the card says it hits rather than
+  recompiling.** `frameKey(frame)` in `pipeline/cache.js` serialises `frame.resources`, and a GPU
+  painter puts its geometry in a `VertexResource`'s `data`, so reading the code said a program is
+  compiled per frame and 106632 bytes are serialised per frame for the flat demo. **The consumer
+  measured it on a real card on 2026-09-20 and both halves of that reading are wrong.** Over 60
+  animating frames of a figure of 1,688 marks the WebGL 2 path issues 1 `drawArraysInstanced`, 1
+  `bufferSubData` and 3 `useProgram` a frame and compiles **0 programs**, and `JSON.stringify` runs
+  **2.07 times a frame over 3,759 characters at 0.0 ms**. So the cache hits and the key costs
+  nothing at that size.
+- **A page draws that figure at 83.3 ms a frame against the SVG painter's 16.7, and 66 of those
+  milliseconds are inside `renderer.draw`.** The same canvas at 133 marks draws at 16.7 either way,
+  so the cost follows the marks rather than the canvas's pixels. `marksAt` is 4.3 ms and `gpuFrame`
+  is 6.0 ms for those 1,688 marks in Node, and one draw call of 3,376 triangles is nothing for a
+  card, so what is left is the engine's own frame path. **The reading is the consumer's and the cost
+  is the engine's**, and nothing here is fixed by a change to this package until that is found.
 - **`createFrameRenderer` throws where its own signature answers nothing.** Its return type is
   `Promise<FrameRenderer | null>`, and `createWebGL2Backend` calls `canvas.getContext('webgl2', …)`
   with no guard, so a canvas with no such method throws a `TypeError` out of the call rather than
