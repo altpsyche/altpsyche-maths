@@ -1826,12 +1826,13 @@ the site's own tree answers and no workflow here can.
   `bufferSubData` and 3 `useProgram` a frame and compiles **0 programs**, and `JSON.stringify` runs
   **2.07 times a frame over 3,759 characters at 0.0 ms**. So the cache hits and the key costs
   nothing at that size.
-- **A page draws that figure at 83.3 ms a frame against the SVG painter's 16.7, and 66 of those
-  milliseconds are inside `renderer.draw`.** The same canvas at 133 marks draws at 16.7 either way,
-  so the cost follows the marks rather than the canvas's pixels. `marksAt` is 4.3 ms and `gpuFrame`
-  is 6.0 ms for those 1,688 marks in Node, and one draw call of 3,376 triangles is nothing for a
-  card, so what is left is the engine's own frame path. **The reading is the consumer's and the cost
-  is the engine's**, and nothing here is fixed by a change to this package until that is found.
+- **A page drew that figure at 83.3 ms a frame against the SVG painter's 16.7, and the cost was this
+  package's own flattening.** It is fixed at 3.0.2, where `gpuFrame` reads its tolerance off the
+  view. The line that stood here said the cost was the engine's, on the arithmetic that `marksAt` is
+  4.3 ms and `gpuFrame` is 6.0 ms and one draw call of 3,376 triangles is nothing for a card. **The
+  6.0 ms was measured at a tolerance the caller named**, and the page named none: at the default the
+  same frame is 104,656 triangles and 68.8 ms. Profiled with the packages unbundled, `bufferOf` is
+  41 per cent of the samples and `earClip` is 24.7.
 - **`createFrameRenderer` throws where its own signature answers nothing.** Its return type is
   `Promise<FrameRenderer | null>`, and `createWebGL2Backend` calls `canvas.getContext('webgl2', …)`
   with no guard, so a canvas with no such method throws a `TypeError` out of the call rather than
