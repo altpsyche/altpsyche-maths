@@ -1524,6 +1524,39 @@ no box test in front of it and the quadratic over piece pairs is not worth remov
 
 ## The items
 
+### Three calls the consumer is blocked on, and none of them is planned yet
+
+**`altpsyche.dev` names all three in its own roadmap as what a release here would change, and this
+tree queued none of them until 2026-09-20.** Each is a call that does not exist rather than a call
+that misbehaves, so each is a feature and the three together are one minor version. **The steps are
+not written**, and by the rule above this item is planned in a session of its own before any code is
+touched.
+
+- **A walk that takes a duration rather than a figure, with settling.** `recordFigure` cannot replace
+  the consumer's own recorder because three things fill that recorder's frames and only two hold a
+  `Figure`: a shader has none. It also carries a settling offset, where a frame from `framesOf`
+  carries one `seconds` and knows nothing about settling, so a shader that accumulates draws 300
+  frames that are dropped before the first one is kept. **What it would measure:** the frames a walk
+  of a given duration hands back against `frameTimesOf` for the same span, and a settling offset
+  reaching the filler.
+- **An equation record whose fitting box is an expression.** `EquationRecordOptions` is
+  `Omit<EquationOptions, 'at'>` with `at` widened, so the `width` and `height` the glyphs are fitted
+  inside stay layout numbers and the frame expression 3.0.0 shipped cannot reach them. That is what
+  stops the consumer's equation figure being written as a file. **What it would measure:** an
+  equation record whose box is read off the frame, drawn at three aspects, against the module it
+  replaces.
+- **A surface that hands the caller the device, or says the card is gone.** `GpuSurface` gives a
+  backend, a canvas and `dispose`, so a caller holding it cannot hear the card go away. WebGL 2 loses
+  its context on the canvas element, which the consumer already listens for on the element itself;
+  WebGPU does not, and nothing here passes the device's own lost promise on. **What it would
+  measure:** a surface reporting a lost card on both backends, taken away through
+  `WEBGL_lose_context` and through a destroyed device.
+
+**What is not on this list is the page painter, and the reason is a measurement.** The consumer's
+roadmap had a fourth line saying a release here has to present the canvas rather than read it back.
+`paintGpu` already presents, `painterGpu` is the recorder's painter and no page calls it, and the
+cost that line was written around is inside the engine's draw. Both trees now say so.
+
 ### The three packages in step, and what this repository owes that job
 
 **The chain is `@altpsyche/engine` below this package and `altpsyche.dev` above it, and holding it
