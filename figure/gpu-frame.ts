@@ -67,6 +67,29 @@ export interface GpuFrame {
   readonly refused: readonly string[];
 }
 
+/** How far a flattened edge may sit from the curve it stands for, in pixels of
+ * the picture as it is drawn. A fifth of a pixel is under what a screen resolves
+ * and over what a curve needs to look straight. */
+const PIXEL_SHARE = 0.2;
+
+/**
+ * The options a frame is flattened under, with the tolerance read off the view
+ * where the caller named none.
+ *
+ * A tolerance is in the figure's own units and what it has to buy is a smooth
+ * edge in pixels, so the two are only the same number at one scale. The view
+ * says how many pixels a unit covers, and a figure drawn at ten of them flattens
+ * ten times finer than it needs to against a tolerance chosen for a hundred.
+ */
+function flattenedFor(view: Transform2D, options: GpuFrameOptions): GpuFrameOptions {
+  if (options.tolerance !== undefined) return options;
+  const scale = mat3.scaleFactor(view);
+  // A view that collapses the plane gives no pixels to measure against, so the
+  // flattening keeps whatever default the triangulation carries.
+  if (!Number.isFinite(scale) || scale <= 0) return options;
+  return { ...options, tolerance: PIXEL_SHARE / scale };
+}
+
 /** Two coordinates, four channels and one depth to a vertex, each a 32-bit
  * float. */
 const STRIDE = 28;
@@ -436,7 +459,7 @@ function handle<Named extends number>(index: number): Named {
  * opacity, so a blend and a smooth edge are both bought by owning the attachment.
  */
 export function gpuFrame(marks: readonly Mark[], view: Transform2D, options: GpuFrameOptions): GpuFrame {
-  const { segments, count, bytes, refused } = segmentsOf(marks, view, options);
+  const { segments, count, bytes, refused } = segmentsOf(marks, view, flattenedFor(view, options));
   const tests = segments.some((segment) => segment.deep);
 
   const multisampled: TextureHandle = handle(0);

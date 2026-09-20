@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { cost, resolve, webgl2Capabilities, webgpuCapabilities } from '@altpsyche/engine';
 import {
+  circle,
   colourFrom,
   gpuFrame,
   interval,
@@ -440,8 +441,8 @@ describe('the demos as a frame description', () => {
 
   it('resolves the solid demo to a backend and costs a pass for each of its stretches', () => {
     const built = frameOf(solid, 6);
-    expect(built.triangles).toBe(2145);
-    expect(built.bytes).toBe(180180);
+    expect(built.triangles).toBe(2140);
+    expect(built.bytes).toBe(179760);
     expect(built.refused).toHaveLength(21);
 
     const spent = cost(built.frame, { width: WIDTH, height: HEIGHT });
@@ -461,5 +462,42 @@ describe('the demos as a frame description', () => {
 
   it('asks only for a smooth edge, which both backends have', () => {
     expect(frameOf(tangent, 5).frame.requires).toEqual(['msaa']);
+  });
+});
+
+/**
+ * A curve is flattened to a share of a pixel rather than to a share of a figure
+ * unit, so the same circle costs what the picture it is drawn into needs.
+ *
+ * The tolerance a caller names is in the figure's own units and what it buys is a
+ * smooth edge in pixels, and those are the same number only where a unit covers
+ * one pixel. A figure drawn small flattened as though it were drawn large, which
+ * is triangles nothing on the screen can tell apart.
+ */
+describe('the flattening a frame chooses', () => {
+  const dot = (at: number): Mark[] => [
+    { kind: 'path', id: `dot-${at}`, path: circle(vec2(0, 0), 1), fill: { colour: colourFrom('#ffffff') } },
+  ];
+
+  const trianglesAt = (pixelsPerUnit: number) =>
+    gpuFrame(dot(0), mat3.scaling(vec2(pixelsPerUnit, pixelsPerUnit)), { width: 400, height: 400 }).triangles;
+
+  it('costs fewer triangles the smaller the picture is drawn', () => {
+    const large = trianglesAt(100);
+    const small = trianglesAt(10);
+    expect(small).toBeLessThan(large);
+    // Ten times fewer pixels across the same curve is a coarser flattening, and
+    // the count follows the square root of the tolerance for a circle.
+    expect(large / small).toBeGreaterThan(2);
+  });
+
+  it('keeps a tolerance the caller names', () => {
+    const named = gpuFrame(dot(0), mat3.scaling(vec2(10, 10)), { width: 400, height: 400, tolerance: 0.5 }).triangles;
+    expect(named).toBeLessThan(trianglesAt(10));
+  });
+
+  it('flattens a view that collapses the plane rather than refusing it', () => {
+    const flat = gpuFrame(dot(0), mat3.scaling(vec2(0, 0)), { width: 400, height: 400 });
+    expect(flat.triangles).toBeGreaterThan(0);
   });
 });
