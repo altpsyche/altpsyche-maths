@@ -408,12 +408,19 @@ is left, since 2.1.0 through 2.10.0 are cut.
 
 | version | what lands | what it changes | steps | cut against | depends on | plan |
 | --- | --- | --- | --- | --- | --- | --- |
-| 3.1.0 | a clip that is a path rather than a rectangle | what a `Mark` may ask for | to plan | nothing yet, which is why it is last of the marks | nothing now, since `@altpsyche/engine` 0.5.0 counts a winding | to plan |
+| 3.1.0 | a walk that takes a duration rather than a figure, with settling | what `recordFigure` can record | to plan | a recording of a shader, which holds no `Figure` | nothing outside this package | to plan |
+| 3.2.0 | an equation record whose fitting box is an expression | what `EquationRecordOptions` may carry | to plan | an equation written as a file and drawn at three aspects | nothing outside this package | to plan |
+| 3.3.0 | a surface that hands over its device, or says the card is gone | what `GpuSurface` reports | to plan | a figure redrawn after a card is taken away | nothing, since `RendererOptions` already takes a caller's device | to plan |
+| 3.4.0 | a clip that is a path rather than a rectangle | what a `Mark` may ask for | to plan | nothing yet, which is why it is last of the marks | nothing now, since `@altpsyche/engine` 0.5.0 counts a winding | to plan |
 | 4.0.0 | a figure a reader can act on | the shape of `Figure`, which gains input | to plan | nothing yet | nothing outside this package | to plan |
 
-**3.1.0 and 4.0.0 are consequences rather than plans**, written down so they are not rediscovered,
-and neither has a picture waiting, which is what a version needs before it is worked. Both rows are
-what is left of the ladder, since 3.0.0 is cut.
+**The first three are what `altpsyche.dev` is blocked on and they stand in front of the clip for that
+reason.** This file orders items by whether anything is waiting to draw the feature, and the clip has
+nothing waiting while each of the three holds up a piece of work in the consumer. The item under
+**The items** below says what each is and what its commit would measure.
+
+**3.4.0 and 4.0.0 are consequences rather than plans**, written down so they are not rediscovered,
+and neither has a picture waiting, which is what a version needs before it is worked.
 
 **What hit testing already gives 4.0.0, so it is not built twice.** `containsPoint`, `windingAt` and
 `nearestEdge` are at the door and a flat list of marks with stable ids is why hit testing is possible
@@ -1529,13 +1536,13 @@ no box test in front of it and the quadratic over piece pairs is not worth remov
 
 ## The items
 
-### Three calls the consumer is blocked on, and none of them is planned yet
+### Three calls the consumer is blocked on, which are 3.1.0, 3.2.0 and 3.3.0 on the ladder
 
 **`altpsyche.dev` names all three in its own roadmap as what a release here would change, and this
 tree queued none of them until 2026-09-20.** Each is a call that does not exist rather than a call
-that misbehaves, so each is a feature and the three together are one minor version. **The steps are
-not written**, and by the rule above this item is planned in a session of its own before any code is
-touched.
+that misbehaves, so each is a feature and **each takes a minor version of its own**, which is the
+convention every other row of the ladder follows. **No steps are written for any of them**, and by
+the rule above each is planned in a session of its own before any code is touched.
 
 - **A walk that takes a duration rather than a figure, with settling.** `recordFigure` cannot replace
   the consumer's own recorder because three things fill that recorder's frames and only two hold a
