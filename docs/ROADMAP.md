@@ -554,8 +554,13 @@ README that plays a video on load is a README nobody can read.
 
 ## Now
 
+**3.0.2 is published and npm answers it for `latest` as of 2026-09-21.** It is one fix over 3.0.1:
+`gpuFrame` reads its flattening tolerance off the view rather than assuming a hundred pixels to the
+unit, which took the consumer's own card page from 83.3 ms a frame to 16.7 at 1,688 marks.
+`altpsyche.dev` crossed to it the same day, moving `^3.0.1` to `^3.0.2` with its lock.
+
 **3.0.0 is cut and published, and its thirteen done-criteria are verified line by line in the cut's
-own commit.** npm answers 3.0.0 for `latest` as of 2026-09-18, and the `v3.0.0` tag is on `0e3bf25`
+own commit.** npm answered 3.0.0 for `latest` from 2026-09-18, and the `v3.0.0` tag is on `0e3bf25`
 locally and is not pushed. A figure in space threw its depth away the moment it was projected, and
 the order of the flat list was the whole of what a painter knew. A `Mark` may now carry a `depth`,
 which is three numbers giving how far the mark stands from the eye as a function of where on the
