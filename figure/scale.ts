@@ -5,7 +5,7 @@
  * that run lands in the figure's own units. Two of them together turn a pair of
  * graph numbers into a point.
  *
- * The mapping is a value a caller holds rather than something read back out of a
+ * The mapping is a value a caller keeps rather than something read back out of a
  * drawn group. Axes draw two lines and a plotted curve needs the mapping, so a
  * curve drawn over axes that were never drawn has to work.
  */

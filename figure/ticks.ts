@@ -21,7 +21,7 @@ export interface Tick {
  *
  * Rounding up gives a step that never asks for more ticks than were wanted;
  * rounding to nearest gives the count closest to it, which is what an axis
- * wants because a step slightly too small crowds the labels.
+ * needs because a step slightly too small crowds the labels.
  */
 function niceNumber(value: number, toNearest: boolean): number {
   const power = Math.floor(Math.log10(value));
@@ -46,7 +46,7 @@ function niceNumber(value: number, toNearest: boolean): number {
 }
 
 /**
- * The gap between one tick and the next for an interval that wants about this
+ * The gap between one tick and the next for an interval that needs about this
  * many of them.
  *
  * The published version rounds the whole span before dividing it, which suits a

@@ -4,23 +4,23 @@
  * A record is a kind, a name and its parameters, and a group's children are
  * records. `shape`, `text` and `group` are the three kinds the tree itself has,
  * and every other kind resolves into a tree of those three, so `resolveNode`
- * hands back the `Node` that `flatten` already walks and nothing below that line
+ * returns the `Node` that `flatten` already walks and nothing below that line
  * moves.
  *
- * A record carries no functions, which is the whole point of it: the same tree
+ * A record stores no functions, which is the whole point of it: the same tree
  * survives being written to a file and read back. A shape's path is a record of
  * its own, either a named form with parameters or its cubics written out.
  *
  * Text is the one kind whose parameter is not a value the format already has. A
  * drawn string is a word beside a formatted number and the expression form is
  * over numbers and points alone, so a text record's content is a template with
- * numbered holes and one expression per hole, each hole carrying the precision
+ * numbered holes and one expression per hole, each hole storing the precision
  * it is written to.
  *
  * A text size is a plain number rather than an expression. A figure that grows a
  * label does it with `scale` over the marks, which is what the animation
- * vocabulary already carries, so a size that follows a track would be a second
- * way to say the same thing.
+ * vocabulary already has, so a size that follows a track would be a second
+ * way to write the same change.
  *
  * A graph frame's options are the values the calls already take rather than
  * expressions. A frame is the furniture a figure draws its moving parts on and no
@@ -180,7 +180,7 @@ export interface MatrixRecordOptions extends Omit<MatrixOptions, 'at'> {
  * A matrix in a figure, written as the strings its entries are drawn as.
  *
  * An entry is a `TextContent`, so a template with a hole reads a number the
- * figure is tracking and the matrix beside a mapped grid says what the map is
+ * figure is tracking and the matrix beside a mapped grid shows what the map is
  * doing while it does it.
  */
 export interface MatrixRecord {
@@ -208,7 +208,7 @@ export interface TableRecord {
  * What a run of bars takes beyond its coordinates and its curve.
  *
  * The run it covers is an `IntervalRecord`, since a figure that walks the bars
- * across a graph moves both ends of it. Everything else a bar carries is
+ * across a graph moves both ends of it. Everything else a bar takes is
  * layout.
  */
 export interface BarsRecordOptions extends Omit<BarsOptions, 'over'> {
@@ -260,7 +260,7 @@ export interface EquationRecordOptions extends Omit<EquationOptions, 'at'> {
  *
  * The `equation` is resolved geometry, one path per glyph with the box round
  * them, rather than the TeX it was typeset from. That is the answer to where
- * text's geometry is settled: a figure carries what MathJax produced, so a
+ * text's geometry is settled: a figure stores what MathJax produced, so a
  * renderer draws the expression without MathJax and two machines draw the same
  * glyphs.
  */
@@ -272,12 +272,12 @@ export interface EquationRecord {
 }
 
 /**
- * What colour a thing read off a magnitude takes.
+ * What colour an arrow takes, read off its magnitude.
  *
  * A bare colour is a constant, which keeps the common case one value. A `bands`
  * choice is a first colour and a list of thresholds, each with the colour that
  * holds above it, read in order so the last threshold a magnitude clears is the
- * one that decides. The expression form is over numbers and points and has no
+ * one that sets the colour. The expression form is over numbers and points and has no
  * colour, which is why this is a form of its own rather than an expression.
  */
 export type ColourChoice =
@@ -292,7 +292,7 @@ export type ColourChoice =
  * What a field takes beyond its coordinates and the field itself.
  *
  * An arrow's length is an expression of the bound variable `magnitude`, which
- * already spells the three forms a field wants: a constant is a literal, a
+ * already spells the three forms a field needs: a constant is a literal, a
  * saturating length is arithmetic, and a threshold is a choice on a comparison.
  * Its colour is a `ColourChoice` because the vocabulary has no colour.
  */
@@ -316,7 +316,7 @@ export interface VectorFieldRecord {
  * node drawn for it.
  *
  * A scene sorts its pieces by the mean of their own depths, so the points are
- * what order the piece rather than anything the node carries.
+ * what order the piece rather than anything the node contains.
  */
 export interface SpaceItemRecord {
   readonly points: readonly Point3Record[];
@@ -381,7 +381,7 @@ export interface Axes3Record {
  * its wash along the recession from the eye, and both ends of that axis are
  * places in space projected through the camera as it turns.
  *
- * A record carrying a fill of its own takes one of these where a figure moves it.
+ * A record storing a fill of its own takes one of these where a figure moves it.
  * The rest stay plain fills until a demo asks.
  */
 export interface FillRecord extends Omit<Fill, 'gradient'> {
@@ -402,7 +402,7 @@ export interface FillRecord extends Omit<Fill, 'gradient'> {
  * reaches part of the ramp alone, and a band spreads the whole ramp over the part
  * the surface uses.
  *
- * A ramp rather than a function is what the format can carry: the shading a cell
+ * A ramp rather than a function is what the format can store: the shading a cell
  * takes is a number and the vocabulary of expressions has no colour, so the
  * steps are written out and the amount picks one.
  */
@@ -432,7 +432,7 @@ export interface Surface3Record {
 /**
  * The cells of a surface, for a scene that sorts them among pieces of its own.
  *
- * This carries no camera and takes the scene's, since pieces sorted together are
+ * This stores no camera and takes the scene's, since pieces sorted together are
  * seen from one place, and a producer inside a scene is where a surface that
  * shares a sort with a second surface is written.
  */
@@ -448,7 +448,7 @@ export interface SurfaceCellsRecord {
  * a sphere. */
 export type Solid3RecordOptions = Omit<Surface3RecordOptions, 'over'>;
 
-/** What every solid carries beyond its own measurements: where it stands, how it
+/** What every solid stores beyond its own measurements: where it stands, how it
  * is shaded, and, where it is drawn on its own rather than sorted with a scene,
  * the camera it is seen from. */
 interface Solid3Fields {
@@ -554,7 +554,7 @@ export interface PlaneRecord {
  * The curve where a plane cuts a surface, as the parameters it is found from.
  *
  * What this describes is runs of places in space rather than a node, so
- * `resolveSection` hands back points and `Section3Record` is the node that draws
+ * `resolveSection` returns points and `Section3Record` is the node that draws
  * them.
  */
 export interface SectionRecord {
@@ -568,7 +568,7 @@ export interface SectionRecord {
  * A curve in space read from one parameter, as the parameters it is read from.
  *
  * What this describes is places in space rather than a node, the way a section
- * does, so `resolveSpaceCurve` hands back points and `Curve3Record` is the node
+ * does, so `resolveSpaceCurve` returns points and `Curve3Record` is the node
  * that draws them. It is not called a curve record on its own because `Curve` is
  * already the name of an easing curve.
  *
@@ -624,7 +624,7 @@ export interface Section3Record {
  * from.
  *
  * The step and the cap are plain numbers rather than expressions. A step that
- * followed a track would hand back a different number of points at every time,
+ * followed a track would return a different number of points at every time,
  * and a morph pairs two runs up by their points.
  */
 export interface StreamlineRecord {
@@ -656,7 +656,7 @@ export interface Streamline3Record {
 /**
  * One entry of a scene: a piece written out, or a producer of many pieces.
  *
- * A producer carries a kind and a written-out piece carries none, so a scene
+ * A producer stores a kind and a written-out piece stores none, so a scene
  * written before the producers existed still reads.
  */
 export type SceneItemRecord =
@@ -751,7 +751,7 @@ const lengthFrom = (expression: Expression, bindings: Bindings) => (magnitude: n
  * An arrow's colour from a choice.
  *
  * The bands are walked in order rather than searched, so the last threshold a
- * magnitude clears is the one that decides and a list written out of order still
+ * magnitude clears is the one that sets the colour and a list written out of order still
  * has one answer.
  */
 function colourFrom(choice: ColourChoice, bindings: Bindings) {
@@ -811,15 +811,15 @@ function fillOf(record: FillRecord, bindings: Bindings): Fill {
   };
 }
 
-/** What a surface's own call takes, from what its record carries. */
+/** What a surface's own call takes, from what its record stores. */
 const surfaceOptions = (options: Surface3RecordOptions, bindings: Bindings): Surface3Options => ({
   ...options,
   shade: shadeFrom(options.shade, bindings),
   light: options.light ? resolvePoint3(options.light, bindings, "a surface's light") : undefined,
 });
 
-/** What a field in space takes, from what its record carries. */
-/** What a solid takes, from what its record carries, which is the surface's own
+/** What a field in space takes, from what its record stores. */
+/** What a solid takes, from what its record stores, which is the surface's own
  * reading without the runs a solid fixes for itself. */
 const solidOptions = (options: Solid3RecordOptions, bindings: Bindings): Solid3Options => ({
   ...options,
@@ -882,8 +882,8 @@ const field3Options = (options: Field3RecordOptions, bindings: Bindings): Vector
 /**
  * The runs of points where a plane cuts a surface, from the record naming both.
  *
- * A run whose two ends meet comes back with its first point repeated at the end,
- * the way the call it stands for hands one back.
+ * A run whose two ends meet is returned with its first point repeated at the end,
+ * the way the call it stands for returns one.
  */
 export function resolveSection(record: SectionRecord, bindings: Bindings = {}): Vec3[][] {
   return sectionOf(
@@ -914,10 +914,10 @@ export function resolveStreamline(record: StreamlineRecord, bindings: Bindings =
 
 /**
  * The pieces one entry of a scene stands for: one for a piece written out, and
- * as many as the grid holds for a producer.
+ * as many as the grid contains for a producer.
  *
  * A producer takes the scene's own camera, so a surface and a field sorted
- * together are seen from one place and neither carries a pose of its own.
+ * together are seen from one place and neither stores a pose of its own.
  */
 function resolveItems(item: SceneItemRecord, camera: Camera3, bindings: Bindings): SpaceItem[] {
   if (!('kind' in item)) {
@@ -966,7 +966,7 @@ const maybe = (expression: Expression | undefined, bindings: Bindings, what: str
 /**
  * A record walked into the node it describes.
  *
- * The bindings reach every expression a record carries: the text holes, the
+ * The bindings reach every expression a record contains: the text holes, the
  * parameters of every path, and the places and distances an annotation is built
  * from. A tree of literals needs no bindings at all.
  *

@@ -11,7 +11,7 @@
  * numbers a painter has nowhere to put.
  *
  * The count is fixed and the curve is never subdivided by how much it bends.
- * Subdivision hands back a different number of points as the curve changes, and
+ * Subdivision produces a different number of points as the curve changes, and
  * one path is walked into another by pairing their points, so a curve that
  * resamples itself between frames could not be morphed into anything.
  */
@@ -84,7 +84,7 @@ const HALVINGS = 24;
  * The place between a sample on the graph and a sample off it where the curve
  * crosses the edge, by halving the gap between them.
  *
- * The y it hands back is held on the edge rather than taken from the function,
+ * The y it returns is clamped to the edge rather than taken from the function,
  * so the cut end sits exactly on the boundary instead of a millionth past it.
  */
 function crossing(
@@ -227,7 +227,7 @@ export interface BarsOptions {
  *
  * A bar whose top is off the graph is cut at the edge, and a bar whose height is
  * not a number is left out. The style sits on the group rather than on each bar,
- * which is what lets the whole run fade as one thing.
+ * which is what lets the whole run fade as one node.
  */
 export function riemannBars(
   name: string,
@@ -277,10 +277,10 @@ interface Reading {
  * How many times a reading corrects its first guess at the fraction along a
  * piece.
  *
- * A curve `plot` writes carries its controls a third of the way along in x, so x
+ * A curve `plot` writes places its controls a third of the way along in x, so x
  * is a straight line in the fraction and the first guess is already the answer.
  * The correction is what makes a reading right on a piece written some other way,
- * and Newton's method doubles the digits it holds each time.
+ * and Newton's method doubles its correct digits each time.
  */
 const CORRECTIONS = 2;
 

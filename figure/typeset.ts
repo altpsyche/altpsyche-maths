@@ -6,7 +6,7 @@
  * than by a line at the top of the file. It is 41 MB of CommonJS and declares no
  * `sideEffects`, so a line at the top would put all of it in the graph of every
  * consumer that draws a figure and typesets nothing. What it costs is that
- * typesetting answers with a promise.
+ * typesetting returns a promise.
  *
  * `fontCache: 'none'` is what makes the outlines readable. With a cache MathJax
  * defines each glyph once and refers to it, and a reference is not geometry
@@ -34,7 +34,7 @@ export interface EquationElement {
   readonly attributes: Readonly<Record<string, string>>;
   readonly children: readonly EquationElement[];
   /** A text element's own characters, which is what names it when it is
-   * refused. Nothing else here carries any. */
+   * refused. Nothing else here stores any. */
   readonly text?: string;
 }
 
@@ -45,7 +45,7 @@ interface Typesetter {
   readonly document: MathDocument<LiteElement, LiteText, LiteDocument>;
 }
 
-// Held as the promise rather than the value: two calls arriving together share
+// Stored as the promise rather than the value: two calls arriving together share
 // one load, and registering the handler twice leaves MathJax with two of them.
 let shared: Promise<Typesetter> | undefined;
 
@@ -67,8 +67,8 @@ async function load(): Promise<Typesetter> {
   return { adaptor, document };
 }
 
-/** MathJax's own tree read into the shape above, with a text node's characters
- * gathered onto the element that holds them. */
+/** MathJax's own tree read into the shape above, with the characters of its text
+ * children gathered onto the element that contains them. */
 function elementOf(adaptor: LiteAdaptor, node: LiteElement): EquationElement {
   const children: EquationElement[] = [];
   let text = '';

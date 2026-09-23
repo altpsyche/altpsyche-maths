@@ -2,7 +2,7 @@
  * The tree an author builds, and the flat list a painter is given.
  *
  * The two are different on purpose. A tree is how a picture is written, with a
- * group carrying a transform and a style its children inherit. A flat list is
+ * group applying a transform and a style its children inherit. A flat list is
  * how a picture is drawn, compared and hit tested, with nothing left to inherit
  * and nothing left to walk.
  */
@@ -20,7 +20,7 @@ import { transformDepth } from './depth.js';
 export interface Style {
   /** How far what is drawn under here is from the eye, as the affine function of
    * the page a space builder fitted. A node naming none takes the one handed
-   * down, so a builder that hands back a group of runs at one depth names it
+   * down, so a builder that returns a group of runs at one depth names it
    * once. */
   depth?: Depth;
   fill?: Fill;
@@ -29,13 +29,13 @@ export interface Style {
   family?: string;
   weight?: number;
   /** The rectangle everything under here is drawn inside, in the figure's own
-   * units. A clip inside a clip is the box both of them hold, since a group
+   * units. A clip inside a clip is the box both of them contain, since a group
    * cannot show what the group above it has already cut away. */
   clip?: Bounds;
 }
 
 interface Named {
-  /** Its own name among its siblings. The id a mark carries is the names on the
+  /** Its own name among its siblings. The id a mark stores is the names on the
    * way down joined together. */
   name: string;
 }
@@ -48,7 +48,7 @@ export interface ShapeNode extends Named, Style {
 export interface TextNode extends Named, Style {
   kind: 'text';
   at: Vec2;
-  /** One line, or several separated by a newline. A mark never carries a
+  /** One line, or several separated by a newline. A mark never contains a
    * newline: the tree is flattened into one text mark per line. */
   text: string;
   size: number;
@@ -109,7 +109,7 @@ function inherited(parent: Style, own: Style): Style {
  *
  * Nothing is three states rather than two: no clip at all, and two clips that
  * miss each other, which leaves nothing to draw and is not a rectangle. The
- * second is carried as `null` rather than as a box of no width, since a box has
+ * second is written as `null` rather than as a box of no width, since a box has
  * a place and a mark sitting on that place would survive a rectangle standing
  * for emptiness.
  */
@@ -121,7 +121,7 @@ function clipped(handed: Bounds | null | undefined, own: Bounds | undefined): Bo
 }
 
 /**
- * Sibling names made unique, so two shapes called the same thing do not become
+ * Sibling names made unique, so two shapes given the same name do not become
  * one id.
  *
  * A repeated name gets a number rather than an error, because a figure built in

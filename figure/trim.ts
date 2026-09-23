@@ -95,7 +95,7 @@ export function pathWindow(path: Path, from: number, to: number): Path {
  * The path up to a fraction of its total length.
  *
  * A fraction at or past one is the path itself and a fraction at or below
- * nothing is no path at all, which are the two ends the window already holds.
+ * nothing is no path at all, which are the two ends the window is already clamped to.
  */
 export function trimPath(path: Path, fraction: number): Path {
   return pathWindow(path, 0, fraction);

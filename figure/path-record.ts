@@ -1,38 +1,38 @@
 /**
  * A path written as data: a named form with its parameters, or its cubics.
  *
- * The rule is that every path a figure carries is one of the two, and which of
+ * The rule is that every path a figure stores is one of the two, and which of
  * them is a choice per figure rather than a rule. A named form is shorter and
- * says what the shape is, so a circle stays a centre and a radius rather than
- * four cubics a reader has to recognise. Cubics written out are what carries a
+ * states what the shape is, so a circle stays a centre and a radius rather than
+ * four cubics a reader has to recognise. Cubics written out are what stores a
  * shape no named form describes.
  *
  * A path is already plain data, since a subpath is a point, a list of cubics and
  * whether it closes, so the written-out form names the path rather than
  * re-spelling it. `data` is the same shape as an SVG `d` attribute, which is
- * what lets a figure carry geometry another tool produced.
+ * what lets a figure store geometry another tool produced.
  *
  * Every parameter is an expression rather than a value, so a shape a track
  * drives is the same form as a shape that stands still. A bare number and a bare
  * point are both literals, which is what keeps a fixed parameter written as
  * itself.
  *
- * A boolean operation is a form here rather than geometry a figure carries,
+ * A boolean operation is a form here rather than geometry a figure stores,
  * because the answer's cubics are none of the operands' and a disc walking
  * through another changes the answer every frame.
  *
- * The graph forms are the same argument over a curve. `plot` carries the curve as
+ * The graph forms are the same argument over a curve. `plot` stores the curve as
  * an expression of the bound variable `x`, and `areaUnder` and `tangentAt` take
  * the plotted path rather than the function behind it, so the region and the
  * curve laid over it are one piece of geometry and cannot come to disagree.
  *
- * The three curves no function of x describes carry their own bound variables by
+ * The three curves no function of x describes take their own bound variables by
  * the same rule: `parametric` reads `t`, `polar` reads `angle`, and `implicit`
  * reads `x` and `y` together. A figure naming its own variable would be a
  * renderer looking a name up rather than binding one.
  *
- * `straight` has no form here. It hands back one `Cubic` rather than a path, and
- * a path written out as cubics already carries its controls, so a figure that
+ * `straight` has no form here. It returns one `Cubic` rather than a path, and
+ * a path written out as cubics already stores its controls, so a figure that
  * would reach for it uses `line` or writes the cubic out.
  */
 import type { Vec2 } from '../values/vec2.js';
@@ -59,7 +59,7 @@ export interface IntervalRecord {
  *
  * The angles an arc takes are `from` and `to` in radians, anticlockwise, the way
  * the call takes them. A boolean operation's `tolerance` is a plain number
- * rather than an expression, since it says how close two things come before they
+ * rather than an expression, since it sets how close two points come before they
  * count as one place and nothing a figure animates changes that.
  */
 export type PathRecord =
@@ -117,7 +117,7 @@ export type PathRecord =
       readonly level?: Expression;
       readonly resolution?: number | { readonly x: number; readonly y: number };
       /** The region sampled, in plain intervals rather than expressions: a region
-       * a track drove would hand back a different count of places at every time. */
+       * a track drove would be sampled at a different count of places at every time. */
       readonly over?: { readonly x?: Interval; readonly y?: Interval };
     }
   | {
@@ -205,7 +205,7 @@ export function heightOf(expression: Expression, bindings: Bindings): (x: number
  *
  * A form outside the set is refused with a sentence naming what was asked for,
  * the way an expression refuses a function it has no entry for. A figure read
- * from a file carries whatever the file says, so the check is at run time rather
+ * from a file contains whatever the file says, so the check is at run time rather
  * than in the types alone.
  */
 export function resolvePath(record: PathRecord, bindings: Bindings = {}): Path {

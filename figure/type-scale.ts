@@ -16,7 +16,7 @@
  * A title says what the picture is. A note is a remark written beside the
  * picture, which is read at the distance prose is read at. A label is a tag on
  * a drawn mark and has to sit beside that mark without covering it. A tick is a
- * number on an axis, which is the smallest text a figure carries. */
+ * number on an axis, which is the smallest text a figure contains. */
 export type TextRole = 'title' | 'note' | 'label' | 'tick';
 
 export interface TextScale {

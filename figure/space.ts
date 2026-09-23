@@ -2,12 +2,12 @@
  * Marks placed at points in space, which a camera turns into the flat nodes the
  * rest of this package already draws.
  *
- * A builder that draws one thing hands back a group, because a shape in space is
- * not always one shape on the page: a line running past the eye comes back as
- * the pieces of it the eye can see, and a shape wholly behind the eye comes back
+ * A builder that draws one shape returns a group, because a shape in space is
+ * not always one shape on the page: a line running past the eye is returned as
+ * the pieces of it the eye can see, and a shape wholly behind the eye is returned
  * as a group with no children, which flattens to no marks rather than to a mark
- * of nothing. A builder that draws pieces for a scene to sort hands back those
- * pieces with the points they came from, which is what says how far off each is.
+ * of nothing. A builder that draws pieces for a scene to sort returns those
+ * pieces with the points they came from, which is what measures how far off each is.
  */
 import { vec3, type Vec3 } from '../values/vec3.js';
 import type { Vec2 } from '../values/vec2.js';
@@ -78,7 +78,7 @@ function visibleRuns(points: readonly Vec3[], camera: Camera3): Run[] {
 
 export type Polyline3Options = Style & {
   /** Whether the last point joins back to the first. A run that the near plane
-   * cut comes back open however this is set, since closing it would draw an edge
+   * cut is returned open however this is set, since closing it would draw an edge
    * that is nowhere in the world. */
   close?: boolean;
   /** How far toward the eye this run is moved before its depth is fitted, in
@@ -140,8 +140,8 @@ export type SpaceItem = {
   node: Node;
 };
 
-/** The same node with a depth on it, which a group carries in the style it hands
- * down and a shape or a label carries itself. */
+/** The same node with a depth on it, which a group stores in the style it passes
+ * down and a shape or a text node stores itself. */
 function atDepth(node: Node, depth: Depth | undefined): Node {
   if (!depth) return node;
   if (node.kind === 'group') return { ...node, style: { ...node.style, depth } };

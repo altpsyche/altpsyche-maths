@@ -2,7 +2,7 @@
  * Animations in the order they happen, turned into absolute spans.
  *
  * The order is written once and compiled once. Reading it at a time is then a
- * walk over a sorted list, which is what lets the same timeline answer a page
+ * walk over a sorted list, which is what lets the same timeline serve a page
  * playing forward, a reader dragging backwards, and a recorder stepping.
  */
 import { curveFor, type Curve } from '../values/ease.js';
@@ -10,11 +10,11 @@ import type { Animation } from './animation.js';
 import type { Extent, ViewChange } from './extent.js';
 import type { Mark } from './mark.js';
 
-/** What one entry of a timeline changes: some of the marks, or the view. */
+/** What one entry of a timeline changes: some of the nodes, or the view. */
 export type Entry = Animation | ViewChange;
 
-/** A change to the marks rather than to the view. An animation is a function and
- * a view change is an object holding one, which is the whole of the test. */
+/** A change to the nodes rather than to the view. An animation is a function and
+ * a view change is an object storing one, which is the whole of the test. */
 function changesMarks(entry: Entry): entry is Animation {
   return typeof entry === 'function';
 }
@@ -27,7 +27,7 @@ export interface Span {
 }
 
 export interface PlayOptions {
-  /** How the change is paced. Still at both ends unless a figure says otherwise,
+  /** How the change is paced. Still at both ends unless a figure sets otherwise,
    * because a move that starts and stops abruptly reads as a jump. */
   curve?: Curve;
   /** Seconds after the previous entry finished. A negative wait overlaps this
@@ -37,15 +37,15 @@ export interface PlayOptions {
 
 export interface StaggerOptions extends PlayOptions {
   /** Seconds between one change starting and the next. A quarter of each
-   * change's own length unless a figure says otherwise, so a row overlaps rather
+   * change's own length unless a figure sets otherwise, so a row overlaps rather
    * than running one at a time. */
   gap?: number;
 }
 
 /**
- * The ordered list, built by naming one thing after another.
+ * The ordered list, built by naming one entry after another.
  *
- * Each call hands back a new timeline rather than changing this one, so a figure
+ * Each call returns a new timeline rather than changing this one, so a figure
  * that builds a timeline inside a function called every frame cannot accumulate
  * entries it did not mean to.
  */
@@ -61,7 +61,7 @@ export class Timeline {
 
   /**
    * A timeline from spans already compiled, which is what a figure read from a
-   * file carries.
+   * file stores.
    *
    * The duration is given rather than read off the spans, since a figure that
    * waits at the end runs past the end of its last one.
@@ -77,7 +77,7 @@ export class Timeline {
     return new Timeline([...this.spans, span], Math.max(this.duration, to));
   }
 
-  /** Several changes over one span, which is how two things move at once. */
+  /** Several changes over one span, which is how two nodes move at once. */
   together(entries: readonly Entry[], seconds: number, options: PlayOptions = {}): Timeline {
     let built: Timeline = this;
     entries.forEach((entry, at) => {
@@ -92,7 +92,7 @@ export class Timeline {
    *
    * Written out by hand this is one play a change with a negative wait between
    * them, and getting that arithmetic right at every entry is what a row of six
-   * things arriving one after another used to cost.
+   * nodes arriving one after another used to cost.
    */
   stagger(entries: readonly Entry[], seconds: number, options: StaggerOptions = {}): Timeline {
     const gap = Math.max(0, options.gap ?? seconds / 4);
@@ -128,8 +128,8 @@ export class Timeline {
    * The extent as every view entry leaves it at a time, starting from the one
    * the figure declares.
    *
-   * A figure with no view entry gets the declared extent back at every time. One
-   * that has view entries gets it as the base of the fold rather than as the
+   * For a figure with no view entry the declared extent is returned at every time.
+   * One that has view entries takes it as the base of the fold rather than as the
    * answer, so a declared extent chosen from the shape of the surface still
    * chooses under a view that moves.
    */

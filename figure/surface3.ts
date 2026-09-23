@@ -73,7 +73,7 @@ function newellNormal(corners: readonly Vec3[]): Vec3 {
  * A scene holding a surface and a plane that cuts through it has to sort all of
  * their cells together, since two surfaces sorted apart are two groups and the
  * second is painted over the first whichever way round they stand. Each cell
- * carries the name it was given ahead of its own place in the grid, so an
+ * stores the name it was given ahead of its own place in the grid, so an
  * animation can still name a whole surface once its cells are mixed with
  * another's.
  */

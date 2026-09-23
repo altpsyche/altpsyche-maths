@@ -1671,7 +1671,9 @@ Steps, one commit each:
       eye over the ten files, and reads 0, 0 and 12. The stripped source is identical for all 83.
 - [x] `figure/` A to M, 38 files. The check read 23 nouns, 72 voice patterns and 217 by eye over
       them, and reads 0, 0 and 48. The stripped source is identical for all 83.
-- [ ] `figure/` N to Z, 29 files. Quotes the comment counts and the stripped-source equality.
+- [x] `figure/` N to Z, 27 files, which with the 40 from `animation-record.ts` to `morph.ts` are
+      the 67. The check read 11 nouns, 43 voice patterns and 110 by eye over them, and reads 0, 0
+      and 27. The stripped source is identical for all 83.
 - [ ] `paint/`. Quotes the comment counts and the stripped-source equality.
 - [ ] Local variables and unexported helpers whose names use a banned noun, renamed. Quotes the
       count of names and `npm test` before and after.

@@ -11,7 +11,7 @@
 import { vec2, type Vec2 } from '../values/vec2.js';
 import { mat3, type Transform2D } from '../values/mat3.js';
 
-/** One cubic segment, carrying its two controls and where it ends. Where it
+/** One cubic segment, storing its two controls and where it ends. Where it
  * begins is wherever the segment before it ended. */
 export interface Cubic {
   readonly control1: Vec2;
@@ -22,7 +22,7 @@ export interface Cubic {
 export interface Subpath {
   readonly start: Vec2;
   readonly curves: readonly Cubic[];
-  /** A closed subpath joins its end back to its start, which is what decides
+  /** A closed subpath joins its end back to its start, which is what sets
    * whether a fill has a straight edge there and whether the stroke has ends. */
   readonly closed: boolean;
 }
@@ -136,7 +136,7 @@ export function arc(centre: Vec2, radius: number, fromAngle: number, toAngle: nu
 }
 
 /** A point on a cubic, with the segment's own start passed in because a segment
- * carries where it ends and not where it began. */
+ * stores where it ends and not where it began. */
 export function pointOn(from: Vec2, curve: Cubic, along: number): Vec2 {
   const u = 1 - along;
   const a = u * u * u;
@@ -166,7 +166,7 @@ export function tangentOn(from: Vec2, curve: Cubic, along: number): Vec2 {
  * One piece cut into two at a fraction, both pieces drawing what the whole
  * drew, by de Casteljau's construction.
  *
- * The piece's own start is passed in because a piece carries where it ends and
+ * The piece's own start is passed in because a piece stores where it ends and
  * not where it began.
  */
 export function splitCurve(from: Vec2, curve: Cubic, along: number): [Cubic, Cubic] {
@@ -183,7 +183,7 @@ export function splitCurve(from: Vec2, curve: Cubic, along: number): [Cubic, Cub
 }
 
 /** Every point of a path moved by a transform, which is how a group's transform
- * reaches the geometry rather than being carried alongside it. */
+ * reaches the geometry rather than being stored alongside it. */
 export function transformPath(path: Path, m: Transform2D): Path {
   const point = (v: Vec2) => mat3.transformPoint(m, v);
   return path.map((subpath) => ({
@@ -197,7 +197,7 @@ export function transformPath(path: Path, m: Transform2D): Path {
   }));
 }
 
-/** How many points a path holds, which is what two paths have to agree on
+/** How many points a path contains, which is what two paths have to agree on
  * before one can be walked into the other. */
 export function pointCount(path: Path): number {
   return path.reduce((total, subpath) => total + 1 + subpath.curves.length * 3, 0);

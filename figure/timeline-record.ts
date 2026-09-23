@@ -3,10 +3,10 @@
  * calls that built them.
  *
  * A span is an entry, a `from`, a `to` and the name of a curve, which is what
- * `figure/timeline.ts` already holds and what `marksAt` already reads. The
+ * `figure/timeline.ts` already stores and what `marksAt` already reads. The
  * `after` offset a call takes and a stagger's gap are not here: each is folded
  * into the next `from` when the call is made and neither can be read back out of
- * the numbers, since two spans starting together say nothing about which call
+ * the numbers, since two spans starting together record nothing about which call
  * grouped them.
  *
  * Writing the calls instead would put the compiler in every renderer. What is
@@ -19,7 +19,7 @@ import { resolveAnimation, type AnimationRecord } from './animation-record.js';
 import { resolveViewChange, type ViewChangeRecord } from './view-record.js';
 import type { Bindings } from './expression.js';
 
-/** What one span changes: some of the marks, or the view. */
+/** What one span changes: some of the nodes, or the view. */
 export type EntryRecord = AnimationRecord | ViewChangeRecord;
 
 export interface SpanRecord {
@@ -37,8 +37,8 @@ export interface TimelineRecord {
   readonly duration?: number;
 }
 
-/** A view move rather than a change to the marks, told apart by its kind, which
- * is what lets one list hold both. */
+/** A view move rather than a change to the nodes, told apart by its kind, which
+ * is what lets one list contain both. */
 const changesView = (record: EntryRecord): record is ViewChangeRecord =>
   record.kind === 'moveView' || record.kind === 'followView' || record.kind === 'frameView';
 

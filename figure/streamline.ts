@@ -1,17 +1,17 @@
 /**
  * The path a point follows through a field of vectors, walked by Runge-Kutta 4.
  *
- * The points come back in graph units and nothing here draws them, the way the
- * curve where a plane cuts a surface comes back as points in space. What a
+ * The points are returned in graph units and nothing here draws them, the way the
+ * curve where a plane cuts a surface is returned as points in space. What a
  * figure does with them is its own.
  *
  * The step is a distance rather than a time, so the field is read as a
- * direction and its magnitude decides nothing about how far the run moves. A
+ * direction and its magnitude has no bearing on how far the run moves. A
  * step in the field's own time crowds the points where the field is weak and
  * spreads them where it is strong, and a curve drawn from those is faceted
  * exactly where it turns hardest.
  *
- * The step is fixed and never adaptive. An adaptive step hands back a different
+ * The step is fixed and never adaptive. An adaptive step produces a different
  * number of points as the field changes, which is a count no gate can hold and
  * a path no morph can pair up against another.
  */
@@ -95,7 +95,7 @@ function run(
  *
  * The run stops on one of three rules: it leaves the region, it reaches its step
  * cap, or the field where it stands is too small to point anywhere. A seed
- * outside the region comes back as that seed alone, which is a curve with
+ * outside the region is returned as that seed alone, which is a curve with
  * nothing to draw rather than a run that starts by escaping.
  *
  * A run that leaves the region stops at the last point inside it and is not cut

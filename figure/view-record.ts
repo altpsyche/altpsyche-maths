@@ -2,12 +2,12 @@
  * The view a figure declares and the view moves it plays, written as data.
  *
  * A figure's extent is either a fixed one or a choice made from the shape of the
- * surface, and the choice is a function today. What a record carries is which
+ * surface, and the choice is a function today. What a record stores is which
  * choice and the extents it picks between, so `resolveExtent` builds the function
  * a figure is handed.
  *
  * A view move is one of three forms and each is already parameters rather than a
- * closure over the clock, so this step carries them rather than writing them.
+ * closure over the clock, so this step passes them through rather than writing them.
  */
 import { byAspect, matchingAspect, type Extent, type ExtentChoice, type ViewChange } from './extent.js';
 import { followView, frameView, moveView, type FollowOptions, type FrameOptions } from './view.js';
@@ -29,8 +29,8 @@ export interface MatchingAspectRecord {
   readonly height?: number;
 }
 
-/** What a figure declares its extent as. A fixed extent carries no kind, the way
- * a fixed place in an expression carries none. */
+/** What a figure declares its extent as. A fixed extent stores no kind, the way
+ * a fixed place in an expression stores none. */
 export type ExtentRecord = Extent | ByAspectRecord | MatchingAspectRecord;
 
 export interface MoveViewRecord {
@@ -83,7 +83,7 @@ export function resolveViewChange(record: ViewChangeRecord): ViewChange {
  * An inset written as data: the part of the figure it shows, the rectangle it
  * draws into, and the view move it puts its own extent through.
  *
- * Every field is a value the records above already carry, so this adds no
+ * Every field is a value the records above already store, so this adds no
  * vocabulary of its own.
  */
 export interface InsetRecord extends Omit<Inset, 'view'> {

@@ -5,7 +5,7 @@
  * A `TextMark` names the words, where they sit and how big they are, and leaves
  * the letter shapes to whatever draws it. A page has a font behind every family
  * name; a card has none. So a label drawn on a card is turned into a `PathMark`
- * of the glyphs the shipped typeface holds, the way `outlinedMarks` already turns
+ * of the glyphs the shipped typeface contains, the way `outlinedMarks` already turns
  * a tapered stroke into the fill it is drawn as.
  *
  * The pen walks the label on the advances `hmtx` names and nothing else. There is

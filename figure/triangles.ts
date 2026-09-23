@@ -13,7 +13,7 @@
  * lets one ear clipping cover a shape with a hole.
  *
  * Nothing here needs a device, so how many triangles a figure is and how much
- * area they cover are held by the suite rather than by a gate.
+ * area they cover are checked by the suite rather than by a gate.
  */
 import { interval } from '../values/interval.js';
 import { vec2, type Vec2 } from '../values/vec2.js';
@@ -28,8 +28,8 @@ export interface TriangleOptions {
   /** How far a straight run may sit from the curve it stands for, in the
    * picture's own units. */
   readonly tolerance?: number;
-  /** How a shape decides what is inside, which is the rule the mark's own fill
-   * carries. */
+  /** How a shape sets what is inside, which is the rule the mark's own fill
+   * stores. */
   readonly rule?: 'nonzero' | 'evenodd';
 }
 
@@ -63,9 +63,9 @@ function leftOf(from: Vec2, to: Vec2, point: Vec2): number {
  * counted without their direction.
  *
  * The even-odd rule needs the count and the nonzero rule needs the winding, and
- * the two answer differently for a ring inside another wound the same way. An
+ * the two differ for a ring inside another wound the same way. An
  * edge is counted at its lower end and not at its upper one, which is what makes
- * a ray leaving through a corner answer what every other ray answers.
+ * a ray leaving through a corner count what every other ray counts.
  */
 function crossings(loops: readonly (readonly Vec2[])[], point: Vec2): number {
   let count = 0;
@@ -245,7 +245,7 @@ function bridged(
   ];
 }
 
-/** A ring wound the way the clipping wants it, counter-clockwise for a ring and
+/** A ring wound the way the clipping needs it, counter-clockwise for a ring and
  * clockwise for a hole, so a bridged polygon stays simple. */
 function wound(ring: readonly Vec2[], anticlockwise: boolean): Vec2[] {
   const area = signedArea(ring);
@@ -310,7 +310,7 @@ export function trianglesOf(path: Path, options: TriangleOptions = {}): Vec2[] {
   });
 
   // A hole belongs to the smallest ring around it, since a ring inside another
-  // ring holds whatever falls in both.
+  // ring contains whatever falls in both.
   const inside = new Map<Vec2[], Vec2[][]>(drawn.map((ring) => [ring, []]));
   for (const hole of holes) {
     const point = insidePoint(hole);
@@ -351,10 +351,10 @@ export function trianglesOf(path: Path, options: TriangleOptions = {}): Vec2[] {
  *
  * The stroke is widened into the outline it covers and that outline is cut like
  * any other fill. Its rule is the nonzero one whatever rule the mark's own fill
- * carries: a closed subpath leaves two loops wound against each other, and the
+ * stores: a closed subpath leaves two loops wound against each other, and the
  * nonzero rule is what reads those as a ring rather than as a disc.
  *
- * A dash is cut into the path before it is widened, so each run carries the
+ * A dash is cut into the path before it is widened, so each run has the
  * stroke's own cap at both of its ends the way a run the platform cuts does.
  *
  * A tapered width is a fraction of the whole path's length, so cutting the path
@@ -383,7 +383,7 @@ export function strokeTrianglesOf(path: Path, stroke: Stroke, options: TriangleO
  * One convex polygon cut back to the inside of one half plane, which is one pass
  * of Sutherland and Hodgman's algorithm.
  *
- * How far inside a corner sits is the number `inside` hands back, positive
+ * How far inside a corner sits is the number `inside` returns, positive
  * within the half plane, so the crossing along an edge leaving the half plane is
  * the fraction that number falls to nothing at. A corner on the boundary is
  * kept and starts no crossing, which is what keeps a polygon lying along the
@@ -408,7 +408,7 @@ function halfPlane(polygon: readonly Vec2[], inside: (point: Vec2) => number): V
  * A list of triangles cut back to a rectangle, three corners to a triangle.
  *
  * A clip is a rectangle and the engine names no scissor test, so the rectangle
- * is cut into the geometry before it is handed over. Sutherland and Hodgman's
+ * is cut into the geometry before it is passed on. Sutherland and Hodgman's
  * algorithm clips a convex polygon against a convex boundary, and a rectangle is
  * four half planes taken in turn. A triangle cut against them leaves a convex
  * polygon of up to seven corners, which is a fan of triangles from any one of
@@ -442,7 +442,7 @@ export function clipTriangles(corners: readonly Vec2[], box: Bounds): Vec2[] {
 }
 
 /** How much area a list of triangles covers, which is what a triangulation is
- * held to. */
+ * checked against. */
 export function triangleArea(corners: readonly Vec2[]): number {
   let sum = 0;
   for (let at = 0; at + 2 < corners.length; at += 3) {

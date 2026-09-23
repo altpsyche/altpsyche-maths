@@ -3,7 +3,7 @@
  *
  * A view that moved used to be a function of the clock written on the figure, so
  * it could not be sequenced against anything. These are the forms the figure
- * format carries as parameters: a move to an extent, a follow with a margin, and
+ * format stores as parameters: a move to an extent, a follow with a margin, and
  * a framing of named marks. A fixed extent and a choice by the shape of the
  * surface are the other two the format names, and both are what a figure already
  * declares.

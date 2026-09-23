@@ -62,7 +62,7 @@ const reflect = (control: Vec2, about: Vec2) => vec2.sub(vec2.scale(about, 2), c
 const reachFor = (sweep: number) => (4 / 3) * Math.tan(sweep / 4);
 
 /**
- * An SVG elliptical arc as cubics, from the endpoint form the string carries.
+ * An SVG elliptical arc as cubics, from the endpoint form the string is written in.
  *
  * SVG gives an arc as where it ends plus two radii, a rotation and two flags,
  * and every one of the four arcs that fit those endpoints is selected by the
@@ -138,7 +138,7 @@ function arcCurves(
     curves.push({
       control1: mat3.transformPoint(place, vec2.add(p0, vec2.scale(t0, reach))),
       control2: mat3.transformPoint(place, vec2.sub(p1, vec2.scale(t1, reach))),
-      // The endpoint the string named rather than the one the angles give back,
+      // The endpoint the string named rather than the one the angles produce,
       // so a run of arcs cannot drift away from where it said it ends.
       to: piece === pieces - 1 ? to : mat3.transformPoint(place, p1),
     });
@@ -164,7 +164,7 @@ export function pathFromData(d: string): Path {
   let moved = false;
   let command = '';
   let index = 0;
-  // Held per kind because an S reflects a cubic's second control and a T a quadratic's only one, and
+  // Kept per kind because an S reflects a cubic's second control and a T a quadratic's only one, and
   // either falls back to the current point when the segment before it was neither.
   let lastCubic: Vec2 | undefined;
   let lastQuadratic: Vec2 | undefined;
@@ -224,7 +224,7 @@ export function pathFromData(d: string): Path {
         lastCubic = undefined;
         lastQuadratic = undefined;
         // A second pair under one moveto is a line rather than a second move,
-        // and the repetition carries the case the moveto was written in.
+        // and the repetition keeps the case the moveto was written in.
         command = relative ? 'l' : 'L';
         break;
       }

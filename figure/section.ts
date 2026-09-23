@@ -134,7 +134,7 @@ function joinEnds(runs: Vec3[][], tolerance: number): Vec3[][] {
 /**
  * The runs of points where a plane cuts a surface, in space.
  *
- * A run whose two ends meet comes back with its first point repeated at the end,
+ * A run whose two ends meet is returned with its first point repeated at the end,
  * so drawing the points as they are given draws the loop closed.
  */
 export function sectionOf(
@@ -182,7 +182,7 @@ export function sectionOf(
       }
       if (crossed.length !== 4) continue;
       // A cell whose corners alternate in sign has two ways to be joined, so the middle of the cell
-      // decides: the pair of corners it agrees with is the pair the curve runs around.
+      // sets which: the pair of corners it agrees with is the pair the curve runs around.
       const middle = (gaps[0] + gaps[1] + gaps[2] + gaps[3]) / 4;
       const pairs = middle >= 0 === gaps[0] >= 0 ? [[0, 1], [2, 3]] : [[3, 0], [1, 2]];
       for (const [first, second] of pairs) {

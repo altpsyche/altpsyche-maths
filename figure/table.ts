@@ -1,11 +1,11 @@
 /**
  * A table of cells with rules between them, laid out on column widths the
- * figure gives.
+ * figure sets.
  *
  * Nothing here measures a string, so the widths arrive from the caller and the
  * cells are placed inside them. A table sized to fit its own text would be a
  * different table on a machine with different fonts, which is the rule `brace`
- * already holds its label to.
+ * already applies to its label.
  */
 import { vec2, type Vec2 } from '../values/vec2.js';
 import { group, shape, text, type GroupNode, type Node, type Style, type TextOptions } from './node.js';
@@ -27,7 +27,7 @@ export interface TableOptions {
   readonly size: number;
   readonly fill: Fill;
   readonly stroke: Stroke;
-  /** Which rules are drawn. Both of them unless the figure says otherwise. */
+  /** Which rules are drawn. Both of them unless the figure sets otherwise. */
   readonly rules?: 'both' | 'rows' | 'columns' | 'none';
   /** Whether the first row is a header, which is drawn with a heavier rule
    * under it in place of the row rule that would sit there. */
@@ -37,7 +37,7 @@ export interface TableOptions {
   /** How far a cell sits inside its column, which is what keeps a word off the
    * rule beside it. A middled cell ignores it. */
   readonly padding?: number;
-  /** How a cell sits in its column, one value for the whole table or one for
+  /** How a cell is aligned in its column, one value for the whole table or one for
    * each column. */
   readonly align?: Align | readonly Align[];
   readonly family?: string;
@@ -56,7 +56,7 @@ function edgesOf(left: number, columns: readonly number[]): number[] {
  * A table placed in a figure: one text node per cell, a rule between rows, a
  * rule between columns, and a heavier rule under a header row.
  *
- * The rules are drawn before the cells so a word crossing one is the thing a
+ * The rules are drawn before the cells so a word crossing one is the mark a
  * reader sees. Rows of different lengths are refused, and so is a row longer
  * than the column widths the figure gave, since a cell with no column has
  * nowhere to sit.

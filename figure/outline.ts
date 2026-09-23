@@ -9,7 +9,7 @@
  * The loop is built on a flattening rather than on the cubics. The offset of a
  * cubic is not a cubic, so offsetting one means either fitting cubics to the
  * result or walking a polyline, and a polyline is also what a width read at
- * every point along the length wants.
+ * every point along the length needs.
  *
  * Caps, joins and the miter limit are the SVG specification's, and the defaults
  * here are its defaults: a butt cap, a miter join, and a limit of four.
@@ -37,7 +37,7 @@ export interface OutlineOptions {
  * How far the outline may sit from the true offset, in figure units.
  *
  * At the hundred pixels to the unit the demos draw at this is a tenth of a
- * pixel. The other tolerance in this package decides which two places are read
+ * pixel. The other tolerance in this package sets which two places are read
  * as one and is a millionth, which here would spend a few thousand points on a
  * curve nothing can see the corners of.
  */
@@ -238,7 +238,7 @@ function anyWidth(width: Width): boolean {
  * which a tolerance of nothing would otherwise leave unbounded. */
 const WIDTH_DEPTH = 12;
 
-/** One run with the width it carries at each of its points. */
+/** One run with the width at each of its points. */
 interface Walked {
   readonly points: readonly Vec2[];
   readonly halves: readonly number[];
@@ -246,7 +246,7 @@ interface Walked {
 }
 
 /** Half the width a fraction of the way along, never below nothing: a taper
- * along a curve that passes its destination and comes back has a stretch below
+ * along a curve that passes its destination and turns back has a stretch below
  * zero, and a stroke offset the wrong way is a bow tie rather than a thin
  * line. */
 function halfAt(width: Width, along: number): number {
@@ -257,7 +257,7 @@ function halfAt(width: Width, along: number): number {
  * One run of the walk split until the width along it is straight enough, with
  * every point placed on the run itself.
  *
- * The flattening answers for the geometry alone, so a straight piece is two
+ * The flattening follows the geometry alone, so a straight piece is two
  * points however the width moves along it and a taper that swells in the middle
  * would have nothing to swell at. The extra points are on the run, which adds
  * no distance to the walk and no corner to the outline.
@@ -334,7 +334,7 @@ function walkedRuns(runs: readonly Run[], width: Width, tolerance: number): Walk
         halves
       );
     }
-    // The run back to the start of a loop carries width like any other, and its
+    // The run back to the start of a loop has a width like any other, and its
     // far end is the point the loop already begins at.
     if (run.closed && run.points.length > 2) {
       const last = run.points.length - 1;
@@ -366,7 +366,7 @@ function walkedRuns(runs: readonly Run[], width: Width, tolerance: number): Walk
  * against each other, which is what the nonzero rule reads as a ring rather
  * than as a disc.
  *
- * A width of nothing or less has no outline and gives an empty path.
+ * A width of nothing or less has no outline, and the path returned is empty.
  */
 export function outlinePath(path: Path, width: Width, options: OutlineOptions = {}): Path {
   if (!anyWidth(width)) return [];
@@ -417,15 +417,15 @@ export function outlinePath(path: Path, width: Width, options: OutlineOptions = 
  * The marks a painter draws, with every tapered stroke turned into the filled
  * outline it is drawn as.
  *
- * A mark whose stroke is one width the whole way is handed back as it stands,
+ * A mark whose stroke is one width the whole way is returned as it stands,
  * so a list with no taper in it comes out of this unchanged and running it
  * twice changes nothing the first pass left.
  *
- * A shape carrying a fill as well leaves two marks, the fill under its own id
+ * A shape with a fill as well leaves two marks, the fill under its own id
  * and the outline under that id with the stroke's name on the end, because one
- * mark holds one fill and the outline needs its own.
+ * mark stores one fill and the outline needs its own.
  *
- * The outline covers the ground the stroke covered, so it carries the stroke's
+ * The outline covers the ground the stroke covered, so it takes the stroke's
  * own depth and is ordered against the rest of the picture where the stroke was.
  */
 export function outlinedMarks(marks: readonly Mark[]): readonly Mark[] {
