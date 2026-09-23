@@ -10,12 +10,13 @@ here is the package's half. The website keeps what the website owns.
 
 ## Purpose
 
-A **figure** is a picture that moves and explains itself. A chapter can show a ray advancing toward
-a surface, with the length of each step drawn beside it and a label following the ray. The same
-figure records to a video file at the sizes the export dialog already offers.
+A **figure** is a mathematical object drawn over time, such as a graph, a curve or a field. A
+chapter can show a ray advancing toward a surface, with the length of each step drawn beside it and
+a label following the ray. The same figure records to a video file at the sizes the export dialog
+already offers.
 
 The site cannot draw such a picture today. A shader draws light and prose describes it, and nothing
-between the two can point at a thing on screen and name it.
+between the two can point at an object on screen and name it.
 
 The idea comes from Manim, the Python library Grant Sanderson wrote for 3Blue1Brown. Two ideas are
 taken from it: a picture is a timeline of animations over named objects, and those objects are
@@ -28,7 +29,7 @@ picture is live.
 
 ## The rule for numbers a shader owns
 
-**A number a figure shows, that a shader also decides, comes from that shader's entry.**
+**A number a figure shows, that a shader also computes, comes from that shader's entry.**
 
 A ray marcher written in TypeScript to explain a ray marcher written in GLSL is one marcher
 implemented twice, in two languages, free to disagree. This site has paid for that arrangement more
@@ -83,7 +84,7 @@ they are separate from `npm test`.
 
 **Why the engine must never import this package.** Two imports would be a cycle, and the case that
 would have caused one is a shader declaring a camera. That case does not need an import: the camera
-is read from the engine and handed to a figure as data, by whatever holds both.
+is read from the engine and handed to a figure as data, by whatever code imports both.
 
 **The duplicate mathematics stays.** The engine publishes its own `mat3`, `mat4` and `vec3`, and this
 package has its own. A duplicate type costs something only where values cross, and what crosses is
@@ -100,19 +101,34 @@ into one file is a reader's problem even where it is not a compiler's, so the wo
 
 ## Terminology
 
-Six words are used throughout, each with one meaning.
+Twelve terms are used throughout, each with one meaning.
 
-A **figure** is the description of a picture over time. It has no canvas and no clock.
+A **figure** is a mathematical object drawn over time, such as a graph, a curve or a field. In code
+it is a plain object with no canvas and no clock.
 
-A **mark** is one drawn item: a filled or stroked path, or a piece of text.
+The **scene** is the tree of nodes that make up the picture.
 
-A **group** holds marks and other groups under one transform.
+A **node** is one entry in the scene: a group, a shape or a text node.
 
-An **animation** changes marks over a span of time.
+A **group** is a node that contains other nodes under one transform and one style they inherit.
 
-The **timeline** is the ordered list of animations and pauses giving a figure its duration.
+A **shape** is a node that draws one path.
 
-A **painter** turns marks into something a reader can see.
+A **text node** is a node that draws a run of letters.
+
+An **animation** changes nodes over a span of time.
+
+The **timeline** is the ordered list of animations and pauses. It sets what happens to each node and
+when, and it gives the figure its duration.
+
+A **mark** is what one node becomes at one time: a path with its fill and stroke, or a run of
+letters.
+
+The **extent** is how much of the world the picture shows, measured in the figure's own units.
+
+The **still** is the one time drawn for a reader who asked for less motion.
+
+A **painter** turns marks into something visible.
 
 ## The package graph
 
@@ -186,7 +202,7 @@ share a release number, and the cut is already drawn against the day that pressu
 
 **Timing moved out of the website and into this package.** The website already sampled a track of
 keys with a flat or a straight approach, and nothing about that is shader-specific. A figure's
-timeline asks the same question, so the website's keyframes read this sampler and carry none of
+timeline asks the same question, so the website's keyframes read this sampler and contain none of
 their own.
 
 That move gave the package a consumer shipping before a single figure existed, which is the test of
@@ -227,10 +243,10 @@ seconds, whatever it yielded before. Three consumers arrive at times in three di
 page plays forward, a reader dragging the scrub bar jumps backward, and the recorder steps at a
 fixed rate. A figure holding state between frames would answer each of them differently.
 
-**Nothing here draws a random number.** A figure requiring one carries its own seed, so the picture
+**Nothing here draws a random number.** A figure requiring one stores its own seed, so the picture
 at four seconds is the picture at four seconds however many times it is requested.
 
-**Every mark carries an identifier.** Hit testing reads the array, as everything else does. Without
+**Every mark stores an identifier.** Hit testing reads the array, as everything else does. Without
 identifiers it would walk the figure instead, which is two traversals of one structure.
 
 **Marks are for explanation and not for data.** A figure of a few hundred marks redrawn sixty times
@@ -238,7 +254,7 @@ a second is comfortable. At their still times the flat demo is 181 marks and the
 counting the inset it draws. Reading a frame and writing its SVG at 1280 by 720 costs 5.13 and 5.14
 milliseconds at the median of sixty runs, measured on 2026-09-09 with both figures read from their
 records, against the 16.7 a sixtieth of a second allows. Ten thousand marks is not comfortable, and a
-figure wanting ten thousand wants a shader.
+figure of ten thousand marks belongs in a shader.
 
 ## Units and the frame
 
@@ -251,8 +267,8 @@ everything else, so a line reading well in the chapter reads well in the reel.
 
 **A figure declares what to do about aspect ratio rather than being cropped.** The export offers
 three shapes, and `accretion` demonstrated what a wide composition does in a square frame: it needed
-a zoom of 0.6 rather than a crop. A figure therefore supplies an extent per shape where it wants
-one, and a single extent where the picture works at every shape.
+a zoom of 0.6 rather than a crop. A figure therefore supplies an extent per shape where one extent
+does not fit every shape, and a single extent where the picture works at every shape.
 
 **A figure may declare itself a loop.** The export offers a looping clip and a reader can select it
 today. A figure ending somewhere other than where it started would give them a clip that jumps once
@@ -276,7 +292,7 @@ evaluated at it.
 **Settling** is the frames a shader draws and discards before clip time zero. A shader building its
 picture from its own last frame opens on an empty one.
 
-That arithmetic belongs to the consumer, and this package holds no clock: a figure is evaluated at a
+That arithmetic belongs to the consumer, and this package contains no clock: a figure is evaluated at a
 time in clip seconds. The three quantities are one type declared once in the website, which hands
 the same type to the page and to the recorder. A figure over a shader needs the same arithmetic, and
 a second copy is how the two would come to disagree.
@@ -309,7 +325,7 @@ page and lose the effect silently in the export. The mark vocabulary is therefor
 the two painters rather than the union, and the type is the contract.
 
 **A clip is inside that intersection and it is a rectangle.** SVG clips with `clip-path` and a canvas
-with `clip()`, so a mark carries the rectangle it is drawn inside and both painters write it. An
+with `clip()`, so a mark stores the rectangle it is drawn inside and both painters write it. An
 arbitrary path clip is refused for a reason the rule above does not cover: a path needs a winding
 number counted, which is a stencil on a card, where a box is the scissor test every device already
 has. So a rectangle is what all three painters draw and a path is what two of them do.
@@ -317,7 +333,7 @@ has. So a rectangle is what all three painters draw and a path is what two of th
 **An inset is a second view of the same figure, magnified into a rectangle of its own frame.** It is
 what the clip exists for, and it reads the marks the figure has already built rather than building
 the tree again, so what it shows is the picture at that time and not a second picture that could
-disagree about it. Its own view is one of the forms a timeline carries, applied in full at every time,
+disagree about it. Its own view is one of the forms a timeline contains, applied in full at every time,
 so nothing about an inset is a function of the clock.
 
 **One gate paints a single mark array both ways and holds both painters to consuming every mark and

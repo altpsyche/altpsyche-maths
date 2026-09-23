@@ -1664,8 +1664,8 @@ Steps, one commit each:
       DESIGN.md 2 and 3, CLAUDE.md 0 and 0. `answers` and `says` are counted by eye (31 and 39),
       since the check cannot tell a function subject from a document one. The baseline's `thing` 20
       is 26 in comments, and a plain grep over the sources agrees at 26.
-- [ ] DESIGN.md: the Terminology section rewritten to the twelve terms above, then the rest of the
-      file swept. Quotes the check's count before and after for the file.
+- [x] DESIGN.md: the Terminology section rewritten to the twelve terms above, then the rest of the
+      file swept. The check read 2 nouns, 3 voice patterns and 18 by eye, and reads 0, 0 and 10.
 - [ ] README.md. Quotes the check's count before and after.
 - [ ] `values/`, `timing/` and `index.ts`. Quotes the comment counts and the stripped-source
       equality.
