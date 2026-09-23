@@ -1657,10 +1657,13 @@ Steps, one commit each:
       nouns, the banned patterns and the containment replacements above, and its definition-first
       example corrected. The file went from 15 banned hits to 0 outside the rule's own quoted
       examples.
-- [ ] A check, `npm run check:vocab`, over comment trivia in the 83 sources, read with the
+- [x] A check, `npm run check:vocab`, over comment trivia in the 83 sources, read with the
       TypeScript scanner, and the text of README.md, DESIGN.md and CLAUDE.md. It reports the banned
       nouns and the banned patterns per file, and the containment words as a count to read by eye.
-      It lands reporting and exiting 0, and quotes its first reading against the baseline above.
+      First reading: 43 banned nouns and 135 voice patterns, of which README.md has 1 and 1,
+      DESIGN.md 2 and 3, CLAUDE.md 0 and 0. `answers` and `says` are counted by eye (31 and 39),
+      since the check cannot tell a function subject from a document one. The baseline's `thing` 20
+      is 26 in comments, and a plain grep over the sources agrees at 26.
 - [ ] DESIGN.md: the Terminology section rewritten to the twelve terms above, then the rest of the
       file swept. Quotes the check's count before and after for the file.
 - [ ] README.md. Quotes the check's count before and after.
