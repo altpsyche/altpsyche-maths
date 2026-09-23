@@ -71,19 +71,30 @@ export function frameTimesOf(figure: Figure, step: FrameStep): number[] {
   return walkTimesOf({ ...step, seconds: step.seconds ?? durationOf(figure) });
 }
 
+/** The frame of a figure at one time of a walk, with its marks and its view read
+ * at that same time. */
+export function frameAt(
+  figure: Figure,
+  index: number,
+  seconds: number,
+  width: number,
+  height: number
+): Frame {
+  // A walk no longer than the figure reads the time it is at, since the figure's
+  // own time and the walk's are the same number before the end.
+  const inside = figureTime(figure, seconds);
+  return {
+    index,
+    seconds,
+    marks: marksAt(figure, inside, width / height),
+    view: viewAt(figure, inside, width, height),
+  };
+}
+
 /** A figure walked at a fixed step, a frame at a time. */
 export function* framesOf(figure: Figure, options: FramesOptions): Generator<Frame> {
   const times = frameTimesOf(figure, options as FrameStep);
   for (let index = 0; index < times.length; index += 1) {
-    const seconds = times[index];
-    // A walk no longer than the figure reads the time it is at, since the figure's
-    // own time and the walk's are the same number before the end.
-    const inside = figureTime(figure, seconds);
-    yield {
-      index,
-      seconds,
-      marks: marksAt(figure, inside, options.width / options.height),
-      view: viewAt(figure, inside, options.width, options.height),
-    };
+    yield frameAt(figure, index, times[index], options.width, options.height);
   }
 }

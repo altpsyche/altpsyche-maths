@@ -262,10 +262,18 @@ export { paintSvg, pathToData, svgElements, svgMarkup } from './paint/svg.js';
 export type { ElementMaker, PaintNode, PaintTarget, SvgColour, SvgElement, SvgMarkupOptions, SvgTheme } from './paint/svg.js';
 export { paintCanvas, paintFrame, paintPixels } from './paint/canvas.js';
 export type { CanvasGradientLike, CanvasLike, ImageDataLike, SurfaceOptions } from './paint/canvas.js';
-export { recordFigure } from './paint/record.js';
+export { recordFigure, recordFrames } from './paint/record.js';
 export { videoSink } from './paint/video.js';
 export type { CanvasSurface, VideoOptions } from './paint/video.js';
-export type { FramePainter, FrameSink, RecordOptions, Recording } from './paint/record.js';
+export type {
+  FrameFill,
+  FramePainter,
+  FrameSink,
+  RecordOptions,
+  Recording,
+  WalkOptions,
+  WalkTime,
+} from './paint/record.js';
 export { arrow, brace, bracePath, callout, dot } from './figure/annotate.js';
 export type { ArrowOptions, BraceOptions, BracedOptions, CalloutOptions } from './figure/annotate.js';
 export { matrix } from './figure/matrix.js';

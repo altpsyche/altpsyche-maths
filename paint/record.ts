@@ -7,13 +7,13 @@
  * page behind it and a card each satisfy the same call and this file changes for
  * none of them.
  *
- * The walk is `frameTimesOf` and there is no second frame count anywhere here. A
+ * The walk is `walkTimesOf` and there is no second frame count anywhere here. A
  * recorder counting its own frames arrives at a different number from the walk the
  * strips are drawn from, since a floor and a round differ for every figure whose
  * duration times the rate lands above a half.
  */
 import { paintFrame, type CanvasLike, type SurfaceOptions } from './canvas.js';
-import { framesOf, frameTimesOf, type Frame } from '../figure/frames.js';
+import { frameAt, walkTimesOf, type Frame } from '../figure/frames.js';
 import { durationOf, type Figure } from '../figure/figure.js';
 import type { Colour } from '../values/colour.js';
 
@@ -60,10 +60,38 @@ export interface FrameSink<Output = void> {
   cancel?(): Promise<void> | void;
 }
 
-export interface RecordOptions {
+/** Where one filled frame falls, counted two ways. */
+export interface WalkTime {
+  /** Its place among the frames kept, counting from nothing. */
+  index: number;
+  /** Its time in the recording, in seconds. */
+  seconds: number;
+  /** Its place among every frame filled, counting from nothing. */
+  frame: number;
+  /** Its time on the fill's own clock, which is `frame` over the rate. */
+  clock: number;
+}
+
+/**
+ * How one frame of a walk is drawn onto the sink's surface.
+ *
+ * A fill is given the time and nothing else, so a shader that holds no figure
+ * records through the same loop a figure does.
+ */
+export type FrameFill = (context: CanvasLike, time: WalkTime) => Promise<void> | void;
+
+export interface WalkOptions {
   /** How many frames a second the recording plays at. The walk steps by exactly
-   * one over this, or the encoded video drifts from the figure's own clock. */
+   * one over this, or the encoded video drifts from the fill's own clock. */
   fps: number;
+  /** How long the recording runs, in seconds. */
+  seconds: number;
+  /** Called once per frame taken, which is what a progress reading is built
+   * from. */
+  onFrame?: (index: number, count: number) => void;
+}
+
+export interface RecordOptions extends Omit<WalkOptions, 'seconds'> {
   /** The surface the frames are painted on, in whatever units the sink counts
    * in. */
   width: number;
@@ -79,9 +107,6 @@ export interface RecordOptions {
   /** How each frame reaches the sink's surface. Left out, the marks are painted
    * onto it by the two-dimensional painter. */
   paint?: FramePainter;
-  /** Called once per frame taken, which is what a progress reading is built
-   * from. */
-  onFrame?: (index: number, count: number) => void;
 }
 
 export interface Recording<Output> {
@@ -94,6 +119,32 @@ export interface Recording<Output> {
   output: Output;
 }
 
+/** A walk filled frame by frame into a sink, which returns whatever it was
+ * collecting. */
+export async function recordFrames<Output>(
+  sink: FrameSink<Output>,
+  fill: FrameFill,
+  options: WalkOptions
+): Promise<Recording<Output>> {
+  const { fps, seconds: span } = options;
+  const times = walkTimesOf({ fps, seconds: span });
+  const gap = 1 / fps;
+  let frames = 0;
+  try {
+    for (let index = 0; index < times.length; index += 1) {
+      const seconds = times[index];
+      await fill(sink.context, { index, seconds, frame: index, clock: index / fps });
+      await sink.add(seconds, gap);
+      frames += 1;
+      options.onFrame?.(index, times.length);
+    }
+  } catch (failure) {
+    await sink.cancel?.();
+    throw failure;
+  }
+  return { frames, seconds: span, output: await sink.finish() };
+}
+
 /** A figure painted frame by frame into a sink, which returns whatever it was
  * collecting. */
 export async function recordFigure<Output>(
@@ -101,22 +152,13 @@ export async function recordFigure<Output>(
   sink: FrameSink<Output>,
   options: RecordOptions
 ): Promise<Recording<Output>> {
-  const { fps, width, height } = options;
-  const span = options.seconds ?? durationOf(figure);
-  const count = frameTimesOf(figure, { fps, seconds: span }).length;
-  const gap = 1 / fps;
+  const { width, height, background } = options;
   const paint = options.paint ?? paintFrame;
-  let frames = 0;
-  try {
-    for (const frame of framesOf(figure, { fps, width, height, seconds: span })) {
-      await paint(sink.context, frame, { width, height, background: options.background });
-      await sink.add(frame.seconds, gap);
-      frames += 1;
-      options.onFrame?.(frame.index, count);
-    }
-  } catch (failure) {
-    await sink.cancel?.();
-    throw failure;
-  }
-  return { frames, seconds: span, output: await sink.finish() };
+  const fill: FrameFill = (context, time) =>
+    paint(context, frameAt(figure, time.index, time.seconds, width, height), { width, height, background });
+  return recordFrames(sink, fill, {
+    fps: options.fps,
+    seconds: options.seconds ?? durationOf(figure),
+    onFrame: options.onFrame,
+  });
 }

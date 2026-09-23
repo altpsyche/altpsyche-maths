@@ -408,7 +408,7 @@ is left, since 2.1.0 through 2.10.0 are cut.
 
 | version | what lands | what it changes | steps | cut against | depends on | plan |
 | --- | --- | --- | --- | --- | --- | --- |
-| 3.1.0 | a walk that takes a duration rather than a figure, with settling | what `recordFigure` can record | 6, 1 ticked | a recording of a shader, which holds no `Figure` | nothing outside this package | under The items |
+| 3.1.0 | a walk that takes a duration rather than a figure, with settling | what `recordFigure` can record | 6, 2 ticked | a recording of a shader, which holds no `Figure` | nothing outside this package | under The items |
 | 3.2.0 | an equation record whose fitting box is an expression | what `EquationRecordOptions` may carry | to plan | an equation written as a file and drawn at three aspects | nothing outside this package | to plan |
 | 3.3.0 | a surface that hands over its device, or says the card is gone | what `GpuSurface` reports | to plan | a figure redrawn after a card is taken away | nothing, since `RendererOptions` already takes a caller's device | to plan |
 | 3.4.0 | a clip that is a path rather than a rectangle | what a `Mark` may ask for | to plan | nothing yet, which is why it is last of the marks | nothing now, since `@altpsyche/engine` 0.5.0 counts a winding | to plan |
@@ -1626,19 +1626,20 @@ version is cut against.
       and after; `walkTimesOf` of 1.999 seconds at 30 reads 60 times against the consumer's 59.
       The door's reference test requires an entry for every export, so `walkTimesOf`'s landed in
       `docs/REFERENCE.md` in this step rather than in step 6.
-- [ ] **2. One recording loop, and `recordFigure` over it.** `recordFrames(sink, fill, options)`
-      with `fps`, `seconds` and `onFrame`, and `recordFigure` rewritten as a fill that paints the
-      frame read at `seconds`. **Measurement:** the 15 `recordFigure` tests in
-      `tests/record.test.ts` pass unchanged, including 615 frames of the flat demo and 798 of the
-      solid one at twice the rate; a fill holding no figure walked over 1.999 seconds at 30 receives
-      60 times equal to `walkTimesOf`'s; `npm run gate:record` reports each file's picture count
-      equal to its walk before and after.
-- [ ] **3. Settling.** `settle` in `RecordOptions`, a count of frames filled and never passed to
+- [x] **2. One recording loop, and `recordFigure` over it.** `recordFrames(sink, fill, options)`
+      over `WalkOptions` of `fps`, `seconds` and `onFrame`, and `recordFigure` is a `FrameFill` that
+      paints `frameAt`'s frame at each `seconds`. `RecordOptions` extends `WalkOptions` with `seconds`
+      optional, so the options steps 3 and 4 add reach both calls. **Measured:** the 15
+      `recordFigure` tests pass unchanged, including 615 frames of the flat demo and 798 of the solid
+      one at twice the rate; a fill holding no figure over 1.999 seconds at 30 receives 60 times
+      equal to `walkTimesOf`'s; `npm run gate:record` writes 32 of 32 files, each holding its walk,
+      before and after.
+- [ ] **3. Settling.** `settle` in `WalkOptions`, a count of frames filled and never passed to
       `sink.add`, with `onSettle(frame, count)` beside `onFrame`. Settling frames are filled at clip
       time 0. **Measurement:** 1 second at 30 frames a second with a settle of 300 fills 330 times
       and adds 30; the first kept frame reads `index` 0, `seconds` 0, `frame` 300 and `clock` 10;
       a settle of 0 fills exactly what step 2 filled.
-- [ ] **4. A recording that can be stopped.** `signal` in `RecordOptions`, an `AbortSignal` read
+- [ ] **4. A recording that can be stopped.** `signal` in `WalkOptions`, an `AbortSignal` read
       before each fill, settling included, which cancels the sink once and rejects with the signal's
       reason rather than finishing. The consumer's loop checks a flag of its own at the same two
       places. **Measurement:** a signal aborted after frame k of a 30 frame walk fills k + 1 times,
@@ -1651,7 +1652,8 @@ version is cut against.
       ink of a recording of the same fill with no settle.
 - [ ] **6. The reference and the cut.** Each export's `docs/REFERENCE.md` entry lands in the step
       that exports it, since the door's reference test fails on an export with none; this step checks
-      that `recordFrames`, `WalkTime` and the two new options read as one section, `docs/GUIDE.md` gains a recording with no figure, and the
+      that `recordFrames`, `FrameFill`, `WalkOptions`, `WalkTime` and the two new options read as one
+      section, `docs/GUIDE.md` gains a recording with no figure, and the
       version is bumped to 3.1.0 in the commit that verifies the done-criteria below.
       **Measurement:** `npm test` over files, and each criterion with the number that satisfies it.
 

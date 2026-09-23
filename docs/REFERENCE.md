@@ -1592,16 +1592,26 @@ picture in a recording and a picture on a card are the same picture.
 
 - `recordFigure(figure, sink, options)` — a figure painted frame by frame into a sink, which hands
   back whatever it was collecting. The walk is `frameTimesOf`, so a recording holds the frames the
-  rest of this package counts. A frame that fails cancels the sink rather than finishing it.
+  rest of this package counts. A frame that fails cancels the sink rather than finishing it. It is
+  `recordFrames` with a fill that paints the figure's frame at each `seconds`.
+- `recordFrames(sink, fill, options)` — a walk filled frame by frame into a sink, with no figure
+  behind it. The walk is `walkTimesOf` over `options.seconds`, so 1.999 seconds at 30 fills 60
+  frames. A fill that fails cancels the sink rather than finishing it.
+- `FrameFill` — how one frame of a walk is drawn, taking the sink's `context` and a `WalkTime`. A
+  shader that holds no figure is a fill.
+- `WalkTime` — where one filled frame falls: its `index` among the frames kept, its `seconds` in the
+  recording, its `frame` among every frame filled, and its `clock`, which is `frame / fps`. All four
+  count from 0.
+- `WalkOptions` — the `fps` the recording plays at, the `seconds` it runs for, and an optional
+  `onFrame(index, count)` called once per frame taken.
 - `FrameSink` — where a recording's frames go, which is an encoder or anything shaped like one. It
   owns the `context` each frame is painted onto, takes each painted frame with `add(seconds,
   duration)`, hands back its own answer from `finish()`, and may offer a `cancel()` for a recording
   that failed part way. `add` may answer a promise, which is how a recorder waits for an encoder that
   has fallen behind.
-- `RecordOptions` — the `fps` the recording plays at, the `width` and `height` of the surface, the
-  `background` each frame opens on, the `seconds` the recording runs for where that is not the
-  figure's own length, the `paint` each frame reaches the surface by, and an optional
-  `onFrame(index, count)` called once per frame taken.
+- `RecordOptions` — `WalkOptions` with `seconds` optional, plus the `width` and `height` of the
+  surface, the `background` each frame opens on and the `paint` each frame reaches the surface by.
+  Left out, `seconds` is the figure's own length.
 - `FramePainter` — how one frame reaches the surface the sink is reading, taking the `context`, the
   frame and the `SurfaceOptions`. `paintFrame` is one answer and `painterGpu` is another, and it may
   answer a promise, since reading a frame back off a card is asynchronous.

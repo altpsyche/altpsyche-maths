@@ -7,8 +7,10 @@ import {
   paintFrame,
   paintPixels,
   recordFigure,
+  recordFrames,
+  walkTimesOf,
 } from '@altpsyche/maths';
-import type { CanvasLike, Figure, Frame, FrameSink, ImageDataLike } from '@altpsyche/maths';
+import type { CanvasLike, Figure, Frame, FrameSink, ImageDataLike, WalkTime } from '@altpsyche/maths';
 import { tangent } from '../demos/tangent.js';
 import { solid } from '../demos/surface.js';
 import { turns } from '../demos/rotate.js';
@@ -373,5 +375,42 @@ describe('paintPixels', () => {
     expect(() => paintPixels(new Counter(), new Uint8Array(16), 2, 2)).toThrow(
       'no createImageData and putImageData'
     );
+  });
+});
+
+describe('recordFrames', () => {
+  it('walks a span with no figure behind it, a fill at each time the walk reads', async () => {
+    const sink = new Taken();
+    const filled: WalkTime[] = [];
+    const recording = await recordFrames(sink, (_, time) => void filled.push(time), { fps: 30, seconds: 1.999 });
+    const times = walkTimesOf({ fps: 30, seconds: 1.999 });
+    expect(recording.frames).toBe(60);
+    expect(filled.map((time) => time.seconds)).toEqual(times);
+    expect(sink.times).toEqual(times);
+    expect(sink.finished).toBe(1);
+  });
+
+  it('counts every filled frame on the clock when nothing settles', async () => {
+    const filled: WalkTime[] = [];
+    await recordFrames(new Taken(), (_, time) => void filled.push(time), { fps: 4, seconds: 1 });
+    expect(filled).toEqual([0, 1, 2, 3].map((index) => ({ index, seconds: index / 4, frame: index, clock: index / 4 })));
+  });
+
+  it('fills onto the surface the sink reads', async () => {
+    const sink = new Taken();
+    const contexts = new Set<CanvasLike>();
+    await recordFrames(sink, (context) => void contexts.add(context), { fps: 4, seconds: 1 });
+    expect([...contexts]).toEqual([sink.context]);
+  });
+
+  it('throws the sink away rather than finishing it when a fill fails', async () => {
+    const sink = new Taken();
+    const failing = (_: CanvasLike, time: WalkTime) => {
+      if (time.index === 2) throw new Error('fill failed');
+    };
+    await expect(recordFrames(sink, failing, { fps: 4, seconds: 1 })).rejects.toThrow('fill failed');
+    expect(sink.cancelled).toBe(1);
+    expect(sink.finished).toBe(0);
+    expect(sink.times).toHaveLength(2);
   });
 });
