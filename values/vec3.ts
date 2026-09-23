@@ -3,11 +3,11 @@
  * positions on the page, such as a colour or a direction being explained.
  *
  * The arithmetic is the engine's, imported from the door that package declares
- * for it, so the two hold one implementation rather than two that agree until
+ * for it, so the two share one implementation rather than two that agree until
  * one of them moves. Two copies is how a projection here came to write clip
  * depth into a range that one never wrote.
  *
- * That door carries the arithmetic alone, so a consumer that never draws on a
+ * That door exports the arithmetic alone, so a consumer that never draws on a
  * card loads one file of it and no renderer. The family is rebuilt here rather
  * than added to, since adding a name to the imported object would change it for
  * everything else holding it.
@@ -28,8 +28,8 @@ function lerp(a: Vec3, b: Vec3, along: number): Vec3 {
 }
 
 /**
- * The vector calls under one name, so a call site says which kind of thing it is
- * reading.
+ * The vector calls under one name, so a call site shows which kind of vector
+ * it is reading.
  *
  * The magnitude is not called `length`: a function's own `length` is how many
  * arguments it takes, it is not writable, and assigning one throws.

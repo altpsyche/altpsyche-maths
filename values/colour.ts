@@ -135,8 +135,8 @@ export function colourText({ r, g, b, a }: Rgba): string {
  *
  * The mixed colour carries no name, since a page themes the two ends and has no
  * value for what lies between them. So a themed colour cross-faded on a dark
- * page walks from the value its record holds, which is the light one the palette
- * wrote in.
+ * page walks from the value its record stores, which is the light one the
+ * palette wrote in.
  */
 export function lerpColour(from: Colour, to: Colour, along: number): Colour {
   const at = (a: number, b: number) => a + (b - a) * along;

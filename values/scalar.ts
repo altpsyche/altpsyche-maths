@@ -28,7 +28,7 @@ export function inverseLerp(from: number, to: number, value: number): number {
   return (value - from) / (to - from);
 }
 
-/** The same position in a second span as it held in the first. */
+/** The same position in a second span as it had in the first. */
 export function remap(value: number, fromLow: number, fromHigh: number, toLow: number, toHigh: number): number {
   return lerp(toLow, toHigh, inverseLerp(fromLow, fromHigh, value));
 }

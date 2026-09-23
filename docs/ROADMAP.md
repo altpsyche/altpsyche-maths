@@ -1667,8 +1667,8 @@ Steps, one commit each:
 - [x] DESIGN.md: the Terminology section rewritten to the twelve terms above, then the rest of the
       file swept. The check read 2 nouns, 3 voice patterns and 18 by eye, and reads 0, 0 and 10.
 - [x] README.md. The check read 1 noun, 1 voice pattern and 30 by eye, and reads 0, 0 and 14.
-- [ ] `values/`, `timing/` and `index.ts`. Quotes the comment counts and the stripped-source
-      equality.
+- [x] `values/`, `timing/` and `index.ts`. The check read 3 nouns, 7 voice patterns and 33 by
+      eye over the ten files, and reads 0, 0 and 12. The stripped source is identical for all 83.
 - [ ] `figure/` A to M, then `figure/` N to Z, as two commits since the directory is 67 files. Each
       quotes the comment counts and the stripped-source equality.
 - [ ] `paint/`. Quotes the comment counts and the stripped-source equality.

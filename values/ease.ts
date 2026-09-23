@@ -3,18 +3,18 @@
  *
  * Four of them are monotone, which means the value never turns back: straight
  * through, still at the start, still at the end, and still at both. Those four
- * are what a pair of keys chooses between, since a key says only whether it is
+ * are what a pair of keys chooses between, since a key stores only whether it is
  * flat where it sits. The other two cannot come from a flat flag, because one
  * goes past its destination before settling on it and the other returns to
  * where it began.
  *
- * Every one of them takes zero to one, so a caller decides what the value at
- * each end is and this decides only the pace between them. Five of them return
+ * Every one of them takes zero to one, so a caller sets what the value at
+ * each end is and this sets only the pace between them. Five of them return
  * zero to one as well, and `thereAndBack` is the exception both ways: it reaches
  * one halfway through and is zero again at one.
  *
  * Each curve has a name here, so a figure written to a file names its pacing
- * rather than carrying a closure that no file can hold.
+ * rather than carrying a closure that no file can store.
  */
 
 /** A curve maps how far through a span the clock is onto how far through the
@@ -52,7 +52,7 @@ export const overshoot: Curve = (along) => {
 export const thereAndBack: Curve = (along) =>
   along <= 0.5 ? smoothstep(along * 2) : smoothstep(2 - along * 2);
 
-/** Every curve by the name a file carries. */
+/** Every curve by the name a file stores it under. */
 const CURVES = {
   linear,
   easeIn,
@@ -62,12 +62,12 @@ const CURVES = {
   thereAndBack,
 } as const;
 
-/** The name of any curve this package holds, which is the closed set a figure
+/** The name of any curve this package defines, which is the closed set a figure
  * as data may name. */
 export type CurveName = keyof typeof CURVES;
 
 /** Every curve by name, sorted, which is the closed set a figure as data may
- * name and what a validator holds a file to. */
+ * name and what a validator checks a file against. */
 export const CURVE_NAMES: readonly CurveName[] = Object.freeze(
   (Object.keys(CURVES) as CurveName[]).sort(),
 );

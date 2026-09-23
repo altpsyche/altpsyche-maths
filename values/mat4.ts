@@ -1,6 +1,6 @@
 /**
- * The transform a point in space carries: how a figure's camera turns a place in
- * the world into a place on the page.
+ * The transform applied to a point in space: how a figure's camera turns a
+ * place in the world into a place on the page.
  *
  * Sixteen numbers, column-major, matching the engine's layout the way `Transform2D`
  * does: the first four are the first column rather than the first row, and the
@@ -33,15 +33,15 @@ export type PerspectiveOptions = {
 };
 
 /**
- * The projection of an eye that sees things smaller the further off they are.
+ * The projection of an eye that sees objects smaller the further off they are.
  *
  * The third column puts the negated view-space z into the fourth coordinate, so
- * a point twice as far away comes back with twice the divisor and lands half as
+ * a point twice as far away gets twice the divisor and lands half as
  * far from the middle of the frame.
  */
 /** The parameters arrive by name because a call site giving four bare numbers
- * cannot say which of them is the near plane. Depth comes back between nothing
- * and one, which is the range WebGPU reads. */
+ * cannot show which of them is the near plane. Depth after the divide lies
+ * between zero and one, which is the range WebGPU reads. */
 function perspective({ fov, aspect, near, far }: PerspectiveOptions): Mat4 {
   return spatial.perspective(fov, aspect, near, far);
 }
@@ -70,8 +70,8 @@ function orthographic({ left, right, bottom, top, near, far }: OrthographicOptio
 }
 
 /** Applies the rotation and scale and neither the translation nor the divide,
- * which is what a direction wants: moving the world must not move where an arrow
- * points, and a direction has no distance for a perspective to shrink. */
+ * which is the rule for a direction: moving the world must not move where an
+ * arrow points, and a direction has no distance for a perspective to shrink. */
 function transformDirection(m: Mat4, v: Vec3): Vec3 {
   return {
     x: m[0] * v.x + m[4] * v.y + m[8] * v.z,

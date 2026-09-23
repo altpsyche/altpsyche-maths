@@ -13,7 +13,7 @@
  */
 import { curveFor, curveNamed, type Curve, type CurveName } from '../values/ease.js';
 
-/** What a key can hold. A boolean is here because a control can be a switch,
+/** What a key can store. A boolean is here because a control can be a switch,
  * and a list because a control can be a vector or a colour. */
 export type TrackValue = number | readonly number[] | boolean;
 
@@ -25,7 +25,7 @@ export interface Key {
   smooth?: boolean;
   /** The curve the value leaves this key along, which overrides the pair of flat
    * flags. It is a name and never a function, so a track stays data a file can
-   * hold. */
+   * store. */
   curve?: CurveName;
 }
 
@@ -45,7 +45,7 @@ export const SAME_TIME = 1 / 120;
 /**
  * The value part way between two keys.
  *
- * A pair this cannot walk between holds the earlier value until the later key's
+ * A pair this cannot walk between keeps the earlier value until the later key's
  * own time: a boolean has no half, and two lists of different lengths have no
  * component to pair up.
  */
@@ -72,8 +72,8 @@ function curveOf(from: Key, to: Key): Curve {
 /**
  * What a track is worth at a time, or null where it has no keys.
  *
- * Outside the keys the nearest one holds, so a track never invents a value
- * before its first key or carries on past its last.
+ * Outside the keys the value is the nearest key's, so a track never invents a
+ * value before its first key or carries on past its last.
  */
 export function sampleTrack(track: Track, seconds: number): TrackValue | null {
   if (track.length === 0) return null;

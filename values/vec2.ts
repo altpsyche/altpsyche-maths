@@ -75,7 +75,7 @@ function lerp(a: Vec2, b: Vec2, along: number): Vec2 {
 
 /**
  * The constructor and the family under one name, so building a vector stays
- * short and an import line says what these operate on.
+ * short and an import line shows what these operate on.
  *
  * The magnitude is not called `length`: a function's own `length` is how many
  * arguments it takes, it is not writable, and assigning one throws.

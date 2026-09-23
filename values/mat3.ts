@@ -1,6 +1,6 @@
 /**
- * The transform a group of marks carries, and the one that maps a figure's own
- * units onto whatever it is being drawn at.
+ * The transform a group applies to the nodes it contains, and the one that maps
+ * a figure's own units onto whatever it is being drawn at.
  *
  * Nine numbers, column-major, matching the engine's layout: the first three are
  * the first column rather than the first row, and the entry at flat index
@@ -39,7 +39,7 @@ function multiply(a: Transform2D, b: Transform2D): Transform2D {
   ];
 }
 
-/** The last column carries the offset, so this moves a point and leaves a
+/** The last column stores the offset, so this moves a point and leaves a
  * direction where it was. */
 function translation(v: Vec2): Transform2D {
   return [1, 0, 0, 0, 1, 0, v.x, v.y, 1];
@@ -61,8 +61,8 @@ function transformPoint(m: Transform2D, v: Vec2): Vec2 {
   return { x: m0 * v.x + m3 * v.y + m6, y: m1 * v.x + m4 * v.y + m7 };
 }
 
-/** Applies the rotation and scale and not the translation, which is what a
- * direction wants: moving the picture must not move where an arrow points. */
+/** Applies the rotation and scale and not the translation, which is the rule
+ * for a direction: moving the picture must not move where an arrow points. */
 function transformDirection(m: Transform2D, v: Vec2): Vec2 {
   const [m0, m1, , m3, m4] = m;
   return { x: m0 * v.x + m3 * v.y, y: m1 * v.x + m4 * v.y };

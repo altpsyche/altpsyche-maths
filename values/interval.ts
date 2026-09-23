@@ -52,9 +52,9 @@ function clampTo(interval: Interval, value: number): number {
 }
 
 /**
- * The place a value holds in one interval, read at the same place in another.
+ * The place a value occupies in one interval, read at the same place in another.
  *
- * A source of no width has no place to read, so this hands back the target's
+ * A source of no width has no place to read, so this returns the target's
  * first bound rather than an infinity that then spreads through every coordinate
  * built on it.
  */
@@ -63,8 +63,8 @@ function remap(value: number, source: Interval, target: Interval): number {
 }
 
 /**
- * The interval calls under one name, so a call site says which kind of thing it
- * is reading and an import line says what these operate on.
+ * The interval calls under one name, so a call site shows which kind of value it
+ * is reading and an import line shows what these operate on.
  *
  * The width is not called `length`: a function's own `length` is how many
  * arguments it takes, it is not writable, and assigning one throws.
