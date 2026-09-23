@@ -1181,6 +1181,43 @@ its marks at the duration against its marks at zero, by tolerance rather than ex
 
 Nothing here writes a file. What a consumer does with a painted frame is the consumer's own.
 
+## Recordings
+
+A **recording** is a walk whose frames are drawn onto a surface one at a time and passed to a sink,
+which is an encoder or anything shaped like one. `recordFigure` records a figure. `recordFrames`
+records a walk with no figure behind it, so a shader that holds only a clock records through the
+same loop.
+
+```ts
+import { recordFrames, videoSink } from '@altpsyche/maths';
+import type { CanvasLike, CanvasSurface } from '@altpsyche/maths';
+
+declare const canvas: CanvasSurface;
+declare function accumulate(context: CanvasLike, clock: number, frame: number): void;
+
+const stop = new AbortController();
+const sink = await videoSink(canvas, { fps: 30 });
+const recording = await recordFrames(sink, (context, time) => accumulate(context, time.clock, time.frame), {
+  fps: 30,
+  seconds: 4,
+  settle: 300,
+  signal: stop.signal,
+});
+```
+
+The fill receives a `WalkTime` of four numbers. `index` and `seconds` place the frame in the
+recording. `frame` counts every frame filled, and `clock` is `frame / fps`.
+
+**Settling** is frames filled before the first kept one and never passed to the sink. A shader that
+sums its own last frame opens on an empty picture, so it settles first. The clock carries on from
+settling rather than restarting, because a shader that divides by how much of its sum has arrived
+would otherwise light its first kept frame far too brightly. A settle of 300 at 30 frames a second
+fills 330 frames over 1 second, keeps 30, and fills the first kept frame at `clock` 10.
+
+`signal` is an `AbortSignal` read before each fill. Once it is aborted, the sink is cancelled once
+and the recording rejects with the signal's reason. A walk counts `Math.max(1, Math.round(seconds ·
+fps))` frames, the count `walkTimesOf` returns, so 1.999 seconds at 30 frames a second is 60 frames.
+
 ## Restrictions
 
 **A mark may request only what both painters implement.** There are no filters and no blend modes. A
