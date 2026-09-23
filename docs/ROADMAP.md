@@ -413,7 +413,7 @@ is left, since 2.1.0 through 2.10.0 are cut.
 | 3.2.0 | an equation record whose fitting box is an expression | what `EquationRecordOptions` may carry | to plan | an equation written as a file and drawn at three aspects | nothing outside this package | to plan |
 | 3.3.0 | a surface that hands over its device, or says the card is gone | what `GpuSurface` reports | to plan | a figure redrawn after a card is taken away | nothing, since `RendererOptions` already takes a caller's device | to plan |
 | 3.4.0 | a clip that is a path rather than a rectangle | what a `Mark` may ask for | to plan | nothing yet, which is why it is last of the marks | nothing now, since `@altpsyche/engine` 0.5.0 counts a winding | to plan |
-| 4.0.0 | a figure a reader can act on | the shape of `Figure`, which gains input | to plan | nothing yet | nothing outside this package | to plan |
+| 4.0.0 | the five `item` names renamed to `entry`, then a figure a reader can act on | the shape of `Figure`, which gains input | to plan | nothing yet | nothing outside this package | to plan |
 
 **The first three are what `altpsyche.dev` is blocked on and they stand in front of the clip for that
 reason.** This file orders items by whether anything is waiting to draw the feature, and the clip has
@@ -1692,8 +1692,14 @@ Steps, one commit each:
       becomes `entries`, which no caller can see, since `content/figures/which-in-front.ts` passes
       it by position. The `items` field of a `scene3` record becomes `entries`, and that one is a
       key in the figure format, so it changes SPECIFICATION.md's table and is a major of the
-      format's own version as well as of the package. Waiting on Siva: yes to all five, yes to the
-      four that leave the format alone, or no.
+      format's own version as well as of the package. Siva said yes to all five on 2026-09-24,
+      if worth it, with `altpsyche.dev` commissioned to follow during its upgrade. It is worth it
+      now: nothing in `altpsyche.dev` imports any of the three types, its one `scene3` call passes
+      the list by position, and no figure file there has a `scene3` record, so what moves is
+      `demos/solids.figure.json` here (2 keys), SPECIFICATION.md's table and the checker. What
+      the site owes is its pin on format version 1, in `tests/figure-file.test.ts` and
+      `scripts/validate-content.ts`. The renames are 4.0.0's first item and ride the same format
+      major as input, so the format changes version once rather than twice.
 - [x] `check:vocab` turned to exit 1 on a banned noun or a banned pattern, never on a containment
       word, and named in CLAUDE.md's gates beside the other three commands. Its patterns match
       within one line, so a phrase broken across a comment's line break is missed ("gives" then
