@@ -1579,7 +1579,7 @@ is one drawn item", "How close two things come", "`inverseLerp` answers", "a gro
 disagree. Prose only: no export, type, parameter, field, value or default moves, and every
 measurement in a comment stays with its number and its meaning.
 
-**The vocabulary is fixed, and DESIGN.md's Terminology section is corrected to it first.** Eleven
+**The vocabulary is fixed, and DESIGN.md's Terminology section is corrected to it first.** Twelve
 terms, Siva's on 2026-09-23 after review:
 
 - A **figure** is a mathematical object drawn over time, such as a graph, a curve or a field. In
@@ -1653,14 +1653,15 @@ renames are 4.0.0's first item, not 3.0.3's.
 
 Steps, one commit each:
 
-- [ ] CLAUDE.md: a vocabulary rule under the prose rules, stating the eleven terms, the banned
+- [x] CLAUDE.md: a vocabulary rule under the prose rules, stating the twelve terms, the banned
       nouns, the banned patterns and the containment replacements above, and its definition-first
-      example corrected. Quotes the count before and after for the file.
+      example corrected. The file went from 15 banned hits to 0 outside the rule's own quoted
+      examples.
 - [ ] A check, `npm run check:vocab`, over comment trivia in the 83 sources, read with the
       TypeScript scanner, and the text of README.md, DESIGN.md and CLAUDE.md. It reports the banned
       nouns and the banned patterns per file, and the containment words as a count to read by eye.
       It lands reporting and exiting 0, and quotes its first reading against the baseline above.
-- [ ] DESIGN.md: the Terminology section rewritten to the eleven terms above, then the rest of the
+- [ ] DESIGN.md: the Terminology section rewritten to the twelve terms above, then the rest of the
       file swept. Quotes the check's count before and after for the file.
 - [ ] README.md. Quotes the check's count before and after.
 - [ ] `values/`, `timing/` and `index.ts`. Quotes the comment counts and the stripped-source

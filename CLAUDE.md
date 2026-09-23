@@ -9,7 +9,7 @@ MathJax is loaded by the typesetting call, so a consumer who never typesets neve
 never loads a renderer. **The engine must never import this package**, which is what keeps the two
 from forming a cycle.
 
-**Where things are.** [`docs/SPECIFICATION.md`](docs/SPECIFICATION.md) is the figure format, stated
+**Where each document is.** [`docs/SPECIFICATION.md`](docs/SPECIFICATION.md) is the figure format, stated
 for a renderer written in another language, and it changes before the code that reads it does.
 [`docs/FIGURE-FORMAT.md`](docs/FIGURE-FORMAT.md) is the reasoning behind that format, with a document
 of that name in each of the three repositories the change crossed. [`DESIGN.md`](DESIGN.md) is the
@@ -20,7 +20,7 @@ handover. This file is the rules.
 **This package has a consumer.** `altpsyche.dev` at `/home/siva/dev/altpsyche-dev` draws every figure
 through it, and a change here reaches that site through a release rather than through an edit over
 there. A feature nothing is waiting to draw is a feature nobody has checked, which is the test
-[`docs/ROADMAP.md`](docs/ROADMAP.md) orders its items by.
+[`docs/ROADMAP.md`](docs/ROADMAP.md) orders its entries by.
 
 ## Prose rules
 
@@ -34,15 +34,15 @@ of them, given by Siva.
    words" or "What this means is" means the first sentence failed. Fix the first sentence.
 3. **No brochure language.** Cut "powerful", "seamless", "robust", "leverage", "unlock", "deep
    dive", "at its core". These describe nothing and survive only because they sound like writing.
-4. **No synonym roulette.** Name a thing, then keep that name. Switching to "the tool", "the
+4. **No synonym roulette.** Name a subject, then keep that name. Switching to "the tool", "the
    library", "the solution" to avoid repetition makes the reader check whether you changed subject.
    Repetition is clearer.
 5. **Use "is" and "are".** Not "serves as", "functions as", "represents", "constitutes", "acts as".
    A fancy verb where a copula belongs adds syllables, not meaning.
 6. **No "not just X, but Y".** Also "isn't merely", "more than just". The formula manufactures depth
    by denying a claim nobody made. State Y.
-7. **No mechanical threes.** Three parallel items because three sounds complete is padding. Use the
-   number of items that exist.
+7. **No mechanical threes.** Three parallel entries because three sounds complete is padding. Use the
+   number of entries that exist.
 8. **No decorative dashes.** A dash marks a genuine break or aside. Used for rhythm, it becomes
    noise and every sentence starts to sound the same. Prefer a period or a colon.
 9. **No robotic phrasing.** Cut "it is important to note", "it should be mentioned", "delve into",
@@ -58,6 +58,38 @@ of them, given by Siva.
 `check:readability` over its own prose corpus, and neither reads this tree. So these are read by eye
 or not at all.
 
+## Vocabulary
+
+**Twelve terms have one meaning each, here, in DESIGN.md, in the README and in every comment.**
+
+- A **figure** is a mathematical object drawn over time, such as a graph, a curve or a field. In
+  code it is a plain object with no canvas and no clock.
+- The **scene** is the tree of nodes that make up the picture.
+- A **node** is one entry in the scene: a group, a shape or a text node.
+- A **group** is a node that contains other nodes under one transform and one style they inherit.
+- A **shape** is a node that draws one path.
+- A **text node** is a node that draws a run of letters.
+- An **animation** changes nodes over a span of time.
+- The **timeline** is the ordered list of animations and pauses. It sets what happens to each node
+  and when, and it gives the figure its duration.
+- A **mark** is what one node becomes at one time: a path with its fill and stroke, or a run of
+  letters.
+- The **extent** is how much of the world the picture shows, measured in the figure's own units.
+- The **still** is the one time drawn for a reader who asked for less motion.
+- A **painter** turns marks into something visible.
+
+**A placeholder noun is never written.** `thing` and `item` become the term that exists: point,
+node, mark, animation, object, cell or entry.
+
+**Code has no voice.** A function returns a value, or its Promise resolves to one. It does not hand
+back, give back, answer, know, want or decide. "`after` decides when it starts" is "`after` sets
+its start time". A mark is measured in units rather than sitting in them.
+
+**A containment verb names the relation.** A group contains its children and applies its
+transform. A segment stores its endpoint. The package ships its typeface. A validator checks a file
+against the specification. `holds` stays for a bound that holds, `piece` for a segment of a path or
+a curve, and `value` in its mathematical sense.
+
 ## The voice brief — from Siva
 
 **Simple language, and the what and the why both said plainly. Aim so a ten year old could follow
@@ -72,11 +104,11 @@ appears**, and a forward reference is a defect.
 _Foundations of Game Engine Development_. Define the object, state its properties, give each number
 with the expression it comes from, then name the function that does the work.
 
-**Definition first.** A section opens by saying what the thing is, in one declarative sentence,
-before it says anything the thing does. "A figure is a description of a picture over time."
+**Definition first.** A section opens by saying what the subject is, in one declarative sentence,
+before it says anything the subject does. "A figure is a mathematical object drawn over time."
 
 **Third person, present tense.** "`marksAt` is a pure function of t", never "you get back a list of
-things to draw". There is no **I**, no **we** and no **you** on these pages.
+marks to draw". There is no **I**, no **we** and no **you** on these pages.
 
 **The standard name for anything that has one.** Cubic Bézier, affine transform, column-major, de
 Casteljau's construction, the painter's algorithm, fourth-order Runge-Kutta, the nonzero winding
@@ -92,7 +124,7 @@ a tour. State what the figure is at the time named, and what the code does.
 **A heading names its subject.** The model, Geometry, Graphs, Space, Painters, Restrictions. Not
 "What you can draw", not "In full".
 
-**Where this meets the simplicity brief above:** plain words for ordinary things, the exact term for
+**Where this meets the simplicity brief above:** plain words for ordinary ideas, the exact term for
 a technical one, and every technical term defined where it first appears. Lengyel defines his terms
 before he uses them, which is the same rule the brief already states.
 
@@ -144,7 +176,7 @@ or a rule, which belongs in this file.
 There is no separate handover file and you must not write one.
 
 **A design call is made in the commit that needs it, and the reasoning goes in that commit's body.**
-What was decided, why, and the one thing that would change the answer. There is no decision file and
+What was decided, why, and the one fact that would change the answer. There is no decision file and
 no index: `git log` is the only archive there is.
 
 **A rule in this file is the rule**, so a rule that looks worth changing is changed rather than
@@ -153,10 +185,10 @@ checked against a second document that would then disagree with it.
 **A feature lands where it belongs, and a workaround is not a landing.** Siva's rule of 2026-09-11.
 Where a gap is another package's, the fix is that package's and the reading that found it is written
 down for it, rather than a second implementation growing here around the hole. A workaround already
-in the tree stays until its answer exists, since taking one out early leaves the thing it holds up
+in the tree stays until its answer exists, since taking one out early leaves the code it holds up
 unable to run at all, and `docs/ROADMAP.md` lists the six the GPU painter carries.
 
-**An item bigger than one commit gets its steps written before it is worked**, each naming the
+**A roadmap entry bigger than one commit gets its steps written before it is worked**, each naming the
 measurement it will quote, plus done-criteria checkable line by line. Writing that plan is a session
 on its own and no code is touched in it. Later sessions resume at the first unticked step.
 
@@ -199,7 +231,7 @@ npm run gate:gpu      every committed figure drawn on a card and compared with t
 **The recording gate needs a browser and writes into `recordings/`**, which is not committed.
 Encoding needs a WebCodecs `VideoEncoder` and rasterising needs a canvas, and Node has neither. The
 gate reads each file back afterwards in Node, since taking a container apart needs no encoder, so
-what it prints is how many pictures the file holds rather than how many the recorder handed over.
+what it prints is how many pictures the file holds rather than how many the recorder sent.
 
 **The GPU gate reads each figure twice and the floor is against the second reading.** The whole
 figure is one reading and the figure with the marks the painter named as refused taken out is the
@@ -227,7 +259,7 @@ Commit or push only when asked. Temporary files never go in the repo.
 
 **A feature is a minor bump and a fix is a patch**, which is what `git log` already shows: the
 annotation pieces landed at 0.2.0, the painter fix as 0.2.1, and the path reader at 0.3.0 because a
-new export is a feature. Under 0.x that convention is the only thing keeping a consumer able to read
+new export is a feature. Under 0.x that convention is all that keeps a consumer able to read
 a version number.
 
 **One door.** `index.ts` is the entire public surface and nothing outside reaches a file inside by
@@ -237,7 +269,7 @@ path. The consumer holds itself to that with a test of its own.
 tree. Publishing is public and cannot be taken back, so it is asked for rather than assumed, and the
 version goes to Siva when it is not obvious which half of the convention applies.
 
-**The 2.x band publishes once, at its end.** Siva's call on 2026-09-11. 2.0.0 is what npm answers and
+**The 2.x band publishes once, at its end.** Siva's call on 2026-09-11. 2.0.0 is what npm reports and
 2.1.0 through 2.6.0 are cut and unpublished, so a session cuts a version and stops there rather than
 asking to release it. What reaches npm next is the version the band closes on.
 
