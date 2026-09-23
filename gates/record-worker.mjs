@@ -18,7 +18,9 @@ import {
   painterGpu,
   readFigure,
   recordFigure,
+  recordFrames,
   videoSink,
+  walkTimesOf,
 } from '../dist/index.js';
 
 /** The card every recording off a card is drawn on, opened once, since a
@@ -78,10 +80,59 @@ async function record({ origin, name, through, fps, width, height }) {
   };
 }
 
+/** How dark a picture is on average, from 0 for white to 1 for black, read off
+ * the red channel since every layer an accumulating fill lays down is grey. */
+function darkness(context, width, height) {
+  const pixels = context.getImageData(0, 0, width, height).data;
+  let sum = 0;
+  for (let at = 0; at < pixels.length; at += 4) sum += 255 - pixels[at];
+  return sum / (255 * width * height);
+}
+
+/** A recording with no figure behind it, whose fill lays a translucent layer
+ * over its own last frame, which is the shape of a shader summing its frames. */
+async function accumulate({ fps, seconds, settle, width, height }) {
+  const canvas = new OffscreenCanvas(width, height);
+  const context = canvas.getContext('2d');
+  const sink = await videoSink(canvas, { fps, format: 'mp4', codec: 'avc' });
+  let filled = 0;
+  let first = null;
+  // Frame 0 on the fill's own clock opens on white, so a settled recording's first kept frame is
+  // already dark where an unsettled one's is not.
+  const fill = (drawn, time) => {
+    filled += 1;
+    if (time.frame === 0) {
+      drawn.globalAlpha = 1;
+      drawn.fillStyle = '#ffffff';
+      drawn.fillRect(0, 0, width, height);
+    }
+    drawn.globalAlpha = 0.02;
+    drawn.fillStyle = '#000000';
+    drawn.fillRect(0, 0, width, height);
+  };
+  const onFrame = (index) => {
+    if (index === 0) first = darkness(context, width, height);
+  };
+  const recording = await recordFrames(sink, fill, { fps, seconds, settle, onFrame });
+  let binary = '';
+  for (const byte of recording.output) binary += String.fromCharCode(byte);
+  return {
+    bytes: btoa(binary),
+    frames: recording.frames,
+    walked: walkTimesOf({ fps, seconds }).length,
+    filled,
+    first,
+    last: darkness(context, width, height),
+    document: typeof document,
+  };
+}
+
+const KINDS = { open, record, accumulate };
+
 self.addEventListener('message', async (message) => {
   const { id, kind, ...rest } = message.data;
   try {
-    const answer = kind === 'open' ? await open(rest) : await record(rest);
+    const answer = await KINDS[kind](rest);
     self.postMessage({ id, answer });
   } catch (error) {
     self.postMessage({ id, error: error.message });

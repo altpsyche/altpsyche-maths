@@ -1648,12 +1648,13 @@ version is cut against.
       adds 8, calls `cancel` once and `finish` never, and rejects with the reason passed to
       `abort`; aborted after settling frame 4 of a settle of 30, it fills 5 times and adds none.
       Record tests 29 to 31; the suite passes 1494.
-- [ ] **5. The recording gate records something that is not a figure.** `gates/record-worker.mjs`
+- [x] **5. The recording gate records something that is not a figure.** `gates/record-worker.mjs`
       gains one recording whose fill draws onto the canvas from its own last frame, which is the
       shape of an accumulating shader without needing a card, recorded with a settle.
-      **Measurement:** the file read back in Node holds the kept count and not the filled count, 30
-      pictures for 1 second at 30 with a settle of 30, and the first picture's ink differs from the
-      ink of a recording of the same fill with no settle.
+      **Measured:** a fill laying a 2% black layer over its own last frame, 1 second at 30. With a
+      settle of 30 it fills 60 times and the file read back in Node holds 30 pictures; its first
+      picture is 49.8% dark against 2.0% for the same fill with no settle, which fills 30 and holds
+      30. `npm run gate:record` goes from 32 of 32 files to 34 of 34.
 - [ ] **6. The reference and the cut.** Each export's `docs/REFERENCE.md` entry lands in the step
       that exports it, since the door's reference test fails on an export with none; this step checks
       that `recordFrames`, `FrameFill`, `WalkOptions`, `WalkTime` and the two new options read as one

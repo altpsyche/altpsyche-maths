@@ -305,12 +305,52 @@ for (const name of figures) {
   }
 }
 
+// A recording with no figure behind it, made twice so the settled one's first picture can be
+// told from the unsettled one's.
+const SETTLES = [30, 0];
+const opened = {};
+for (const settle of SETTLES) {
+  const stem = `accumulate.worker${settle ? '.settled' : ''}`;
+  try {
+    const answer = await page.evaluate(
+      (request) => window.ask({ kind: 'accumulate', ...request }),
+      { fps: FPS, seconds: 1, settle, width: WIDTH, height: HEIGHT }
+    );
+    const bytes = Buffer.from(answer.bytes, 'base64');
+    const file = path.join(out, `${stem}.mp4`);
+    writeFileSync(file, bytes);
+    const held = await inside(file);
+    opened[settle] = answer.first;
+    const agrees =
+      answer.frames === answer.walked &&
+      held.packets === answer.frames &&
+      answer.filled === answer.frames + settle &&
+      answer.document === 'undefined';
+    console.log(
+      `${stem}.mp4 ${bytes.length} bytes, ${answer.filled} filled with a settle of ${settle}, ` +
+        `${answer.frames} frames of ${answer.walked} walked, ${held.packets} in the file, ` +
+        `${held.duration.toFixed(4)}s of ${held.size} ${held.codec}, first picture ` +
+        `${(answer.first * 100).toFixed(1)}% dark and last ${(answer.last * 100).toFixed(1)}%, ` +
+        `${agrees ? 'the file holds the kept frames' : 'THE FILE DISAGREES WITH THE WALK'}`
+    );
+    if (!agrees) failed += 1;
+  } catch (error) {
+    failed += 1;
+    console.error(`${stem} failed: ${error.message}`);
+  }
+}
+if (opened[30] !== undefined && opened[0] !== undefined && !(opened[30] > opened[0])) {
+  failed += 1;
+  console.error('the settled recording opens no darker than the unsettled one');
+}
+
 await browser.close();
 server.close();
-const asked = figures.length * PASSES.length;
+const asked = figures.length * PASSES.length + SETTLES.length;
 console.log(
   `${asked - failed} of ${asked} recordings written into ${out}, each figure through the ` +
     `two-dimensional painter and off a ${backend} card, in the page and again in a worker ` +
-    `on ${worker.backend} whose document is ${worker.document}`
+    `on ${worker.backend} whose document is ${worker.document}, and one fill with no figure ` +
+    `settled and unsettled`
 );
 process.exit(failed === 0 ? 0 : 1);
