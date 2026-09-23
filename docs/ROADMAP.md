@@ -1684,8 +1684,16 @@ Steps, one commit each:
       `spaceEntry`. What is left is exported and is step 10's: `SpaceItem`, `SpaceItemRecord`,
       `SceneItemRecord`, the `items` field of a `scene3` record and the parameter of `scene3`.
       `npm test` passed 1481 of 1481 before and after, and all 83 `dist/*.d.ts` are identical.
-- [ ] Exported names using a banned noun, listed with the proposed names and put to Siva. No rename
-      lands in this version.
+- [x] Exported names using a banned noun, listed with the proposed names and put to Siva. No rename
+      lands in this version. The TypeScript scanner finds five over the 83 sources, and none uses
+      `thing`. `SpaceItem` becomes `SpaceEntry`, used in 11 files here and 0 in `altpsyche.dev`.
+      `SpaceItemRecord` becomes `SpaceEntryRecord`, in 6 files here and 0 there. `SceneItemRecord`
+      becomes `SceneEntryRecord`, in 8 files here and 0 there. The parameter `items` of `scene3`
+      becomes `entries`, which no caller can see, since `content/figures/which-in-front.ts` passes
+      it by position. The `items` field of a `scene3` record becomes `entries`, and that one is a
+      key in the figure format, so it changes SPECIFICATION.md's table and is a major of the
+      format's own version as well as of the package. Waiting on Siva: yes to all five, yes to the
+      four that leave the format alone, or no.
 - [ ] `check:vocab` turned to exit 1 on a banned noun or a banned pattern, never on a containment
       word, and named in CLAUDE.md's gates beside the other three commands. Its patterns match
       within one line, so a phrase broken across a comment's line break is missed ("gives" then
