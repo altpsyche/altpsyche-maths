@@ -408,7 +408,7 @@ is left, since 2.1.0 through 2.10.0 are cut.
 
 | version | what lands | what it changes | steps | cut against | depends on | plan |
 | --- | --- | --- | --- | --- | --- | --- |
-| 3.1.0 | a walk that takes a duration rather than a figure, with settling | what `recordFigure` can record | 6, none ticked | a recording of a shader, which holds no `Figure` | nothing outside this package | under The items |
+| 3.1.0 | a walk that takes a duration rather than a figure, with settling | what `recordFigure` can record | 6, 1 ticked | a recording of a shader, which holds no `Figure` | nothing outside this package | under The items |
 | 3.2.0 | an equation record whose fitting box is an expression | what `EquationRecordOptions` may carry | to plan | an equation written as a file and drawn at three aspects | nothing outside this package | to plan |
 | 3.3.0 | a surface that hands over its device, or says the card is gone | what `GpuSurface` reports | to plan | a figure redrawn after a card is taken away | nothing, since `RendererOptions` already takes a caller's device | to plan |
 | 3.4.0 | a clip that is a path rather than a rectangle | what a `Mark` may ask for | to plan | nothing yet, which is why it is last of the marks | nothing now, since `@altpsyche/engine` 0.5.0 counts a winding | to plan |
@@ -1619,11 +1619,13 @@ loop, and `npm run gate:record` is the reading that says each file still holds t
 counts. Step 5 gives the recording gate its first file that holds no figure, which is what the
 version is cut against.
 
-- [ ] **1. The walk's times, without a figure.** `walkTimesOf(step)` over a `FrameStep` whose
-      `seconds` is required, exported at the door, and `frameTimesOf` becomes `walkTimesOf` with the
-      figure's duration filled in. **Measurement:** `frameTimesOf` for all eight committed demos at
-      30 and 60 frames a second, identical before and after by tolerance, and `walkTimesOf` of 1.999
-      seconds at 30 reading 60 times against the consumer's 59.
+- [x] **1. The walk's times, without a figure.** `walkTimesOf(step)` over a `FrameStep` whose
+      `seconds` is required, exported at the door, and `frameTimesOf` is `walkTimesOf` with the
+      figure's duration filled in. **Measured:** the eight committed demos at 30 and 60 frames a
+      second are 16 walks and 5705 times, with the same counts and a worst difference of 0 before
+      and after; `walkTimesOf` of 1.999 seconds at 30 reads 60 times against the consumer's 59.
+      The door's reference test requires an entry for every export, so `walkTimesOf`'s landed in
+      `docs/REFERENCE.md` in this step rather than in step 6.
 - [ ] **2. One recording loop, and `recordFigure` over it.** `recordFrames(sink, fill, options)`
       with `fps`, `seconds` and `onFrame`, and `recordFigure` rewritten as a fill that paints the
       frame read at `seconds`. **Measurement:** the 15 `recordFigure` tests in
@@ -1647,8 +1649,9 @@ version is cut against.
       **Measurement:** the file read back in Node holds the kept count and not the filled count, 30
       pictures for 1 second at 30 with a settle of 30, and the first picture's ink differs from the
       ink of a recording of the same fill with no settle.
-- [ ] **6. The reference and the cut.** `docs/REFERENCE.md` gains `walkTimesOf`, `recordFrames`,
-      `WalkTime` and the two new options, `docs/GUIDE.md` gains a recording with no figure, and the
+- [ ] **6. The reference and the cut.** Each export's `docs/REFERENCE.md` entry lands in the step
+      that exports it, since the door's reference test fails on an export with none; this step checks
+      that `recordFrames`, `WalkTime` and the two new options read as one section, `docs/GUIDE.md` gains a recording with no figure, and the
       version is bumped to 3.1.0 in the commit that verifies the done-criteria below.
       **Measurement:** `npm test` over files, and each criterion with the number that satisfies it.
 

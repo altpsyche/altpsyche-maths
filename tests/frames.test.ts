@@ -6,6 +6,7 @@ import {
   figureTime,
   frameTimesOf,
   framesOf,
+  walkTimesOf,
   group,
   isLoop,
   sameMarks,
@@ -36,7 +37,7 @@ const still: Figure = {
 
 describe('the door', () => {
   it('hands out every call frames out added', () => {
-    for (const name of ['frameTimesOf', 'framesOf']) {
+    for (const name of ['frameTimesOf', 'framesOf', 'walkTimesOf']) {
       expect(typeof (door as Record<string, unknown>)[name], name).not.toBe('undefined');
     }
     // A type is not a value, so the door is held to it by a frame that is one.
@@ -78,6 +79,33 @@ describe('frameTimesOf', () => {
 
   it('walks one frame of a figure that never moves', () => {
     expect(frameTimesOf(still, { fps: 30 })).toEqual([0]);
+  });
+});
+
+describe('walkTimesOf', () => {
+  it('walks a span of seconds with no figure behind it', () => {
+    const times = walkTimesOf({ fps: 30, seconds: 2 });
+    expect(times).toHaveLength(60);
+    expect(times[59]).toBeCloseTo(59 / 30, 12);
+  });
+
+  it('rounds the frame count, where a floor would drop the last frame', () => {
+    // A floor of 1.999 * 30 is 59, which leaves the last thirtieth of a second unrecorded.
+    expect(walkTimesOf({ fps: 30, seconds: 1.999 })).toHaveLength(60);
+  });
+
+  it('spreads a count over the span', () => {
+    expect(walkTimesOf({ frames: 4, seconds: 6 })).toEqual([0, 1.5, 3, 4.5]);
+  });
+
+  it('walks one frame of a span of nothing', () => {
+    expect(walkTimesOf({ fps: 30, seconds: 0 })).toEqual([0]);
+  });
+
+  it('is the walk frameTimesOf reads over a figure', () => {
+    for (const fps of [30, 60]) {
+      expect(frameTimesOf(tangent, { fps })).toEqual(walkTimesOf({ fps, seconds: durationOf(tangent) }));
+    }
   });
 });
 

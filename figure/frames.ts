@@ -47,22 +47,28 @@ export type FramesOptions = FrameStep & {
 };
 
 /**
- * The times a walk reads, which a recorder needs before it has drawn anything to
- * say how far along it is.
+ * The times a walk over a span of seconds reads, with no figure behind it.
  *
- * A walk stops strictly before the end of its span. The frame at the duration of
- * a figure that loops is its own first frame, and a recording would show it
- * twice. A figure with no duration is one frame, since a picture that never moves
- * still has a picture.
+ * A walk stops strictly before the end of its span. The frame at the end of a
+ * span that loops is its own first frame, and a recording would show it twice.
+ * A span of nothing is one frame, since a picture that never moves still has a
+ * picture.
  */
-export function frameTimesOf(figure: Figure, step: FrameStep): number[] {
-  const span = step.seconds ?? durationOf(figure);
+export function walkTimesOf(step: FrameStep & { seconds: number }): number[] {
   const count =
     step.fps === undefined
       ? Math.max(1, Math.round(step.frames))
-      : Math.max(1, Math.round(span * step.fps));
-  const gap = step.fps === undefined ? span / count : 1 / step.fps;
+      : Math.max(1, Math.round(step.seconds * step.fps));
+  const gap = step.fps === undefined ? step.seconds / count : 1 / step.fps;
   return Array.from({ length: count }, (_, index) => index * gap);
+}
+
+/**
+ * The times a walk over a figure reads, which a recorder needs before it has
+ * drawn anything to say how far along it is.
+ */
+export function frameTimesOf(figure: Figure, step: FrameStep): number[] {
+  return walkTimesOf({ ...step, seconds: step.seconds ?? durationOf(figure) });
 }
 
 /** A figure walked at a fixed step, a frame at a time. */

@@ -250,7 +250,7 @@ export {
   sameMarks,
   viewAt,
 } from './figure/figure.js';
-export { frameTimesOf, framesOf } from './figure/frames.js';
+export { frameTimesOf, framesOf, walkTimesOf } from './figure/frames.js';
 export type { Frame, FrameStep, FramesOptions } from './figure/frames.js';
 export type { Figure, PainterName, TrackValues } from './figure/figure.js';
 export { resolveFigure } from './figure/figure-record.js';

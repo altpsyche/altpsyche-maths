@@ -1415,7 +1415,11 @@ frame round a picture is a shape.
   for.
 - `frameTimesOf(figure, step)` — the times a walk reads, which a recorder needs before it has drawn
   anything to say how far along it is. A walk stops strictly before the duration, so a figure that
-  loops never hands back its own first frame twice.
+  loops never hands back its own first frame twice. It is `walkTimesOf` with the figure's duration
+  as the span.
+- `walkTimesOf(step)` — the times a walk over `step.seconds` reads, with no figure behind it. At a
+  rate the count is `max(1, round(seconds · fps))`, so 1.999 seconds at 30 is 60 frames where a floor
+  would give 59, and the last of them starts before the span ends.
 - `framesOf(figure, options)` — a figure walked at a fixed step, a frame at a time. Frames come back
   one at a time, since ten seconds at sixty a second is six hundred frames of every mark a figure
   draws.
