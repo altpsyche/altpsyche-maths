@@ -1666,7 +1666,7 @@ Steps, one commit each:
       is 26 in comments, and a plain grep over the sources agrees at 26.
 - [x] DESIGN.md: the Terminology section rewritten to the twelve terms above, then the rest of the
       file swept. The check read 2 nouns, 3 voice patterns and 18 by eye, and reads 0, 0 and 10.
-- [ ] README.md. Quotes the check's count before and after.
+- [x] README.md. The check read 1 noun, 1 voice pattern and 30 by eye, and reads 0, 0 and 14.
 - [ ] `values/`, `timing/` and `index.ts`. Quotes the comment counts and the stripped-source
       equality.
 - [ ] `figure/` A to M, then `figure/` N to Z, as two commits since the directory is 67 files. Each

@@ -4,14 +4,15 @@ The mathematics behind the figures on [altpsyche.dev](https://altpsyche.dev).
 
 ## The model
 
-A **figure** is a description of a picture over time. It carries an **extent** and a **scene**. The
-extent is a width and a height in the figure's own units. The scene is a tree of nodes holding
-paths, text, transforms and styles. A figure has no canvas, no clock and no state.
+A **figure** is a mathematical object drawn over time, such as a graph, a curve or a field. It
+contains an **extent** and a **scene**. The extent is a width and a height in the figure's own units.
+The scene is the tree of nodes that make up the picture, and its nodes contain paths, text,
+transforms and styles. A figure has no canvas, no clock and no state.
 
-Evaluating a figure at time t yields a flat array of **marks**. A mark is one drawn item: an outline
-with a fill, a stroke, or both, or a piece of text. Its geometry is expressed in figure units with
-every transform already applied, and its style is resolved rather than inherited. A mark holds no
-reference to an output device.
+Evaluating a figure at time t yields a flat array of **marks**. A mark is what one node becomes at
+one time: an outline with a fill, a stroke, or both, or a run of letters. Its geometry is expressed
+in figure units with every transform already applied, and its style is resolved rather than
+inherited. A mark stores no reference to an output device.
 
 ```ts
 marksAt(figure, t): readonly Mark[]
@@ -65,7 +66,7 @@ const figure = {
 svgMarkup(marksAt(figure, 0.5), viewAt(figure, 0.5, 640, 360), 640, 360);
 ```
 
-At t = 0.5 the timeline has applied `draw` at half its span, and the mark carries half the ring's
+At t = 0.5 the timeline has applied `draw` at half its span, and the mark's path is half the ring's
 arc length. `svgMarkup` returns a complete SVG document as a string, with a view box and no width or
 height of its own.
 
@@ -108,7 +109,7 @@ truth.
 ## Graphs
 
 A **scale** is a pair of intervals: the numbers an axis counts through, and where those numbers land
-in figure units. `coordsOf` pairs two scales, and the mapping is a value the caller holds rather
+in figure units. `coordsOf` pairs two scales, and the mapping is a value the caller keeps rather
 than state read back out of a drawn group.
 
 `plot` samples a function and emits one Hermite cubic per interval. The control points sit a third
@@ -150,7 +151,7 @@ step, so a helix round a cylinder is sorted against the cylinder's own cells: al
 between the first piece of the helix and the last, where a curve sorted whole is one mark at one depth
 and is painted entirely in front of the solid or entirely behind it.
 
-`camera3` holds an eye, a target, an up vector, a view matrix and a projection. `perspective` and
+`camera3` stores an eye, a target, an up vector, a view matrix and a projection. `perspective` and
 `orthographic` supply the projection; the orthographic case is a scale rather than a divide and
 therefore has no near plane. Every builder that works in space projects to figure units and returns
 the same node types a graph returns, so one animation reaches both.
@@ -162,11 +163,11 @@ author gave and a picture does not flicker between frames. `sectionOf` returns t
 where a plane cuts a parametric surface, closing a run whose ends meet.
 
 A sort alone leaves two cases with no right answer: pieces that pierce each other, and overlaps that
-run in a ring. So a mark carries a depth as well. `Mark.depth` is three numbers giving how far the
+run in a ring. So a mark stores a depth as well. `Mark.depth` is three numbers giving how far the
 mark stands from the eye as a function of where on the page it is drawn, and of two marks over one
 point the smaller number is the nearer. Three numbers are exact for a flat piece of the world, which
-is what a cell, a face and a segment each are. The builders in space fit them; a flat figure carries
-none, and a mark carrying none clears the depths before it, so a caption drawn after a surface
+is what a cell, a face and a segment each are. The builders in space fit them; a flat figure stores
+none, and a mark storing none clears the depths before it, so a caption drawn after a surface
 covers it.
 
 ## Time and motion
@@ -188,7 +189,7 @@ timeline a function of time rather than a record of what has played. Tracks are 
 values: `sampleTrack` reads a keyed value at a time, holding the nearest key outside the keyed
 range.
 
-`framesOf` walks a figure at a fixed rate or count and yields one frame at a time. A frame carries
+`framesOf` walks a figure at a fixed rate or count and yields one frame at a time. A frame contains
 its index, its time, its marks and the view matrix built at that same time. The walk stops strictly
 before the duration, so a looping figure never emits its first frame twice.
 
@@ -207,7 +208,7 @@ painter keeps a depth attachment and lets the card compare at every pixel, which
 passing through each other need.
 
 A figure may name the painters that can draw it. `Figure.painters` is a list of names and
-`PAINTER_NAMES` holds the three: `svg`, `canvas` and `gpu`. Left out, all three may. The refusal is
+`PAINTER_NAMES` lists the three: `svg`, `canvas` and `gpu`. Left out, all three may. The refusal is
 at `marksAt`, since a painter is handed marks and never sees the figure they came from.
 
 ## Recording
@@ -232,7 +233,7 @@ const { frames, seconds, output } = await recordFigure(figure, sink, {
 ```
 
 `output` is the finished file as bytes. The walk is `frameTimesOf`, the same one the strips are drawn
-from, so a recording holds the frames the rest of the package counts. A frame lasts exactly one over
+from, so a recording contains the frames the rest of the package counts. A frame lasts exactly one over
 the rate, and the walk stops strictly before the end, since the frame at the duration of a figure
 that loops is its own first frame.
 
@@ -241,12 +242,12 @@ figure that declares itself a loop is read at the remainder and a figure that do
 picture, which is `figureTime`.
 
 `FrameSink` is the parameter that makes the encoder replaceable: it owns the canvas each frame is
-painted onto, takes each painted frame, and hands back whatever it collected. A sink that counts the
+painted onto, takes each painted frame, and returns whatever it collected. A sink that counts the
 frames it is given is how the walk is checked without a device.
 
 Encoding needs a WebCodecs `VideoEncoder`. A browser has one and Node does not, so the bytes are a
 gate with a browser in it: `npm run gate:record` records every committed figure in Chromium, reads
-each file back, and says how many pictures the file holds.
+each file back, and prints how many pictures the file contains.
 
 ## Restrictions
 
@@ -258,7 +259,7 @@ A clip is a rectangle and no other shape, and that exclusion is not the rule abo
 clip, with `clip-path` and with `clip()`. An arbitrary path clip needs a winding number counted,
 which is a stencil on a card, where a box is the scissor test every device already has.
 
-A fill carries one colour and a gradient beside it. SVG names a gradient with an element carrying a
+A fill stores one colour and a gradient beside it. SVG names a gradient with an element carrying a
 document-unique identifier and a canvas with an object built from the context, and the one colour
 stays because a contrast reading and anything else needing a single colour has to have one.
 
@@ -301,7 +302,7 @@ shape('disc', circle(vec2(0, 0), 1), { fill: { colour: colourFrom('#fb923c', 'ac
 reads the channels alone, and `hexOf` and `colourText` write one back out. A form neither reads is
 refused rather than painted as nothing: a named colour or an `hsl()` read as black is a wrong picture
 with nothing to say it went wrong. The SVG painter still writes `var(--name, #rrggbb)`, from the
-channels the colour holds, so a page themes a figure exactly as it did.
+channels the colour contains, so a page themes a figure exactly as it did.
 
 **Three readers take the drawn path rather than the function behind it.**
 
@@ -327,7 +328,7 @@ that stores geometry stores what the function produced.
 ## Further reading
 
 [docs/GUIDE.md](docs/GUIDE.md) teaches the package in order. [docs/REFERENCE.md](docs/REFERENCE.md)
-carries one entry for each of the 375 names at the door. [DESIGN.md](DESIGN.md) states why the
+contains one entry for each of the 375 names at the door. [DESIGN.md](DESIGN.md) states why the
 design is what it is and what it will not become.
 
 `index.ts` is the entire public surface, and nothing outside the package reaches a file inside it by
