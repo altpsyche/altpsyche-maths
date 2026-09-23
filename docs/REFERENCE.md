@@ -1607,6 +1607,8 @@ picture in a recording and a picture on a card are the same picture.
   the first kept one and never passed to the sink, each at `seconds` 0, with `onSettle(frame, count)`
   called once per settling frame. The clock carries on from settling rather than restarting, so a
   settle of 300 at 30 frames a second fills the first kept frame at `frame` 300 and `clock` 10.
+  `signal` is an `AbortSignal` read before each fill, settling included. Once it is aborted, the sink
+  is cancelled once and the recording rejects with the signal's reason.
 - `FrameSink` — where a recording's frames go, which is an encoder or anything shaped like one. It
   owns the `context` each frame is painted onto, takes each painted frame with `add(seconds,
   duration)`, hands back its own answer from `finish()`, and may offer a `cancel()` for a recording

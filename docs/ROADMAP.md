@@ -1641,11 +1641,13 @@ version is cut against.
       `frame` 300 and `clock` 10; a settle of 0 over 1.999 seconds fills the same 60 times as no
       settle. `recordFigure` passes both options on. The record tests go from 27 to 29 and the suite
       passes 1492.
-- [ ] **4. A recording that can be stopped.** `signal` in `WalkOptions`, an `AbortSignal` read
+- [x] **4. A recording that can be stopped.** `signal` in `WalkOptions`, an `AbortSignal` read
       before each fill, settling included, which cancels the sink once and rejects with the signal's
       reason rather than finishing. The consumer's loop checks a flag of its own at the same two
-      places. **Measurement:** a signal aborted after frame k of a 30 frame walk fills k + 1 times,
-      calls `cancel` once and `finish` never, and the same for an abort during settling.
+      places. **Measured:** a signal aborted during kept frame 7 of a 30 frame walk fills 8 times,
+      adds 8, calls `cancel` once and `finish` never, and rejects with the reason passed to
+      `abort`; aborted after settling frame 4 of a settle of 30, it fills 5 times and adds none.
+      Record tests 29 to 31; the suite passes 1494.
 - [ ] **5. The recording gate records something that is not a figure.** `gates/record-worker.mjs`
       gains one recording whose fill draws onto the canvas from its own last frame, which is the
       shape of an accumulating shader without needing a card, recorded with a settle.

@@ -424,6 +424,38 @@ describe('recordFrames', () => {
     expect(zero).toEqual(none);
   });
 
+  it('stops before the next fill once its signal is aborted, cancelling the sink once', async () => {
+    const sink = new Taken();
+    const controller = new AbortController();
+    const reason = new Error('stopped');
+    let fills = 0;
+    const fill = (_: CanvasLike, time: WalkTime) => {
+      fills += 1;
+      if (time.index === 7) controller.abort(reason);
+    };
+    const walk = recordFrames(sink, fill, { fps: 30, seconds: 1, signal: controller.signal });
+    await expect(walk).rejects.toBe(reason);
+    expect(fills).toBe(8);
+    expect(sink.times).toHaveLength(8);
+    expect(sink.cancelled).toBe(1);
+    expect(sink.finished).toBe(0);
+  });
+
+  it('stops during settling once its signal is aborted', async () => {
+    const sink = new Taken();
+    const controller = new AbortController();
+    let fills = 0;
+    const onSettle = (frame: number) => {
+      if (frame === 4) controller.abort();
+    };
+    const walk = recordFrames(sink, () => void (fills += 1), { fps: 30, seconds: 1, settle: 30, onSettle, signal: controller.signal });
+    await expect(walk).rejects.toThrow();
+    expect(fills).toBe(5);
+    expect(sink.times).toHaveLength(0);
+    expect(sink.cancelled).toBe(1);
+    expect(sink.finished).toBe(0);
+  });
+
   it('fills onto the surface the sink reads', async () => {
     const sink = new Taken();
     const contexts = new Set<CanvasLike>();

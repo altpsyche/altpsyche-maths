@@ -95,6 +95,9 @@ export interface WalkOptions {
   /** Called once per settling frame, which is what a progress reading of the
    * settling is built from. */
   onSettle?: (frame: number, count: number) => void;
+  /** Read before each fill, settling included. Once aborted, the sink is cancelled
+   * and the recording rejects with the signal's reason rather than finishing. */
+  signal?: AbortSignal;
 }
 
 export interface RecordOptions extends Omit<WalkOptions, 'seconds'> {
@@ -132,19 +135,21 @@ export async function recordFrames<Output>(
   fill: FrameFill,
   options: WalkOptions
 ): Promise<Recording<Output>> {
-  const { fps, seconds: span, settle = 0 } = options;
+  const { fps, seconds: span, settle = 0, signal } = options;
   const times = walkTimesOf({ fps, seconds: span });
   const gap = 1 / fps;
   let frames = 0;
   try {
     // Settling: frames at clip time 0 on a clock that the kept frames carry on from rather than restart.
     for (let frame = 0; frame < settle; frame += 1) {
+      signal?.throwIfAborted();
       await fill(sink.context, { index: 0, seconds: 0, frame, clock: frame / fps });
       options.onSettle?.(frame, settle);
     }
     for (let index = 0; index < times.length; index += 1) {
       const seconds = times[index];
       const frame = settle + index;
+      signal?.throwIfAborted();
       await fill(sink.context, { index, seconds, frame, clock: frame / fps });
       await sink.add(seconds, gap);
       frames += 1;
@@ -168,6 +173,7 @@ export async function recordFigure<Output>(
   const paint = options.paint ?? paintFrame;
   const fill: FrameFill = (context, time) =>
     paint(context, frameAt(figure, time.index, time.seconds, width, height), { width, height, background });
-  const { fps, onFrame, settle, onSettle } = options;
-  return recordFrames(sink, fill, { fps, seconds: options.seconds ?? durationOf(figure), onFrame, settle, onSettle });
+  const { fps, onFrame, settle, onSettle, signal } = options;
+  const seconds = options.seconds ?? durationOf(figure);
+  return recordFrames(sink, fill, { fps, seconds, onFrame, settle, onSettle, signal });
 }
