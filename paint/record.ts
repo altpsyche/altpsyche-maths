@@ -8,7 +8,7 @@
  * none of them.
  *
  * The walk is `frameTimesOf` and there is no second frame count anywhere here. A
- * recorder counting its own frames answers a different number from the walk the
+ * recorder counting its own frames arrives at a different number from the walk the
  * strips are drawn from, since a floor and a round differ for every figure whose
  * duration times the rate lands above a half.
  */
@@ -22,7 +22,7 @@ import type { Colour } from '../values/colour.js';
  *
  * `paintFrame` is one answer and a card is another, since a card draws the frame
  * on its own canvas and the pixels it reads back are written onto this one. It
- * answers a promise because that readback is asynchronous where painting onto a
+ * returns a promise because that readback is asynchronous where painting onto a
  * context is not.
  */
 export type FramePainter = (
@@ -35,9 +35,9 @@ export type FramePainter = (
  * Where a recording's frames go, which is an encoder or anything shaped like
  * one.
  *
- * The sink owns the surface rather than being handed one per frame, because an
+ * The sink owns the surface rather than being passed one per frame, because an
  * encoder is built around a single surface and reads it whenever it likes. A
- * recorder that made a new one each frame would hand the encoder a picture it
+ * recorder that made a new one each frame would pass the encoder a picture it
  * had already stopped reading.
  */
 export interface FrameSink<Output = void> {
@@ -47,7 +47,7 @@ export interface FrameSink<Output = void> {
    * The frame just painted, taken at the time it is shown and for as long as it
    * is shown.
    *
-   * It answers a promise so a recorder waits for an encoder that has fallen
+   * It returns a promise so a recorder waits for an encoder that has fallen
    * behind. Frames arriving faster than they are encoded is how a recording of
    * four hundred of them runs a machine out of memory.
    */
@@ -55,7 +55,7 @@ export interface FrameSink<Output = void> {
   /** Whatever the sink was collecting, once no more frames are coming. */
   finish(): Promise<Output> | Output;
   /** Thrown away rather than finished, for a recording that failed part way. An
-   * encoder holds an open file and a worker until it is told one way or the
+   * encoder keeps a file and a worker open until it is told one way or the
    * other. */
   cancel?(): Promise<void> | void;
 }
@@ -90,11 +90,11 @@ export interface Recording<Output> {
   /** How long the recording runs, in seconds, which is the figure's own length
    * where nothing else was asked for. */
   seconds: number;
-  /** What the sink handed back when it was finished. */
+  /** What the sink returned when it was finished. */
   output: Output;
 }
 
-/** A figure painted frame by frame into a sink, which hands back whatever it was
+/** A figure painted frame by frame into a sink, which returns whatever it was
  * collecting. */
 export async function recordFigure<Output>(
   figure: Figure,

@@ -6,7 +6,7 @@
  * loads it. Nothing else in this package names the library.
  *
  * Encoding needs a `VideoEncoder`, which is WebCodecs, and Node has no such
- * global: `getEncodableVideoCodecs()` answers an empty list there. So this runs
+ * global: `getEncodableVideoCodecs()` returns an empty list there. So this runs
  * in a browser or on anything else that implements WebCodecs, and the claim that
  * the bytes play is a gate with a browser in it rather than part of the suite.
  */
@@ -41,7 +41,7 @@ export interface VideoOptions {
 }
 
 /**
- * A sink that encodes each frame it is handed and answers the finished file.
+ * A sink that encodes each frame it is passed and returns the finished file.
  *
  * The canvas is the sink's own, since an encoder reads the one surface it was
  * built around. Finishing the output finishes the source with it, so the source
@@ -63,7 +63,7 @@ export async function videoSink(
     target,
   });
   // The library names the DOM's own canvas types and this package declares no
-  // browser library, so what satisfies the parts an encoder reads is handed over
+  // browser library, so what satisfies the parts an encoder reads is passed on
   // as the canvas it is.
   const source = new CanvasSource(canvas as unknown as OffscreenCanvas, {
     codec: options.codec ?? (options.format === 'webm' ? 'vp9' : 'avc'),

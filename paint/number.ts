@@ -4,7 +4,7 @@
  * Rounding is not a nicety here. Both painters have to agree mark for mark, and
  * two doubles that differ in their last bit would read as a difference where a
  * reader could never see one. A thousandth of a pixel is finer than anything a
- * screen or an encoder can hold.
+ * screen or an encoder can resolve.
  */
 const PLACES = 3;
 

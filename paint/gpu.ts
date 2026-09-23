@@ -7,11 +7,11 @@
  * else in this package names the engine's door, and the engine never names this
  * package, which is what keeps the two from forming a cycle.
  *
- * The engine's door hands out a renderer for a backend the caller has already
+ * The engine's door returns a renderer for a backend the caller has already
  * chosen, and asking a browser for a card is a separate question from whether it
  * reports one. So the choosing is done here: a device is asked for, the two
- * backends' capabilities are read off what came back, and the engine's own
- * `resolve` answers which one draws the frame this painter builds.
+ * backends' capabilities are read off the result, and the engine's own
+ * `resolve` returns which one draws the frame this painter builds.
  *
  * Making a renderer is asked for once and drawing is asked for per frame, since a
  * renderer compiles shaders and owns card memory. That is why the surface and the
@@ -67,7 +67,7 @@ export interface GpuSurface {
   /** The canvas the frames land on, whose size each frame is worked out
    * against. */
   readonly canvas: GpuCanvas;
-  /** Gives up the card resources the renderer holds. */
+  /** Gives up the card resources the renderer owns. */
   dispose(): void;
 }
 
@@ -105,7 +105,7 @@ function sizedFor(canvas: GpuCanvas, options: GpuSurfaceOptions): GpuFrameOption
  * are written in and the smooth edge they need, and neither depends on the marks.
  *
  * `openRenderer` gathers what the machine offers, chooses the backend, asks for a
- * card only where that choice wants one, and translates the frame it is opened
+ * card only where that choice needs one, and translates the frame it is opened
  * with. It reads a frame for the language it is written in rather than for what
  * it requires, so the smooth edge this frame asks for is not checked against the
  * chosen backend; both backends have four samples a pixel wherever they run at
@@ -120,8 +120,8 @@ export async function gpuSurface(
   const empty = gpuFrame([], mat3.scaling(vec2(1, 1)), sizedFor(canvas, options)).frame;
 
   // The engine's door names the DOM's own canvas types and this package declares
-  // no browser library, so what satisfies the parts a renderer reads is handed
-  // over as the canvas it is, under the type that door already states.
+  // no browser library, so what satisfies the parts a renderer reads is passed
+  // on as the canvas it is, under the type that door already states.
   type EngineCanvas = Parameters<typeof engine.openRenderer>[0];
   const opened = await engine.openRenderer(canvas as unknown as EngineCanvas, empty, {
     ...(options.backend ? { backend: options.backend } : {}),
@@ -132,7 +132,7 @@ export async function gpuSurface(
     return null;
   }
 
-  // A renderer opened for one frame draws every later frame the caller hands it,
+  // A renderer opened for one frame draws every later frame the caller passes it,
   // and the WebGL 2 backend throws on a WGSL frame however the renderer was
   // opened, so the translation the door did once is done here for each of them.
   const asDrawn =
@@ -156,7 +156,7 @@ export async function gpuSurface(
   return held;
 }
 
-/** Whether a surface is one this module made, which is what carries the renderer
+/** Whether a surface is one this module made, which is what stores the renderer
  * the drawing calls submit through. */
 function heldBy(surface: GpuSurface): Held {
   const held = surface as Held;
@@ -167,7 +167,7 @@ function heldBy(surface: GpuSurface): Held {
 /**
  * One list of marks drawn on a card, at the size the surface's canvas is now.
  *
- * What comes back is what the frame left out rather than the picture, since the
+ * What is returned is what the frame left out rather than the picture, since the
  * picture is on the canvas. A label is drawn as the shapes the shipped typeface
  * gives it, so nothing is left out for being text.
  */

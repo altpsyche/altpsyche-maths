@@ -2,9 +2,9 @@
  * Marks written as SVG, which is what a figure on a page is.
  *
  * SVG is the painter for the page and not for a recording, and the reasons are
- * things this project has already paid for. A screenshot sweep paints its mask
+ * costs this project has already paid. A screenshot sweep paints its mask
  * over a whole canvas and is blind inside it, where SVG is in the document and
- * the sweep reads the real thing. Text is text, so a screen reader gets it. CSS
+ * the sweep reads the elements themselves. Text is text, so a screen reader gets it. CSS
  * custom properties reach it, so a figure follows a theme with nothing watching.
  * And the markup can be written without a browser, so a still frame ships inside
  * a page before any script runs.
@@ -32,8 +32,8 @@ export interface SvgElement {
   tag: 'path' | 'text' | 'defs' | 'linearGradient' | 'stop' | 'clipPath' | 'rect';
   attributes: Record<string, string>;
   text?: string;
-  /** The elements inside this one, which is how a gradient carries its stops and
-   * a clip carries its rectangle. */
+  /** The elements inside this one, which is how a gradient contains its stops and
+   * a clip contains its rectangle. */
   children?: readonly SvgElement[];
 }
 
@@ -57,8 +57,8 @@ export interface SvgMarkupOptions {
   /**
    * What the sheet paints behind its own marks, one colour per ground.
    *
-   * Inside an `<img>` the colour scheme query answers for the browser and not
-   * for the page around it, so a dark half chosen on a light page lands on a
+   * Inside an `<img>` the colour scheme query reads the browser's scheme and
+   * not the page's, so a dark half chosen on a light page lands on a
    * ground it was never measured against. A sheet that paints the ground it was
    * measured on holds its readings wherever it is shown.
    */
@@ -77,7 +77,7 @@ export interface SvgMarkupOptions {
   /**
    * What every id written here begins with.
    *
-   * A gradient and a clip are each named by an element carrying an id, and an id
+   * A gradient and a clip are each named by an element with an id, and an id
    * is unique across a whole document rather than inside one figure. A mark's own id is already
    * unique inside its figure and stable frame to frame, so what is left is
    * telling two figures on one page apart, which is this. Two figures in one
@@ -91,13 +91,13 @@ export interface SvgMarkupOptions {
    * Given, each label's baseline is placed here from the font's own metrics and
    * the kerning is turned off, so the browser lays the label out on the same
    * advances and puts the same letters in the same places. Left out, the baseline
-   * is named to the browser and the browser decides what it means: Chrome puts a
+   * is named to the browser and the browser's own rule places it: Chrome puts a
    * hanging one 4.4 pixels below this font's declared cap height at a 30-pixel
    * em, which is a rule no font states and no other painter can read.
    */
   font?: Font;
   /**
-   * Whether the font named above is carried in the sheet, as a `@font-face` rule
+   * Whether the font named above is embedded in the sheet, as a `@font-face` rule
    * whose source is the font's own bytes.
    *
    * A sheet read inside an `<img>` fetches nothing: no stylesheet, no script and
@@ -130,7 +130,7 @@ export function pathToData(path: Path, view: Transform2D): string {
 /**
  * The id of the element naming one mark's gradient.
  *
- * Every character an id may not carry is written as its own code point between
+ * Every character an id may not contain is written as its own code point between
  * dashes, a literal dash included. Nothing is dropped and nothing is folded
  * together, so two mark ids that differ cannot arrive at one id here.
  */
@@ -144,7 +144,7 @@ function elementId(prefix: string, mark: string): string {
  *
  * The channels are written into the `var()` as its fallback rather than left to
  * the page, so a sheet whose style element was stripped still draws the value
- * the figure shipped, and a page carrying the property overrides it.
+ * the figure shipped, and a page setting the property overrides it.
  */
 function colourPaint(colour: Colour): string {
   const hex = hexOf(colour);
@@ -179,7 +179,7 @@ function clipRect(clip: Bounds, view: Transform2D): Record<string, string> {
 
 /**
  * The id of the element naming one clip, which is the rectangle's own four
- * numbers rather than the id of a mark that carries it.
+ * numbers rather than the id of a mark that uses it.
  *
  * A gradient is named per mark because two marks rarely share an axis. A clip is
  * shared: every mark of an inset is cut to the one rectangle, so naming it per
@@ -187,7 +187,7 @@ function clipRect(clip: Bounds, view: Transform2D): Record<string, string> {
  * two marks with the same rectangle arrive at one id, and they are stable frame
  * to frame in the way a counter over the marks would not be.
  *
- * The dots and minus signs a number carries are both allowed inside an id, and
+ * The dots and minus signs a number contains are both allowed inside an id, and
  * the prefix is what keeps it from starting with a digit.
  */
 function clipId(prefix: string, rect: Record<string, string>): string {
@@ -196,7 +196,7 @@ function clipId(prefix: string, rect: Record<string, string>): string {
 
 /**
  * Every gradient and every clip named once, inside the one `<defs>` the sheet
- * carries.
+ * contains.
  *
  * Both are written in the units painted into rather than the figure's own, which
  * is what `userSpaceOnUse` means, so the same view that moved the geometry moves
@@ -284,7 +284,7 @@ function textElement(
     'font-size': short(size),
     fill: fillPaint(mark.fill, mark.id, prefix),
   };
-  // The advances a label is laid out on carry no kerning here and none in the
+  // The advances a label is laid out on include no kerning here and none in the
   // shipped face, so the browser is told to apply none either.
   if (font) attributes['font-kerning'] = 'none';
   if (mark.weight !== undefined) attributes['font-weight'] = String(mark.weight);
@@ -311,7 +311,7 @@ function textLift(marks: readonly Mark[], scale: number, floor: number): number 
  * one `<defs>` holding whatever gradients and clips they name. */
 export function svgElements(marks: readonly Mark[], view: Transform2D, options: SvgMarkupOptions = {}): SvgElement[] {
   const scale = mat3.scaleFactor(view);
-  // A stroke of two widths is no attribute an element carries, so it arrives here
+  // A stroke of two widths is no attribute an element has, so it arrives here
   // as the filled outline it is drawn as before any of it is written out, and the
   // outline is the shape the depth order cuts.
   const drawn = depthOrder(outlinedMarks(marks));
@@ -337,7 +337,7 @@ function plainValue(value: string): boolean {
   return !/[<>&{};"]/.test(value);
 }
 
-/** A font's bytes as base64, which is what a `url(data:...)` carries. The
+/** A font's bytes as base64, which is what a `url(data:...)` contains. The
  * characters are gathered one at a time because a spread of fifteen thousand
  * arguments overflows a call stack. */
 function base64Of(bytes: Uint8Array): string {
@@ -390,8 +390,8 @@ function sheetStyle(theme: SvgTheme | undefined, ground: SvgColour | undefined, 
 /**
  * A whole `<svg>` as text, for a page that has not run any script yet.
  *
- * It carries no width or height of its own and only a view box, so the element
- * around it decides how big it is and the picture stays where it was put.
+ * It has no width or height of its own and only a view box, so the element
+ * around it sets how big it is and the picture stays where it was put.
  */
 export function svgMarkup(
   marks: readonly Mark[],
@@ -419,9 +419,9 @@ const SVG_NAMESPACE = 'http://www.w3.org/2000/svg';
 /**
  * Only what a painter needs from a document, named here rather than taken from
  * the DOM types, so this package declares no browser library at all: it can be
- * checked and tested without one, and a caller can hand in a stand-in.
+ * checked and tested without one, and a caller can pass in a stand-in.
  *
- * The element a maker makes is the element the target is handed, and that type
+ * The element a maker makes is the element the target is passed, and that type
  * travels through rather than being flattened to the two members named below. An
  * element in a real document takes whole nodes and text where the painter's own
  * type takes neither, so a target written in terms of the painter's type is a
@@ -435,8 +435,8 @@ export interface PaintNode {
   /**
    * What a gradient's stops and a clip's rectangle are put inside.
    *
-   * It is required rather than optional: a `<clipPath>` holding no `<rect>`
-   * clips away everything that references it, so a target that could not hold a
+   * It is required rather than optional: a `<clipPath>` containing no `<rect>`
+   * clips away everything that references it, so a target that could not contain a
    * child would lose every clipped mark rather than lose an effect on one.
    */
   append(...nodes: unknown[]): void;
@@ -459,7 +459,7 @@ export interface ElementMaker<Made extends PaintNode = PaintNode> {
  * two frames to disagree.
  */
 export function paintSvg<Made extends PaintNode>(
-  // The maker alone says what kind of element this is: read from the target as well, a real element
+  // The maker alone sets what kind of element this is: read from the target as well, a real element
   // would offer the whole union its own call accepts, which is not one this painter can write to.
   into: PaintTarget<NoInfer<Made>>,
   marks: readonly Mark[],

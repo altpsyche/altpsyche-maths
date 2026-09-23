@@ -1674,7 +1674,10 @@ Steps, one commit each:
 - [x] `figure/` N to Z, 27 files, which with the 40 from `animation-record.ts` to `morph.ts` are
       the 67. The check read 11 nouns, 43 voice patterns and 110 by eye over them, and reads 0, 0
       and 27. The stripped source is identical for all 83.
-- [ ] `paint/`. Quotes the comment counts and the stripped-source equality.
+- [x] `paint/`, 6 files. The check read 3 nouns, 9 voice patterns and 37 by eye over them, and
+      reads 0, 0 and 6, so the tree reads 0 and 0. Two phrases broken across a line, "handed" then
+      "over" in `paint/gpu.ts` and `paint/video.ts`, were fixed by hand. The stripped source is
+      identical for all 83.
 - [ ] Local variables and unexported helpers whose names use a banned noun, renamed. Quotes the
       count of names and `npm test` before and after.
 - [ ] Exported names using a banned noun, listed with the proposed names and put to Siva. No rename

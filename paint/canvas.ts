@@ -24,13 +24,13 @@ import { widestWidth } from '../figure/width.js';
 /**
  * Only what a painter uses from a canvas context, named here rather than taken
  * from the DOM types, so this package declares no browser library and a test can
- * hand in a stand-in. A real `CanvasRenderingContext2D` satisfies it.
+ * pass in a stand-in. A real `CanvasRenderingContext2D` satisfies it.
  *
  * The two style properties are `unknown` because a real context also accepts a
  * gradient and a pattern there, and a narrower type here would refuse the very
- * thing this is meant to be handed.
+ * objects this is meant to be passed.
  */
-/** What a canvas hands back for a gradient, which is an object built from the
+/** What a canvas returns for a gradient, which is an object built from the
  * context and filled with stops rather than a value written out. */
 export interface CanvasGradientLike {
   addColorStop(offset: number, colour: string): void;
@@ -80,7 +80,7 @@ export interface CanvasLike {
   textBaseline: 'alphabetic' | 'top' | 'hanging' | 'middle' | 'ideographic' | 'bottom';
 }
 
-/** SVG says middle where a canvas says center, and the two mean the same place. */
+/** SVG names middle where a canvas names center, and the two mean the same place. */
 const ALIGNMENT = { start: 'start', middle: 'center', end: 'end' } as const;
 
 function tracePath(context: CanvasLike, path: Path, view: Transform2D): void {
@@ -103,7 +103,7 @@ function tracePath(context: CanvasLike, path: Path, view: Transform2D): void {
  * stops, and its one colour otherwise.
  *
  * A colour reaches the context as hex and never as the `var()` the SVG painter
- * writes, since a canvas resolves no custom property and paints one it is handed
+ * writes, since a canvas resolves no custom property and paints one it is passed
  * as nothing at all.
  *
  * The axis is transformed by the view before the gradient is built, since the
@@ -152,7 +152,7 @@ function paintPath(context: CanvasLike, mark: PathMark, view: Transform2D, scale
     context.lineCap = mark.stroke.cap ?? 'butt';
     context.lineJoin = mark.stroke.join ?? 'miter';
     // Set every time rather than only when a mark asks for it, because a context
-    // holds the last dash it was given and the next mark would inherit it.
+    // stores the last dash it was given and the next mark would inherit it.
     context.setLineDash(mark.stroke.dash ? mark.stroke.dash.map((run) => run * scale) : []);
     context.lineDashOffset = (mark.stroke.dashOffset ?? 0) * scale;
     context.stroke();
@@ -179,7 +179,7 @@ function paintText(context: CanvasLike, mark: TextMark, view: Transform2D, scale
  */
 export function paintCanvas(context: CanvasLike, marks: readonly Mark[], view: Transform2D): void {
   const scale = mat3.scaleFactor(view);
-  // A stroke of two widths is no setting a context holds, so it arrives here as
+  // A stroke of two widths is no setting a context has, so it arrives here as
   // the filled outline it is drawn as before any of it is traced, and the outline
   // is the shape the depth order cuts.
   for (const mark of depthOrder(outlinedMarks(marks))) {
@@ -197,8 +197,8 @@ export function paintCanvas(context: CanvasLike, marks: readonly Mark[], view: T
  * on.
  *
  * The ground is a colour rather than a fill, since a frame opens on one colour
- * and a mark is what carries a gradient. Leaving it out is what a figure drawn
- * over something else wants: a figure lying over a shader has the shader's
+ * and only a mark's fill is a gradient. Leaving it out is what a figure drawn
+ * over something else needs: a figure lying over a shader has the shader's
  * pixels underneath it, and a ground painted over them erases the picture.
  */
 export interface SurfaceOptions {
