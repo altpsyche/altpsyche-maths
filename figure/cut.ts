@@ -64,7 +64,7 @@ function cutCurve(from: Vec2, curve: Cubic, fractions: readonly number[]): Cubic
  * The tolerance is a distance rather than a fraction, so it is read against
  * each piece's own length: a cut is worth making only where the piece it would
  * leave behind is long enough to see, and a piece of nothing is one the stitch
- * that follows would have to know to skip.
+ * that follows would have to skip.
  *
  * A cut naming a piece the path does not have is ignored, since a caller that
  * has already thrown one subpath away should not have to renumber the cuts it

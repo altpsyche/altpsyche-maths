@@ -207,9 +207,10 @@ hand over; above 50%, hand over without starting anything.
 npm test          vitest, the whole suite
 npm run type-check tsc --noEmit
 npm run build     tsc -p tsconfig.build.json, which is what prepack runs
+npm run check:vocab  the banned nouns and voice patterns, in comments and in README, DESIGN, CLAUDE
 ```
 
-**There is no `land` skill and there does not need to be.** Three commands are the whole gate, and a
+**There is no `land` skill and there does not need to be.** Four commands are the whole gate, and a
 skill wrapping them would be a second place the list is written. `/next` is here because a sequence
 is worth stating once; a gate this short is not.
 

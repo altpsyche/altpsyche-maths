@@ -7,8 +7,8 @@
  * two places, which is how a preview and a recording drift apart.
  *
  * A key is flat where it is marked smooth, so two keys give four curves. A key
- * naming a curve gets that one instead, which is how a value overshoots or comes
- * back: neither shape can be deduced from a pair of flat flags. The rest of this
+ * naming a curve gets that one instead, which is how a value overshoots or
+ * returns: neither shape can be deduced from a pair of flat flags. The rest of this
  * file is holding the keys in the order the sampler reads them.
  */
 import { curveFor, curveNamed, type Curve, type CurveName } from '../values/ease.js';

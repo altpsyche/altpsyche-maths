@@ -45,8 +45,8 @@ function pieceArea(from: Vec2, curve: Cubic): number {
  *
  * A subpath left open is closed by the straight run back to where it started,
  * since an open loop encloses nothing on its own. Every subpath is added, so a
- * ring written as an outer loop and an inner loop wound the other way comes
- * back as the difference between the two discs.
+ * ring written as an outer loop and an inner loop wound the other way
+ * measures the difference between the two discs.
  */
 export function areaOf(path: Path): number {
   let total = 0;

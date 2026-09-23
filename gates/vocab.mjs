@@ -15,11 +15,20 @@ const SOURCES = [
 const PROSE = ['README.md', 'DESIGN.md', 'CLAUDE.md'];
 
 // Alternation order matters: the longer phrase is tried first, so "drawn item" is not also an "item".
+// A phrase may break across a comment's line, so the gap between its words also takes the `*` or
+// `//` that opens the next line.
+const GAP = String.raw`(?:\s|\*|//)+`;
+const phrases = (...list) => new RegExp(String.raw`\b(${list.map((p) => p.replaceAll(' ', GAP)).join('|')})\b`, 'gi');
+
+// Alternation order matters: the longer phrase is tried first, so "drawn item" is not also an "item".
 const BANNED = [
-  ['noun', /\b(drawn items?|things?|items?)\b/gi],
+  ['noun', phrases('drawn items?', 'things?', 'items?')],
   [
     'voice',
-    /\b(hands back|handed back|hand back|gives back|given back|give back|comes back|come back|hands over|handed over|knows|wants|decides|sits in)\b/gi,
+    phrases(
+      'hands back', 'handed back', 'hand back', 'gives back', 'given back', 'give back', 'comes back', 'come back',
+      'hands over', 'handed over', 'knows', 'know', 'wants', 'decides', 'sits in',
+    ),
   ],
 ];
 // Words the rule allows in one sense and bans in another, so they are counted for a reader to judge.
@@ -41,10 +50,16 @@ function commentText(path) {
   };
   visit(file);
   visit(file.endOfFileToken);
-  return [...ranges.values()].map((range) => ({
-    line: file.getLineAndCharacterOfPosition(range.pos).line + 1,
-    text: text.slice(range.pos, range.end),
-  }));
+  // Consecutive line comments are one span, so a phrase broken between two of them is still read.
+  const spans = [];
+  for (const range of [...ranges.values()].sort((a, b) => a.pos - b.pos)) {
+    const last = spans.at(-1);
+    const joined =
+      last && range.kind === ts.SyntaxKind.SingleLineCommentTrivia && last.kind === range.kind && /^[ \t]*\r?\n[ \t]*$/.test(text.slice(last.end, range.pos));
+    if (joined) Object.assign(last, { end: range.end, text: text.slice(last.pos, range.end) });
+    else spans.push({ ...range, line: file.getLineAndCharacterOfPosition(range.pos).line + 1, text: text.slice(range.pos, range.end) });
+  }
+  return spans;
 }
 
 // Code in backticks is a name rather than prose, and CLAUDE.md's Vocabulary section quotes the
@@ -53,12 +68,12 @@ function proseText(path) {
   const lines = readFileSync(path, 'utf8').split('\n');
   let fenced = false;
   let quoting = false;
-  return lines.map((line, index) => {
+  const kept = lines.map((line) => {
     if (line.startsWith('```')) fenced = !fenced;
     if (path === 'CLAUDE.md' && line.startsWith('## ')) quoting = line === '## Vocabulary';
-    const text = fenced || quoting ? '' : line.replace(/`[^`]*`/g, '');
-    return { line: index + 1, text };
+    return fenced || quoting ? '' : line.replace(/`[^`]*`/g, '');
   });
+  return [{ line: 1, text: kept.join('\n') }];
 }
 
 const totals = { noun: 0, voice: 0 };
@@ -99,3 +114,5 @@ console.log(
       .map(([word, count]) => `${word} ${count}`)
       .join(', '),
 );
+
+if (totals.noun + totals.voice > 0) process.exitCode = 1;

@@ -13,7 +13,7 @@
  * segment read here is an approximation of the one the string described, apart
  * from the arc, which no Bézier can be exactly.
  *
- * A command it does not know stops the read rather than being skipped. Skipping
+ * A command it does not implement stops the read rather than being skipped. Skipping
  * leaves a shape with a piece missing, and a piece missing from a letter or an
  * outline reads as a mistake in the drawing rather than in the reading of it.
  */

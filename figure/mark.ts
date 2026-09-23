@@ -125,7 +125,7 @@ interface Common {
    * Stable across frames, and built from the names on the way down the tree.
    *
    * Hit testing reads the flat list rather than walking the tree again, and
-   * comparing one frame against another needs to know which mark is which, so
+   * comparing one frame against another needs to tell which mark is which, so
    * an id that changed between frames would make both impossible.
    */
   id: string;

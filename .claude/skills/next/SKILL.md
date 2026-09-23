@@ -69,7 +69,7 @@ and continue from the corrected list.
 The before-state is measured first and it is what the commit body quotes. One step, one finding; a
 second defect goes in the roadmap rather than into this commit.
 
-**There is no `/land` skill here and there does not need to be.** The gates are the three commands in
+**There is no `/land` skill here and there does not need to be.** The gates are the four commands in
 `CLAUDE.md`, every claim this package makes is testable without a browser, and the demos' own marks
 are the measurement. Run them, commit, and tick the step with its measurement rather than a bare
 tick.

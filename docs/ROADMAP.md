@@ -1694,11 +1694,16 @@ Steps, one commit each:
       key in the figure format, so it changes SPECIFICATION.md's table and is a major of the
       format's own version as well as of the package. Waiting on Siva: yes to all five, yes to the
       four that leave the format alone, or no.
-- [ ] `check:vocab` turned to exit 1 on a banned noun or a banned pattern, never on a containment
+- [x] `check:vocab` turned to exit 1 on a banned noun or a banned pattern, never on a containment
       word, and named in CLAUDE.md's gates beside the other three commands. Its patterns match
       within one line, so a phrase broken across a comment's line break is missed ("gives" then
       "back" in `figure/camera.ts` was one), and `know` without the s is not matched ("the
-      typesetter does not know" in `figure/equation.ts` was one). Both are closed in this step.
+      typesetter does not know" in `figure/equation.ts` was one). Both are closed in this step. The gap
+      between a phrase's words now takes a comment's `*` or `//`, consecutive line comments are
+      one span, and a prose file is one span. The widened pattern read 11 new hits: `comes back`
+      broken across a line 3 times and `know` 8 times, 7 in comments and 1 in DESIGN.md. It reads
+      0 after, exits 0, and exits 1 on a probe file whose `hands back` is split across two `//`
+      lines.
 
 Done when:
 

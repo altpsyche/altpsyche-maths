@@ -40,8 +40,8 @@ export const smoothstep: Curve = (along) => along * along * (3 - 2 * along);
 const BACK = 1.70158;
 const BACK_CUBIC = BACK + 1;
 
-/** The back ease out, Robert Penner: the value passes its destination and comes
- * back to it, peaking at 1 + 4·BACK³/(27·BACK_CUBIC²) of the change. */
+/** The back ease out, Robert Penner: the value passes its destination and returns
+ * to it, peaking at 1 + 4·BACK³/(27·BACK_CUBIC²) of the change. */
 export const overshoot: Curve = (along) => {
   const back = along - 1;
   return 1 + BACK_CUBIC * back * back * back + BACK * back * back;

@@ -46,7 +46,7 @@ formula may be re-derived; a constant may not. `check:code-parity` already holds
 to the shader it documents, and this is that rule applied to a different kind of text.
 
 **A figure never reads a shader's current state**, which is the same rule from the other side. An
-overlay does not know whether the disc is edge on at this moment, because the picture underneath may
+overlay cannot tell whether the disc is edge on at this moment, because the picture underneath may
 be a still.
 
 That fixes where the work starts. **Drawing over a live shader is the first case rather than the

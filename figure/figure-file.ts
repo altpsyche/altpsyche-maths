@@ -17,7 +17,7 @@ import { resolveFigure, type FigureRecord } from './figure-record.js';
 import type { Figure } from './figure.js';
 
 /** The version of the format this package writes and reads. A figure declares
- * its own and a reader refuses one it does not know. */
+ * its own and a reader refuses one it does not implement. */
 export const FIGURE_FORMAT_VERSION = 1;
 
 /** What a file contains: the version of the format, and one figure. */
@@ -91,7 +91,7 @@ export function writeFigure(record: FigureRecord): string {
  * The figure a file's text describes.
  *
  * The version is read before anything else, because a file written in a version
- * this package does not know may use a field for something else entirely, and a
+ * this package does not implement may use a field for something else entirely, and a
  * figure drawn from a guess is a wrong picture with nothing to say it went
  * wrong.
  */

@@ -9,7 +9,7 @@
  *
  * The stack starts turned over, because SVG counts y downward and a figure
  * counts it upward. Doing it here means the whole expression arrives in the
- * figure's own space and nothing downstream has to know which way up the
+ * figure's own space and nothing downstream depends on which way up the
  * typesetter works.
  *
  * A mark is returned with no fill and its id is a leaf name, because both arrive
@@ -98,7 +98,7 @@ function svgOf(element: EquationElement): EquationElement {
 }
 
 /** The colour the `noundefined` extension draws a macro the typesetter does not
- * know, which is the only sign that it did not typeset one. */
+ * define, which is the only sign that it did not typeset one. */
 const UNKNOWN = 'red';
 
 /** The characters under an element, read off the code point each glyph stores.
