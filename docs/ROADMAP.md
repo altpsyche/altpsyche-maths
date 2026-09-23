@@ -408,7 +408,7 @@ is left, since 2.1.0 through 2.10.0 are cut.
 
 | version | what lands | what it changes | steps | cut against | depends on | plan |
 | --- | --- | --- | --- | --- | --- | --- |
-| 3.1.0 | a walk that takes a duration rather than a figure, with settling | what `recordFigure` can record | to plan | a recording of a shader, which holds no `Figure` | nothing outside this package | to plan |
+| 3.1.0 | a walk that takes a duration rather than a figure, with settling | what `recordFigure` can record | 6, none ticked | a recording of a shader, which holds no `Figure` | nothing outside this package | under The items |
 | 3.2.0 | an equation record whose fitting box is an expression | what `EquationRecordOptions` may carry | to plan | an equation written as a file and drawn at three aspects | nothing outside this package | to plan |
 | 3.3.0 | a surface that hands over its device, or says the card is gone | what `GpuSurface` reports | to plan | a figure redrawn after a card is taken away | nothing, since `RendererOptions` already takes a caller's device | to plan |
 | 3.4.0 | a clip that is a path rather than a rectangle | what a `Mark` may ask for | to plan | nothing yet, which is why it is last of the marks | nothing now, since `@altpsyche/engine` 0.5.0 counts a winding | to plan |
@@ -1559,8 +1559,8 @@ no box test in front of it and the quadratic over piece pairs is not worth remov
 **`altpsyche.dev` names all three in its own roadmap as what a release here would change, and this
 tree queued none of them until 2026-09-20.** Each is a call that does not exist rather than a call
 that misbehaves, so each is a feature and **each takes a minor version of its own**, which is the
-convention every other row of the ladder follows. **No steps are written for any of them**, and by
-the rule above each is planned in a session of its own before any code is touched.
+convention every other row of the ladder follows. **3.1.0 has its steps written below**, and 3.2.0 and
+3.3.0 have none, so by the rule above each is planned in a session of its own before any code is touched.
 
 - **A walk that takes a duration rather than a figure, with settling.** `recordFigure` cannot replace
   the consumer's own recorder because three things fill that recorder's frames and only two hold a
@@ -1586,6 +1586,87 @@ the rule above each is planned in a session of its own before any code is touche
 roadmap had a fourth line saying a release here has to present the canvas rather than read it back.
 `paintGpu` already presents, `painterGpu` is the recorder's painter and no page calls it, and the
 cost that line was written around is inside the engine's draw. Both trees now say so.
+
+### 3.1.0, a walk that takes a duration rather than a figure, with settling
+
+**A walk is the list of times a recording reads, and today only a `Figure` has one.** `frameTimesOf`
+takes a figure to read `durationOf` off it and nothing else, and `recordFigure` takes a figure to
+paint each time through `framesOf`. The consumer's `VideoRecorder.record` walks a `FrameFiller`
+instead: `fill(target, seconds, index, clipSeconds)`, an optional `settle` count and `dispose`. A
+shader is a filler and holds no figure, so the consumer keeps its own loop, and that loop counts
+`Math.floor(duration * fps)` where `frameTimesOf` counts `Math.max(1, Math.round(duration * fps))`,
+which is 59 frames against 60 for 1.999 seconds at 30 frames a second.
+
+**Settling is frames drawn and not kept.** A shader that sums its own last frame opens on an empty
+picture, so `accretion` draws 300 frames before the first recorded one. The clock and the frame count
+carry on from where settling ends, because a shader that divides by how much of its sum has arrived
+lights its first kept frame far too brightly if either restarts. The recorded frame at clip time t is
+therefore filled at clock time t + settle / fps with frame count settle + index.
+
+**The design call, made here so the steps can quote it.** The new call is `recordFrames(sink, fill,
+options)`, where `fill(context, time)` receives one `WalkTime` of four numbers: `index`, counting kept
+frames from nothing; `seconds`, the clip's own time; `frame`, counting every filled frame from
+nothing, settling included; and `clock`, which is `frame / fps`. `recordFigure` becomes a fill over
+`recordFrames` that paints `framesOf`'s frame at `seconds`, so there is one loop and one count in the
+package. **Frame counts start at nothing**, as `Frame.index` already does, where the consumer's
+`FrameFiller` passes `settle + frame + 1`; a shader whose frame uniform counts from one adds the one
+itself. Layering several fillers stays in the consumer, since `layered` is three lines over a fill
+and this package has no second fill to layer. **What would change the answer** is a second caller
+here, such as a gate recording a figure over something that is not a figure.
+
+**Which step the demos gain from.** Step 2 moves every committed figure's recording onto the new
+loop, and `npm run gate:record` is the reading that says each file still holds the frames the walk
+counts. Step 5 gives the recording gate its first file that holds no figure, which is what the
+version is cut against.
+
+- [ ] **1. The walk's times, without a figure.** `walkTimesOf(step)` over a `FrameStep` whose
+      `seconds` is required, exported at the door, and `frameTimesOf` becomes `walkTimesOf` with the
+      figure's duration filled in. **Measurement:** `frameTimesOf` for all eight committed demos at
+      30 and 60 frames a second, identical before and after by tolerance, and `walkTimesOf` of 1.999
+      seconds at 30 reading 60 times against the consumer's 59.
+- [ ] **2. One recording loop, and `recordFigure` over it.** `recordFrames(sink, fill, options)`
+      with `fps`, `seconds` and `onFrame`, and `recordFigure` rewritten as a fill that paints the
+      frame read at `seconds`. **Measurement:** the 15 `recordFigure` tests in
+      `tests/record.test.ts` pass unchanged, including 615 frames of the flat demo and 798 of the
+      solid one at twice the rate; a fill holding no figure walked over 1.999 seconds at 30 receives
+      60 times equal to `walkTimesOf`'s; `npm run gate:record` reports each file's picture count
+      equal to its walk before and after.
+- [ ] **3. Settling.** `settle` in `RecordOptions`, a count of frames filled and never passed to
+      `sink.add`, with `onSettle(frame, count)` beside `onFrame`. Settling frames are filled at clip
+      time 0. **Measurement:** 1 second at 30 frames a second with a settle of 300 fills 330 times
+      and adds 30; the first kept frame reads `index` 0, `seconds` 0, `frame` 300 and `clock` 10;
+      a settle of 0 fills exactly what step 2 filled.
+- [ ] **4. A recording that can be stopped.** `signal` in `RecordOptions`, an `AbortSignal` read
+      before each fill, settling included, which cancels the sink once and rejects with the signal's
+      reason rather than finishing. The consumer's loop checks a flag of its own at the same two
+      places. **Measurement:** a signal aborted after frame k of a 30 frame walk fills k + 1 times,
+      calls `cancel` once and `finish` never, and the same for an abort during settling.
+- [ ] **5. The recording gate records something that is not a figure.** `gates/record-worker.mjs`
+      gains one recording whose fill draws onto the canvas from its own last frame, which is the
+      shape of an accumulating shader without needing a card, recorded with a settle.
+      **Measurement:** the file read back in Node holds the kept count and not the filled count, 30
+      pictures for 1 second at 30 with a settle of 30, and the first picture's ink differs from the
+      ink of a recording of the same fill with no settle.
+- [ ] **6. The reference and the cut.** `docs/REFERENCE.md` gains `walkTimesOf`, `recordFrames`,
+      `WalkTime` and the two new options, `docs/GUIDE.md` gains a recording with no figure, and the
+      version is bumped to 3.1.0 in the commit that verifies the done-criteria below.
+      **Measurement:** `npm test` over files, and each criterion with the number that satisfies it.
+
+**Done-criteria.**
+
+1. `walkTimesOf` and `recordFrames` are exported from `index.ts`, and neither takes a `Figure`.
+2. `frameTimesOf` is `walkTimesOf` with the figure's duration, and the eight committed demos' walks
+   are unchanged at 30 and 60 frames a second.
+3. `recordFigure` contains no loop of its own, and every existing `recordFigure` test passes
+   unchanged.
+4. A settle of n at r frames a second over s seconds fills n + round(s · r) times and adds round(s ·
+   r), and the first kept frame's `clock` is n / r.
+5. An aborted signal cancels the sink once, never finishes it, and stops filling before the next
+   frame, during settling and after it.
+6. `npm run gate:record` writes one file that holds no figure, and its picture count read back in
+   Node is the kept count.
+7. `npm test`, `npm run type-check`, `npm run build` and `npm run check:vocab` pass, and
+   `package.json` reads 3.1.0.
 
 ### The vocabulary rule carried into `docs/`
 
