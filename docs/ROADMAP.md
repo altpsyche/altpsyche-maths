@@ -408,6 +408,7 @@ is left, since 2.1.0 through 2.10.0 are cut.
 
 | version | what lands | what it changes | steps | cut against | depends on | plan |
 | --- | --- | --- | --- | --- | --- | --- |
+| 3.0.3 | the vocabulary fixed in DESIGN.md, CLAUDE.md, the README and every published comment, with a check that keeps it | the words in `dist/*.d.ts`, and nothing a compiler reads | written, under The items | the stripped-source comparison, identical for all 83 sources | nothing outside this package | written |
 | 3.1.0 | a walk that takes a duration rather than a figure, with settling | what `recordFigure` can record | to plan | a recording of a shader, which holds no `Figure` | nothing outside this package | to plan |
 | 3.2.0 | an equation record whose fitting box is an expression | what `EquationRecordOptions` may carry | to plan | an equation written as a file and drawn at three aspects | nothing outside this package | to plan |
 | 3.3.0 | a surface that hands over its device, or says the card is gone | what `GpuSurface` reports | to plan | a figure redrawn after a card is taken away | nothing, since `RendererOptions` already takes a caller's device | to plan |
@@ -1568,6 +1569,125 @@ the rule above each is planned in a session of its own before any code is touche
 roadmap had a fourth line saying a release here has to present the canvas rather than read it back.
 `paintGpu` already presents, `painterGpu` is the recorder's painter and no page calls it, and the
 cost that line was written around is inside the engine's draw. Both trees now say so.
+
+### Placeholder nouns and agent verbs out of the README, DESIGN.md and every published comment
+
+**The prose that becomes `dist/*.d.ts` uses placeholder nouns and gives functions a voice.** "A mark
+is one drawn item", "How close two things come", "`inverseLerp` answers", "a group holds children",
+"hands back a group". `altpsyche.dev` rewrote its guide to the package on 2026-09-23 (its commit
+`docs: improved prose`) in the vocabulary below, so the guide and the types a reader hovers over now
+disagree. Prose only: no export, type, parameter, field, value or default moves, and every
+measurement in a comment stays with its number and its meaning.
+
+**The vocabulary is fixed, and DESIGN.md's Terminology section is corrected to it first.** Eleven
+terms, Siva's on 2026-09-23 after review:
+
+- A **figure** is a mathematical object drawn over time, such as a graph, a curve or a field. In
+  code it is a plain object with no canvas and no clock.
+- The **scene** is the tree of nodes that make up the picture.
+- A **node** is one entry in the scene: a group, a shape or a text node.
+- A **group** is a node that contains other nodes under one transform and one style they inherit.
+- A **shape** is a node that draws one path.
+- A **text node** is a node that draws a run of letters.
+- An **animation** changes nodes over a span of time.
+- The **timeline** is the ordered list of animations and pauses. It sets what happens to each node
+  and when, and it gives the figure its duration.
+- A **mark** is what one node becomes at one time: a path with its fill and stroke, or a run of
+  letters.
+- The **extent** is how much of the world the picture shows, measured in the figure's own units.
+- The **still** is the one time drawn for a reader who asked for less motion.
+- A **painter** turns marks into something visible.
+
+The first six of the consumer's glossary are its words unchanged. DESIGN.md today says "the
+description of a picture over time", "one drawn item" and "an animation changes marks", and
+CLAUDE.md's definition-first example quotes the first. The third is a real error: a mark exists at
+one time only, so what an animation changes is a node.
+
+**Banned outright, the placeholder nouns.** `thing` and `things` become the term that exists:
+point, node, mark, animation, object or cell. `item` becomes node or mark, and `drawn item` becomes
+mark.
+
+**Banned as patterns, the verbs that give code a voice.** `hands back`, `gives back`, `comes back
+as` and `hands over` become `returns`, or `resolves to` where the result is a Promise. `answers` and
+`says` with a function or a record as subject become `returns` or `lists`, whichever is true.
+`knows`, `wants` and `decides` become the rule itself: "`after` decides when it starts" becomes
+"`after` sets its start time". `sits in` units becomes `is measured in`.
+
+**Changed only where they mean containment.** A group or path that holds children `contains` them.
+A group that carries a transform `applies` it. A segment that carries its endpoint `stores` it. The
+package that carries a typeface `ships` it. A validator that holds a file to a schema `checks` the
+file against it.
+
+**Unchanged.** `holds` for a bound or a test that holds one. `answer` as a noun. `piece` and
+`pieces` for a segment of a path or a curve, which is the package's own term. `value` in its
+mathematical sense. `gives` and `carries` in ordinary use.
+
+**Baseline, counted in comment text only** over the 83 published sources (`index.ts`, 8 in
+`values/`, 1 in `timing/`, 67 in `figure/`, 6 in `paint/`, no tests) by reading comment trivia with
+the TypeScript scanner, so an identifier such as `item` in code is not counted. Measured 2026-09-23
+on `c00297f`: `thing` 20, `things` 10, `item` 3, `drawn item` 1, `hands back` 24, `hands` 29,
+`handed` 23, `hand` 14, `comes back` 20, `come back` 6, `sits` 42, `carries` 95, `carry` 22,
+`carrying` 33, `carried` 15, `wants` 16, `decides` 22, `answers` 26, `answer` 28, `answered` 4,
+`says` 31, `say` 19, `knows` 2, `holds` 50, `hold` 24, `held` 23, `gives` 29, `give` 6, `giving` 5.
+`piece` 99 and `pieces` 57 are counted and expected to stay. These are word counts, and the check's
+first reading splits them into banned, containment and unchanged uses. The heaviest files are
+`figure/depth-order.ts` at 52, `figure/node-record.ts` at 42 and `figure/gpu-frame.ts` at 38. Over
+README.md, DESIGN.md and CLAUDE.md, `grep -owiE` counts `thing` 7, `things` 3, `item` 3, `items` 3,
+`carries` 13, `holds` 24, `says` 3 and `a description of a picture over time` 3.
+
+**What proves no code moved** is each source printed through the TypeScript printer with
+`removeComments: true`, before and after, compared byte for byte. `npm run build` emitting the same
+`.js` is weaker evidence, because `tsc` keeps comments in the JavaScript. The demos gain nothing a
+reading could show and lose nothing either: their marks are unchanged by construction wherever the
+stripped source is identical, and `npm test` covers the one step where it is not.
+
+**It stands at 3.0.3 in front of 3.1.0** because it is a patch, it changes no name 3.1.0 would
+build on, and the consumer's guide already uses the vocabulary the types do not.
+
+**Exported names are listed at step 9 and decided then.** Siva asked on 2026-09-23 for the
+vocabulary fixed "everywhere, in the prose and the code base", and on review chose to see the list
+before deciding. Local variables and unexported helpers are renamed inside the sweep, since nothing
+outside the package reads them. An exported name, type or field is different: renaming one is a
+major version, and `altpsyche.dev` breaks until it renames too. If Siva says yes to the list, the
+renames are 4.0.0's first item, not 3.0.3's.
+
+Steps, one commit each:
+
+- [ ] CLAUDE.md: a vocabulary rule under the prose rules, stating the eleven terms, the banned
+      nouns, the banned patterns and the containment replacements above, and its definition-first
+      example corrected. Quotes the count before and after for the file.
+- [ ] A check, `npm run check:vocab`, over comment trivia in the 83 sources, read with the
+      TypeScript scanner, and the text of README.md, DESIGN.md and CLAUDE.md. It reports the banned
+      nouns and the banned patterns per file, and the containment words as a count to read by eye.
+      It lands reporting and exiting 0, and quotes its first reading against the baseline above.
+- [ ] DESIGN.md: the Terminology section rewritten to the eleven terms above, then the rest of the
+      file swept. Quotes the check's count before and after for the file.
+- [ ] README.md. Quotes the check's count before and after.
+- [ ] `values/`, `timing/` and `index.ts`. Quotes the comment counts and the stripped-source
+      equality.
+- [ ] `figure/` A to M, then `figure/` N to Z, as two commits since the directory is 67 files. Each
+      quotes the comment counts and the stripped-source equality.
+- [ ] `paint/`. Quotes the comment counts and the stripped-source equality.
+- [ ] Local variables and unexported helpers whose names use a banned noun, renamed. Quotes the
+      count of names and `npm test` before and after.
+- [ ] Exported names using a banned noun, listed with the proposed names and put to Siva. No rename
+      lands in this version.
+- [ ] `check:vocab` turned to exit 1 on a banned noun or a banned pattern, never on a containment
+      word, and named in CLAUDE.md's gates beside the other three commands.
+
+Done when:
+
+- [ ] `check:vocab` reports zero banned nouns and zero banned patterns over the 83 sources,
+      README.md, DESIGN.md and CLAUDE.md, and exits 0 in its failing form.
+- [ ] The stripped-source comparison is identical for all 83 files over every commit before the
+      local-rename step, and that step's own diff changes no exported declaration in `dist/*.d.ts`.
+- [ ] `npm run type-check`, `npm test` and `npm run build` pass, and `grep -c "drawn item"
+      dist/figure/mark.d.ts` is 0.
+- [ ] A patch version is cut, since the published types change and nothing else does.
+
+**`docs/` is outside this item, and outside the check.** GUIDE.md, REFERENCE.md, SPECIFICATION.md,
+FIGURE-FORMAT.md and this file contain the same words (60, 165, 104 and 89 matching lines for the
+first four) and are a second item once this one lands. That item widens the check to `docs/`.
 
 ### The three packages in step, and what this repository owes that job
 
