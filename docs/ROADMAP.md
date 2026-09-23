@@ -1634,11 +1634,13 @@ version is cut against.
       one at twice the rate; a fill holding no figure over 1.999 seconds at 30 receives 60 times
       equal to `walkTimesOf`'s; `npm run gate:record` writes 32 of 32 files, each holding its walk,
       before and after.
-- [ ] **3. Settling.** `settle` in `WalkOptions`, a count of frames filled and never passed to
+- [x] **3. Settling.** `settle` in `WalkOptions`, a count of frames filled and never passed to
       `sink.add`, with `onSettle(frame, count)` beside `onFrame`. Settling frames are filled at clip
-      time 0. **Measurement:** 1 second at 30 frames a second with a settle of 300 fills 330 times
-      and adds 30; the first kept frame reads `index` 0, `seconds` 0, `frame` 300 and `clock` 10;
-      a settle of 0 fills exactly what step 2 filled.
+      time 0. **Measured:** 1 second at 30 frames a second with a settle of 300 fills 330 times and
+      adds 30, with `onSettle` called 300 times; the first kept frame reads `index` 0, `seconds` 0,
+      `frame` 300 and `clock` 10; a settle of 0 over 1.999 seconds fills the same 60 times as no
+      settle. `recordFigure` passes both options on. The record tests go from 27 to 29 and the suite
+      passes 1492.
 - [ ] **4. A recording that can be stopped.** `signal` in `WalkOptions`, an `AbortSignal` read
       before each fill, settling included, which cancels the sink once and rejects with the signal's
       reason rather than finishing. The consumer's loop checks a flag of its own at the same two

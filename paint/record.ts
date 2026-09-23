@@ -89,6 +89,12 @@ export interface WalkOptions {
   /** Called once per frame taken, which is what a progress reading is built
    * from. */
   onFrame?: (index: number, count: number) => void;
+  /** Frames filled before the first one kept and never passed to the sink. A fill
+   * that sums its own last frame opens on an empty picture until these have run. */
+  settle?: number;
+  /** Called once per settling frame, which is what a progress reading of the
+   * settling is built from. */
+  onSettle?: (frame: number, count: number) => void;
 }
 
 export interface RecordOptions extends Omit<WalkOptions, 'seconds'> {
@@ -126,14 +132,20 @@ export async function recordFrames<Output>(
   fill: FrameFill,
   options: WalkOptions
 ): Promise<Recording<Output>> {
-  const { fps, seconds: span } = options;
+  const { fps, seconds: span, settle = 0 } = options;
   const times = walkTimesOf({ fps, seconds: span });
   const gap = 1 / fps;
   let frames = 0;
   try {
+    // Settling: frames at clip time 0 on a clock that the kept frames carry on from rather than restart.
+    for (let frame = 0; frame < settle; frame += 1) {
+      await fill(sink.context, { index: 0, seconds: 0, frame, clock: frame / fps });
+      options.onSettle?.(frame, settle);
+    }
     for (let index = 0; index < times.length; index += 1) {
       const seconds = times[index];
-      await fill(sink.context, { index, seconds, frame: index, clock: index / fps });
+      const frame = settle + index;
+      await fill(sink.context, { index, seconds, frame, clock: frame / fps });
       await sink.add(seconds, gap);
       frames += 1;
       options.onFrame?.(index, times.length);
@@ -156,9 +168,6 @@ export async function recordFigure<Output>(
   const paint = options.paint ?? paintFrame;
   const fill: FrameFill = (context, time) =>
     paint(context, frameAt(figure, time.index, time.seconds, width, height), { width, height, background });
-  return recordFrames(sink, fill, {
-    fps: options.fps,
-    seconds: options.seconds ?? durationOf(figure),
-    onFrame: options.onFrame,
-  });
+  const { fps, onFrame, settle, onSettle } = options;
+  return recordFrames(sink, fill, { fps, seconds: options.seconds ?? durationOf(figure), onFrame, settle, onSettle });
 }

@@ -396,6 +396,34 @@ describe('recordFrames', () => {
     expect(filled).toEqual([0, 1, 2, 3].map((index) => ({ index, seconds: index / 4, frame: index, clock: index / 4 })));
   });
 
+  it('fills the settling frames first and never passes them to the sink', async () => {
+    const sink = new Taken();
+    const filled: WalkTime[] = [];
+    const settled: [number, number][] = [];
+    const recording = await recordFrames(sink, (_, time) => void filled.push(time), {
+      fps: 30,
+      seconds: 1,
+      settle: 300,
+      onSettle: (frame, count) => void settled.push([frame, count]),
+    });
+    expect(filled).toHaveLength(330);
+    expect(sink.times).toHaveLength(30);
+    expect(recording.frames).toBe(30);
+    expect(settled).toEqual(Array.from({ length: 300 }, (_, frame) => [frame, 300]));
+    expect(filled[0]).toEqual({ index: 0, seconds: 0, frame: 0, clock: 0 });
+    expect(filled[299]).toEqual({ index: 0, seconds: 0, frame: 299, clock: 299 / 30 });
+    expect(filled[300]).toEqual({ index: 0, seconds: 0, frame: 300, clock: 10 });
+    expect(filled[329]).toEqual({ index: 29, seconds: 29 / 30, frame: 329, clock: 329 / 30 });
+  });
+
+  it('fills with a settle of 0 exactly what it fills with none', async () => {
+    const none: WalkTime[] = [];
+    const zero: WalkTime[] = [];
+    await recordFrames(new Taken(), (_, time) => void none.push(time), { fps: 30, seconds: 1.999 });
+    await recordFrames(new Taken(), (_, time) => void zero.push(time), { fps: 30, seconds: 1.999, settle: 0 });
+    expect(zero).toEqual(none);
+  });
+
   it('fills onto the surface the sink reads', async () => {
     const sink = new Taken();
     const contexts = new Set<CanvasLike>();
