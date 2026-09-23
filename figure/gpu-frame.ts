@@ -331,11 +331,11 @@ function segmentsOf(marks: readonly Mark[], view: Transform2D, options: GpuFrame
     segments.push({ deep, data, count });
     run = [];
   };
-  for (const item of ready) {
-    const carries = item.mark.depth !== undefined;
+  for (const entry of ready) {
+    const carries = entry.mark.depth !== undefined;
     if (run.length > 0 && carries !== deep) close();
     deep = carries;
-    run.push(item);
+    run.push(entry);
   }
   close();
 

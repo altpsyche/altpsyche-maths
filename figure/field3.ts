@@ -53,7 +53,7 @@ export function fieldArrows3(
     z: interval.ordered(over.z ?? interval(0, 1)),
   };
   const steps = stepsOf(resolution, 'x', 'y', 'z');
-  const items: SpaceItem[] = [];
+  const arrows: SpaceItem[] = [];
 
   for (let i = 0; i < steps.x; i += 1) {
     for (let j = 0; j < steps.y; j += 1) {
@@ -69,7 +69,7 @@ export function fieldArrows3(
         if (!(magnitude > 0) || !Number.isFinite(length) || !(length > 0)) continue;
 
         const to = vec3.add(from, vec3.scale(vector, length / magnitude));
-        items.push({
+        arrows.push({
           points: [from, to],
           node: arrow3(`${name}/${i}-${j}-${k}`, from, to, camera, {
             ...rest,
@@ -80,7 +80,7 @@ export function fieldArrows3(
     }
   }
 
-  return items;
+  return arrows;
 }
 
 /** A field of vectors in space, drawn as arrows ordered back to front. */

@@ -480,8 +480,8 @@ const SHAPES: Readonly<Record<string, Shape>> = {
     from: need(ref('expression')),
     options: need(ref('streamlineOptions')),
   }),
-  spaceItem: fields('a piece of a scene', { points: need(list(ref('point3'))), node: need(ref('node')) }),
-  sceneItem: {
+  spaceEntry: fields('a piece of a scene', { points: need(list(ref('point3'))), node: need(ref('node')) }),
+  sceneEntry: {
     form: 'kinds',
     what: 'an entry of a scene in space',
     kinds: {
@@ -493,7 +493,7 @@ const SHAPES: Readonly<Record<string, Shape>> = {
       torusCells: TORUS,
       curvePieces3: { name: need(text), curve: need(ref('spaceCurve')), options: may(ref('style')) },
     },
-    kindless: ref('spaceItem'),
+    kindless: ref('spaceEntry'),
   },
   carriedPath: {
     form: 'kinds',
@@ -671,7 +671,7 @@ const SHAPES: Readonly<Record<string, Shape>> = {
         camera: need(ref('camera')),
         options: need(ref('arrowOptions')),
       },
-      scene3: { name: need(text), items: need(list(ref('sceneItem'))), camera: need(ref('camera')) },
+      scene3: { name: need(text), items: need(list(ref('sceneEntry'))), camera: need(ref('camera')) },
       axes3: { name: need(text), camera: need(ref('camera')), options: need(ref('axes3Options')) },
       surface3: {
         name: need(text),
@@ -877,7 +877,7 @@ function check(value: unknown, shape: Shape, path: string): void {
       if (shape.length !== undefined && (value as unknown[]).length !== shape.length) {
         refuse(path, `is a list of ${shape.length} and holds ${(value as unknown[]).length}`);
       }
-      (value as unknown[]).forEach((item, at) => check(item, shape.of, `${path}.${at}`));
+      (value as unknown[]).forEach((entry, at) => check(entry, shape.of, `${path}.${at}`));
       return;
     case 'map':
       if (!isObject(value)) refuse(path, `is a set of values by name and is ${nameOf(value)}`);
@@ -958,7 +958,7 @@ function checkFields(value: unknown, what: string, held: Fields, path: string, t
  */
 function tracksRead(value: unknown, path: string, found: Map<string, string>): void {
   if (Array.isArray(value)) {
-    value.forEach((item, at) => tracksRead(item, `${path}.${at}`, found));
+    value.forEach((entry, at) => tracksRead(entry, `${path}.${at}`, found));
     return;
   }
   if (!isObject(value)) return;

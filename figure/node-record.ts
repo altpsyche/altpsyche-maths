@@ -919,43 +919,43 @@ export function resolveStreamline(record: StreamlineRecord, bindings: Bindings =
  * A producer takes the scene's own camera, so a surface and a field sorted
  * together are seen from one place and neither stores a pose of its own.
  */
-function resolveItems(item: SceneItemRecord, camera: Camera3, bindings: Bindings): SpaceItem[] {
-  if (!('kind' in item)) {
+function resolveEntries(entry: SceneItemRecord, camera: Camera3, bindings: Bindings): SpaceItem[] {
+  if (!('kind' in entry)) {
     return [
       {
-        points: item.points.map((point) => resolvePoint3(point, bindings, 'a point of a piece in space')),
-        node: resolveNode(item.node, bindings),
+        points: entry.points.map((point) => resolvePoint3(point, bindings, 'a point of a piece in space')),
+        node: resolveNode(entry.node, bindings),
       },
     ];
   }
-  if (item.kind === 'surfaceCells') {
-    return surfaceCells(item.name, surfaceOf(item.of, bindings), camera, surfaceOptions(item.options, bindings));
+  if (entry.kind === 'surfaceCells') {
+    return surfaceCells(entry.name, surfaceOf(entry.of, bindings), camera, surfaceOptions(entry.options, bindings));
   }
-  if (item.kind === 'curvePieces3') {
-    const { of, resolution, over } = item.curve;
+  if (entry.kind === 'curvePieces3') {
+    const { of, resolution, over } = entry.curve;
     return curvePieces3(
-      item.name,
+      entry.name,
       (t) => resolvePoint3(of, binding(bindings, { t }), 'a place on a curve in space'),
       camera,
       {
         resolution,
         over: over ? spanOf(over, bindings, 'a curve in space') : undefined,
-        ...item.options,
+        ...entry.options,
       }
     );
   }
-  if (item.kind === 'fieldArrows3') {
-    return fieldArrows3(item.name, field3Of(item.of, bindings), camera, field3Options(item.options, bindings));
+  if (entry.kind === 'fieldArrows3') {
+    return fieldArrows3(entry.name, field3Of(entry.of, bindings), camera, field3Options(entry.options, bindings));
   }
   if (
-    item.kind === 'sphereCells' ||
-    item.kind === 'cubeCells' ||
-    item.kind === 'cylinderCells' ||
-    item.kind === 'torusCells'
+    entry.kind === 'sphereCells' ||
+    entry.kind === 'cubeCells' ||
+    entry.kind === 'cylinderCells' ||
+    entry.kind === 'torusCells'
   ) {
-    return solidCells(item, camera, bindings);
+    return solidCells(entry, camera, bindings);
   }
-  throw new Error(`a scene has no piece called ${String((item as { kind?: unknown }).kind)}`);
+  throw new Error(`a scene has no piece called ${String((entry as { kind?: unknown }).kind)}`);
 }
 
 /** An optional parameter read where it is given and left out where it is not, so
@@ -1090,7 +1090,7 @@ export function resolveNode(record: NodeRecord, bindings: Bindings = {}): Node {
       const camera = resolveCamera(record.camera, bindings);
       return scene3(
         record.name,
-        record.items.flatMap((item) => resolveItems(item, camera, bindings)),
+        record.items.flatMap((entry) => resolveEntries(entry, camera, bindings)),
         camera
       );
     }

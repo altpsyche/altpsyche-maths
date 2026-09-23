@@ -1678,8 +1678,12 @@ Steps, one commit each:
       reads 0, 0 and 6, so the tree reads 0 and 0. Two phrases broken across a line, "handed" then
       "over" in `paint/gpu.ts` and `paint/video.ts`, were fixed by hand. The stripped source is
       identical for all 83.
-- [ ] Local variables and unexported helpers whose names use a banned noun, renamed. Quotes the
-      count of names and `npm test` before and after.
+- [x] Local variables and unexported helpers whose names use a banned noun, renamed. Thirteen
+      names in seven files, read with the TypeScript scanner as identifiers rather than comment
+      text, became `entry`, `entries`, `arrows`, `cells`, `resolveEntries`, `sceneEntry` and
+      `spaceEntry`. What is left is exported and is step 10's: `SpaceItem`, `SpaceItemRecord`,
+      `SceneItemRecord`, the `items` field of a `scene3` record and the parameter of `scene3`.
+      `npm test` passed 1481 of 1481 before and after, and all 83 `dist/*.d.ts` are identical.
 - [ ] Exported names using a banned noun, listed with the proposed names and put to Siva. No rename
       lands in this version.
 - [ ] `check:vocab` turned to exit 1 on a banned noun or a banned pattern, never on a containment

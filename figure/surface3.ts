@@ -84,7 +84,7 @@ export function surfaceCells(name: string, of: (u: number, v: number) => Vec3, c
   const steps = stepsOf(resolution, 'u', 'v');
   const grid = cornersOf(of, u, v, steps);
   const toLight = vec3.normalize(light);
-  const items: SpaceItem[] = [];
+  const cells: SpaceItem[] = [];
 
   for (let i = 0; i < steps.u; i += 1) {
     for (let j = 0; j < steps.v; j += 1) {
@@ -95,14 +95,14 @@ export function surfaceCells(name: string, of: (u: number, v: number) => Vec3, c
         if (vec3.dot(normal, vec3.sub(camera.eye, middle)) <= 0) continue;
       }
       const fill = shade((vec3.dot(normal, toLight) + 1) / 2);
-      items.push({
+      cells.push({
         points: corners,
         node: polyline3(`${name}/${i}-${j}`, corners, camera, { close: true, fill, stroke }),
       });
     }
   }
 
-  return items;
+  return cells;
 }
 
 /**

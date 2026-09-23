@@ -173,12 +173,12 @@ function middleDepth(points: readonly Vec3[], camera: Camera3): number {
  * top between frames would flicker.
  */
 export function scene3(name: string, items: readonly SpaceItem[], camera: Camera3): GroupNode {
-  const measured = items.map((item) => ({
-    node: atDepth(item.node, depthOf(item.points, camera)),
-    depth: middleDepth(item.points, camera),
+  const measured = items.map((entry) => ({
+    node: atDepth(entry.node, depthOf(entry.points, camera)),
+    depth: middleDepth(entry.points, camera),
   }));
   measured.sort((a, b) => b.depth - a.depth);
-  return group(name, measured.map((item) => item.node));
+  return group(name, measured.map((entry) => entry.node));
 }
 
 export type Arrow3Options = ArrowOptions;

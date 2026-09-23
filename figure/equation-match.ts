@@ -92,7 +92,7 @@ interface Match<T> {
 function pairedByKey<T>(
   from: readonly T[],
   to: readonly T[],
-  keyOf: (item: T) => string | undefined
+  keyOf: (entry: T) => string | undefined
 ): Match<T> {
   const places = pairedPlaces(from.map(keyOf), to.map(keyOf));
   const takenLeft = new Set(places.map(([row]) => row));
