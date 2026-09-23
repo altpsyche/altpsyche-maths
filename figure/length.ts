@@ -102,7 +102,7 @@ export function parameterAt(measured: Measured, wanted: number): number {
   return (sample - 1 + within) / SAMPLES;
 }
 
-/** How long a path is, in figure units, across every subpath it holds. */
+/** How long a path is, in figure units, across every subpath it contains. */
 export function lengthOf(path: Path): number {
   return measurePath(path).total;
 }
@@ -113,7 +113,7 @@ export function lengthOf(path: Path): number {
  *
  * A fraction outside nothing to one is held at the nearer end, so a walk that
  * overshoots stops at the end of the path rather than carrying on past it. A
- * path with no points has no such place and hands back nothing.
+ * path with no points has no such place and returns nothing.
  */
 export function pointAlong(path: Path, fraction: number): Vec2 | null {
   if (path.length === 0) return null;

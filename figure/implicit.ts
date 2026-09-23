@@ -22,13 +22,13 @@
  *
  * A cell whose corners are inside at two opposite corners and outside at the
  * other two has two pieces and two ways to pair the edges up. The value at the
- * middle of the cell decides which, which is the standard disambiguation and the
+ * middle of the cell sets which, which is the standard disambiguation and the
  * only one that keeps the two branches of a hyperbola apart where both pass
  * through one cell.
  *
  * The count of places is not fixed and cannot be. A parametric curve is sampled
  * at a count a figure names, and an implicit curve's places are the crossings its
- * own zero set makes, which the function decides. So a morph over an implicit
+ * own zero set makes, which depend on the function. So a morph over an implicit
  * curve pairs places that need not correspond, and this is the one curve here
  * that cannot be a morph's source.
  */
@@ -114,7 +114,7 @@ const AMBIGUOUS: Record<number, { middleInside: readonly (readonly [number, numb
  *
  * Which end is at or above the level is read once and the halving keeps the two
  * ends on opposite sides of it, so a function that is not monotonic along the
- * edge hands back one of its crossings rather than nothing.
+ * edge returns one of its crossings rather than nothing.
  */
 function crossingOn(of: (x: number, y: number) => number, level: number, from: Vec2, to: Vec2): Vec2 {
   const reached = (at: Vec2) => of(at.x, at.y) >= level;
@@ -146,7 +146,7 @@ const GRADIENT = 1e-4;
  *
  * The gradient points the way the function climbs, which is towards the region at
  * or above the level, and turning it a quarter turn clockwise puts that region on
- * the left of the direction handed back.
+ * the left of the direction returned.
  */
 function directionAt(of: (x: number, y: number) => number, at: Vec2, step: Vec2): Vec2 | undefined {
   const across = (of(at.x + step.x, at.y) - of(at.x - step.x, at.y)) / (2 * step.x);
@@ -183,7 +183,7 @@ function runThrough(coords: Coords, places: readonly Vec2[], directions: readonl
 }
 
 /** One run of the curve, as the grid edges it crosses in order and whether it
- * comes back round to the edge it began on. */
+ * returns to the edge it began on. */
 interface Run {
   readonly edges: number[];
   readonly closes: boolean;
@@ -269,7 +269,7 @@ export function implicit(coords: Coords, of: (x: number, y: number) => number, o
 
   // A run that leaves the sampled region starts on an edge no piece enters, so
   // those are walked first and every edge still spoken for afterwards is on a run
-  // that comes back round to where it began.
+  // that returns to where it began.
   const entered = new Set(next.values());
   for (const start of [...next.keys()].filter((edge) => !entered.has(edge))) {
     if (next.has(start)) runs.push(walk(start, false));

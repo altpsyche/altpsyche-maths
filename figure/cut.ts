@@ -2,7 +2,7 @@
  * A path cut where something crosses it.
  *
  * Each cut names a piece and how far along it the cut falls, and the pieces
- * that come back draw exactly what the pieces they replace drew, because de
+ * returned draw exactly what the pieces they replace drew, because de
  * Casteljau's construction gives both halves of a cubic as cubics. Several cuts
  * in one piece are taken in order, and each one after the first is measured
  * against what is left rather than against the piece it started as.

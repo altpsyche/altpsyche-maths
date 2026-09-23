@@ -80,7 +80,7 @@ function settled(box: ReturnType<typeof empty>): Bounds | null {
   return { x: interval(box.x.low, box.x.high), y: interval(box.y.low, box.y.high) };
 }
 
-/** The box round a path, or nothing where the path holds no points. */
+/** The box round a path, or nothing where the path has no points. */
 export function boundsOf(path: Path): Bounds | null {
   const box = empty();
   for (const subpath of path) {
@@ -128,9 +128,9 @@ export function centreOf(bounds: Bounds): Vec2 {
 }
 
 /**
- * The box both boxes hold, or nothing where they miss each other.
+ * The box both boxes contain, or nothing where they miss each other.
  *
- * Touching along an edge counts as meeting, so a box holds what sits exactly on
+ * Touching along an edge counts as meeting, so a box contains what lies exactly on
  * its boundary. Refusing that would drop a mark drawn along the edge of its own
  * clip, which is where an axis usually sits.
  */

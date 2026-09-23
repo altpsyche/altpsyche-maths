@@ -3,8 +3,8 @@
  *
  * MathJax describes an expression as nested groups with a transform on each,
  * every glyph as an outline and a fraction bar or a root's rule as a rectangle.
- * A figure holds a flat list of marks with every transform already applied, so
- * this walks the tree, carries the transform stack down it, and hands back the
+ * A figure at one time is a flat list of marks with every transform already applied, so
+ * this walks the tree, carries the transform stack down it, and returns the
  * marks with the box the typesetter measured the expression into.
  *
  * The stack starts turned over, because SVG counts y downward and a figure
@@ -12,18 +12,18 @@
  * figure's own space and nothing downstream has to know which way up the
  * typesetter works.
  *
- * A mark comes back with no fill and its id is a leaf name, because both arrive
+ * A mark is returned with no fill and its id is a leaf name, because both arrive
  * when the equation is placed in a figure: a figure's node tree builds an id out
  * of the names on the way down it, so a full path written here would be a second
  * naming of the same mark. The colour arrives there too, since a figure is handed
  * its palette as it is drawn rather than reading one.
  *
- * An id carries the glyph's own code point, which is what a match between two
+ * An id stores the glyph's own code point, which is what a match between two
  * expressions has to be made on.
  *
- * Three things stop the walk instead of being drawn, and each names what it
+ * Three cases stop the walk instead of being drawn, and each names what it
  * found: a TeX error, a character the font has no outline for, and a macro the
- * typesetter does not know.
+ * typesetter does not define.
  */
 import { mat3, type Transform2D } from '../values/mat3.js';
 import { vec2, type Vec2 } from '../values/vec2.js';
@@ -101,7 +101,7 @@ function svgOf(element: EquationElement): EquationElement {
  * know, which is the only sign that it did not typeset one. */
 const UNKNOWN = 'red';
 
-/** The characters under an element, read off the code point each glyph carries.
+/** The characters under an element, read off the code point each glyph stores.
  * It is what names a run the typesetter drew instead of typesetting. */
 function charactersOf(element: EquationElement): string {
   const code = element.tag === 'path' ? Number.parseInt(element.attributes['data-c'] ?? '', 16) : NaN;
@@ -110,10 +110,10 @@ function charactersOf(element: EquationElement): string {
 }
 
 /**
- * The three things that stop the walk rather than being drawn, each naming what
+ * The three cases that stop the walk rather than being drawn, each naming what
  * it found.
  *
- * A TeX error carries its message on the group MathJax puts the error box in. A
+ * A TeX error stores its message on the group MathJax puts the error box in. A
  * character the font has no outline for arrives as a text element, which draws
  * in a browser with whatever font it found and draws nothing at all in a
  * recording. And an undefined macro is not an error under `AllPackages`, since
@@ -207,9 +207,9 @@ export interface EquationOptions {
  *
  * It fits inside both measurements rather than being sized by the height alone.
  * An expression two units wide for every one it is tall runs off the sides of a
- * narrow figure the moment its height is what decides its size.
+ * narrow figure the moment its height is what sets its size.
  *
- * The group carries the transform rather than the geometry, so the glyphs stay
+ * The group applies the transform rather than the geometry, so the glyphs stay
  * the typesetter's own numbers and moving the expression is one matrix.
  */
 export function equationNode(name: string, equation: Equation, options: EquationOptions): GroupNode {

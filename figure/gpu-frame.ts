@@ -6,18 +6,18 @@
  * pipelines and its passes, with every handle an index into one of those lists.
  * Nothing here touches a device and nothing here imports the engine at run time,
  * since a frame description is a plain value and the engine's own handle
- * builders are erased to the index they carry. So `resolve` and `cost` answer for
+ * builders are erased to the index they store. So `resolve` and `cost` run on
  * a figure inside `npm test`, and only the painter of the next step needs a card.
  *
  * The geometry is triangles in clip space and the shade is a colour per vertex.
  * A mark's opacity multiplies its alpha and its clip is cut into its triangles,
- * so nothing of a mark survives as state a draw would have to carry, and the
+ * so nothing of a mark survives as state a draw would have to keep, and the
  * triangles of one draw sit in the order the marks were painted in.
  *
- * A mark carrying a depth is drawn against a depth attachment instead, so the
- * card decides which of two marks covers the other at each pixel rather than the
- * order of the list deciding it. The list is split into stretches at every mark
- * carrying no depth, since such a mark clears the depths before it, and each
+ * A mark with a depth is drawn against a depth attachment instead, so the depth
+ * test on the card sets which of two marks covers the other at each pixel rather
+ * than the order of the list. The list is split into stretches at every mark
+ * with no depth, since such a mark clears the depths before it, and each
  * stretch is a pass that empties the depth attachment first. A flat figure has
  * one stretch, names no depth attachment and costs exactly what it did before.
  *
@@ -52,7 +52,7 @@ export interface GpuFrameOptions extends TriangleOptions {
   readonly clear?: readonly [number, number, number, number];
 }
 
-/** What one frame description carries: the graph the engine draws, how much
+/** What one frame description contains: the graph the engine draws, how much
  * geometry went into it, and the marks it had no vocabulary for. */
 export interface GpuFrame {
   /** The engine's own frame description, ready for `resolve`, `cost` and a
@@ -60,7 +60,7 @@ export interface GpuFrame {
   readonly frame: FrameGraph;
   /** How many triangles the whole frame is. */
   readonly triangles: number;
-  /** How many bytes of vertex data the frame carries. */
+  /** How many bytes of vertex data the frame contains. */
   readonly bytes: number;
   /** The id of every mark the description leaves out or draws differently from
    * the other two painters, in the order they were painted. */
@@ -78,14 +78,14 @@ const PIXEL_SHARE = 0.2;
  *
  * A tolerance is in the figure's own units and what it has to buy is a smooth
  * edge in pixels, so the two are only the same number at one scale. The view
- * says how many pixels a unit covers, and a figure drawn at ten of them flattens
+ * sets how many pixels a unit covers, and a figure drawn at ten of them flattens
  * ten times finer than it needs to against a tolerance chosen for a hundred.
  */
 function flattenedFor(view: Transform2D, options: GpuFrameOptions): GpuFrameOptions {
   if (options.tolerance !== undefined) return options;
   const scale = mat3.scaleFactor(view);
   // A view that collapses the plane gives no pixels to measure against, so the
-  // flattening keeps whatever default the triangulation carries.
+  // flattening keeps whatever default the triangulation uses.
   if (!Number.isFinite(scale) || scale <= 0) return options;
   return { ...options, tolerance: PIXEL_SHARE / scale };
 }
@@ -100,7 +100,7 @@ const STRIDE = 28;
 const NEAREST = 0.05;
 const FURTHEST = 0.95;
 
-/** What a mark carrying no depth writes, which is the middle of the range and is
+/** What a mark with no depth writes, which is the middle of the range and is
  * never tested against anything. */
 const UNTESTED = 0.5;
 
@@ -205,7 +205,7 @@ function trianglesFor(mark: Mark, options: TriangleOptions): Piece[] {
 }
 
 /** One mark ready to be written out: the triangles it came to, and the depth
- * function it carries. */
+ * function it has. */
 interface Ready {
   readonly pieces: Piece[];
   readonly mark: Mark;
@@ -221,7 +221,7 @@ interface Segment {
 
 /**
  * The smallest and largest depth any corner of any mark is at, or nothing where
- * no mark carries one.
+ * no mark has one.
  *
  * The card keeps a depth over a fixed range, so the depths a figure uses are
  * carried into that range before they are written. One pair of ends for the whole
@@ -250,7 +250,7 @@ function endsOf(ready: readonly Ready[]): { least: number; most: number } | unde
  * smaller number.
  *
  * The map is affine in the depth and the depth is affine in the page, so what the
- * card interpolates across a triangle is still the function the mark carries
+ * card interpolates across a triangle is still the function the mark stores
  * rather than an approximation of it. A run of no width is drawn at the near end,
  * since every mark of it is at the same distance and the order of the list is
  * what separates them.
@@ -299,8 +299,8 @@ function bufferOf(run: readonly Ready[], view: Transform2D, options: GpuFrameOpt
 /**
  * Every mark's triangles as the runs the passes are built from.
  *
- * A run ends where a mark stops carrying a depth or starts carrying one, which is
- * the same split the painters with no depth buffer make: a mark carrying none
+ * A run ends wherever a mark with a depth meets a mark with none, which is
+ * the same split the painters with no depth buffer make: a mark with none
  * clears the depths before it, so what is drawn after it is never tested against
  * what was drawn before it.
  */
@@ -313,8 +313,8 @@ function segmentsOf(marks: readonly Mark[], view: Transform2D, options: GpuFrame
   const refused: string[] = [];
   const ready: Ready[] = [];
   for (const mark of marks) {
-    // A text mark carries no outline and a card has no text vocabulary, which is
-    // the one thing here that differs from what the other two painters draw.
+    // A text mark has no outline and a card has no text vocabulary, which is
+    // the one case where this painter draws less than the other two.
     if (mark.kind === 'text') refused.push(mark.id);
     const pieces = trianglesFor(mark, options);
     if (pieces.length === 0 || pieces.every((piece) => piece.corners.length === 0)) continue;
@@ -357,7 +357,7 @@ function segmentsOf(marks: readonly Mark[], view: Transform2D, options: GpuFrame
  * through to the target.
  *
  * WGSL's clip space keeps its depth from nothing to one, which is the range the
- * vertex already carries, so the number is written as it stands. */
+ * vertex already stores, so the number is written as it stands. */
 const WGSL = `struct Vertex {
   @location(0) position: vec2f,
   @location(1) shade: vec4f,
@@ -389,12 +389,12 @@ fn fragmentMain(painted: Painted) -> @location(0) vec4f {
  * The vertex stage negates clip-space y, which is the first half of the only way
  * WebGL 2 has of giving a WGSL frame its own top-left framebuffer origin, and the
  * winding inversion the backend applies is the second. A baked translation is
- * read as carrying both, so a stage leaving y alone draws the picture upside
+ * read as applying both, so a stage leaving y alone draws the picture upside
  * down.
  *
  * The depth is doubled and moved back by one because this clip space keeps its
  * own from minus one to one where WGSL's keeps it from nothing to one, and the
- * vertex carries the WGSL range. A stage writing the number as it stands would
+ * vertex stores the WGSL range. A stage writing the number as it stands would
  * draw the near half of every figure in space. */
 const GLSL_VERTEX = `#version 300 es
 layout(location = 0) in vec2 position;
@@ -421,7 +421,7 @@ void main() {
 /** The name the two stages are fetched under, which a loader dedups by. */
 const DOCUMENT = 'altpsyche-marks';
 
-/** The colour the target already holds kept in the share the new colour's alpha
+/** The colour the target already stores kept in the share the new colour's alpha
  * leaves, which is the painter's algorithm written as a blend. */
 const OVER = {
   color: { srcFactor: 'src-alpha', dstFactor: 'one-minus-src-alpha', operation: 'add' },
@@ -429,10 +429,10 @@ const OVER = {
 } as const;
 
 /** Four channels of a byte each, which is the format a page's own colour buffer
- * holds and what a resolved picture is presented as. */
+ * stores and what a resolved picture is presented as. */
 const FORMAT = 'rgba8unorm';
 
-/** The format the depth is kept in, which both backends carry and neither of them
+/** The format the depth is kept in, which both backends support and neither of them
  * keeps a stencil beside. */
 const DEPTH_FORMAT = 'depth24plus';
 
@@ -441,7 +441,7 @@ const DEPTH_FORMAT = 'depth24plus';
 const EMPTY = 1;
 
 /**
- * A handle is the index of the thing it names, and the engine's own builders are
+ * A handle is the index of the entry it names, and the engine's own builders are
  * erased to that index, so a description written here needs no run-time import of
  * the engine to name one.
  */
@@ -510,7 +510,7 @@ export function gpuFrame(marks: readonly Mark[], view: Transform2D, options: Gpu
       fragment: { document: DOCUMENT, entry: 'fragmentMain' },
       geometry: handle<VertexHandle>(firstVertex + at),
       bindings: [],
-      // A mark carrying no depth is drawn by a pipeline that neither tests one
+      // A mark with no depth is drawn by a pipeline that neither tests one
       // nor writes one: the order of the list is what places it, and a mark under
       // partial opacity that wrote a depth would hide what is drawn behind it
       // afterwards.
@@ -525,7 +525,7 @@ export function gpuFrame(marks: readonly Mark[], view: Transform2D, options: Gpu
       // corner count of its own, which the backend refuses in a geometry pass.
       draws: [{ instances: 1 }],
       // Each stretch empties the depth attachment, so a mark from before a mark
-      // carrying none never comes back through one drawn after it.
+      // with none never shows through one drawn after it.
       ...(segment.deep ? { depth: { resource: depth, clear: EMPTY } } : {}),
       colour: [
         {

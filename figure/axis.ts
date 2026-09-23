@@ -28,7 +28,7 @@ export interface NumberLineOptions {
   at?: number;
   direction?: 'across' | 'up';
   /** About how many ticks are wanted. The step is a round number, so the count
-   * that comes back is near this rather than equal to it. */
+   * that is returned is near this rather than equal to it. */
   ticks?: number;
   /** How far a tick reaches across the line in total, half of it either side. */
   tickLength?: number;
@@ -41,7 +41,7 @@ export interface NumberLineOptions {
   family?: string;
   weight?: number;
   /** Leaves the label at zero out, which is what a second axis crossing here
-   * wants, since both would otherwise write the same number in the same place. */
+   * needs, since both would otherwise write the same number in the same place. */
   skipZero?: boolean;
   /** The number on this line another line crosses it at. The label there is
    * written below and to the left of the crossing rather than under it, since
@@ -204,7 +204,7 @@ function gridLines(coords: Coords, step: number, along: 'x' | 'y', skipping?: nu
  * The minor lines are drawn first and the major ones over them, so a major line
  * a minor one lands on is the one a reader sees. The stroke is handed down from
  * the group rather than set on each line, which is what lets the whole grid fade
- * as one thing.
+ * as one group.
  */
 export function numberPlane(name: string, coords: Coords, options: NumberPlaneOptions): GroupNode {
   const step = { x: tickStep(coords.x.graph, options.ticks), y: tickStep(coords.y.graph, options.ticks) };

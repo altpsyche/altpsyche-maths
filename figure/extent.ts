@@ -12,13 +12,13 @@ import type { Mark } from './mark.js';
 export interface Extent {
   width: number;
   height: number;
-  /** Where the middle of the frame sits in the figure's own units, the origin
+  /** Where the middle of the frame lies in the figure's own units, the origin
    * unless named. A figure whose view follows something moves this rather than
    * moving everything it draws. */
   centre?: Vec2;
 }
 
-/** Whether the extent is held inside the surface, leaving margins where the
+/** Whether the extent is kept inside the surface, leaving margins where the
  * shapes differ, or fills it and runs off two edges. */
 export type Fit = 'contain' | 'cover';
 
@@ -40,19 +40,19 @@ export function resolveExtent(choice: ExtentChoice, aspect: number, seconds = 0)
  * rather than a record of what has been played.
  *
  * The marks arrive as a getter because a view that follows something has to read
- * where that thing is and most views read nothing. Every painter asks for the
- * marks and the matrix both, so building the marks inside the call that answers
- * for the matrix would build them twice a frame.
+ * where that node is and most views read nothing. Every painter asks for the
+ * marks and the matrix both, so building the marks inside the call that returns
+ * the matrix would build them twice a frame.
  */
 export type ViewAnimation = (extent: Extent, along: number, marks: () => readonly Mark[]) => Extent;
 
 /**
  * A view animation as a timeline entry.
  *
- * The wrapper is what lets one span list hold a change to the marks and a change
- * to the view. Both are functions of two arguments and nothing at runtime tells
- * them apart, and one list is what lets `after` and `stagger` sequence a camera
- * move against an entrance.
+ * The wrapper is what lets one span list contain a change to the marks and a
+ * change to the view. Both are functions of two arguments and nothing at runtime
+ * tells them apart, and one list is what lets `after` and `stagger` sequence a
+ * camera move against an entrance.
  */
 export interface ViewChange {
   view: ViewAnimation;

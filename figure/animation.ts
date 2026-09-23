@@ -1,5 +1,5 @@
 /**
- * A change to some of the marks, over a span of time.
+ * A change to some of the nodes, over a span of time.
  *
  * An animation is a function rather than an object with a start and a stop,
  * because the picture at a time has to be the same whichever direction the clock
@@ -8,7 +8,7 @@
  * answer.
  *
  * Each one is given how far through its own span the clock is, already eased, and
- * hands back the marks as they stand at that fraction.
+ * returns the marks as they stand at that fraction.
  */
 import { mat3, type Transform2D } from '../values/mat3.js';
 import { vec2, type Vec2 } from '../values/vec2.js';
@@ -83,7 +83,7 @@ export function draw(target: string): Animation {
  * One shape becoming another, point by point.
  *
  * The two paths are aligned first, so the one with fewer segments is subdivided
- * until both hold the same points. A mark with no path is left alone.
+ * until both contain the same points. A mark with no path is left alone.
  */
 export function morph(target: string, into: Path): Animation {
   return over(target, (mark, along) => {
@@ -130,7 +130,7 @@ export function morphEquation(from: string, to: string): Animation {
 }
 
 /** The part of a mark's id under a target, which is the key two groups pair on.
- * A mark that is the target itself carries no part after it and keys on nothing,
+ * A mark that is the target itself has no part after it and keys on nothing,
  * so two single shapes pair with each other. */
 function relativeTo(id: string, target: string): string | undefined {
   if (id === target) return '';
@@ -158,7 +158,7 @@ function walkedPaint(from: Fill, to: Fill, along: number): Fill {
 }
 
 /** A colour whose alpha is a share of what it was, which is how a fill or a
- * stroke that only one of a pair carries arrives and leaves. Dropping it at half
+ * stroke that only one of a pair has arrives and leaves. Dropping it at half
  * instead would make the paint appear or vanish in one frame. */
 function faded(colour: Colour, by: number): Colour {
   return { ...colour, a: colour.a * by };
@@ -236,7 +236,7 @@ function walked(from: Mark, to: Mark, along: number): Mark {
  *
  * The pairing is by name: the part of a mark's id under the target it sits under
  * is the key, so two groups built by one function pair mark for mark, and what no
- * name answers pairs by the order it stands in. Manim matches two shapes by a key
+ * name matches pairs by the order it stands in. Manim matches two shapes by a key
  * built from their points, which a mark here needs no more than a mark needs an
  * id built for it.
  *
@@ -276,7 +276,7 @@ export function morphGroup(from: string, to: string): Animation {
 /**
  * A number ticking from one value to another, written into a text mark.
  *
- * How the value is written is the caller's, so this holds no opinion about
+ * How the value is written is the caller's, so this sets no rule about
  * decimal places: a count of a length and a count of a population want different
  * rounding and neither is this function's to choose.
  *
@@ -287,7 +287,7 @@ export function countTo(target: string, from: number, to: number, write: (value:
   return over(target, (mark, along) => (mark.kind === 'text' ? { ...mark, text: write(lerp(from, to, along)) } : mark));
 }
 
-/** A mark's own opacity walked to a value, for a figure that wants a thing dimmed
+/** A mark's own opacity walked to a value, for a figure that needs a mark dimmed
  * rather than gone. */
 export function fadeTo(target: string, opacity: number): Animation {
   return over(target, (mark, along) => ({ ...mark, opacity: lerp(mark.opacity ?? 1, opacity, along) }));
@@ -368,10 +368,10 @@ function around(pivot: Vec2, change: Transform2D): Transform2D {
 /**
  * Turned about a point, by an angle in radians.
  *
- * A text mark's anchor moves and its words stay upright. A mark carries no
+ * A text mark's anchor moves and its words stay upright. A mark stores no
  * rotation of its own, so turning the words would mean adding one to what both
- * painters have to do, and a label that stays readable while the thing it names
- * turns is what a figure wants anyway, which is the same reason a number line
+ * painters have to do, and a label that stays readable while the mark it names
+ * turns is what a figure needs anyway, which is the same reason a number line
  * takes a direction rather than being turned on its side.
  */
 export function rotate(target: string, angle: number, options: AboutOptions = {}): Animation {
@@ -414,7 +414,7 @@ function blended(m: Transform2D, along: number): Transform2D {
  * Interpolating the entries is what the picture needs and it is not a turn. The
  * determinant halfway to a turn by an angle is `(1 + cos angle) / 2`, so a
  * quarter turn halves the area on the way and a half turn flattens every point
- * onto one line. A figure that wants the turn itself asks `rotate`, which
+ * onto one line. A figure that needs the turn itself uses `rotate`, which
  * interpolates the angle and holds the area at 1.
  */
 export function applyMatrix(target: string, m: Transform2D, options: AboutOptions = {}): Animation {
@@ -449,7 +449,7 @@ export function moveAlong(target: string, path: Path): Animation {
 /**
  * Grown from nothing at a point, which is a growth starting at no size.
  *
- * Left out, the point is the middle of the box round the marks, so a thing grows
+ * Left out, the point is the middle of the box round the marks, so a mark grows
  * out of where it already is. At the end of the span it is the marks themselves
  * rather than the marks rebuilt through a transform of one, so a growth that has
  * finished leaves the geometry the author wrote.
@@ -494,7 +494,7 @@ export interface IndicateOptions extends AboutOptions {
  *
  * Each of the mark's own colours is walked towards the colour named and back
  * again, so the swell and the colour reach their furthest at the same moment. A
- * mark part of the way there carries no name, so it paints the mixed channels
+ * mark part of the way there has no name, so it paints the mixed channels
  * rather than following a page's theme for the span it is swelling.
  */
 export function indicate(target: string, options: IndicateOptions = {}): Animation {
@@ -522,14 +522,14 @@ export interface FlashOptions {
   rays?: number;
   /** How far the far end of a ray reaches at the widest, in figure units. Twice
    * the distance from the middle of the box to its corner unless named, so the
-   * rays sit outside the thing they are pointing at. */
+   * rays sit outside the marks they are pointing at. */
   reach?: number;
   /** Where the near end of a ray sits, as a share of the reach. */
   inner?: number;
 }
 
 /**
- * Rays out from a point and gone, for a moment a figure wants a reader to look
+ * Rays out from a point and gone, for a moment a figure asks a reader to look
  * at.
  *
  * The rays are in the list at every fraction of the span, at nothing at both
@@ -603,7 +603,7 @@ function sweepFrom(mark: TextMark, across: number): number {
 }
 
 /** The bottom of the box a line of type stands in, which the anchor sits on the
- * baseline of unless the mark says otherwise. */
+ * baseline of unless the mark sets another. */
 function writtenFoot(mark: TextMark): number {
   if (mark.baseline === 'middle') return mark.at.y - mark.size / 2;
   if (mark.baseline === 'hanging') return mark.at.y - mark.size;
@@ -620,7 +620,7 @@ function writtenFoot(mark: TextMark): number {
  * wrote them in, which is the order the expression reads.
  *
  * A string is uncovered behind a rectangle rather than drawn stroke by stroke.
- * Drawing the strokes needs the outlines of the face, and a text mark carries a
+ * Drawing the strokes needs the outlines of the face, and a text mark stores a
  * family name rather than a font, so the outlines are not here to draw. What the
  * sweep costs is that a letter arrives whole from its left edge; what it saves is
  * that the painter still writes the string as text.
@@ -665,12 +665,12 @@ export interface WiggleOptions extends AboutOptions {
 }
 
 /**
- * A swell and a rock about a point, for a figure that wants something noticed
+ * A swell and a rock about a point, for a figure that needs a mark noticed
  * without moving it.
  *
  * The swell is `indicate`'s, out and back over the span, and the rock is a sine
  * of a whole number of turns, so both are at nothing at both ends and the marks
- * come back the geometry they went in as. A whole number of rocks is what makes
+ * end as the geometry they went in as. A whole number of rocks is what makes
  * that true of the turn: half a rock would leave the shape at an angle when the
  * span ended.
  */
@@ -719,7 +719,7 @@ function displacedPath(path: Path, push: (point: Vec2) => Vec2): Path {
  * The push moves the control points a path is made of rather than resampling it,
  * so a piece whose two ends the band has not both reached bends at one end. A
  * shape drawn with few pieces therefore shows a coarser wave than one drawn with
- * many, and a plotted curve carries enough points for the difference not to
+ * many, and a plotted curve has enough points for the difference not to
  * show.
  *
  * The box the crossing is measured across is read off the marks as they arrive,
@@ -776,12 +776,12 @@ export interface PassingFlashOptions {
  *
  * The window runs from behind the start to past the end, so the light enters at
  * one end and leaves at the other rather than appearing whole and vanishing
- * whole. It is in the list at every fraction of the span and holds no path at
+ * whole. It is in the list at every fraction of the span and has no path at
  * both ends, for the reason a flash keeps its rays: a mark that arrives between
  * one frame and the next turns up in a comparison between two frames as
  * something that changed.
  *
- * A text mark carries no path for a light to run along and is passed over.
+ * A text mark has no path for a light to run along and is passed over.
  *
  * The light runs along the path it is given, so it stands at that path's own
  * depth rather than over everything the picture has drawn so far.
@@ -808,7 +808,7 @@ export function showPassingFlash(target: string, options: PassingFlashOptions): 
 
 export interface CircumscribeOptions {
   stroke: Stroke;
-  /** A box round the thing, or the ellipse through the same four sides. */
+  /** A box round the target, or the ellipse through the same four sides. */
   around?: 'box' | 'ellipse';
   /** How far outside the box it sits, in figure units. */
   padding?: number;

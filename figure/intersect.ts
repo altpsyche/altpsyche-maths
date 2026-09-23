@@ -31,7 +31,7 @@ export interface Crossing {
 
 export interface CrossingOptions {
   /** How close two pieces come before they count as meeting, in the picture's
-   * own units. It decides which meetings are told apart rather than how sharp
+   * own units. It sets which meetings are told apart rather than how sharp
    * one is, since Newton's method supplies the sharpness afterwards. */
   readonly tolerance?: number;
 }
@@ -39,7 +39,7 @@ export interface CrossingOptions {
 
 
 /**
- * How many pairs the search may make before it answers with where it had got to.
+ * How many pairs the search may make before it returns where it had got to.
  *
  * It counts pairs made rather than pairs looked at, because each one looked at
  * makes up to four more: counting the ones looked at leaves the pile of pairs
@@ -69,7 +69,7 @@ interface Box {
   readonly highY: number;
 }
 
-/** One meeting as the search found it, carrying the stretch of each curve it
+/** One meeting as the search found it, with the stretch of each curve it
  * was found in so that a run of them can be joined up. */
 interface Hit extends Crossing {
   readonly firstLow: number;
@@ -88,13 +88,13 @@ interface Pair {
   readonly depth: number;
 }
 
-/** A segment written as its four points, since a segment carries where it ends
+/** A segment written as its four points, since a segment stores where it ends
  * and not where it began. */
 function hullOf(from: Vec2, curve: Cubic): Hull {
   return [from, curve.control1, curve.control2, curve.to];
 }
 
-/** The box round the four points, which holds the curve because a cubic never
+/** The box round the four points, which contains the curve because a cubic never
  * leaves the hull of the points it is written from. */
 function boxOf(hull: Hull): Box {
   let lowX = hull[0].x;
@@ -190,7 +190,7 @@ function pointAt(hull: Hull, along: number): Vec2 {
 }
 
 /** Which way the curve is heading, read off the four points the search already
- * holds rather than off a piece, so following a pair down allocates nothing. */
+ * has rather than off a piece, so following a pair down allocates nothing. */
 function slopeAt(hull: Hull, along: number): Vec2 {
   const u = 1 - along;
   const a = 3 * u * u;
@@ -248,7 +248,7 @@ function sharpened(first: Hull, second: Hull, start: Crossing): Crossing {
 /**
  * A run of hits reported as the places they gather at.
  *
- * Every hit carries the stretch of each curve it was found in, and two hits
+ * Every hit stores the stretch of each curve it was found in, and two hits
  * whose stretches touch on both curves are the same meeting: the stretch
  * between them was never thrown away, so the curves stayed within the tolerance
  * across it. A gap in the run is the curves moving apart by more than the
@@ -304,8 +304,8 @@ function clustered(hits: readonly Hit[]): Crossing[] {
 }
 
 
-/** How many places the coarse sweep looks at before it decides which part of a
- * curve a point is nearest. */
+/** How many places the coarse sweep samples to find which part of a curve a
+ * point is nearest. */
 const SWEEP = 32;
 
 /** How hard the curve is turning at a place, which Newton needs because the
@@ -363,7 +363,7 @@ const ALONG_SHARED = 12;
 /**
  * The two ends of the stretch two curves cover together, when they cover one.
  *
- * Halving into a stretch like that answers it as a spray of meetings, because
+ * Halving into a stretch like that returns it as a spray of meetings, because
  * every pair of small pieces along it overlaps and the budget runs out before
  * the run is walked. So the stretch is found first, from the ends of each curve
  * that lie on the other, and answered by where it starts and where it ends.
@@ -407,9 +407,9 @@ function sharedStretch(first: Hull, second: Hull, tolerance: number): Crossing[]
 /**
  * Every place two cubics cross, as a fraction along each and the point.
  *
- * Each segment is given the point it starts from, since a segment carries where
- * it ends and not where it began. Two curves covering the same stretch answer
- * with the two ends of that stretch, so a caller reading the answer as places to
+ * Each segment is given the point it starts from, since a segment stores where
+ * it ends and not where it began. Two curves covering the same stretch are
+ * reported as the two ends of that stretch, so a caller reading the answer as places to
  * cut at gets the stretch marked off rather than chopped into slivers.
  */
 export function curveCrossings(

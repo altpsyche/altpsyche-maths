@@ -5,7 +5,7 @@
  * A static matrix is already drawable through the typesetter, and what that
  * cannot give is a name for one entry. Here each row is a group and each entry
  * is a text node inside it, so an animation naming `m/rows/1/0` reaches one
- * number and one naming `m/rows/1` reaches the row it sits in.
+ * number and one naming `m/rows/1` reaches the row it lies in.
  */
 import { vec2, type Vec2 } from '../values/vec2.js';
 import { group, shape, text, type GroupNode, type Node, type Style, type TextOptions } from './node.js';
@@ -45,7 +45,7 @@ function bracket(at: number, top: number, bottom: number, reach: number) {
  * centred in a cell of its own.
  *
  * An entry is a string laid out by the painter and never measured, which is why
- * the cell it sits in is a share of the box rather than a width read off the
+ * the cell it lies in is a share of the box rather than a width read off the
  * text. A figure whose columns were sized to fit their entries would be a
  * different figure on a machine with different fonts.
  *

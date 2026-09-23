@@ -7,13 +7,13 @@
  * shapes only if they come from a file rather than from a browser. So this
  * package ships a typeface and reads it here.
  *
- * The tables read are the ones a label needs and no others. `head` says how many
- * units an em is divided into, `maxp` says how many glyphs there are, `cmap`
- * says which glyph draws a code point, `hhea` and `hmtx` say how far the pen
- * moves after each one, and `loca` and `glyf` hold the outlines. Hinting and
- * layout are dropped from the shipped subset: hinting is a rasteriser's business
- * and nothing here rasterises, and a kerning pair no painter reads would put the
- * same label in two places.
+ * The tables read are the ones a label needs and no others. `head` stores how
+ * many units an em is divided into, `maxp` stores how many glyphs there are,
+ * `cmap` stores which glyph draws a code point, `hhea` and `hmtx` store how far
+ * the pen moves after each one, and `loca` and `glyf` store the outlines.
+ * Hinting and layout are dropped from the shipped subset: hinting is a
+ * rasteriser's business and nothing here rasterises, and a kerning pair no
+ * painter reads would put the same label in two places.
  */
 
 /** One table's bytes inside the file, which is what every reading below is taken
@@ -29,7 +29,7 @@ export interface Font {
    * are measured in. A label at a size of s figure units draws its glyphs scaled
    * by s over this. */
   readonly unitsPerEm: number;
-  /** How many glyphs the font holds, the missing-glyph one included. */
+  /** How many glyphs the font contains, the missing-glyph one included. */
   readonly glyphCount: number;
   /** What the font calls itself, which is the name a page registers it under and
    * a mark names to be drawn in it. */
@@ -68,7 +68,7 @@ function tagAt(view: DataView, at: number): string {
 function tablesOf(view: DataView): Map<string, Table> {
   const version = view.getUint32(0);
   // A TrueType file opens with 0x00010000 or with 'true'; an OpenType file with
-  // CFF outlines opens with 'OTTO' and holds no glyf table to read.
+  // CFF outlines opens with 'OTTO' and contains no glyf table to read.
   if (version !== 0x00010000 && version !== 0x74727565) {
     throw new Error(`the font is not TrueType: its version word is 0x${version.toString(16)}`);
   }
@@ -92,10 +92,10 @@ function tableOf(tables: Map<string, Table>, tag: string): Table {
 /**
  * The code-point-to-glyph map of a format 4 subtable, read into a lookup.
  *
- * Format 4 is the one every font carries for the Basic Multilingual Plane: the
+ * Format 4 is the one every font contains for the Basic Multilingual Plane: the
  * code points are cut into segments, and a segment either adds a fixed delta to
  * the code point or points at a slice of a glyph array. The whole map is walked
- * once here rather than searched per character, since a subset holds a few
+ * once here rather than searched per character, since a subset contains a few
  * hundred code points and a map is a faster answer than a binary search.
  */
 function cmap4(view: DataView, at: number): Map<number, number> {
@@ -111,7 +111,7 @@ function cmap4(view: DataView, at: number): Map<number, number> {
     const delta = view.getInt16(deltas + segment * 2);
     const rangeOffset = view.getUint16(ranges + segment * 2);
     // The last segment ends at 0xffff and maps nothing, which the specification
-    // requires every font to carry.
+    // requires every font to contain.
     if (start > end) continue;
     for (let code = start; code <= end && code !== 0x10000; code += 1) {
       let glyph: number;
@@ -151,9 +151,9 @@ function unicodeCmap(view: DataView, table: Table): Map<number, number> {
 /**
  * What the font calls itself, read out of its own name table.
  *
- * A name record is written in one of two encodings and the table holds both: the
- * Windows records are UTF-16 two bytes to a character and the Macintosh ones are
- * one byte. The Windows record is preferred because every font written this
+ * A name record is written in one of two encodings and the table contains both:
+ * the Windows records are UTF-16 two bytes to a character and the Macintosh ones
+ * are one byte. The Windows record is preferred because every font written this
  * century carries one.
  */
 function familyName(view: DataView, table: Table): string {
@@ -180,8 +180,8 @@ function familyName(view: DataView, table: Table): string {
 }
 
 /** Where each glyph's outline begins, as offsets from the start of the file. The
- * table holds one more entry than there are glyphs, so a glyph's end is the next
- * entry. */
+ * table contains one more entry than there are glyphs, so a glyph's end is the
+ * next entry. */
 function locations(view: DataView, loca: Table, glyf: Table, glyphCount: number, longFormat: boolean): number[] {
   const found: number[] = [];
   for (let index = 0; index <= glyphCount; index += 1) {
@@ -247,7 +247,7 @@ export function readFont(bytes: Uint8Array): Font {
   };
 }
 
-/** The shipped typeface, read once and held, since every label after the first
+/** The shipped typeface, read once and kept, since every label after the first
  * reads the same font. */
 let shipped: Promise<Font> | undefined;
 

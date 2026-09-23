@@ -10,8 +10,8 @@
  * drawn under, so a loop wound the other way inside another loop is a hole.
  * Every edge crossing the ray is counted with the sign of the direction it
  * crosses in, and an edge is counted at its lower end and not at its upper one,
- * which is what makes a ray leaving through a corner answer what every other
- * ray answers.
+ * which is what makes a ray leaving through a corner count what every other
+ * ray counts.
  */
 import { vec2, type Vec2 } from '../values/vec2.js';
 import type { Cubic, Path } from './path.js';
@@ -29,7 +29,7 @@ export interface FlattenOptions {
 const DEPTH = 24;
 
 /**
- * How many points a whole flattening may hold before it is refused.
+ * How many points a whole flattening may contain before it is refused.
  *
  * Halving is the only bound the depth gives, so with no ceiling on the count a
  * fine tolerance is a machine out of memory rather than a fine flattening. The
@@ -172,13 +172,13 @@ export function nearestEdge(loops: readonly (readonly Vec2[])[], point: Vec2): F
 }
 
 /**
- * Whether a path holds a point, under the nonzero rule.
+ * Whether a path contains a point, under the nonzero rule.
  *
  * A point sitting on the edge itself has no answer this can be right about, and
- * what comes back for one is whichever side the tolerance put it on.
+ * what is returned for one is whichever side the tolerance put it on.
  *
  * The path is flattened again on every call, which is a millisecond every three
- * points against a path of a hundred pieces. Asking about many points wants the
+ * points against a path of a hundred pieces. Asking about many points needs the
  * flattening made once and the count taken against it.
  */
 export function containsPoint(path: Path, point: Vec2, options: FlattenOptions = {}): boolean {

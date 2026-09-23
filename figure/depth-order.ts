@@ -2,7 +2,7 @@
  * The order a painter draws a list of marks in, for a painter with no depth
  * buffer.
  *
- * Where two marks carrying a depth overlap on the page, the nearer of the two at
+ * Where two marks with a depth overlap on the page, the nearer of the two at
  * a point is drawn over the further one there, whatever order the list gives. A
  * painter that paints whole marks one after another cannot meet that rule as it
  * stands, so the geometry is cut before it is painted: two depths are equal along
@@ -10,7 +10,7 @@
  * affine and its zero set is a line, and a mark cut by that line has one depth
  * order against everything it overlaps.
  *
- * A mark carrying no depth clears the depths before it, so the list is a run of
+ * A mark with no depth clears the depths before it, so the list is a run of
  * stretches and each stretch is cut and ordered on its own.
  *
  * A cell of a mesh and a curve lying on that cell are the two shapes this is
@@ -42,13 +42,13 @@ const STRAIGHT = 1e-12;
 const SHARP = 1e-12;
 
 /**
- * The ground a mark covers, as the smallest convex shape holding it.
+ * The ground a mark covers, as the smallest convex shape containing it.
  *
  * Two marks whose boxes meet need not meet at all, and two cells of one mesh
  * sharing an edge are the case that matters: an order between two shapes that
  * never meet is an order about nothing, and enough of them together can run in a
  * ring that no order of the whole list satisfies. The hull is bigger than the
- * mark inside it, so a pair it says miss each other really do.
+ * mark inside it, so a pair it shows miss each other really do.
  */
 interface Reach {
   /** The corners of the hull, anticlockwise. */
@@ -57,7 +57,7 @@ interface Reach {
   readonly pad: number;
 }
 
-/** A piece of a mark, with the one depth it carries and the box it covers. */
+/** A piece of a mark, with the one depth it has and the box it covers. */
 interface Piece {
   readonly mark: Mark;
   readonly depth: Depth;
@@ -67,14 +67,14 @@ interface Piece {
   /** A place the piece covers, which is where the sign of a difference of depths
    * is read first. */
   readonly where: Vec2;
-  /** The ground it covers, which says whether it meets another piece at all and
-   * holds the points the sign of a difference is read over. */
+  /** The ground it covers, which shows whether it meets another piece at all and
+   * contains the points the sign of a difference is read over. */
   readonly reach: Reach;
-  /** Where the mark it came from stood in the list, which is what decides the
+  /** Where the mark it came from stood in the list, which is what sets the
    * order of two pieces at one depth. */
   readonly at: number;
   /** The id of the mark it was cut from, which two pieces share only where one
-   * mark holds both of them and they are drawn the same way. */
+   * mark contains both of them and they are drawn the same way. */
   readonly from: string;
 }
 
@@ -85,7 +85,7 @@ function between(one: Depth, other: Depth): Depth {
 }
 
 /** Every point a path is written from. A cubic lies inside the hull of its four
- * points, so the hull of these holds the whole of the path. */
+ * points, so the hull of these contains the whole of the path. */
 function pointsOf(path: Path, into: Vec2[]): Vec2[] {
   for (const subpath of path) {
     into.push(subpath.start);
@@ -240,11 +240,11 @@ function cornersOf(box: Bounds): Vec2[] {
 }
 
 /**
- * Whether the difference takes both signs over these points, which is what says
+ * Whether the difference takes both signs over these points, which is what shows
  * the two marks it came from have no one order over the ground they cover.
  *
  * A difference that is nothing everywhere is two marks at one depth, which the
- * order of the list decides and no cut would help.
+ * order of the list settles and no cut would help.
  */
 function crosses(difference: Depth, points: readonly Vec2[]): boolean {
   let least = Infinity;
@@ -270,7 +270,7 @@ function crossesMark(difference: Depth, mark: Mark, reach: Reach): boolean {
  *
  * An affine function of a cubic is a cubic in one dimension with the function's
  * value at the four control points as its own control values, so the control
- * polygon holds the curve: four values of one sign are a piece the line misses.
+ * polygon contains the curve: four values of one sign are a piece the line misses.
  * A piece whose control values sit evenly is straight in that value and its one
  * crossing is read off directly, which is what a segment written as a straight
  * run gives. Anything else is halved by de Casteljau's construction until the
@@ -358,7 +358,7 @@ function cutSubpath(subpath: Subpath, difference: Depth): Cut[] {
 
 /** Which side of the line a piece lies on, read at the middle of the points it
  * is written from, since a piece cut at every crossing lies wholly on one side.
- * A piece lying along the line itself answers nothing and is kept by both. */
+ * A piece lying along the line itself has no side and is kept by both. */
 function sideOf(from: Vec2, curve: Cubic, difference: Depth): number {
   const d0 = depthAt(difference, from);
   const d1 = depthAt(difference, curve.control1);
@@ -374,15 +374,15 @@ function sideOf(from: Vec2, curve: Cubic, difference: Depth): number {
  * A path with everything on one side of the line taken out.
  *
  * A closed loop keeps its ends together: where the walk leaves the side being
- * kept and comes back to it, the two places are joined by the straight run
+ * kept and returns to it, the two places are joined by the straight run
  * between them, which is the clipped boundary running along the line. This is
  * Sutherland and Hodgman's clip, with the pieces cut at their crossings first so
  * that a curve is kept as the curve it was.
  *
  * A stroke is not joined up, whether or not its path was written closed, since a
- * stroke follows the line it is given and a run cut in two is two runs. What
- * decides is whether the mark has a fill rather than whether the subpath is
- * closed: a loop that is stroked and not filled is a line that comes back to
+ * stroke follows the line it is given and a run cut in two is two runs. The
+ * test is whether the mark has a fill rather than whether the subpath is
+ * closed: a loop that is stroked and not filled is a line that returns to
  * where it started, and closing its pieces along the clip would draw a stroke
  * down the cut.
  */
@@ -432,9 +432,9 @@ function closedRun(wanted: readonly Cut[]): Subpath {
  * The kept pieces of an open run as the runs they fall into, each one the stretch
  * between two crossings.
  *
- * Each run carries how far along the path it began, since a dash pattern starts
+ * Each run stores how far along the path it began, since a dash pattern starts
  * again at every subpath and a run that took its dashes from the pattern's own
- * start would hold dashes the path never had. The length is measured only where
+ * start would contain dashes the path never had. The length is measured only where
  * there is a dash to keep.
  */
 function openRuns(cuts: readonly Cut[], side: number, offset: number, measure: boolean): Run[] {
@@ -476,13 +476,13 @@ function straightTo(from: Vec2, to: Vec2): Cubic {
  *
  * A dashed stroke leaves one mark per run rather than one mark per side, because
  * the dash pattern starts again at every subpath, so a run cut out of the middle
- * of a path carries the length before it as its own offset and keeps the dashes
+ * of a path stores the length before it as its own offset and keeps the dashes
  * where they were.
  */
 function cutMark(mark: Mark, lines: readonly Depth[], at: number): Piece[] {
   const depth = mark.depth as Depth;
   if (lines.length === 0 || mark.kind === 'text') return [pieceOf(mark, depth, at, mark.id)];
-  // A shape carrying both is cut twice, since the two are cut differently: the
+  // A shape with both is cut twice, since the two are cut differently: the
   // fill is closed along the line and the stroke is not, and one path cut as a
   // fill would draw the stroke along every cut as well. The two leave two marks
   // the way a tapered stroke does, the fill under its own id and the stroke under
@@ -507,7 +507,7 @@ function cutMark(mark: Mark, lines: readonly Depth[], at: number): Piece[] {
     }
     parts = next;
   }
-  // A mark every line missed comes back whole, under the id it arrived with,
+  // A mark every line missed is returned whole, under the id it arrived with,
   // since a piece numbered off a mark that was never cut is a new id for nothing.
   if (parts.length === 1 && parts[0].length === mark.path.length && parts[0].every((run, step) => run.subpath === mark.path[step])) {
     return [pieceOf(mark, depth, at, mark.id)];
@@ -568,7 +568,7 @@ function orderStretch(marks: readonly Mark[]): readonly Mark[] {
     wanted.push({ one, other, difference, cutsOne, cutsOther });
   });
 
-  // A pair either of the two could take goes to whichever of them is carrying
+  // A pair either of the two could take goes to whichever of them has
   // fewer lines already. A mark cut by several lines is cut into the pieces of
   // their arrangement, so the count matters more than which of the two is the
   // simpler shape: one big cell cut by every small one it covers leaves far more
@@ -644,7 +644,7 @@ function meetingPairs(boxes: readonly (Bounds | null)[], met: (one: number, othe
  * a piece is nearer than another only where the two meet, so the pieces are
  * sorted by that order rather than by a depth read at one place. The pieces that
  * nothing is waiting on are taken in the order their marks stood in the list,
- * which is what decides two pieces at one depth.
+ * which is what orders two pieces at one depth.
  */
 function furthestFirst(pieces: readonly Piece[]): readonly Mark[] {
   const count = pieces.length;
@@ -698,11 +698,11 @@ function furthestFirst(pieces: readonly Piece[]): readonly Mark[] {
  * One piece added to what is drawn, folded into the piece before it where the
  * two came from one mark and nothing was drawn between them.
  *
- * Two pieces of one mark painted one after the other draw what one mark holding
+ * Two pieces of one mark painted one after the other draw what one mark containing
  * both would, and a cut leaves many of them next to each other, so folding them
  * back together costs nothing and is what keeps a cut picture near the size of
  * the picture it was cut from. A dashed stroke is left alone, since each of its
- * runs carries where along the path it began.
+ * runs stores where along the path it began.
  */
 function join(drawn: Mark[], piece: Piece, last: Piece | undefined): void {
   const mark = piece.mark;
@@ -719,7 +719,7 @@ function join(drawn: Mark[], piece: Piece, last: Piece | undefined): void {
  * One piece freed from a ring of pieces each waiting on the next.
  *
  * Three pieces can each be over the next and under the one after, which no order
- * of whole pieces answers, so one of the orders in the ring has to go. The ring
+ * of whole pieces satisfies, so one of the orders in the ring has to go. The ring
  * is found by walking backwards from a piece that is stuck until a piece turns up
  * twice, and the order dropped is the one resting on the smallest difference of
  * depths, which is the one the ring has the least reason for. Everything else the
@@ -774,7 +774,7 @@ function breakRing(
 }
 
 /**
- * The pieces nothing is waiting on, handed back in the order their marks stood
+ * The pieces nothing is waiting on, returned in the order their marks stood
  * in the list.
  *
  * It is a heap rather than a list scanned for its smallest, since every piece
@@ -889,7 +889,7 @@ function spanSign(difference: Depth, hull: readonly Vec2[]): number {
 /**
  * The list a painter with no depth buffer draws, in the order it draws it.
  *
- * A list holding no depth at all is handed back as it stands, so every flat
+ * A list with no depth at all is returned as it stands, so every flat
  * figure pays nothing for this and a painter can call it on whatever it is
  * given.
  */

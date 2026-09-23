@@ -2,11 +2,11 @@
  * The shapes an annotation is made of, composed from marks rather than being
  * marks of their own.
  *
- * A builder hands back a group, so an arrow is a shaft and a head with ids of
+ * A builder returns a group, so an arrow is a shaft and a head with ids of
  * their own and an animation naming the arrow reaches both. Making an arrow a
  * single mark instead would mean one path that is stroked along its shaft and
  * filled at its head, and no mark can be both. `bracePath` is the one call here
- * that hands back a path, for a figure that wants the outline and not the group.
+ * that returns a path, for a figure that needs the outline and not the group.
  */
 import { vec2, type Vec2 } from '../values/vec2.js';
 import { circle, line, polygon, straight, type Cubic, type Path } from './path.js';
@@ -67,7 +67,7 @@ export interface BraceOptions {
   curl?: number;
 }
 
-/** The control distance a quarter circle wants, which is what makes each curl of
+/** The control distance a quarter circle needs, which is what makes each curl of
  * a brace an arc rather than a corner rounded by eye. */
 const QUARTER = (4 / 3) * (Math.SQRT2 - 1);
 
@@ -77,7 +77,7 @@ const QUARTER = (4 / 3) * (Math.SQRT2 - 1);
  *
  * It is one open subpath of six pieces: a curl out of each end, a run along at
  * the curl's own height, and two curls meeting at the tip. The tip is a corner
- * rather than a smooth turn, which is what a brace has and what says which point
+ * rather than a smooth turn, which is what a brace has and what shows which point
  * of it is being pointed at.
  *
  * The tip stands at the depth asked for whatever the span, and only the curl
@@ -161,8 +161,8 @@ export interface CalloutOptions {
   stroke: Stroke;
   fill: Fill;
   size: number;
-  /** The disc left on the thing being named. Nothing is drawn where this is zero,
-   * which is what a callout pointing at a moving thing wants. */
+  /** The disc left on the point being named. Nothing is drawn where this is zero,
+   * which is what a callout pointing at a moving mark needs. */
   marker?: number;
   align?: TextOptions['align'];
   baseline?: TextOptions['baseline'];
@@ -175,7 +175,7 @@ export interface CalloutOptions {
  * room, and the word at the end of it.
  *
  * This is the annotation a figure over a shader is made of. The words sit away
- * from what they name because a label on top of the picture hides the thing the
+ * from what they name because a label on top of the picture hides the mark the
  * reader was told to look at.
  */
 export function callout(name: string, at: Vec2, to: Vec2, content: string, options: CalloutOptions): GroupNode {

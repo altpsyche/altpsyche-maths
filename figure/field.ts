@@ -11,7 +11,7 @@
  *
  * The count is fixed by the resolution and never by the field, so a gate can
  * hold it. The one sample that draws nothing is the one whose vector is nothing,
- * and the count is what says where that happened.
+ * and the count is what shows where that happened.
  */
 import { interval, type Interval } from '../values/interval.js';
 import { vec2, type Vec2 } from '../values/vec2.js';

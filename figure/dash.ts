@@ -3,12 +3,12 @@
  *
  * The other two painters hand a dash to the platform under them: the SVG painter
  * writes `stroke-dasharray` and the canvas painter calls `setLineDash`. A card
- * has neither, so the cutting is done here, and each run comes back as an
+ * has neither, so the cutting is done here, and each run is returned as an
  * ordinary open subpath that widens and caps like any other.
  *
  * The rule is the SVG specification's. A pattern of odd length is repeated to
  * make it even, so `[1]` and `[1, 1]` draw the same runs. A pattern that is
- * empty, holds a value below nothing, or sums to nothing draws the path solid.
+ * empty, contains a value below nothing, or sums to nothing draws the path solid.
  * The pattern restarts at the beginning of each subpath, so two subpaths of
  * different lengths both open with a whole first dash.
  */
@@ -51,8 +51,8 @@ function drawsSolid(dash: readonly number[]): boolean {
  *
  * The offset moves the pattern back under the path, so an offset above nothing
  * opens the subpath partway into the pattern and an offset of a whole period
- * draws what an offset of nothing draws. Runs that meet are handed back as one,
- * which is what makes a pattern holding a gap of nothing draw as an unbroken
+ * draws what an offset of nothing draws. Runs that meet are returned as one,
+ * which is what makes a pattern containing a gap of nothing draw as an unbroken
  * line the way both other painters draw it.
  */
 function runsAlong(

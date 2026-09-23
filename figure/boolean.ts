@@ -3,13 +3,13 @@
  *
  * Both paths are cut at every place they cross, so that after the cutting every
  * piece is wholly inside the other path or wholly outside it. Each piece is
- * then decided one way or the other, the operation says which pieces it wants,
+ * then decided one way or the other, the operation sets which pieces it keeps,
  * and what is kept is stitched back into loops by joining ends that meet.
  *
  * The difference takes the second path's kept pieces the other way round, which
  * is what turns a disc taken out of the middle of another disc into a ring: the
  * inner loop is wound against the outer one and the nonzero rule the mark
- * carries leaves it empty.
+ * has leaves it empty.
  *
  * A piece lying along the other path's own edge is decided by which way the two
  * run rather than by which side it is on, because a point on an edge is the one
@@ -27,14 +27,14 @@ import { flattenPath, nearestEdge, windingAt } from './inside.js';
 import { TOLERANCE } from './tolerance.js';
 
 export interface BooleanOptions {
-  /** How close two things come before they count as the same place, in the
-   * picture's own units. It decides where two paths are read as crossing and
+  /** How close two points come before they count as the same place, in the
+   * picture's own units. It sets where two paths are read as crossing and
    * which ends are read as meeting. */
   readonly tolerance?: number;
 }
 
 
-/** One piece with the point it starts from, since a piece carries where it ends
+/** One piece with the point it starts from, since a piece stores where it ends
  * and not where it began. */
 interface Piece {
   readonly from: Vec2;
@@ -78,7 +78,7 @@ function piecesOf(path: Path): Piece[] {
 }
 
 /** A piece walked the other way, which is what puts a hole the opposite way
- * round from the loop it sits in. */
+ * round from the loop it lies in. */
 function reversed(piece: Piece): Piece {
   return {
     from: piece.curve.to,
@@ -119,7 +119,7 @@ function place(point: Vec2): string {
  * What a run of pieces that will not close stops with.
  *
  * Handing it back as a loop anyway is the one failure a caller cannot see: the
- * shape drawn is wrong and nothing about it says so. Every input is closed
+ * shape drawn is wrong and nothing about it shows the fault. Every input is closed
  * loops, so a run that will not close is this code being wrong rather than the
  * caller, and stopping is what makes that visible on the frame it happens.
  */
@@ -135,7 +135,7 @@ function refuse(pieces: number, start: Vec2, end: Vec2, tolerance: number): neve
  * The kept pieces joined into loops, by taking each end to the piece that
  * starts where it finishes.
  *
- * A piece carries its two controls and where it ends, so the loop takes where
+ * A piece stores its two controls and where it ends, so the loop takes where
  * each piece begins from where the piece before it ended. The two paths put
  * their cut at a place they each worked out on their own, so the two ends of a
  * join differ by whatever the crossing was out by, and that difference is
@@ -179,7 +179,7 @@ type Side = 'inside' | 'outside' | 'along' | 'against';
  * Where each piece stands against the other path, read at its middle.
  *
  * The middle stands for the whole piece because the cutting has already put a
- * break wherever the two paths meet, so a piece after it is wholly one thing.
+ * break wherever the two paths meet, so a piece after it is wholly on one side.
  */
 function sidesAgainst(
   pieces: readonly Piece[],

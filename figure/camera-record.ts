@@ -1,8 +1,8 @@
 /**
  * A camera written as data, and the projection under it.
  *
- * A built `Camera3` carries `project` and its `Projection` carries `place`, so a
- * figure that carried a built camera would carry two functions. What a figure
+ * A built `Camera3` stores `project` and its `Projection` stores `place`, so a
+ * figure that stored a built camera would store two functions. What a figure
  * stores is the pose and the choice of projection, and `resolveCamera` builds the
  * camera from them at the time being drawn.
  *

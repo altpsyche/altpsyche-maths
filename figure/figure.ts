@@ -1,13 +1,13 @@
 /**
  * A picture over time, and the one call that reads it.
  *
- * `at` is the whole public surface of a figure. Ask it for four seconds and it
- * gives the picture at four seconds, whatever it gave before, so a page playing
- * forward, a reader dragging a scrub bar backwards and a recorder walking a fixed
- * step are three consumers of one answer rather than three implementations of it.
+ * `at` is the whole public surface of a figure. Asked for four seconds, it
+ * returns the picture at four seconds whatever it returned before, so a page
+ * playing forward, a reader dragging a scrub bar backwards and a recorder walking
+ * a fixed step are three consumers of one answer, not three implementations.
  *
- * Nothing here touches a screen. What comes back is a list of marks in the
- * figure's own units, and a painter decides what to do with them.
+ * Nothing here touches a screen. `at` returns a list of marks measured in the
+ * figure's own units, and a painter turns them into something visible.
  */
 import { sampleTracks, type TrackValue, type Tracks } from '../timing/track.js';
 import { flatten, type Node } from './node.js';
@@ -86,7 +86,7 @@ export function durationOf(figure: Figure): number {
  * The marks the figure's own tree draws at a time, without its insets.
  *
  * A view entry naming a mark reads this rather than the whole list: an inset's
- * copy of a mark carries a name ending in that mark's own, so a view following
+ * copy of a mark has a name ending in that mark's own, so a view following
  * one would be handed the box round the mark and its magnified copy together and
  * would follow neither.
  */
@@ -149,7 +149,7 @@ export function marksAt(
  * The extent a figure declares is the base the view entries are folded over
  * rather than the answer, so a declared extent chosen from the shape of the
  * surface still chooses under a view that moves. A mark placed against the frame
- * is placed in the figure's own units, so this is the call that answers for where
+ * is placed in the figure's own units, so this is the call that returns where
  * the frame is.
  *
  * A scene that places a mark against the frame is not answered from here. It

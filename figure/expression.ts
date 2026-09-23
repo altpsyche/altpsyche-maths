@@ -1,20 +1,20 @@
 /**
  * A parameter a figure computes rather than states, written as data.
  *
- * A figure carries no functions, so a value that follows a track is an
+ * A figure contains no functions, so a value that follows a track is an
  * expression: a tree of named forms a renderer walks. The vocabulary is closed
  * and it is published, which is the whole difference between this and an
  * interpreter. A form outside it is refused with a sentence naming what was
- * asked for, so a figure that cannot be drawn says so rather than drawing
- * something else.
+ * asked for, so a figure that cannot be drawn is reported rather than drawn
+ * as something else.
  *
  * The tree is over numbers and over points, and that is a requirement rather
- * than a convenience: one vocabulary then carries a curve of one number, a
+ * than a convenience: one vocabulary then covers a curve of one number, a
  * parametric curve, a field of a place, a surface of two numbers and a pointwise
  * map of a shape. A form written for a scalar and widened afterwards costs a
  * major version to widen.
  *
- * The calls that read geometry take a path or a camera, and both carry
+ * The calls that read geometry take a path or a camera, and both contain
  * expressions of their own, so this module and those records name each other.
  * Neither reads the other while it is loading, which is what makes that safe.
  *
@@ -64,7 +64,7 @@ export interface Bindings {
 }
 
 /** What a frame expression may read off the extent. The set is versioned the
- * way the function set is, so a reader holds a file's `name` to these four. */
+ * way the function set is, so a reader checks a file's `name` against these four. */
 export const FRAME_MEASURES = Object.freeze(['width', 'height', 'aspect', 'centre'] as const);
 
 export type FrameMeasure = (typeof FRAME_MEASURES)[number];
@@ -77,7 +77,7 @@ export type Comparison = '<' | '<=' | '>' | '>=' | '=' | '!=';
  *
  * A bare number, boolean or point is a literal, which keeps the common case one
  * value rather than a record wrapping one value. A point is told from the record
- * forms by carrying no `kind`, so a fixed place in a figure is written the way
+ * forms by having no `kind`, so a fixed place in a figure is written the way
  * every other fixed place in this package is.
  */
 export type Expression =
@@ -113,7 +113,7 @@ export type Expression =
   | { readonly kind: 'camera'; readonly of: Camera3Record };
 
 /** A place rather than a number, a path or a pair of scales, told apart by
- * carrying a number in both members. */
+ * having a number in both members. */
 function isPoint(value: ExpressionValue): value is Vec2 {
   return typeof value === 'object' && !Array.isArray(value) && typeof (value as Vec2).x === 'number';
 }
@@ -122,7 +122,7 @@ function isPoint(value: ExpressionValue): value is Vec2 {
  * scales. */
 const isPath = (value: ExpressionValue): value is Path => Array.isArray(value);
 
-/** A camera carries the place its eye stands, which nothing else here does. */
+/** A camera stores the place its eye stands, which nothing else here does. */
 const isCamera = (value: ExpressionValue): value is Camera3 => typeof value === 'object' && 'eye' in value;
 
 export function asNumber(value: ExpressionValue, what: string): number {
@@ -312,10 +312,10 @@ function points(of: (first: Vec2, second: Vec2) => ExpressionValue): Callable {
 
 /** Every function an expression may name, in the order a reference lists them.
  * The set is versioned the way the node set is, so a figure written against one
- * version says which names it may use. */
+ * version may use only the names it lists. */
 export const EXPRESSION_FUNCTIONS: readonly string[] = Object.freeze(Object.keys(FUNCTIONS).sort());
 
-/** A track's value as something the vocabulary carries. A list has no value
+/** A track's value as something the vocabulary covers. A list has no value
  * type here, so the track is named rather than silently read as its first
  * number. */
 function valueOfTrack(value: TrackValue, name: string): ExpressionValue {

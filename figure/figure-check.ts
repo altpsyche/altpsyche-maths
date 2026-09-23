@@ -1,5 +1,5 @@
 /**
- * The vocabulary described as a table, and the walk that holds a value to it.
+ * The vocabulary described as a table, and the walk that checks a value by it.
  *
  * A file read from disk is whatever the bytes said, so the shape of every kind
  * is checked before a figure is built from it. The description is a table rather
@@ -11,7 +11,7 @@
  * a list wherever one is crossed, since a name on its own does not say which of
  * forty nodes carries it.
  *
- * A field a kind does not carry is refused rather than ignored. A renderer that
+ * A field a kind does not have is refused rather than ignored. A renderer that
  * ignored one would draw a figure another renderer draws differently, with
  * nothing to say the two disagreed, and the format's version is what a new field
  * arrives with instead.
@@ -21,7 +21,7 @@ import { EXPRESSION_FUNCTIONS, FRAME_MEASURES } from './expression.js';
 import type { FigureRecord } from './figure-record.js';
 import { PAINTER_NAMES } from './figure.js';
 
-/** One field of a record, and whether a figure has to carry it. */
+/** One field of a record, and whether a figure has to have it. */
 interface Field {
   readonly shape: Shape;
   readonly required?: true;
@@ -59,7 +59,7 @@ const may = (shape: Shape): Field => ({ shape });
 const ref = (name: string): Shape => ({ form: 'ref', name });
 const list = (of: Shape, length?: number): Shape => (length === undefined ? { form: 'list', of } : { form: 'list', of, length });
 
-/** What every solid carries beyond its own measurements, written once because
+/** What every solid has beyond its own measurements, written once because
  * the eight kinds of solid differ only in those measurements and in whether they
  * name the camera they are seen from. */
 const STANDS = { name: need(text), centre: need(ref('point3')), options: need(ref('solidOptions')) };
@@ -849,8 +849,8 @@ const refuse = (path: string, said: string): never => {
 const isObject = (value: unknown): value is Record<string, unknown> =>
   typeof value === 'object' && value !== null && !Array.isArray(value);
 
-/** A value held to one shape, refusing with the path of the field where it does
- * not hold. Nothing is returned, since what a file carried is what is drawn. */
+/** A value checked against one shape, refusing with the path of the field where
+ * it fails. Nothing is returned, since what a file contains is what is drawn. */
 function check(value: unknown, shape: Shape, path: string): void {
   switch (shape.form) {
     case 'ref': {
@@ -917,7 +917,7 @@ function check(value: unknown, shape: Shape, path: string): void {
 
 /**
  * One record against its fields, refusing a required field that is absent and a
- * field the kind does not carry.
+ * field the kind does not have.
  *
  * A field written as `undefined` counts as absent, since that is what a record
  * built in TypeScript carries for a field it leaves out and a written file drops
@@ -943,9 +943,9 @@ function checkFields(value: unknown, what: string, held: Fields, path: string, t
 }
 
 /**
- * A value held to the shape of a figure, handed back as one.
+ * A value checked against the shape of a figure, and returned as one.
  *
- * What comes back is the value that was given rather than a copy of it, so a
+ * The value returned is the value that was given rather than a copy of it, so a
  * reader parses once and draws what it parsed.
  */
 /**
@@ -972,15 +972,15 @@ function tracksRead(value: unknown, path: string, found: Map<string, string>): v
 }
 
 /**
- * A value held to the shape of a figure, handed back as one.
+ * A value checked against the shape of a figure, and returned as one.
  *
- * Two things are read after the shapes and neither is a shape: a span that runs
- * backwards, and an expression naming a track the figure does not carry. A
- * renderer wants both answers before it draws, where a track missing from a
- * figure otherwise refuses at the first time the expression is reached, which is
- * however far into the timeline that span begins.
+ * Two faults are checked after the shapes and neither is a fault of shape: a
+ * span that runs backwards, and an expression naming a track the figure does not
+ * have. A renderer needs both answers before it draws, where a track missing
+ * from a figure otherwise refuses at the first time the expression is reached,
+ * which is however far into the timeline that span begins.
  *
- * What comes back is the value that was given rather than a copy of it, so a
+ * The value returned is the value that was given rather than a copy of it, so a
  * reader parses once and draws what it parsed.
  */
 export function checkFigure(value: unknown): FigureRecord {

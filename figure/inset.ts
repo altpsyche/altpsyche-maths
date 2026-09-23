@@ -27,14 +27,14 @@ export interface Inset {
   /** The rectangle of the frame the inset is drawn into, in the figure's own
    * units. */
   into: Bounds;
-  /** Whether what the inset shows is held inside its rectangle, leaving margins
+  /** Whether what the inset shows fits inside its rectangle, leaving margins
    * where the two shapes differ, or fills it and runs off two edges. */
   fit?: Fit;
   /**
    * One view move the inset's own extent is put through, applied in full at
    * every time.
    *
-   * It is the same `ViewChange` a figure's timeline carries, so an inset follows
+   * It is the same `ViewChange` a figure's timeline contains, so an inset follows
    * a mark or frames a group by the forms that already exist. There is no span
    * and no easing, because an inset that eased into following would show the
    * wrong part of the picture while it caught up.
@@ -101,7 +101,7 @@ function reachOf(mark: Mark): Bounds | null {
  *
  * Every mark is magnified and clipped to the inset's rectangle, and one whose
  * whole reach falls outside that rectangle is left out, as is one the inset
- * hides. A mark already carrying a clip keeps it: its clip is magnified with it
+ * hides. A mark that already has a clip keeps it: its clip is magnified with it
  * and then cut down to the inset's rectangle, so a mark clipped in the figure is
  * clipped the same way in the inset.
  */

@@ -3,7 +3,7 @@
  *
  * A depth is an affine function of the page: the depth at (x, y) is
  * a·x + b·y + c, and the mark with the smaller number at a point is the nearer
- * one there. Three numbers carry it exactly because a mark in space is a flat
+ * one there. Three numbers store it exactly because a mark in space is a flat
  * piece of the world, and the depth of a plane is affine on the page under a
  * parallel projection. Under a perspective projection the affine quantity is the
  * reciprocal of the depth, which is what perspective-correct interpolation on a

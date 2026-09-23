@@ -1,13 +1,13 @@
 /**
  * The places a curve in space passes through, from a function of one number.
  *
- * Nothing here draws them. The places come back in the world's own coordinates,
+ * Nothing here draws them. The places are in the world's own coordinates,
  * the way the curve where a plane cuts a surface does, and what a figure does
  * with them is its own: `polyline3` draws one run, and a scene sorts a run
  * against the solid it lies on.
  *
  * The count is fixed by the resolution and never by the curve. A count that
- * followed the curve would hand back a different number of places at every time,
+ * followed the curve would return a different number of places at every time,
  * which is a count no gate can hold and a run no morph can pair up against
  * another.
  */
@@ -19,7 +19,7 @@ import { polyline3, type SpaceItem } from './space.js';
 
 export interface Curve3Options {
   /** How many steps the run is cut into, which is one fewer than the count of
-   * places it hands back. */
+   * places it returns. */
   resolution?: number;
   /** The run of the parameter the curve is read over, which is nothing to one
    * where it is left out. */
@@ -38,9 +38,9 @@ const STEPS = 96;
  * The places a curve in space passes through, in order, both ends of the run
  * included.
  *
- * A curve that closes hands back its first place again at the end, since the
- * function itself is what says so, and a run that a painter closes would say it
- * twice.
+ * A curve that closes returns its first place again at the end, since the
+ * function itself is what closes it, and a run that a painter closes would be
+ * closed twice.
  */
 export function curveOf3(of: (t: number) => Vec3, options: Curve3Options = {}): Vec3[] {
   const steps = Math.max(1, Math.round(options.resolution ?? STEPS));
@@ -51,7 +51,7 @@ export function curveOf3(of: (t: number) => Vec3, options: Curve3Options = {}): 
 }
 
 /** How the pieces of a curve are drawn, which is a curve's own options and the
- * style each piece carries. */
+ * style each piece has. */
 export type CurvePieces3Options = Curve3Options & Style;
 
 /**
@@ -63,7 +63,7 @@ export type CurvePieces3Options = Curve3Options & Style;
  * of its middle, which paints the half of it that is behind the cylinder in
  * front of the cylinder.
  *
- * Each piece carries the name it was given ahead of its own place along the run,
+ * Each piece stores the name it was given ahead of its own place along the run,
  * so an animation can still name a whole curve once its pieces are mixed with a
  * solid's cells.
  *

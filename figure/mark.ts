@@ -1,6 +1,7 @@
 /**
- * One drawn item, resolved: its geometry is in the figure's own units with every
- * transform already applied, and its style is settled rather than inherited.
+ * A mark is what one node becomes at one time. Its geometry is measured in the
+ * figure's own units with every transform applied, and its style is settled
+ * rather than inherited.
  *
  * What a mark may ask for was once the intersection of what an SVG element and a
  * two-dimensional canvas can both do, so that a figure could not reach for
@@ -16,7 +17,7 @@
  * and the type is what keeps a figure from asking for the other one.
  *
  * A gradient is refused for a different reason, since both painters draw one.
- * SVG names a gradient with an element carrying an id and a canvas names it with
+ * SVG names a gradient with an element with an id and a canvas names it with
  * an object built from the context, and a colour here is four channels each
  * painter writes in its own text.
  */
@@ -34,8 +35,8 @@ export type { Colour };
  * The width leaves the first number for the second along the named curve, read
  * at the fraction of the whole path's length rather than of the piece it falls
  * in, which is the measure a path is trimmed by as well. A curve is named
- * rather than passed, because a figure written as a file carries a name and
- * cannot carry a function.
+ * rather than passed, because a figure written as a file stores a name and
+ * cannot store a function.
  */
 export interface Taper {
   /** The width where the path starts, in figure units. */
@@ -76,9 +77,9 @@ export interface Stop {
  * units.
  *
  * The axis is a pair of points rather than an angle and a length, because both
- * painters take it that way: an SVG element carries the two ends and a canvas
+ * painters take it that way: an SVG element stores the two ends and a canvas
  * context is handed them as four numbers. Being in the mark's own units is what
- * lets a group's transform carry the axis with the shape it fills.
+ * lets a group's transform move the axis with the shape it fills.
  */
 export interface Gradient {
   from: Vec2;
@@ -92,11 +93,11 @@ export interface Fill {
    * colour reads, a contrast reading included. */
   colour: Colour;
   /** The stops this fill is painted with, where it is painted with more than one
-   * colour. A fill carrying one is drawn as the gradient rather than as the
+   * colour. A fill with one is drawn as the gradient rather than as the
    * colour beside it. */
   gradient?: Gradient;
-  /** How a shape that crosses itself decides what is inside. Both painters
-   * carry both answers under different names. */
+  /** How the inside of a shape that crosses itself is found. Both painters
+   * support both rules under different names. */
   rule?: 'nonzero' | 'evenodd';
 }
 
@@ -105,7 +106,7 @@ export interface Fill {
  * drawn.
  *
  * The depth at the page point (x, y) is a·x + b·y + c, and the mark with the
- * smaller depth there is the nearer one. Three numbers carry it exactly because a
+ * smaller depth there is the nearer one. Three numbers state it exactly because a
  * mark in space is a flat piece of the world: the depth of a plane is an affine
  * function of the page under a parallel projection, and under a perspective
  * projection the reciprocal of that depth is, which is the quantity a card
@@ -133,10 +134,10 @@ interface Common {
    * How far this mark is from the eye across the page, absent on every mark a
    * flat figure draws.
    *
-   * Where two marks carrying one overlap, the nearer of the two at a point is
+   * Where two marks with one overlap, the nearer of the two at a point is
    * drawn over the further one there, whatever order the list gives. Where one
-   * of the two carries none, and where both are at the same depth, the order of
-   * the list decides instead.
+   * of the two has none, and where both are at the same depth, the order of
+   * the list places them instead.
    */
   depth?: Depth;
   /**

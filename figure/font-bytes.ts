@@ -3,8 +3,8 @@
  * `font/build.mjs` and not by hand.
  *
  * A font arrives as a module rather than as a file beside the code because a file
- * is reached by a path, and a path is a different thing in Node, behind a bundler
- * and in a browser with neither. An import is the same thing everywhere. The
+ * is reached by a path, and a path resolves differently in Node, behind a bundler
+ * and in a browser with neither. An import resolves the same way everywhere. The
  * module is loaded by the call that needs it, so a consumer who never draws a
  * label never fetches these bytes.
  *
@@ -12,7 +12,7 @@
  * Open Font License 1.1. The licence text ships beside the generator.
  */
 
-/** The subset as base64, which is what a module can carry and a byte array
+/** The subset as base64, which is what a module can contain and a byte array
  * cannot. */
 const ENCODED =
   'AAEAAAAKAIAAAwAgT1MvMmlSAAwAADiEAAAAYGNtYXAiwURFAAA45AAAAFRnbHlmnGFkDwAAAKwAADKMaGVhZCiD2/4AADT0' +
@@ -227,7 +227,7 @@ const ENCODED =
   'AGkAbwBuACAAMgAuADAAMQA1ADsAIAB0AHQAZgBhAHUAdABvAGgAaQBuAHQAIAAoAHYAMQAuADgALgA0AC4ANwAtADUAZAA1' +
   'AGIAKQBOAG8AdABvAFMAYQBuAHMALQBSAGUAZwB1AGwAYQByAAMAAAAAAAD/nAAyAAAAAAAAAAAAAAAAAAAAAAAAAAA=';
 
-/** The typeface's bytes, decoded once and held, since every label read after the
+/** The typeface's bytes, decoded once and kept, since every label read after the
  * first reads the same font. */
 let decoded: Uint8Array | undefined;
 

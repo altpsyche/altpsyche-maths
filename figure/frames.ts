@@ -1,12 +1,12 @@
 /**
  * A figure walked at a fixed step, a frame at a time.
  *
- * A frame is the marks and the view read at one time, handed over together. A
- * consumer that asked for them separately holds two calls it can pass different
+ * A frame is the marks and the view read at one time, returned together. A
+ * consumer that asked for them separately makes two calls it can pass different
  * times, and a figure whose view moves then paints its marks through the matrix
  * of some other moment.
  *
- * Frames come back one at a time rather than as a list. A ten second figure at
+ * Frames are returned one at a time rather than as a list. A ten second figure at
  * sixty frames a second is six hundred frames of every mark it draws, and a
  * recorder encodes a frame and throws it away.
  */
@@ -28,10 +28,10 @@ export interface Frame {
 /**
  * How the walk is stepped, as a rate or as a count.
  *
- * The two are different questions. A recorder knows how fast the frames play and
- * needs a step of exactly one over that, or the encoded video drifts from the
- * figure's own clock. A strip knows how many pictures fit across a page and wants
- * them spread over the whole figure.
+ * The two are different questions. A recorder is given the frame rate and needs a
+ * step of exactly one over that rate, or the encoded video drifts from
+ * the figure's own clock. A strip is given the count of pictures that fit
+ * across a page and needs them spread over the whole figure.
  */
 export type FrameStep = ({ fps: number; frames?: never } | { frames: number; fps?: never }) & {
   /** How long the walk runs for, where that is not the figure's own length. A

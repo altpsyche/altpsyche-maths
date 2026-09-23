@@ -3,9 +3,9 @@
  * space becomes a point in the figure's units.
  *
  * A camera is a value the caller holds, the way a `Scale` is, and nothing inside
- * a figure owns one. That is what keeps the seam: `at(figure, seconds)` gives
- * back marks measured in the figure's own units, so a point in space has to
- * become a point in those units before it is a mark at all. A camera inside the
+ * a figure owns one. That is what keeps the seam: `at(figure, seconds)` returns
+ * marks measured in the figure's own units, so a point in space has to become
+ * a point in those units before it is a mark at all. A camera inside the
  * flattening would make every animation say whether it acts on the shape in
  * space or on the picture of it, which is a question `fadeIn` should never be
  * asked.
@@ -68,7 +68,7 @@ export type PerspectiveChoice = {
 };
 
 /**
- * An eye that sees things smaller the further off they are.
+ * An eye that sees objects smaller the further off they are.
  *
  * The matrix is built at an aspect of one and only its x and y are read, so the
  * same shrinking factor is used across and up and a circle facing the eye stays a
@@ -104,7 +104,7 @@ export type Camera3Choice = {
  * A projection written as data: which of the two, with the parameters its own
  * builder takes.
  *
- * A built `Projection` carries `place`, which is a function, so a figure stores
+ * A built `Projection` stores `place`, which is a function, so a figure stores
  * the choice and a resolver builds the projection.
  */
 export type ProjectionChoice =

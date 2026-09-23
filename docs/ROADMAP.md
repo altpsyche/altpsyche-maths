@@ -1669,15 +1669,19 @@ Steps, one commit each:
 - [x] README.md. The check read 1 noun, 1 voice pattern and 30 by eye, and reads 0, 0 and 14.
 - [x] `values/`, `timing/` and `index.ts`. The check read 3 nouns, 7 voice patterns and 33 by
       eye over the ten files, and reads 0, 0 and 12. The stripped source is identical for all 83.
-- [ ] `figure/` A to M, then `figure/` N to Z, as two commits since the directory is 67 files. Each
-      quotes the comment counts and the stripped-source equality.
+- [x] `figure/` A to M, 38 files. The check read 23 nouns, 72 voice patterns and 217 by eye over
+      them, and reads 0, 0 and 48. The stripped source is identical for all 83.
+- [ ] `figure/` N to Z, 29 files. Quotes the comment counts and the stripped-source equality.
 - [ ] `paint/`. Quotes the comment counts and the stripped-source equality.
 - [ ] Local variables and unexported helpers whose names use a banned noun, renamed. Quotes the
       count of names and `npm test` before and after.
 - [ ] Exported names using a banned noun, listed with the proposed names and put to Siva. No rename
       lands in this version.
 - [ ] `check:vocab` turned to exit 1 on a banned noun or a banned pattern, never on a containment
-      word, and named in CLAUDE.md's gates beside the other three commands.
+      word, and named in CLAUDE.md's gates beside the other three commands. Its patterns match
+      within one line, so a phrase broken across a comment's line break is missed ("gives" then
+      "back" in `figure/camera.ts` was one), and `know` without the s is not matched ("the
+      typesetter does not know" in `figure/equation.ts` was one). Both are closed in this step.
 
 Done when:
 

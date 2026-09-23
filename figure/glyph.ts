@@ -8,7 +8,7 @@
  * two are the same curve at every parameter, so a drawn letter spends only the
  * flattening tolerance the triangulation already spends.
  *
- * The coordinates come back in font units with y counting up, which is how the
+ * The coordinates are returned in font units with y counting up, which is how the
  * table writes them. A label turns them over and scales them, since a figure's y
  * counts down.
  */
@@ -232,7 +232,7 @@ function compositeGlyph(font: Font, view: DataView, at: number, depth: number): 
  *
  * A glyph with no outline gives an empty path, which is what a space is. A glyph
  * index past the end of the font gives one too, rather than a refusal, since a
- * code point the font does not cover already answers the missing-glyph box.
+ * code point the font does not cover already maps to the missing-glyph box.
  */
 export function glyphPath(font: Font, glyph: number, depth = 0): Path {
   if (glyph < 0 || glyph >= font.glyphCount || depth > NESTING) return [];

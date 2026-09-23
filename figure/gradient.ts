@@ -20,7 +20,7 @@ export function transformGradient(gradient: Gradient, m: Transform2D): Gradient 
 }
 
 /** A fill through a transform, which is its gradient's axis and nothing else. A
- * fill of one colour is handed back as it stands. */
+ * fill of one colour is returned as it stands. */
 export function transformFill(fill: Fill, m: Transform2D): Fill {
   if (!fill.gradient) return fill;
   return { ...fill, gradient: transformGradient(fill.gradient, m) };

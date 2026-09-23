@@ -18,7 +18,7 @@ import type { Fit } from './extent.js';
 import type { Figure, PainterName } from './figure.js';
 import type { Tracks } from '../timing/track.js';
 
-/** A whole figure as data, which is the nine fields `Figure` carries with each
+/** A whole figure as data, which is the nine fields `Figure` has with each
  * function of the clock written as the record that describes it. */
 export interface FigureRecord {
   readonly extent: ExtentRecord;
@@ -37,7 +37,7 @@ export interface FigureRecord {
  * The figure a record describes, which `marksAt` then reads at a time.
  *
  * An animation's own parameters are read once here rather than at each time,
- * because a figure carries one timeline and every time reads that same one. A
+ * because a figure has one timeline and every time reads that same one. A
  * shape driven by a track reaches a picture through the scene instead, which is
  * where a track belongs: an animation moves marks the scene has already made.
  */

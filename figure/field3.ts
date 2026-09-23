@@ -33,7 +33,7 @@ export type VectorField3Options = ArrowOptions & {
  * An arrow is measured in the world's own units rather than the figure's, unlike
  * the arrows of a flat field, because a length in space is what perspective is
  * for: a far arrow drawing shorter than a near one of the same magnitude is what
- * says which is far. Its head is still in figure units, since the head is drawn
+ * shows which is far. Its head is still in figure units, since the head is drawn
  * on the page.
  *
  * A sample sits at the middle of its cell and the count is fixed by the

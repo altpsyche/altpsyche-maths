@@ -1,7 +1,7 @@
 /**
  * A figure as the text of a file, and the version the text declares.
  *
- * A file is a JSON document carrying two fields: the version of the format the
+ * A file is a JSON document with two fields: the version of the format the
  * figure is written in, and the figure. Nothing else is in the envelope, because
  * a field a renderer is not required to read is a field two renderers disagree
  * about.
@@ -20,7 +20,7 @@ import type { Figure } from './figure.js';
  * its own and a reader refuses one it does not know. */
 export const FIGURE_FORMAT_VERSION = 1;
 
-/** What a file holds: the version of the format, and one figure. */
+/** What a file contains: the version of the format, and one figure. */
 export interface FigureFile {
   readonly format: number;
   readonly figure: FigureRecord;

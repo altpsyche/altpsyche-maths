@@ -31,14 +31,14 @@ export interface Axes3Options {
    * missing. */
   size?: number;
   /** About how many ticks are wanted on each axis. The step is a round number,
-   * so the count that comes back is near this rather than equal to it. */
+   * so the count that is returned is near this rather than equal to it. */
   ticks?: number;
   /** How far a tick reaches across its axis in world units, half either side. */
   tickLength?: number;
   /** From the projected tick to the label's own anchor, in figure units. */
   gap?: number;
   /** What each axis is called, written past its far end. An axis this does not
-   * name carries no name, and nothing is written at all without a `fill` and a
+   * name has no name, and nothing is written at all without a `fill` and a
    * `size`. */
   names?: { x?: string; y?: string; z?: string };
   family?: string;
@@ -46,7 +46,7 @@ export interface Axes3Options {
   /**
    * Whether the axes are drawn over the picture rather than inside it.
    *
-   * Their marks then carry no depth, so nothing in the scene hides a line or a
+   * Their marks then have no depth, so nothing in the scene hides a line or a
    * tick number. A number a surface covers cannot be read, and the axes are what
    * a reader measures the surface against, so a figure drawing a solid over its
    * own middle asks for this. Left out, the axes stand in the scene like anything
@@ -159,8 +159,8 @@ export function axes3(name: string, camera: Camera3, options: Axes3Options): Gro
 }
 
 /** The same nodes with the depth every space builder fitted taken off, which is
- * what a mark drawn over the picture carries: a mark with no depth is painted
- * over everything before it and nothing earlier comes back over it. */
+ * what a mark drawn over the picture has: a mark with no depth is painted
+ * over everything before it and nothing earlier is painted over it. */
 function withoutDepth(node: Node): Node {
   if (node.kind === 'group') {
     const { style, ...rest } = node;

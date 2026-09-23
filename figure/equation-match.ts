@@ -13,7 +13,7 @@
  * right-hand side, and it pairs each occurrence of a repeated glyph once rather
  * than pairing several to one partner.
  *
- * The token is read off the id rather than carried beside the mark because a
+ * The token is read off the id rather than stored beside the mark because a
  * consumer stores a typeset equation rather than typesetting it again, and what
  * it stores is a path and the id it belongs to. A code point kept elsewhere
  * would have to be stored elsewhere too, and the matching would fail on
@@ -29,17 +29,17 @@ import type { Mark, PathMark } from './mark.js';
 export interface GlyphMatch {
   /** Each glyph of the expression being left beside the one it becomes. */
   readonly pairs: readonly (readonly [PathMark, PathMark])[];
-  /** Glyphs of the expression being left that nothing in the other answers. */
+  /** Glyphs of the expression being left that nothing in the other matches. */
   readonly leaving: readonly PathMark[];
   /** Glyphs of the expression being arrived at that nothing in the first
-   * answers. */
+   * matches. */
   readonly arriving: readonly PathMark[];
 }
 
 /**
  * What a mark matches on: its leaf name after the first dash.
  *
- * A mark whose leaf carries no dash is not a glyph a typesetter wrote, and it
+ * A mark whose leaf has no dash is not a glyph a typesetter wrote, and it
  * pairs with nothing rather than pairing with every other mark that is also
  * unnamed.
  */
@@ -86,9 +86,9 @@ interface Match<T> {
   readonly arriving: readonly T[];
 }
 
-/** Two lists paired by key, in order, with what no key answers kept apart. An
- * item whose key is nothing pairs with nothing rather than with every other item
- * that also has none. */
+/** Two lists paired by key, in order, with what no key matches kept apart. An
+ * entry whose key is nothing pairs with nothing rather than with every other
+ * entry that also has none. */
 function pairedByKey<T>(
   from: readonly T[],
   to: readonly T[],
@@ -104,7 +104,7 @@ function pairedByKey<T>(
   };
 }
 
-/** Two typeset expressions paired glyph by glyph, with what neither answers kept
+/** Two typeset expressions paired glyph by glyph, with what neither matches kept
  * apart. Marks that are not paths are left out, since a glyph is an outline. */
 export function matchGlyphs(from: readonly Mark[], to: readonly Mark[]): GlyphMatch {
   return pairedByKey(glyphsOf(from), glyphsOf(to), (mark) => glyphToken(mark.id));
@@ -113,19 +113,19 @@ export function matchGlyphs(from: readonly Mark[], to: readonly Mark[]): GlyphMa
 export interface MarkMatch {
   /** Each mark of the group being left beside the mark it becomes. */
   readonly pairs: readonly (readonly [Mark, Mark])[];
-  /** Marks of the group being left that nothing in the other answers. */
+  /** Marks of the group being left that nothing in the other matches. */
   readonly leaving: readonly Mark[];
-  /** Marks of the group being arrived at that nothing in the first answers. */
+  /** Marks of the group being arrived at that nothing in the first matches. */
   readonly arriving: readonly Mark[];
 }
 
 /**
  * Two groups of marks paired one to one, by key first and by order after.
  *
- * The key is paired as a longest common subsequence, so a key both groups carry
+ * The key is paired as a longest common subsequence, so a key both groups have
  * pairs in the order the marks stand in and a repeated key pairs each of its
  * occurrences once. The kind is part of what is matched on, since a path cannot
- * walk into a string, so a path and a text mark carrying one key pair with
+ * walk into a string, so a path and a text mark with one key pair with
  * nothing.
  *
  * What the key left over pairs by order within its own kind, which is what makes

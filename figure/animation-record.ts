@@ -2,7 +2,7 @@
  * An animation written as data rather than as a call.
  *
  * A record is a kind, the target it changes and its parameters, and
- * `resolveAnimation` hands back the `Animation` the timeline already plays, so
+ * `resolveAnimation` returns the `Animation` the timeline already plays, so
  * nothing below that line moves. A target stays an id or the front of one, which
  * is what lets one name reach a whole group.
  *
@@ -170,7 +170,7 @@ export interface MorphGroupRecord {
  * The three that add marks rather than change them.
  *
  * Each names its target alone, since the marks it adds are named from that
- * target: a flash's rays and the shape a circumscribe draws carry the target's
+ * target: a flash's rays and the shape a circumscribe draws have the target's
  * own name in front of theirs, so a record naming them again would be a second
  * place the same name is written.
  */
@@ -197,7 +197,7 @@ export interface CircumscribeRecord {
  *
  * How the number is written is a precision rather than a writer, which is the
  * step it is rounded and padded to, the way a tick's label takes one. The call
- * keeps its writer, since a count of a population wants a form no precision
+ * keeps its writer, since a count of a population needs a form no precision
  * spells, and a figure that needs one writes the count as a text hole that
  * follows a track instead.
  */
@@ -213,7 +213,7 @@ export interface CountToRecord {
  * The three indications Manim has that this did not, and the one that writes.
  *
  * Each names its target and its own options, and the marks a passing flash adds
- * carry the lit mark's own name in front of theirs, so a record naming them
+ * have the lit mark's own name in front of theirs, so a record naming them
  * again would be a second place the same name is written.
  */
 export interface ShowPassingFlashRecord {
@@ -271,7 +271,7 @@ export type AnimationRecord =
  *
  * A kind outside the set is refused with a sentence naming what was asked for,
  * the way an expression refuses a function it has no entry for. A figure read
- * from a file carries whatever the file says, so the check is at run time rather
+ * from a file contains whatever the file stores, so the check is at run time rather
  * than in the types alone.
  */
 export function resolveAnimation(record: AnimationRecord, bindings: Bindings = {}): Animation {
