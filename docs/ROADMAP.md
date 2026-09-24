@@ -1755,6 +1755,11 @@ entry's steps come first, then 3.4.0 and 4.0.0 in ladder order, then the handove
       needs three answers: the trusted publisher set on npmjs.com for `publish.yml`, a yes to
       pushing `v3.0.0`, and which version the workflow publishes first, since 3.3.0 is cut and npm
       carries 3.0.0. Until then the next pick is 3.4.0, whose steps are below.
+      **Siva answered two of the three on 2026-09-24.** No tag is pushed for 3.0.0, so the first
+      tag is the version the workflow publishes. That version is 3.4.0, published once after 3.4.0
+      step 8 cuts it, with 3.1.0 through 3.3.0 never reaching npm. The trusted publisher is not set
+      yet, and until Siva sets it on npmjs.com this step keeps waiting and no `publish.yml` is
+      written.
       The engine's `publish.yml`: on a release being
       published, the gates, then `npm publish --provenance --access public` with `id-token: write`
       and no npm token anywhere. What it costs is that the trust lives in a registry setting naming
@@ -1783,7 +1788,8 @@ entry's steps come first, then 3.4.0 and 4.0.0 in ladder order, then the handove
    workflow states why a runner cannot run it and the gate stays by hand. The same for
    `gate:record` and the count of files it wrote.
 6. A runner's reading is quoted beside this machine's, since a runner's renderer is not this card.
-7. The `v3.0.0` tag is pushed, since a release is made from a tag.
+7. The `v3.4.0` tag is pushed, since a release is made from a tag, and it is the first tag this
+   repository carries.
 8. A version published by the workflow shows provenance on the package page, and no npm token
    exists in this tree or in its settings.
 9. The Releases section of `CLAUDE.md` carries the rule in at most three sentences, it names what
