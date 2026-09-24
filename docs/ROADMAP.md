@@ -1892,12 +1892,16 @@ and a figure asked twice with the same two answers the same picture twice.
       and every committed figure file. **Measurement:** 3 `items` keys to 0, the eight committed files
       read to the same mark counts at the still and at half the duration, and a version 1 file
       refused with the sentence naming both numbers. **Landed:** 3 keys to 0 and 8 `format` lines to 2, the eight files at the same counts from boolean's 12 and 12 to tangent's 236 and 244 at a 16:9 aspect, and "this reads version 2 of the format and the file is written in version 1".
-- [ ] **3. A figure is read with held values.** `marksAt`, `extentAt` and `viewAt` take the held
+- [x] **3. A figure is read with held values.** `marksAt`, `extentAt` and `viewAt` take the held
       values, a held value replaces the sampled value of the track of that name, and a name no track
       carries is refused by name. The rule in DESIGN.md becomes a pure function of time and the held
       values. **Measurement:** the flat demo at named times with `s` held at what its track reads
       there, against the same times with nothing held, by tolerance; the dot with `s` held at 0.25
       against `pointAlong` of the walked stretch at 0.25; and `npm run demos` changing 0 bytes.
+      **Landed:** the flat demo at its 7 named times and the solid demo at its 4 draw the same marks
+      held and unheld within 1e-9, the dot at `s` 0.25 sits within 1e-9 of `pointAlong`, a held `s`
+      moves the view that follows the dot, `turn` held on the flat demo is refused by name, the suite
+      reads 1,540 of 1,540 over 99 files against 1,536 over 98, and `npm run demos` changes 0 bytes.
 - [ ] **4. A pixel becomes a place and a press takes an input.** The inverse of the matrix `viewAt`
       returns turns a pixel into figure units, and a press takes the input whose named mark contains
       the place or lies within that input's reach of it. **Measurement:** the round trip error of the

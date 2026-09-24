@@ -1348,7 +1348,7 @@ a group of that name.
   is not a JSON document, a document that is not an object, a file with no `format` and a file with
   no `figure` are each refused with what was found. What it parsed goes through `checkFigure`, so a
   field of the wrong shape is refused with its path before anything is drawn.
-- `marksAt(figure, seconds, aspect, painter)` — the marks a figure shows at a time. A tapered stroke is
+- `marksAt(figure, seconds, aspect, painter, held)` — the marks a figure shows at a time. A tapered stroke is
   turned into its filled outline after the timeline has run, so an animation that trims a path trims
   the centreline and the outline follows it. The aspect is the shape of the surface the marks are
   headed for, and it is what a scene placing a mark against the frame is answered from: the extent
@@ -1356,14 +1356,17 @@ a group of that name.
   has the same frame at every aspect and may be asked with none, and a figure whose declared extent
   is a function has no frame without one, so a `frame` expression under it is refused with the
   measure named. The painter is who is asking, and a figure that does not name it refuses rather than
-  handing back marks that painter would draw wrongly. A caller naming none is not asked.
-- `extentAt(figure, seconds, aspect)` — how much of the world a figure shows at a time, after its
+  handing back marks that painter would draw wrongly. A caller naming none is not asked. The held
+  values are the tracks a reader is holding, by name, and each replaces what its track's keys give
+  at that time. A held name no track of the figure carries is refused by name. Left out, every track
+  reads its keys.
+- `extentAt(figure, seconds, aspect, held)` — how much of the world a figure shows at a time, after its
   view entries. The extent a figure declares is the base those entries are folded over rather than
   the answer, so this is the call that says where the frame is. A scene placing a mark against the
   frame is not answered from here. It reads the extent the figure declares, since a view that
   follows something reads the marks and a scene reading this answer would be asking for what is
   being built.
-- `viewAt(figure, seconds, width, height)` — the matrix a painter needs at a time, in one call. A
+- `viewAt(figure, seconds, width, height, held)` — the matrix a painter needs at a time, in one call. A
   figure whose view moves has to be asked for its extent at the time its marks were asked for.
   Writing that as two calls has two chances to pass different times.
 - `durationOf(figure)` — how long a figure runs, which is its own duration where it names one and

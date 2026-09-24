@@ -238,10 +238,14 @@ second changed nothing above it.
 
 Four properties follow from this seam and are part of it.
 
-**A figure is a pure function of time.** An evaluation at four seconds yields the picture at four
-seconds, whatever it yielded before. Three consumers arrive at times in three different orders. The
-page plays forward, a reader dragging the scrub bar jumps backward, and the recorder steps at a
-fixed rate. A figure holding state between frames would answer each of them differently.
+**A figure is a pure function of time and the held values.** A track is a number given at named
+times, called keys, and read in between them, and a scene is rebuilt from what its tracks read. A
+held value is the number a reader gives a track while holding it, and it replaces what that track's
+keys give. An evaluation at four seconds with the same held values yields the same picture, whatever
+it yielded before. The consumer keeps what is held between frames, so the figure keeps nothing.
+Three consumers arrive at times in
+three different orders. The page plays forward, a reader dragging the scrub bar jumps backward, and
+the recorder steps at a fixed rate. A figure holding state between frames would answer each of them differently.
 
 **Nothing here draws a random number.** A figure requiring one stores its own seed, so the picture
 at four seconds is the picture at four seconds however many times it is requested.

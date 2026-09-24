@@ -90,8 +90,8 @@ export function durationOf(figure: Figure): number {
  * one would be handed the box round the mark and its magnified copy together and
  * would follow neither.
  */
-function ownMarks(figure: Figure, seconds: number, aspect?: number): readonly Mark[] {
-  const values = figure.tracks ? sampleTracks(figure.tracks, seconds) : {};
+function ownMarks(figure: Figure, seconds: number, aspect?: number, held?: TrackValues): readonly Mark[] {
+  const values = valuesAt(figure, seconds, held);
   const frame = frameOf(figure, seconds, aspect);
   const tree = typeof figure.scene === 'function' ? figure.scene(seconds, values, frame) : figure.scene;
   const marks = flatten(tree);
@@ -100,6 +100,25 @@ function ownMarks(figure: Figure, seconds: number, aspect?: number): readonly Ma
   // path trims the centreline and the outline follows it rather than being opened
   // up along one side.
   return outlinedMarks(played);
+}
+
+/**
+ * The value of every track at a time, a held value standing in place of what
+ * its track's keys give.
+ *
+ * A held name that no track carries is refused rather than handed to the scene,
+ * since a scene reading only its own tracks would draw as if nothing were held.
+ */
+function valuesAt(figure: Figure, seconds: number, held?: TrackValues): TrackValues {
+  const values = figure.tracks ? sampleTracks(figure.tracks, seconds) : {};
+  if (!held) return values;
+  for (const [name, value] of Object.entries(held)) {
+    if (!figure.tracks || !(name in figure.tracks)) {
+      throw new Error(`the held value ${name} names no track of this figure`);
+    }
+    values[name] = value;
+  }
+  return values;
 }
 
 /**
@@ -124,18 +143,22 @@ function frameOf(figure: Figure, seconds: number, aspect: number | undefined): E
  * what a scene placing a mark against the frame is answered from. A caller with
  * no surface in hand leaves it out, and every figure whose marks are in its own
  * units draws the same picture either way.
+ *
+ * The held values are the tracks a reader is holding, by name. Left out, every
+ * track reads its keys, so a recording and the still are drawn from time alone.
  */
 export function marksAt(
   figure: Figure,
   seconds: number,
   aspect?: number,
   painter?: PainterName,
+  held?: TrackValues,
 ): readonly Mark[] {
   if (painter) {
     const refusal = painterRefusal(figure, painter);
     if (refusal) throw new Error(refusal);
   }
-  const drawn = ownMarks(figure, seconds, aspect);
+  const drawn = ownMarks(figure, seconds, aspect, held);
   if (!figure.insets) return drawn;
   // Every inset reads the figure's own marks and none of them reads another's, so
   // an inset placed over an inset magnifies the picture rather than the first
@@ -157,13 +180,13 @@ export function marksAt(
  * because a view that follows something reads the marks and a scene reading this
  * answer would be asking for what is being built.
  */
-export function extentAt(figure: Figure, seconds: number, aspect: number): Extent {
+export function extentAt(figure: Figure, seconds: number, aspect: number, held?: TrackValues): Extent {
   const declared = resolveExtent(figure.extent, aspect, seconds);
   if (!figure.timeline) return declared;
   // The marks are built at most once and only if a view entry asks for them, so
   // a figure whose view follows nothing pays nothing for one that does.
   let built: readonly Mark[] | undefined;
-  return figure.timeline.extentAt(declared, seconds, () => (built ??= ownMarks(figure, seconds, aspect)));
+  return figure.timeline.extentAt(declared, seconds, () => (built ??= ownMarks(figure, seconds, aspect, held)));
 }
 
 /**
@@ -174,8 +197,14 @@ export function extentAt(figure: Figure, seconds: number, aspect: number): Exten
  * to pass different times. What the painter is handed is the matrix, so the
  * extent and the centring stay in here.
  */
-export function viewAt(figure: Figure, seconds: number, width: number, height: number): Transform2D {
-  return viewMatrix(extentAt(figure, seconds, width / height), figure.fit ?? 'contain', width, height);
+export function viewAt(
+  figure: Figure,
+  seconds: number,
+  width: number,
+  height: number,
+  held?: TrackValues,
+): Transform2D {
+  return viewMatrix(extentAt(figure, seconds, width / height, held), figure.fit ?? 'contain', width, height);
 }
 
 /**
