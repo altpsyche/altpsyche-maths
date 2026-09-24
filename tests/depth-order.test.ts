@@ -75,6 +75,12 @@ describe('two marks that overlap', () => {
     const right = square('right', 4, level(1));
     expect(depthOrder([left, right]).map((mark) => mark.id)).toEqual(['left', 'right']);
   });
+
+  it('leaves two alone where a path clip cuts one down to ground the other never covers', () => {
+    const far = square('far', 0, level(5));
+    const near = { ...square('near', 1, level(2)), clipPath: circle(vec2(2.9, 2.9), 0.05) };
+    expect(depthOrder([near, far]).map((mark) => mark.id)).toEqual(['near', 'far']);
+  });
 });
 
 describe('a mark carrying no depth', () => {

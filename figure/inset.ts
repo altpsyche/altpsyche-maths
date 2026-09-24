@@ -14,6 +14,7 @@
  */
 import { mat3, type Transform2D } from '../values/mat3.js';
 import { vec2 } from '../values/vec2.js';
+import { transformPath } from './path.js';
 import { carried, touches } from './animation.js';
 import { boundsOf, centreOf, grownBy, overlapOf, type Bounds } from './bounds.js';
 import { widestWidth } from './width.js';
@@ -102,8 +103,8 @@ function reachOf(mark: Mark): Bounds | null {
  * Every mark is magnified and clipped to the inset's rectangle, and one whose
  * whole reach falls outside that rectangle is left out, as is one the inset
  * hides. A mark that already has a clip keeps it: its clip is magnified with it
- * and then cut down to the inset's rectangle, so a mark clipped in the figure is
- * clipped the same way in the inset.
+ * and then cut down to the inset's rectangle, and its path clip is magnified with
+ * it, so a mark clipped in the figure is clipped the same way in the inset.
  */
 export function insetMarks(marks: readonly Mark[], inset: Inset): readonly Mark[] {
   const shows = inset.view ? inset.view.view(inset.shows, 1, () => marks) : inset.shows;
@@ -117,7 +118,8 @@ export function insetMarks(marks: readonly Mark[], inset: Inset): readonly Mark[
     const moved = carried(mark, through);
     const reach = reachOf(moved);
     if (reach && !overlapOf(reach, clip)) continue;
-    drawn.push({ ...moved, id: `${name}/${mark.id}`, clip });
+    const clipPath = mark.clipPath ? { clipPath: transformPath(mark.clipPath, through) } : {};
+    drawn.push({ ...moved, id: `${name}/${mark.id}`, clip, ...clipPath });
   }
   return drawn;
 }

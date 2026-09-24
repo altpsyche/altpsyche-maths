@@ -235,8 +235,8 @@ function pieceOf(mark: Mark, depth: Depth, at: number, from: string): Piece {
 }
 
 /**
- * The box a mark covers on the page, with its stroke's width added and its clip
- * taken in.
+ * The box a mark covers on the page, with its stroke's width added and both its
+ * clips taken in.
  *
  * A text mark reaches only as far as its own anchor, for the reason the box
  * round a list of marks does: how wide some text is depends on the fonts the
@@ -249,7 +249,9 @@ function footprintOf(mark: Mark): Bounds | null {
       ? { x: interval(mark.at.x, mark.at.x), y: interval(mark.at.y, mark.at.y) }
       : boxOfPath(mark);
   if (!own) return null;
-  return mark.clip ? overlapOf(own, mark.clip) : own;
+  const clipped = mark.clip ? overlapOf(own, mark.clip) : own;
+  const around = mark.clipPath ? boundsOf(mark.clipPath) : null;
+  return clipped && around ? overlapOf(clipped, around) : clipped;
 }
 
 function boxOfPath(mark: PathMark): Bounds | null {

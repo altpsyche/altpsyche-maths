@@ -1895,12 +1895,19 @@ scissor. So nothing outside this package stands between a figure and a path clip
       6.28 × 10⁻³ that chords of the flattening leave. Before, the same mark kept both triangles and
       covered 1. The flat demo's frame at its still time is 1,538 triangles before and after, in
       2.54ms and 2.43ms at the best of 20, and `npm test` reads 1,529 of 1,529 over 98 files.
-- [ ] **6. Animation, inset and depth order carry a path clip.** A morph whose pair has two
+- [x] **6. Animation, inset and depth order carry a path clip.** A morph whose pair has two
       different path clips swaps at half, which is what `walkedClip` does for a rectangle only one of
       the pair has. An inset magnifies a mark's path clip through its matrix, and `footprintOf` takes
       the path clip's box into a mark's box. **Measurement:** a mark under a path clip seen through an
       inset at twice its size carries a clip of four times the area, and the depth order of the
       solid demo's 798 frames unchanged.
+      **Landed 2026-09-24:** a disc clip of radius 0.25 seen through the inset that magnifies by two
+      encloses 4 times its area to 12 places, against 1 before, when the inset kept the figure's
+      path clip unmoved. A pair whose clips differ carries the first clip at 0.4 and the second at
+      0.6, against the first at both before, and a clip only the first carries is gone at 0.6. A
+      square cut to a disc its partner never covers keeps its place in the list, where before the
+      pair was ordered by depth. The solid demo's 798 frames at 60 per second give 262,237 marks in
+      the same order before and after, and `npm test` reads 1,532 of 1,532 over 98 files.
 - [ ] **7. Both lenses get round corners.** `Inset` gains a `corner` radius in figure units, and a
       nonzero one cuts its marks to the rounded rectangle through `clipPath`. The flat demo's lens
       and the solid demo's lens each take one, and the border each demo draws round its lens takes

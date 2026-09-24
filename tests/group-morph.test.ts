@@ -234,4 +234,18 @@ describe('a paired mark style walking', () => {
     expect(discAt(1, cut).clip?.x.from).toBeCloseTo(3, 12);
     expect(discAt(1, cut).clip?.x.to).toBeCloseTo(5, 12);
   });
+
+  it('takes the path clip of the mark it is walking onto after half', () => {
+    const lens = circle(vec2(0, 0), 1);
+    const other = circle(vec2(4, 0), 1);
+    const cut: readonly Mark[] = [
+      { ...painted('fig/one/disc', 0, INK, 0.02), clipPath: lens },
+      { ...painted('fig/two/disc', 4, INK, 0.02), clipPath: other },
+    ];
+    expect(discAt(0.4, cut).clipPath).toBe(lens);
+    expect(discAt(0.6, cut).clipPath).toBe(other);
+    const once: readonly Mark[] = [{ ...painted('fig/one/disc', 0, INK, 0.02), clipPath: lens }, painted('fig/two/disc', 4, INK, 0.02)];
+    expect(discAt(0.4, once).clipPath).toBe(lens);
+    expect('clipPath' in discAt(0.6, once)).toBe(false);
+  });
 });

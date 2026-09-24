@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { boundsOfMarks, circle, colourFrom, flatten, followView, group, insetMarks, insetMatrix, interval, line, marksAt, mat3, moveView, sameMarks, shape, text, vec2, type Figure, type Mark } from '@altpsyche/maths';
+import { areaOf, boundsOfMarks, circle, colourFrom, flatten, followView, group, insetMarks, insetMatrix, interval, line, marksAt, mat3, moveView, sameMarks, shape, text, vec2, type Figure, type Mark } from '@altpsyche/maths';
 
 /**
  * The inset, which is a second view of the same figure drawn into a rectangle of
@@ -73,6 +73,13 @@ describe('the marks of an inset', () => {
   it('magnify a stroke width with the geometry', () => {
     const rule = found(drawn, 'inset/fig/rule');
     expect(rule.kind === 'path' && rule.stroke!.width).toBeCloseTo(0.2, 12);
+  });
+
+  it('magnify a path clip with the geometry, so its area is the square of the magnification', () => {
+    const lens = circle(vec2(1, 0.5), 0.25);
+    const [seen] = insetMarks([{ ...found(marks, 'fig/disc'), clipPath: lens }], { shows, into });
+    expect(areaOf(seen.clipPath!) / areaOf(lens)).toBeCloseTo(4, 12);
+    expect(seen.clip).toEqual(into);
   });
 
   it('carry the rectangle as their clip, so nothing spills out of it', () => {

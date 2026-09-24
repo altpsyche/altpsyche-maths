@@ -205,13 +205,17 @@ function walkedClip(from: Bounds | undefined, to: Bounds | undefined, along: num
  * avoid.
  */
 function walked(from: Mark, to: Mark, along: number): Mark {
+  // Path clip: two paths of different pieces have no shape between them, so the clip swaps at half.
+  const { clipPath: _, ...bare } = from;
+  const clipPath = along < 0.5 ? from.clipPath : to.clipPath;
   const shared = {
     opacity: lerp(from.opacity ?? 1, to.opacity ?? 1, along),
     clip: walkedClip(from.clip, to.clip, along),
+    ...(clipPath ? { clipPath } : {}),
   };
   if (from.kind === 'text' && to.kind === 'text') {
     return {
-      ...from,
+      ...(bare as typeof from),
       ...shared,
       at: vec2.lerp(from.at, to.at, along),
       size: lerp(from.size, to.size, along),
@@ -221,7 +225,7 @@ function walked(from: Mark, to: Mark, along: number): Mark {
   }
   if (from.kind === 'path' && to.kind === 'path') {
     return {
-      ...from,
+      ...(bare as typeof from),
       ...shared,
       path: lerpPath(from.path, to.path, along),
       fill: walkedFill(from.fill, to.fill, along),
