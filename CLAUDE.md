@@ -204,7 +204,7 @@ hand over; above 50%, hand over without starting anything.
 ## Gates
 
 ```
-npm test          vitest, the whole suite
+npm test          the build, then vitest over the whole suite, since two tests read dist/
 npm run type-check tsc --noEmit
 npm run build     tsc -p tsconfig.build.json, which is what prepack runs
 npm run check:vocab  the banned nouns and voice patterns, in comments and in README, DESIGN, CLAUDE
