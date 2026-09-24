@@ -15,6 +15,7 @@ import { transformFill } from './gradient.js';
 import { boundsOf, grownBy, overlapOf, type Bounds } from './bounds.js';
 import type { Depth, Fill, Mark, Stroke } from './mark.js';
 import { transformDepth } from './depth.js';
+import { intersectionOf } from './boolean.js';
 
 /** What a group hands down and a child may override. */
 export interface Style {
@@ -123,6 +124,15 @@ function clipped(handed: Bounds | null | undefined, own: Bounds | undefined): Bo
   return overlapOf(handed, own);
 }
 
+/** The path clip a child is drawn inside, in the rectangle's three states: two paths sharing no
+ * area intersect in a path with no subpaths, and that is `null`, which draws nothing. */
+function clippedByPath(handed: Path | null | undefined, own: Path | undefined): Path | null | undefined {
+  if (handed === null) return null;
+  const clip = !handed ? own : !own ? handed : intersectionOf(handed, own);
+  if (clip === undefined) return undefined;
+  return clip.length === 0 ? null : clip;
+}
+
 /**
  * Sibling names made unique, so two shapes given the same name do not become
  * one id.
@@ -147,6 +157,7 @@ function walk(
   transform: Transform2D,
   style: Style,
   clip: Bounds | null | undefined,
+  clipPath: Path | null | undefined,
   into: Mark[]
 ): void {
   const id = prefix === '' ? node.name : `${prefix}/${node.name}`;
@@ -155,13 +166,18 @@ function walk(
     const next = node.transform ? mat3.multiply(transform, node.transform) : transform;
     const handed = inherited(style, node.style ?? {});
     const inside = clipped(clip, node.style?.clip);
+    const insidePath = clippedByPath(clipPath, node.style?.clipPath);
     const names = uniqueNames(node.children);
-    node.children.forEach((child, at) => walk({ ...child, name: names[at] }, id, next, handed, inside, into));
+    node.children.forEach((child, at) =>
+      walk({ ...child, name: names[at] }, id, next, handed, inside, insidePath, into)
+    );
     return;
   }
 
   const inside = clipped(clip, node.clip);
-  if (inside === null) return;
+  const insidePath = clippedByPath(clipPath, node.clipPath);
+  if (inside === null || insidePath === null) return;
+  const byPath = insidePath ? { clipPath: insidePath } : {};
   const settled = inherited(style, node);
   const opacity = settled.opacity ?? 1;
   // A group that scales makes the lines inside it thicker, the way it makes everything else bigger,
@@ -176,6 +192,8 @@ function walk(
     const reach = settled.stroke ? widestWidth(settled.stroke.width) * scale : 0;
     const box = boundsOf(path);
     if (inside && box && !overlapOf(grownBy(box, reach / 2), inside)) return;
+    const pathBox = insidePath ? boundsOf(insidePath) : undefined;
+    if (pathBox && box && !overlapOf(grownBy(box, reach / 2), pathBox)) return;
     into.push({
       kind: 'path',
       id,
@@ -185,6 +203,7 @@ function walk(
       opacity,
       depth: settled.depth ? transformDepth(settled.depth, transform) : undefined,
       clip: inside,
+      ...byPath,
     });
     return;
   }
@@ -210,6 +229,7 @@ function walk(
       opacity,
       depth: settled.depth ? transformDepth(settled.depth, transform) : undefined,
       clip: inside,
+      ...byPath,
     });
   });
 }
@@ -230,6 +250,6 @@ function walk(
  */
 export function flatten(root: Node, transform: Transform2D = mat3.IDENTITY, style: Style = {}): readonly Mark[] {
   const marks: Mark[] = [];
-  walk(root, '', transform, style, style.clip, marks);
+  walk(root, '', transform, style, style.clip, style.clipPath, marks);
   return marks;
 }

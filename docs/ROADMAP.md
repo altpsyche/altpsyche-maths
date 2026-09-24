@@ -1851,12 +1851,17 @@ scissor. So nothing outside this package stands between a figure and a path clip
       same bytes, a rectangle there is refused as `scene.style.clipPath is a list and is an object`,
       and `npm test` reads 1,513 of 1,513 over 98 files with the eight files untouched. In a file
       the path clip is the cubics written out, which the specification states.
-- [ ] **2. The scene nests path clips.** `clipped` in `figure/node.ts` takes the handed path clip and
+- [x] **2. The scene nests path clips.** `clipped` in `figure/node.ts` takes the handed path clip and
       the node's own, and two path clips become their `intersectionOf`. A shape whose reach misses
       the path clip's bounding box is left out of the list, the same rule the rectangle has.
       **Measurement:** a disc of radius 1 inside a disc of radius 1 moved 1 across gives a clip whose
       area is (2π/3 − √3/2), which is 1.2284, within the flattening tolerance, and every demo's marks
       at its still time unchanged by count.
+      **Landed 2026-09-24:** the two discs nest to one path of 4 cubics enclosing 1.22887 against
+      1.22837, which is 5.0 × 10⁻⁴ out inside the allowance of 2π · 2.8 × 10⁻⁴ = 1.76 × 10⁻³. The
+      eight figure files give the same mark counts at the still and at half the duration, from 12 on
+      the boolean demo to 1,070 on the solids, and `npm test` reads 1,519 of 1,519 over 98 files. A
+      mark under no path clip carries no `clipPath` field at all.
 - [ ] **3. The SVG painter writes a path clip.** A `<clipPath>` holding a `<path>` with
       `clip-rule="nonzero"`, named by its path data the way `clipId` names a rectangle by its four
       numbers, so every mark of one inset shares one element. A mark with both clips is written with

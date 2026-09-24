@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { circle, colourFrom, flatten, group, interval, line, mat3, paintCanvas, paintSvg, shape, svgElements, text, vec2, viewMatrix, type CanvasLike, type Mark, type PaintNode, type SvgElement } from '@altpsyche/maths';
+import { areaOf, circle, colourFrom, flatten, group, interval, line, mat3, paintCanvas, paintSvg, shape, svgElements, text, vec2, viewMatrix, type CanvasLike, type Mark, type PaintNode, type SvgElement } from '@altpsyche/maths';
 
 /**
  * The rectangular clip, in the tree that declares it and in the two painters
@@ -218,6 +218,69 @@ describe('a clip a group hands down', () => {
     // The disc lands at 11 across, which the clip would hold had it moved by the
     // same ten and does not.
     expect(flatten(moved('disc'))).toEqual([]);
+  });
+});
+
+describe('a path clip a group hands down', () => {
+  /** The disc of radius 1 about (x, 0), which is four cubics. */
+  const disc = (x: number) => circle(vec2(x, 0), 1);
+
+  /** What the edge of the overlap of two unit discs can move its area by: the
+   * whole circle's length times the 2.8e-4 in radius four cubics cost it. */
+  const EDGE_ERROR = 2 * Math.PI * 2.8e-4;
+
+  it('reaches every mark under it, text included', () => {
+    const marks = flatten(
+      group('fig', [shape('near', circle(vec2(1, 0), 0.5), { fill: ink }), text('word', vec2(0, 0), 'a', 1, { fill: ink })], {
+        style: { clipPath: disc(0) },
+      })
+    );
+    expect(ids(marks)).toEqual(['fig/near', 'fig/word']);
+    expect(marks.every((mark) => mark.clipPath === marks[0].clipPath)).toBe(true);
+    expect(marks[0].clipPath).toEqual(disc(0));
+  });
+
+  it('is the region both paths enclose where one sits inside another', () => {
+    const marks = flatten(
+      group('fig', [group('half', [shape('in', circle(vec2(0.5, 0), 0.25), { fill: ink })], { style: { clipPath: disc(1) } })], {
+        style: { clipPath: disc(0) },
+      })
+    );
+    // Two unit discs one apart share the lens 2·acos(1/2) − (1/2)·√3, which is 2π/3 − √3/2.
+    const lens = (2 * Math.PI) / 3 - Math.sqrt(3) / 2;
+    expect(lens).toBeCloseTo(1.2284, 4);
+    expect(Math.abs(areaOf(marks[0].clipPath!) - lens)).toBeLessThan(EDGE_ERROR);
+  });
+
+  it("leaves out a shape whose reach misses the path clip's box", () => {
+    const marks = flatten(
+      group('fig', [shape('far', circle(vec2(3, 0), 0.5), { fill: ink }), shape('edge', circle(vec2(2, 0), 0.5), { stroke: pen })], {
+        style: { clipPath: disc(0) },
+      })
+    );
+    expect(ids(marks)).toEqual(['fig/edge']);
+  });
+
+  it('leaves nothing at all where the two paths share no area', () => {
+    const marks = flatten(
+      group('fig', [group('apart', [shape('disc', circle(vec2(0, 0), 0.25), { fill: ink }), text('word', vec2(0, 0), 'a', 1, { fill: ink })], {
+        style: { clipPath: disc(3) },
+      })], { style: { clipPath: disc(0) } })
+    );
+    expect(marks).toEqual([]);
+  });
+
+  it('is carried beside the rectangle rather than in place of it', () => {
+    const marks = flatten(
+      group('fig', [shape('near', circle(vec2(1, 0), 0.5), { fill: ink })], { style: { clip: box, clipPath: disc(0) } })
+    );
+    expect(marks[0].clip).toEqual(box);
+    expect(marks[0].clipPath).toEqual(disc(0));
+  });
+
+  it('adds no field to a mark under no path clip', () => {
+    const marks = flatten(group('fig', [shape('near', circle(vec2(1, 0), 0.5), { fill: ink })], { style: { clip: box } }));
+    expect('clipPath' in marks[0]).toBe(false);
   });
 });
 
