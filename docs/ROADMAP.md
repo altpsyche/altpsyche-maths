@@ -408,7 +408,7 @@ is left, since 2.1.0 through 2.10.0 are cut.
 
 | version | what lands | what it changes | steps | cut against | depends on | plan |
 | --- | --- | --- | --- | --- | --- | --- |
-| 3.3.0 | a surface that hands over its device, or says the card is gone | what `GpuSurface` reports | to plan | a figure redrawn after a card is taken away | nothing, since `RendererOptions` already takes a caller's device | to plan |
+| 3.3.0 | a surface that hands over its device, or says the card is gone | what `GpuSurface` reports | 5, none ticked | a figure redrawn after a card is taken away | nothing, since `RendererOptions` already takes a caller's device | under The items |
 | 3.4.0 | a clip that is a path rather than a rectangle | what a `Mark` may ask for | to plan | nothing yet, which is why it is last of the marks | nothing now, since `@altpsyche/engine` 0.5.0 counts a winding | to plan |
 | 4.0.0 | the five `item` names renamed to `entry`, then a figure a reader can act on | the shape of `Figure`, which gains input | to plan | nothing yet | nothing outside this package | to plan |
 
@@ -1605,8 +1605,8 @@ no box test in front of it and the quadratic over piece pairs is not worth remov
 **`altpsyche.dev` names all three in its own roadmap as what a release here would change, and this
 tree queued none of them until 2026-09-20.** Each is a call that does not exist rather than a call
 that misbehaves, so each is a feature and **each takes a minor version of its own**, which is the
-convention every other row of the ladder follows. **3.1.0 and 3.2.0 are cut**, and 3.3.0 has no
-steps, so by the rule above it is planned in a session of its own before any code is touched.
+convention every other row of the ladder follows. **3.1.0 and 3.2.0 are cut**, and 3.3.0 has
+its steps written below.
 
 - **A walk that takes a duration rather than a figure, with settling.** `recordFigure` cannot replace
   the consumer's own recorder because three things fill that recorder's frames and only two hold a
@@ -1632,6 +1632,98 @@ steps, so by the rule above it is planned in a session of its own before any cod
 roadmap had a fourth line saying a release here has to present the canvas rather than read it back.
 `paintGpu` already presents, `painterGpu` is the recorder's painter and no page calls it, and the
 cost that line was written around is inside the engine's draw. Both trees now say so.
+
+### 3.3.0, a surface that hands over its device, or says the card is gone
+
+**A surface cannot report that its card was taken away, on either backend.** `gpuSurface` in
+`paint/gpu.ts` passes no device to the engine's `openRenderer`, which asks for one itself where the
+selection wants WebGPU and keeps it, so the `lost` promise that is WebGPU's only report of a taken
+card never reaches the caller. `GpuSurface` has three members, `backend`, `canvas` and `dispose`, and
+`gpuSurface` adds 0 listeners to the canvas. The consumer covers the WebGL 2 half itself, with a
+`webglcontextlost` listener on the element at `components/figure/FigureSurface.tsx` line 203 there,
+and has nothing for the WebGPU half.
+
+**The design call, made here so the steps can quote it.** The engine's own `createSurface` in
+`host/surface.js` already answers both losses and is the precedent: it takes the caller's `device`,
+reads `device.lost`, listens for `webglcontextlost` and calls `preventDefault` on it so the browser
+may restore the context. This surface does the same through one callback rather than the engine's
+two, because a caller answers a lost card the same way whichever backend lost it.
+
+- `GpuSurfaceOptions.device` is the caller's card and is passed to `openRenderer`. Left out, and
+  where `backend` is not `webgl2`, `gpuSurface` asks for one through the engine's
+  `requestWebGPUDevice` itself, which is the request `openRenderer` would have made, so the surface
+  keeps the device the renderer draws with.
+- `GpuSurface.device` is that device on WebGPU and absent on WebGL 2.
+- `GpuSurfaceOptions.onLost(reason)` is called once when the card goes. The reason is the device's
+  own, `destroyed` or `unknown`, on WebGPU, and `context` on WebGL 2, which gives no reason.
+- A lost surface draws nothing, and `paintGpu` and `pixelsGpu` return every mark's id in `refused`,
+  which is what the field is documented as: the marks left out. Neither throws, so a loop
+  painting through a lost surface keeps running until its caller acts on `onLost`.
+- `dispose` removes the listener and never reports a loss, including a device the surface asked for
+  and that `dispose` destroys.
+
+The device is typed as `GpuDevice`, an interface of the parts this module reads, in the way
+`GpuCanvas` is, so this package declares no WebGPU library. `GpuCanvas` gains an optional
+`addEventListener` and `removeEventListener`, which an `HTMLCanvasElement` and an `OffscreenCanvas`
+both have. **What would change the answer** is a consumer that needs to tell a WebGL 2 loss from a
+WebGPU one, which the reason string already does, or one that wants the surface to rebuild itself
+on a restore, which the engine's `createSurface` does and this surface leaves to its caller.
+
+**How it is measured without a browser.** The suite mocks `@altpsyche/engine` with `vi.mock`, so
+`openRenderer` returns a renderer that counts its draws, and the device and the canvas are plain
+objects whose `lost` promise and whose listeners the test controls. No test mocks the engine today;
+this is the first.
+
+**Which step the demos gain from.** Step 4 takes the card away from a committed figure in
+`gate:gpu` and draws the figure again, which is the reading the version is cut against.
+
+- [ ] **1. The surface takes and returns its device.** `GpuDevice`, `GpuSurfaceOptions.device`,
+      `GpuSurface.device`, and the request made by `gpuSurface` where no device is given. REFERENCE.md's
+      lines for the three types. Records in the commit body whether the engine's WebGPU `dispose`
+      destroys the device it was given. **Measurement:** in Node with no mock, a plain device
+      reaches the engine's door, and the refusal reads `selected webgpu and that backend gave the
+      canvas no context` where today it reads `no backend can draw a wgsl frame`; with the mock, the
+      device `openRenderer` receives is the one passed, and the one `GpuSurface.device` returns.
+- [ ] **2. A lost device is reported.** `onLost` from `device.lost`, the lost flag, and both
+      painting calls drawing nothing after it. **Measurement:** with the mock, a `lost` promise
+      resolved with `destroyed` calls `onLost` 1 time with `destroyed`; `paintGpu` after it makes 0
+      draws where before it made 1, and returns all of the marks it was given in `refused`; a
+      surface disposed before its `lost` resolves calls `onLost` 0 times.
+- [ ] **3. A lost context is reported.** The `webglcontextlost` listener, its `preventDefault`, and
+      its removal on `dispose`. **Measurement:** with the mock, 1 listener after opening a WebGL 2
+      surface and 0 after `dispose`; a dispatched loss calls `onLost` 1 time with `context` and
+      marks the event's default prevented; a canvas with no `addEventListener` opens as it does
+      today.
+- [ ] **4. The gate takes a card away and draws the figure again.** `gates/gpu.mjs` gains a pass per
+      backend over one committed figure. WebGL 2 loses its context through `WEBGL_lose_context`'s
+      `loseContext`, is restored with `restoreContext`, and a new surface is opened on the same
+      canvas. WebGPU destroys the device and opens a new surface on the same canvas with a new
+      device. **Measurement:** the reason each backend reports, the milliseconds from the loss to
+      `onLost`, the refused count of a paint through the lost surface against the figure's mark
+      count, and the redrawn picture's equal share and worst channel against its first reading,
+      which must be the same. **The step stops and goes to Siva** if Playwright's Chromium gives
+      no WebGPU adapter under `--enable-unsafe-webgpu`, since the WebGPU half would then be a claim
+      nothing measured.
+- [ ] **5. The consumer's surface read against a release.** `npm pack` here and `npm install
+      --no-save` in `altpsyche.dev`, with a scratch change to `FigureSurface.tsx` there that drops the
+      element listener for `onLost`, never committed. The commit here is the reading written into
+      this entry. **Measurement:** `tsc --noEmit` in the site reads 0 errors with the change, and
+      the site's own figure tests pass in the count they pass today.
+
+**Done-criteria**, each checked against a number at the cut:
+
+1. `GpuDevice` is exported at `index.ts`, `GpuSurfaceOptions` carries `device` and `onLost`, and
+   `GpuSurface` carries `device`.
+2. With no mock, a plain device passed to `gpuSurface` in Node draws the refusal naming webgpu.
+3. With the mock, a WebGPU loss and a WebGL 2 loss each call `onLost` once with `destroyed` and
+   `context`, and a disposed surface calls it never.
+4. A paint through a lost surface makes 0 draws and refuses as many marks as it was handed.
+5. `npm run gate:gpu` reports a loss and a redraw equal to the first reading on both backends, and
+   every figure still agrees with the sheet.
+6. The consumer type-checks against the packed tree with the element listener replaced by `onLost`,
+   and the site's tree is clean afterwards.
+7. `npm test` passes, `type-check` and `build` report no error, `check:vocab` reads 0 and 0, and
+   `package.json` reads 3.3.0.
 
 ### The vocabulary rule carried into `docs/`
 
