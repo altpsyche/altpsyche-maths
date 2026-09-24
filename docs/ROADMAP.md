@@ -408,7 +408,7 @@ is left, since 2.1.0 through 2.10.0 are cut.
 
 | version | what lands | what it changes | steps | cut against | depends on | plan |
 | --- | --- | --- | --- | --- | --- | --- |
-| 3.2.0 | an equation record whose fitting box is an expression | what `EquationRecordOptions` may carry | to plan | an equation written as a file and drawn at three aspects | nothing outside this package | to plan |
+| 3.2.0 | an equation record whose fitting box is an expression | what `EquationRecordOptions` may carry | 3, none ticked | an equation written as a file and drawn at three aspects | nothing outside this package | under The items |
 | 3.3.0 | a surface that hands over its device, or says the card is gone | what `GpuSurface` reports | to plan | a figure redrawn after a card is taken away | nothing, since `RendererOptions` already takes a caller's device | to plan |
 | 3.4.0 | a clip that is a path rather than a rectangle | what a `Mark` may ask for | to plan | nothing yet, which is why it is last of the marks | nothing now, since `@altpsyche/engine` 0.5.0 counts a winding | to plan |
 | 4.0.0 | the five `item` names renamed to `entry`, then a figure a reader can act on | the shape of `Figure`, which gains input | to plan | nothing yet | nothing outside this package | to plan |
@@ -1581,8 +1581,9 @@ no box test in front of it and the quadratic over piece pairs is not worth remov
 **`altpsyche.dev` names all three in its own roadmap as what a release here would change, and this
 tree queued none of them until 2026-09-20.** Each is a call that does not exist rather than a call
 that misbehaves, so each is a feature and **each takes a minor version of its own**, which is the
-convention every other row of the ladder follows. **3.1.0 is cut**, and 3.2.0 and 3.3.0 have no
-steps, so by the rule above each is planned in a session of its own before any code is touched.
+convention every other row of the ladder follows. **3.1.0 is cut**, 3.2.0 has its steps written
+below, and 3.3.0 has none, so by the rule above it is planned in a session of its own before any code
+is touched.
 
 - **A walk that takes a duration rather than a figure, with settling.** `recordFigure` cannot replace
   the consumer's own recorder because three things fill that recorder's frames and only two hold a
@@ -1608,6 +1609,59 @@ steps, so by the rule above each is planned in a session of its own before any c
 roadmap had a fourth line saying a release here has to present the canvas rather than read it back.
 `paintGpu` already presents, `painterGpu` is the recorder's painter and no page calls it, and the
 cost that line was written around is inside the engine's draw. Both trees now say so.
+
+### 3.2.0, an equation record whose fitting box is an expression
+
+**The box an equation is fitted inside is two layout numbers, and the frame cannot reach them.**
+`EquationRecordOptions` in `figure/node-record.ts` is `Omit<EquationOptions, 'at'>` with `at` widened
+to an `Expression`, and the checker's `equationOptions` in `figure/figure-check.ts` takes `width` and
+`height` as `number`. The consumer's `circle-distance` fits its glyphs inside 0.84 of the frame's
+width and 0.46 of its height, so written as a file it agrees at the aspect the record was written for
+and nowhere else: its first glyph stands at -124.921 at every aspect, where the module has it at
+-74.027, -41.640 and -23.423.
+
+**The design call, made here so the steps can quote it.** `width` and `height` become `Expression`
+and are resolved with `numberOf` beside `at`, the way a dot's `radius` already is. **The format's
+version stays 1**, because a number is an expression written as itself, so every committed file
+means what it meant and the change is a field widened rather than a meaning changed. `EquationOptions`
+keeps its numbers, since a caller building a node in code has the extent in hand. **What would change
+the answer** is a box that has to follow a track rather than the frame, which this design already
+carries, since a track is an expression too.
+
+**Which step the demos gain from.** Step 2 gives the frame demo an equation fitted to a share of the
+frame, and the frame demo is already drawn at sixteen by nine, at square and at nine by sixteen, which
+is the three aspects the version is cut against.
+
+- [ ] **1. The box is an expression.** SPECIFICATION.md first, where the equation node's paragraph
+      names `at`, `width` and `height` as expressions, then `EquationRecordOptions`, the checker's
+      `equationOptions` and the resolve in `node-record.ts`, and REFERENCE.md's line for the type.
+      **Measurement:** a record fitted to `shareOf('width', 0.84)` by `shareOf('height', 0.46)` at
+      `matchingAspect` 100, read at 16/9, 1 and 9/16, against `equationNode` called with the numbers
+      worked out by hand, worst difference in any glyph's path; `npm run demos` leaves all 8
+      committed `.figure.json` files byte for byte as they were.
+- [ ] **2. The frame demo carries an equation fitted to the frame.** A typeset rule in
+      `demos/frame.ts` whose box is a share of the frame's width and height, `demos/frame.figure.json`,
+      `docs/frame.svg` and `docs/frame-strip.svg` written again, and `tests/frame-demo.test.ts` reading it. **Measurement:**
+      the equation's drawn width and height at each of the three shapes, which of the two shares binds
+      at each, and the committed file equal to the module at all three.
+- [ ] **3. The consumer's figure read as a file.** `npm pack` here and `npm install --no-save` in
+      `altpsyche.dev`, with `circle-distance` written as a record in a scratch file there and never
+      committed. The commit here is the reading written into this entry. **Measurement:** the first
+      glyph at each aspect the site draws against the module's -74.027, -41.640 and -23.423, and the
+      worst difference over every mark by the tolerance the specification names.
+
+**Done-criteria, each checkable by one reading.**
+
+1. `EquationRecordOptions.width` and `.height` are `Expression`, and the checker accepts a `frame`
+   expression in either and refuses a string with the field named in the sentence.
+2. SPECIFICATION.md names all three fields of an equation node's `options` as expressions and still
+   reads version 1.
+3. All 8 committed `.figure.json` files are byte for byte what they were before step 1.
+4. The frame demo's equation differs in drawn width between 16/9 and 9/16, and the file draws what
+   the module draws at all three shapes.
+5. `circle-distance` read as a file matches its module at every aspect the site draws, within the
+   specification's tolerance.
+6. `npm test`, `type-check`, `build` and `check:vocab` pass, and `package.json` reads 3.2.0.
 
 ### The vocabulary rule carried into `docs/`
 
