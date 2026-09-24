@@ -17,6 +17,7 @@ import type { Colour } from '../values/colour.js';
 import type { Frame } from '../figure/frames.js';
 import type { Fill, Mark, PathMark, TextMark } from '../figure/mark.js';
 import type { Path } from '../figure/path.js';
+import type { Bounds } from '../figure/bounds.js';
 import { outlinedMarks } from '../figure/outline.js';
 import { depthOrder } from '../figure/depth-order.js';
 import { widestWidth } from '../figure/width.js';
@@ -55,7 +56,7 @@ export interface CanvasLike {
   /** Required rather than optional, unlike the gradient above: a context that
    * quietly skipped a clip would paint the marks a figure asked to have cut
    * away, where one that skips a gradient paints the same shape in one colour. */
-  clip(): void;
+  clip(rule?: 'nonzero' | 'evenodd'): void;
   moveTo(x: number, y: number): void;
   bezierCurveTo(c1x: number, c1y: number, c2x: number, c2y: number, x: number, y: number): void;
   closePath(): void;
@@ -120,16 +121,23 @@ function fillPaint(context: CanvasLike, fill: Fill, view: Transform2D): unknown 
 }
 
 /**
- * The mark's clip set on the context, in the units painted into.
+ * The mark's clips set on the context, in the units painted into.
  *
  * The rectangle goes through the same view the geometry does, and the corners
  * are taken lowest first afterwards: the view turns the y axis over, so a width
- * worked out before the flip would come out negative.
+ * worked out before the flip would come out negative. A second `clip` call
+ * intersects with the first, so a mark with both is drawn inside both.
  */
 function clipTo(context: CanvasLike, mark: Mark, view: Transform2D): void {
-  if (!mark.clip) return;
-  const one = mat3.transformPoint(view, vec2(mark.clip.x.from, mark.clip.y.from));
-  const other = mat3.transformPoint(view, vec2(mark.clip.x.to, mark.clip.y.to));
+  if (mark.clip) clipToRect(context, mark.clip, view);
+  if (!mark.clipPath) return;
+  tracePath(context, mark.clipPath, view);
+  context.clip('nonzero');
+}
+
+function clipToRect(context: CanvasLike, clip: Bounds, view: Transform2D): void {
+  const one = mat3.transformPoint(view, vec2(clip.x.from, clip.y.from));
+  const other = mat3.transformPoint(view, vec2(clip.x.to, clip.y.to));
   context.beginPath();
   context.rect(
     Math.min(one.x, other.x),

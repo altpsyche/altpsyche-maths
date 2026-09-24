@@ -1870,12 +1870,17 @@ scissor. So nothing outside this package stands between a figure and a path clip
       bytes over the eight committed images.
       **Landed 2026-09-24:** three marks under one disc clip give 1 `<clipPath>` holding one
       `<path>` with `clip-rule="nonzero"`, against 0 before, when a `clipPath` reached no element at
-      all. With a rectangle as well the sheet holds 2 and each mark sits in a `<g>` carrying the
-      rectangle. `npm run demos` changed 0 bytes of the committed images, and `npm test` reads
+      all. With a rectangle as well the sheet holds 2 and each mark's element is written inside a
+      `<g>` carrying the rectangle. `npm run demos` changed 0 bytes of the committed images, and `npm test` reads
       1,523 of 1,523 over 98 files.
-- [ ] **4. The canvas painter clips to a path.** `CanvasLike.clip` takes the fill rule the way
+- [x] **4. The canvas painter clips to a path.** `CanvasLike.clip` takes the fill rule the way
       `fill` already does, and a path clip is built with `moveTo` and `bezierCurveTo` then clipped.
       **Measurement:** the calls a stand-in context records for one mark under a disc clip, in order.
+      **Landed 2026-09-24:** one disc under a rectangle and a disc clip records `save`, `beginPath`,
+      `rect`, `clip`, then `beginPath`, `moveTo`, four `bezierCurveTo`, `closePath` and `clip` with
+      `nonzero`, then the mark's own `beginPath`. Before, the same mark recorded the rectangle's four
+      calls and nothing for the path clip. `npm run demos` changed 0 bytes and `npm test` reads
+      1,525 of 1,525 over 98 files.
 - [ ] **5. The GPU frame cuts triangles to a path.** The clip path is triangulated by `trianglesOf`,
       and each of a mark's triangles is cut against each triangle of the clip by the same Sutherland
       and Hodgman step `clipTriangles` uses, since a triangle is convex. Pairs whose boxes miss are

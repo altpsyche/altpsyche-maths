@@ -51,8 +51,10 @@ class Recorder implements CanvasLike {
   rect(x: number, y: number, width: number, height: number) {
     this.note('rect', x, y, width, height);
   }
-  clip() {
+  readonly rules: Array<string | undefined> = [];
+  clip(rule?: 'nonzero' | 'evenodd') {
     this.note('clip');
+    this.rules.push(rule);
   }
   moveTo(x: number, y: number) {
     this.note('moveTo', x, y);
@@ -342,6 +344,31 @@ describe('a path clip written as SVG', () => {
     expect(markup.match(/<clipPath /g)).toHaveLength(2);
     expect(markup).toMatch(/<clipPath id="clip-path-[^"]+" clipPathUnits="userSpaceOnUse"><path d="M110 50C[^"]+" clip-rule="nonzero"\/><\/clipPath>/);
     expect(markup.match(/<g clip-path="url\(#clip-100-30-40-40\)"><path data-mark=/g)).toHaveLength(2);
+  });
+});
+
+describe('a path clip on a canvas', () => {
+  /** A disc of radius 1 at the origin, which is 100 across and 50 down the surface with a radius of 10. */
+  const lens = circle(vec2(0, 0), 1);
+
+  it('is traced and clipped by the nonzero rule before the geometry, after the rectangle', () => {
+    const marks = flatten(shape('disc', circle(vec2(0.5, 0), 1), { fill: ink, clip: box, clipPath: lens }));
+    const recorder = painted(marks);
+    const order = recorder.calls.map((call) => call.name);
+    expect(order.slice(0, order.indexOf('clip', 5) + 1)).toEqual([
+      'save', 'beginPath', 'rect', 'clip',
+      'beginPath', 'moveTo', 'bezierCurveTo', 'bezierCurveTo', 'bezierCurveTo', 'bezierCurveTo', 'closePath', 'clip',
+    ]);
+    expect(recorder.rules).toEqual([undefined, 'nonzero']);
+    expect(recorder.calls[5].args).toEqual([110, 50]);
+    expect(order.slice(12, 14)).toEqual(['beginPath', 'moveTo']);
+    expect(order.at(-1)).toBe('restore');
+  });
+
+  it('is one clip call on a mark with only the path clip', () => {
+    const recorder = painted(flatten(shape('disc', circle(vec2(0.5, 0), 1), { fill: ink, clipPath: lens })));
+    expect(recorder.calls.slice(0, 3).map((call) => call.name)).toEqual(['save', 'beginPath', 'moveTo']);
+    expect(recorder.rules).toEqual(['nonzero']);
   });
 });
 
