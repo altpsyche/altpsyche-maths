@@ -275,6 +275,11 @@ path. The consumer holds itself to that with a test of its own.
 tree. Publishing is public and cannot be taken back, so it is asked for rather than assumed, and the
 version goes to Siva when it is not obvious which half of the convention applies.
 
+**A release that changes the engine peer range says what a card read at the new floor.** Its commit
+body carries the `npm run gate:floor` result and the `gate:gpu` reading taken with the floor
+installed, naming the adapter, or it states that no card read the floor. Nothing enforces this,
+because no gate reads a commit message.
+
 **The 2.x band publishes once, at its end.** Siva's call on 2026-09-11. 2.0.0 is what npm reports and
 2.1.0 through 2.6.0 are cut and unpublished, so a session cuts a version and stops there rather than
 asking to release it. What reaches npm next is the version the band closes on.

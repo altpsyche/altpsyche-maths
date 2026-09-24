@@ -1717,11 +1717,13 @@ wait on Siva's second decision above; steps 1 and 4 do not.
       the repository and the workflow file, so a renamed file stops publishing until the setting is
       renamed with it. **Measurement:** the provenance attestation on the version the workflow
       publishes.
-- [ ] **4. A release says what the floor drew.** `@altpsyche/engine` settled the same question at
+- [x] **4. A release says what the floor drew.** `@altpsyche/engine` settled the same question at
       its 0a47891 and the shape is taken rather than invented: one rule, with what nothing enforces
       stated in the same place. The rule is that a release changing the peer range carries the
       floor's `gate:gpu` reading or says that no card read the floor. **Measurement:** none, which
-      is why the rule states its own limit.
+      is why the rule states its own limit. **Landed** as three sentences under Releases in
+      `CLAUDE.md`, naming the adapter and the stated omission, and saying no gate reads a commit
+      message.
 
 **Done-criteria.**
 
