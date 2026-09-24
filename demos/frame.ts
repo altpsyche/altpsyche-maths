@@ -10,10 +10,13 @@
  * The plate is a rectangle inset a twentieth of the frame on every side, so it
  * is a different rectangle at every shape the frame comes in. The disc is a
  * circle of radius 1.05 about the origin, so it is the same circle at all three.
- * The strip draws the two together at sixteen by nine, at square and at nine by
- * sixteen, which is the reading that says which of them answers to the frame.
+ * The rule under the disc is fitted inside a share of the frame, so the frame's
+ * height sets its size where the frame is wide and its width sets it where the
+ * frame is narrow. The strip draws them together at sixteen by nine, at square
+ * and at nine by sixteen, which is the reading that says which answer to the frame.
  */
 import {
+  equationFromTex,
   marksAt,
   moveBy,
   resolveFigure,
@@ -55,6 +58,12 @@ export const TEXT = textScale(0.27);
 export const DISC = 1.05;
 export const DISC_WORD_Y = -1.8;
 
+/** The box the rule is fitted inside, as shares of the frame's width and height. */
+export const RULE_ACROSS = 0.6;
+export const RULE_UP = 0.08;
+
+const rule = await equationFromTex('x^2 + y^2 = r^2');
+
 export const scene: NodeRecord = {
   kind: 'group',
   name: 'frame',
@@ -85,6 +94,17 @@ export const scene: NodeRecord = {
       options: { fill: ink, align: 'middle' },
     },
     {
+      kind: 'equationNode',
+      name: 'rule',
+      equation: rule,
+      options: {
+        at: atFraction(0.5, 0.1),
+        width: shareOf('width', RULE_ACROSS),
+        height: shareOf('height', RULE_UP),
+        fill: ink,
+      },
+    },
+    {
       kind: 'text',
       name: 'plateWord',
       at: atFraction(0.5, 0.88),
@@ -107,6 +127,7 @@ export const written: FigureRecord = {
       { entry: { kind: 'fadeIn', target: 'frame/plate' }, from: 0, to: 0.6 },
       { entry: { kind: 'growFrom', target: 'frame/disc' }, from: 0.5, to: 1.2 },
       { entry: { kind: 'fadeIn', target: 'frame/discWord' }, from: 1, to: 1.5 },
+      { entry: { kind: 'fadeIn', target: 'frame/rule' }, from: 1.1, to: 1.6 },
       { entry: { kind: 'fadeIn', target: 'frame/plateWord' }, from: 1.3, to: HOLD },
     ],
     duration: HOLD,

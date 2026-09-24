@@ -5,7 +5,7 @@
 import { describe, expect, it } from 'vitest';
 import { boundsOf, marksAt, readFigure, type Mark } from '../index.js';
 import { readFileSync } from 'node:fs';
-import { DISC, GAP, HEIGHT, HOLD, SHAPES, framed, stripMarks } from '../demos/frame.js';
+import { DISC, GAP, HEIGHT, HOLD, RULE_ACROSS, RULE_UP, SHAPES, framed, stripMarks } from '../demos/frame.js';
 
 const found = (marks: readonly Mark[], id: string): Mark => {
   const mark = marks.find((each) => each.id === id);
@@ -41,6 +41,23 @@ describe('the frame demo', () => {
       expect(box.y.from).toBeCloseTo(-DISC, 6);
       expect(box.y.to).toBeCloseTo(DISC, 6);
     }
+  });
+
+  it('fits the rule by the frame height where the frame is wide and by its width where it is narrow', () => {
+    const drawn = SHAPES.map((aspect) => {
+      const glyphs = marksAt(framed, HOLD, aspect).filter((mark) => mark.id.startsWith('frame/rule/'));
+      expect(glyphs).toHaveLength(8);
+      const boxes = glyphs.map(boxOf);
+      const width = Math.max(...boxes.map((box) => box.x.to)) - Math.min(...boxes.map((box) => box.x.from));
+      const height = Math.max(...boxes.map((box) => box.y.to)) - Math.min(...boxes.map((box) => box.y.from));
+      return { width, height };
+    });
+    // The glyphs fill the height of the box at both wide shapes, so the two
+    // widths agree, and at the narrow shape the width runs out first.
+    expect(drawn[0].height).toBeCloseTo(RULE_UP * HEIGHT, 3);
+    expect(drawn[1].width).toBeCloseTo(drawn[0].width, 10);
+    expect(drawn[2].width).toBeLessThanOrEqual(RULE_ACROSS * HEIGHT * SHAPES[2]);
+    expect(drawn[2].height).toBeLessThan(RULE_UP * HEIGHT - 0.05);
   });
 
   it('draws the committed file the way the module draws it', () => {

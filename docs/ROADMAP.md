@@ -408,7 +408,7 @@ is left, since 2.1.0 through 2.10.0 are cut.
 
 | version | what lands | what it changes | steps | cut against | depends on | plan |
 | --- | --- | --- | --- | --- | --- | --- |
-| 3.2.0 | an equation record whose fitting box is an expression | what `EquationRecordOptions` may carry | 3, 1 ticked | an equation written as a file and drawn at three aspects | nothing outside this package | under The items |
+| 3.2.0 | an equation record whose fitting box is an expression | what `EquationRecordOptions` may carry | 3, 2 ticked | an equation written as a file and drawn at three aspects | nothing outside this package | under The items |
 | 3.3.0 | a surface that hands over its device, or says the card is gone | what `GpuSurface` reports | to plan | a figure redrawn after a card is taken away | nothing, since `RendererOptions` already takes a caller's device | to plan |
 | 3.4.0 | a clip that is a path rather than a rectangle | what a `Mark` may ask for | to plan | nothing yet, which is why it is last of the marks | nothing now, since `@altpsyche/engine` 0.5.0 counts a winding | to plan |
 | 4.0.0 | the five `item` names renamed to `entry`, then a figure a reader can act on | the shape of `Figure`, which gains input | to plan | nothing yet | nothing outside this package | to plan |
@@ -1642,11 +1642,15 @@ is the three aspects the version is cut against.
       **Read:** worst difference 0 at all three aspects, over 8 glyphs each; all 8 files unchanged.
       Before, the checker refused the record with `scene.options.width is a number and is an
       object`; a string is now refused with `is an expression and is the text "84"`.
-- [ ] **2. The frame demo carries an equation fitted to the frame.** A typeset rule in
+- [x] **2. The frame demo carries an equation fitted to the frame.** A typeset rule in
       `demos/frame.ts` whose box is a share of the frame's width and height, `demos/frame.figure.json`,
       `docs/frame.svg` and `docs/frame-strip.svg` written again, and `tests/frame-demo.test.ts` reading it. **Measurement:**
       the equation's drawn width and height at each of the three shapes, which of the two shares binds
       at each, and the committed file equal to the module at all three.
+      **Read:** `x^2 + y^2 = r^2` in 0.6 of the width by 0.08 of the height, 8 glyphs. Drawn 2.318 by
+      0.480 at 16/9 and at 1, where the height binds; 1.979 by 0.410 at 9/16, where the width of
+      2.025 binds. The file draws what the module draws at all three, and grows from 6,373 bytes to
+      176,495.
 - [ ] **3. The consumer's figure read as a file.** `npm pack` here and `npm install --no-save` in
       `altpsyche.dev`, with `circle-distance` written as a record in a scratch file there and never
       committed. The commit here is the reading written into this entry. **Measurement:** the first
