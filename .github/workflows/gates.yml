@@ -1,0 +1,76 @@
+# The floor gate installs a second engine version and each browser gate can fail on a runner alone,
+# so each of the three runs in a job of its own and cannot change or hide what another job reads.
+
+name: gates
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  gates:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+
+      - run: npm ci
+
+      - run: npm test
+
+      - run: npm run type-check
+
+      - run: npm run build
+
+      - run: npm run check:vocab
+
+  floor:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+
+      - run: npm ci
+
+      # The floor is read out of peerDependencies, so this line never names a version.
+      - run: npm run gate:floor
+
+  gpu:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+
+      - run: npm ci
+
+      # The Chromium the playwright dependency pins, since installing a browser replaces the build it finds.
+      - run: npx playwright install --with-deps chromium
+
+      - run: npm run gate:gpu
+
+  record:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+
+      - run: npm ci
+
+      # The Chromium the playwright dependency pins, since installing a browser replaces the build it finds.
+      - run: npx playwright install --with-deps chromium
+
+      - run: npm run gate:record
