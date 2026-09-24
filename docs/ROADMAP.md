@@ -1659,8 +1659,10 @@ file's two counts before and after, the check's file total, and `npm test` over 
       list before and after, `check:vocab` reads 5 prose files, and 1,511 of 1,511 over 98 files. The
       heading "The seven item producers" is now "The seven entry producers", and the test that reads
       that section by its heading reads the new one.
-- [ ] **3. FIGURE-FORMAT.md.** 18 and 16 to 0 and 0. The documents of that name in the engine and
-      the site are theirs, and this commit touches only this one.
+- [x] **3. FIGURE-FORMAT.md.** 18 and 16 to 0 and 0. The documents of that name in the engine and
+      the site are theirs, and this commit touches only this one. **Landed:** 34 matches reworded,
+      319 backticked spans the same list before and after, `check:vocab` reads 6 prose files, and
+      1,511 of 1,511 over 98 files.
 - [ ] **4. REFERENCE.md.** 18 and 53 to 0 and 0. `tests/reference.test.ts` holds every name at the
       door against this file, so it passes unchanged.
 

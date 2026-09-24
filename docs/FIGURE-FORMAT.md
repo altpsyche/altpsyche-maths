@@ -13,7 +13,7 @@ computation the format refuses is written by a program that emits a figure.
 **The refusals are rules rather than a name.** Calling it a language was considered and dropped:
 Lottie is called a format and has renderers on four platforms, glTF is a transmission format and the
 whole 3D industry implements it, so the word buys nothing, and a bigger word invites a bigger
-thing.
+scope.
 
 **This document is one of three.** The change it describes crosses three repositories, and each one
 carries the half of it that repository does. This is the `@altpsyche/maths` half, and it is most of
@@ -43,7 +43,7 @@ permanent.** A fourth repository was made and then folded back on the same day: 
 their specifications because several implementers with different owners read them, and there is one
 implementation and one author here. [`SPECIFICATION.md`](SPECIFICATION.md) is that document, and the
 discipline the split would have bought is a rule instead: **it changes before the code does.** It
-moves out when a second implementation exists, or when a tool wants the types and a validator without
+moves out when a second implementation exists, or when a tool needs the types and a validator without
 the whole library, which is also when `@altpsyche/figure-format` becomes a package.
 
 **The specification carries its own version.** A figure declares which version of the language it is
@@ -60,7 +60,7 @@ export function plot(coords: Coords, of: (x: number) => number, options: PlotOpt
 ```
 
 That `(x: number) => number` cannot be written to a file. So a figure cannot leave this language, and
-four things are impossible because of it.
+four uses are impossible because of it.
 
 **A figure cannot be written by anything but a person typing TypeScript.** No editor, no page's
 content, no generator.
@@ -75,15 +75,15 @@ it offline.
 graph can do both, because a frame graph is data. This package claims the same philosophy and does
 not keep it.
 
-**What the format buys, stated as the things Siva asked for.** A renderer written in Rust reading a
+**What the format buys, stated as the four uses Siva asked for.** A renderer written in Rust reading a
 figure and drawing it with no browser. A command that turns a figure into a video file for a channel.
 An application that opens a figure, changes it and saves it. And a package another developer adopts,
-because a format is a stronger thing to adopt than a library.
+because a format is a stronger choice to adopt than a library.
 
 ## The decisions this is built to
 
 **The format is the product and this package is its reference implementation.** The builders stay as
-the pleasant way to write a figure. What they produce is data, and the data is what other things
+the pleasant way to write a figure. What they produce is data, and the data is what other programs
 read.
 
 **The format is closed.** An author uses the animations and the scene shapes the format names, with
@@ -111,7 +111,7 @@ the middle of the package.
 
 ### Every builder splits in two
 
-`plot(coords, curve)` computes geometry and hands back a `Path`. After the change it returns a
+`plot(coords, curve)` computes geometry and returns a `Path`. After the change it returns a
 description, and a resolver turns descriptions into marks. The twenty-one node builders all change
 shape: `axes`, `plot`, `tangentAt`, `areaUnder`, `brace`, `numberPlane`, `vectorField`, `dot`,
 `text`, `shape`, `group`, `axes3`, `surface3`, `polyline3`, `dot3`, `text3`, `arrow3`,
@@ -121,7 +121,7 @@ The authoring call keeps its name and its arguments wherever it can, so a consum
 sees as little change as the format allows. Whether that holds for every builder is one of the
 questions the planning session answers rather than assumes.
 
-### Animations become named things
+### Animations become named records
 
 `type Animation = (marks: readonly Mark[], along: number) => readonly Mark[]` becomes a record with a
 kind and parameters, and a resolver for each kind. The kinds that exist are the ones the format
@@ -155,8 +155,8 @@ problems wearing one word**, and only the smallest of the three needs the format
 ### Functions that make fixed geometry, which do not need to survive
 
 `curve` is `(x: number) => x * x`. It reaches the picture only through `plot(coords, curve, over)`,
-and what `plot` hands back is a path of cubics. `slopeField` reaches it only through `vectorField`,
-which samples it on a grid and hands back arrows.
+and what `plot` returns is a path of cubics. `slopeField` reaches it only through `vectorField`,
+which samples it on a grid and returns arrows.
 
 **Neither function has to serialise. The geometry it produced has to.** An author writes the function
 in TypeScript, and the format carries cubics. What is lost is re-sampling at another resolution, and
@@ -199,7 +199,7 @@ remove every one of them.
 rather than arbitrary code. The flat demo's own defence still holds: the dot, the tangent and the
 reading stay one number, because they read one track through one expression.
 
-**Text metrics are half answered.** A typeset rule is already geometry, since MathJax hands back SVG
+**Text metrics are half answered.** A typeset rule is already geometry, since MathJax returns SVG
 paths, so an equation bakes and no renderer needs MathJax to draw one. A plain text mark still
 carries a string and a size, and where its glyphs land is the renderer's. The format should let a
 text mark carry resolved outlines as well, so a figure that must look identical everywhere can say so.
@@ -214,7 +214,7 @@ three need different treatment.
 ### Node kinds, twenty-one of them
 
 A node kind is a named record with parameters. Three of them are the kinds of the tree itself and the
-other eighteen are builders that resolve into a tree of those three, so a resolver hands back a `Node`
+other eighteen are builders that resolve into a tree of those three, so a resolver returns a `Node`
 that `flatten` already walks.
 
 **A camera counts as a function.** A built `Camera3` carries `project` and its `Projection` carries
@@ -240,14 +240,14 @@ that `flatten` already walks.
 | `text3` | at, content, size, camera | **yes**, the camera |
 | `arrow3` | from, to, camera, options | **yes**, the camera |
 | `axes3` | camera, options | **yes**, the camera |
-| `scene3` | items, camera | **yes**, the camera |
+| `scene3` | the entries, camera | **yes**, the camera |
 | `surface3` | the surface, camera, options | **yes**, the surface, the camera and the shading |
 | `vectorField3` | the field, camera, options | **yes**, the field, the camera and two options |
 
-### Item producers, two of them
+### Entry producers, two of them
 
 These return `SpaceItem[]`, the list `scene3` sorts by depth and draws. A figure uses one inside a
-`scene3` beside its other items, which is what neither of them being a node is for.
+`scene3` beside its other entries, which is what neither of them being a node is for.
 
 | producer | parameters | carries a function |
 | --- | --- | --- |
@@ -302,7 +302,7 @@ other seven run inside an animation or inside the resolver, so a figure never ca
 
 ### Point producers, two of them
 
-These return points rather than a path, `Vec2[]` and `Vec3[][]`, and a figure passes what comes back
+These return points rather than a path, `Vec2[]` and `Vec3[][]`, and a figure passes what they return
 to `straight` or to `polyline3`.
 
 | producer | parameters | carries a function |
@@ -382,23 +382,23 @@ written: a precision, and later a choice of forms if a figure ever needs one. Th
 three precisions, 1, 0.01 and 0.001, which is what says a precision is the parameter rather than the
 one figure that draws it.
 
-**So the vocabulary is twenty-one node kinds, two item producers, eleven path producers, two point
+**So the vocabulary is twenty-one node kinds, two entry producers, eleven path producers, two point
 producers, fifteen animation kinds, one timeline structure and eleven value types**, which is
-sixty-three things.
+sixty-three names.
 
 ### What splitting steps 3 and 4 corrected in the inventory
 
 **Three of the counts above were wrong**, because the tables were built from the names at the door
 and splitting the two steps meant reading each builder's return type instead.
 
-**There are twenty-one node kinds rather than nineteen, and two item producers nobody counted.**
+**There are twenty-one node kinds rather than nineteen, and two entry producers nobody counted.**
 `riemannBars` returns a `GroupNode` and was counted as a path producer. `vectorField3` returns one and
-was missed. `surfaceCells` and `fieldArrows3` return `SpaceItem[]`, which is a third thing a figure is
-made of: the list of items `scene3` sorts and draws, rather than a node or a path.
+was missed. `surfaceCells` and `fieldArrows3` return `SpaceItem[]`, which is a third part a figure is
+made of: the list of entries `scene3` sorts and draws, rather than a node or a path.
 
 **Three of the twenty-one are the tree's own kinds and the other eighteen are builders over them.**
 `figure/node.ts` publishes `shape`, `text` and `group`, and every other kind resolves into a tree of
-those three. A resolver hands back a `Node` that `flatten` already walks, so nothing below the line
+those three. A resolver returns a `Node` that `flatten` already walks, so nothing below the line
 moves for any of the twenty.
 
 **A path needs a written form before anything that takes a path does.** Ten operations take a path
@@ -411,7 +411,7 @@ the format can carry as it stands. `streamlineOf` and `sectionOf` produce points
 
 **Nineteen names at the door take a function or a value carrying one, and twelve shapes of function
 exist among them rather than three.** The tables above mark eighteen of the nineteen and `slopeOf` is
-the one they miss, because it returns a number rather than a node, a path, an item, a point or an
+the one they miss, because it returns a number rather than a node, a path, an entry, a point or an
 animation, so none of the five tables has a row for it. **Three more carry a function in a field of a
 type rather than in a parameter:** `PlayOptions.curve` is a `Curve`, `Figure.scene` may be a function
 of the clock and its sampled values, and `ExtentChoice` is an `Extent` or a function of the aspect and
@@ -474,7 +474,7 @@ files, which its own document describes and does not scope.
 **This is almost certainly 2.0.0 rather than a minor.** `plot` returns a `Path` today and would
 return a record. A consumer calling it breaks. The door was frozen at 1.0.0 five commits ago and a
 frozen door is what a major exists for, so either the old calls keep working beside the new ones,
-which means two APIs and two things to test, or the version goes to two. **That is Siva's call and
+which means two APIs and two surfaces to test, or the version goes to two. **That is Siva's call and
 this plan assumed a minor without asking.**
 
 **Realistic shape: forty commits over the vocabulary and the surfaces, plus the
@@ -503,7 +503,7 @@ The comparison is by tolerance and never by hash, for the reason `CLAUDE.md` alr
 `altpsyche.dev` draws place every mark as a fraction of the frame, and the format as it was frozen
 could not describe either. `marksAt` took one number, a record's scene was a static tree, and the
 frame reached nothing. The site got what it needed by calling `build(palette, aspect)` outside the
-package, which is the one thing a file cannot do.
+package, which is the one step a file cannot take.
 
 **The kind reads the extent the figure declares, resolved at the aspect being drawn.** It does not
 read the extent a view move or a follow has left. A view that follows a mark resolves its extent from
@@ -525,14 +525,14 @@ an expression, so one kind answers both.
 ## Why an implicit curve's count of places is not fixed, and one form in this format is not a morph source
 
 **Every other path form fixes its count of places from the figure rather than from the function.**
-`plot` and `parametric` take a resolution and hand back that many samples whatever the function does,
+`plot` and `parametric` take a resolution and return that many samples whatever the function does,
 which is what makes a morph possible at all: a morph walks one path into another by pairing their
 points in order, so a path that resampled itself between frames would pair points that do not
 correspond and the drawn shape would swim.
 
 **An implicit curve cannot do this and the reason is the technique rather than the writing.** Marching
-squares hands back one place per cell edge the level crosses, so the count is how many cells the curve
-passes through, which the function decides. Fixing it would mean resampling the run afterwards, and a
+squares returns one place per cell edge the level crosses, so the count is how many cells the curve
+passes through, which the function sets. Fixing it would mean resampling the run afterwards, and a
 resampled run is no longer a curve whose places are on the level: every one of them would sit on a
 chord instead, at an error the cell size sets rather than the bisection.
 
@@ -573,14 +573,14 @@ same picture a depth buffer draws and needs boolean path operations this reposit
 
 **Why a mark carrying no depth clears the depths before it.** The two ways of meeting the rule would
 otherwise draw different pictures. A depth buffer keeps every depth it has written, so a mark from
-before the flat one comes back through a mark after it wherever it is nearer, while a renderer
+before the flat one shows through a mark after it wherever it is nearer, while a renderer
 painting in order has already covered it. Neither is more right than the other, so the format says
-which: the flat mark clears, the list becomes a run of stretches, and the depth decides inside a
+which: the flat mark clears, the list becomes a run of stretches, and the depth sets the order inside a
 stretch and nowhere else. On a card that is a clear of the depth attachment, which is one more
 attachment operation rather than one more pass.
 
 **What it costs.** A curve lying on a surface is at that surface's depth, so the two functions agree
-and nothing decides between them. The builder that draws the curve moves it nearer by the cell's own
+and nothing sets the order between them. The builder that draws the curve moves it nearer by the cell's own
 sagitta, which is the offset a card calls a polygon offset. A global offset chosen without knowing
 which surface a curve sits on does not work and that was measured: at the still the offset needed to
 carry a piece over the cell it lies on is 0.1958 and the nearest genuine occluder allows 0.1874, and
@@ -632,7 +632,7 @@ machine.
 identity entry by entry, so the numbers a figure writes beside a mapped grid are the numbers the
 picture is at. The determinant halfway to a turn by an angle is `(1 + cos angle) / 2`: 0.500000 at a
 quarter turn, 0.250000 at 120 degrees, and 0.000000 at a half turn, where every point lands on one
-line. A figure that wants the turn asks `rotate`, which interpolates the angle and holds the area at
+line. A figure that needs the turn asks for `rotate`, which interpolates the angle and holds the area at
 1. Writing the two as one kind would mean a renderer deciding which of them a matrix meant, and the
 two answers differ everywhere except the ends of the span.
 
@@ -665,7 +665,7 @@ the mark a reader is watching.
 
 **What the name rule costs** is a pair of groups written by two different hands, whose marks carry
 unrelated names. Those pair by the order they stand in, which is the second rule, and a figure that
-wants a particular pairing gets it by naming the marks alike.
+needs a particular pairing gets it by naming the marks alike.
 
 ## The precedent
 
@@ -693,5 +693,5 @@ down, and 1.6.0 the clip a `Style` carries and the inset a `Figure` does. Freezi
 would have cost a major of the format's own version to add them afterwards, since an old figure has to
 keep rendering. Freezing after cost rewriting four demos' syntax, which was mechanical.
 
-One item survives in another repository regardless of what happens here, and it is the engine's
+One planned change survives in another repository regardless of what happens here, and it is the engine's
 stencil. That document says why.

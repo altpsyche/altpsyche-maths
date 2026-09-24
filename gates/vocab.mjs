@@ -12,7 +12,7 @@ const SOURCES = [
       .map((name) => `${dir}/${name}`),
   ),
 ];
-const PROSE = ['README.md', 'DESIGN.md', 'CLAUDE.md', 'docs/GUIDE.md', 'docs/SPECIFICATION.md'];
+const PROSE = ['README.md', 'DESIGN.md', 'CLAUDE.md', 'docs/GUIDE.md', 'docs/SPECIFICATION.md', 'docs/FIGURE-FORMAT.md'];
 
 // Alternation order matters: the longer phrase is tried first, so "drawn item" is not also an "item".
 // A phrase may break across a comment's line, so the gap between its words also takes the `*` or
