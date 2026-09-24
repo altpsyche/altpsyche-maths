@@ -44,6 +44,15 @@ export interface GpuCanvas {
   getContext(kind: string, attributes?: unknown): unknown;
 }
 
+/**
+ * A WebGPU device, named by the parts this module reads rather than taken from
+ * the WebGPU types, so this package declares no WebGPU library. The `GPUDevice`
+ * a browser returns satisfies it.
+ */
+export interface GpuDevice {
+  destroy(): void;
+}
+
 export interface GpuSurfaceOptions {
   /** What each frame opens on, four channels from nothing to one. Left out, a
    * frame opens on nothing at all and whatever is behind the canvas shows
@@ -58,6 +67,10 @@ export interface GpuSurfaceOptions {
   readonly backend?: 'webgl2' | 'webgpu';
   /** What to call with the engine's own words when it turns a frame down. */
   readonly onRefused?: (message: string) => void;
+  /** The card to draw with, where the caller already holds one. Left out, and
+   * where the backend is not WebGL 2, the surface asks for one itself and
+   * destroys it on `dispose`. */
+  readonly device?: GpuDevice;
 }
 
 /** A card with a renderer on it, ready to draw a figure's marks. */
@@ -67,6 +80,8 @@ export interface GpuSurface {
   /** The canvas the frames land on, whose size each frame is worked out
    * against. */
   readonly canvas: GpuCanvas;
+  /** The device the frames are drawn with on WebGPU, and absent on WebGL 2. */
+  readonly device?: GpuDevice;
   /** Gives up the card resources the renderer owns. */
   dispose(): void;
 }
@@ -123,14 +138,25 @@ export async function gpuSurface(
   // no browser library, so what satisfies the parts a renderer reads is passed
   // on as the canvas it is, under the type that door already states.
   type EngineCanvas = Parameters<typeof engine.openRenderer>[0];
+  type EngineDevice = NonNullable<Parameters<typeof engine.openRenderer>[2]>['device'];
+
+  // Asked for here so the surface holds the renderer's device; with none returned the door
+  // is narrowed to WebGL 2, which it would choose anyway, rather than asking a second time.
+  const asked = options.device || options.backend === 'webgl2' ? null : await engine.requestWebGPUDevice();
+  const device: GpuDevice | null = options.device ?? asked;
+  const backend = options.backend ?? (device ? undefined : 'webgl2');
   const opened = await engine.openRenderer(canvas as unknown as EngineCanvas, empty, {
-    ...(options.backend ? { backend: options.backend } : {}),
+    ...(backend ? { backend } : {}),
+    ...(device ? { device: device as EngineDevice } : {}),
     onRefused: options.onRefused,
   });
   if ('refusal' in opened) {
+    asked?.destroy();
     options.onRefused?.(opened.refusal);
     return null;
   }
+  const drawnWith = opened.renderer.backend === 'webgpu' ? (device ?? undefined) : undefined;
+  if (!drawnWith) asked?.destroy();
 
   // A renderer opened for one frame draws every later frame the caller passes it,
   // and the WebGL 2 backend throws on a WGSL frame however the renderer was
@@ -147,11 +173,17 @@ export async function gpuSurface(
   const held: Held = {
     backend: opened.renderer.backend,
     canvas,
+    ...(drawnWith ? { device: drawnWith } : {}),
     renderer: opened.renderer,
     options,
     font,
     asDrawn,
-    dispose: () => opened.renderer.dispose(),
+    // The engine's WebGPU backend leaves its device alive on dispose, so a device
+    // the surface asked for is destroyed here and a caller's is left to the caller.
+    dispose: () => {
+      opened.renderer.dispose();
+      if (drawnWith === asked) asked?.destroy();
+    },
   };
   return held;
 }

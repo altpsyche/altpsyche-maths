@@ -48,7 +48,7 @@ export type { Font } from './figure/font.js';
 export { gpuFrame } from './figure/gpu-frame.js';
 export type { GpuFrame, GpuFrameOptions } from './figure/gpu-frame.js';
 export { gpuSurface, paintGpu, painterGpu, pixelsGpu } from './paint/gpu.js';
-export type { GpuCanvas, GpuPainting, GpuSurface, GpuSurfaceOptions } from './paint/gpu.js';
+export type { GpuCanvas, GpuDevice, GpuPainting, GpuSurface, GpuSurfaceOptions } from './paint/gpu.js';
 export type { FlatEdge, FlattenOptions } from './figure/inside.js';
 export { cutPath } from './figure/cut.js';
 export type { Cut, CutOptions } from './figure/cut.js';

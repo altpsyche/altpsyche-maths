@@ -49,6 +49,16 @@ describe('gpuSurface', () => {
     expect(surface).toBeNull();
     expect(said[0]).toContain('no backend can draw a wgsl frame');
   });
+
+  it('passes a device the caller holds through to the door', async () => {
+    // A device in hand offers WebGPU where Node has no adapter, so the refusal
+    // moves from the choosing to the canvas that gives no context.
+    const said: string[] = [];
+    const device = { destroy: () => {} };
+    const surface = await gpuSurface(contextless(8), { device, onRefused: (message) => said.push(message) });
+    expect(surface).toBeNull();
+    expect(said[0]).toContain('selected webgpu and that backend gave the canvas no context');
+  });
 });
 
 describe('the painting calls', () => {

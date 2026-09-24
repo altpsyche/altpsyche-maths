@@ -1677,13 +1677,13 @@ this is the first.
 **Which step the demos gain from.** Step 4 takes the card away from a committed figure in
 `gate:gpu` and draws the figure again, which is the reading the version is cut against.
 
-- [ ] **1. The surface takes and returns its device.** `GpuDevice`, `GpuSurfaceOptions.device`,
-      `GpuSurface.device`, and the request made by `gpuSurface` where no device is given. REFERENCE.md's
-      lines for the three types. Records in the commit body whether the engine's WebGPU `dispose`
-      destroys the device it was given. **Measurement:** in Node with no mock, a plain device
-      reaches the engine's door, and the refusal reads `selected webgpu and that backend gave the
-      canvas no context` where today it reads `no backend can draw a wgsl frame`; with the mock, the
-      device `openRenderer` receives is the one passed, and the one `GpuSurface.device` returns.
+- [x] **1. The surface takes and returns its device.** Landed. With no mock, a plain device passed
+      to `gpuSurface` in Node draws the refusal `selected webgpu and that backend gave the canvas no
+      context` where no device draws `no backend can draw a wgsl frame`. With the mock, the device
+      `openRenderer` receives and `GpuSurface.device` returns is the one passed, a device the surface
+      asked for is destroyed once on `dispose` and a caller's 0 times, and a request that returns
+      none narrows the door to WebGL 2 in 1 request rather than 2. The engine's WebGPU `dispose`
+      unconfigures the context and leaves the device alive.
 - [ ] **2. A lost device is reported.** `onLost` from `device.lost`, the lost flag, and both
       painting calls drawing nothing after it. **Measurement:** with the mock, a `lost` promise
       resolved with `destroyed` calls `onLost` 1 time with `destroyed`; `paintGpu` after it makes 0

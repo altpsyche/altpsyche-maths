@@ -1513,11 +1513,16 @@ picture in a recording and a picture on a card are the same picture.
   read off what came back, and the engine's own `resolve` answers which one draws. Making a renderer
   is asked for once and drawing per frame, since a renderer compiles shaders and owns card memory.
 - `GpuSurfaceOptions` — the four channels each frame `clear`s to, the `tolerance` a curve is flattened
-  to, a `backend` where the caller has already chosen one, and `onRefused` for the engine's own words
-  when it turns a frame down.
+  to, a `backend` where the caller has already chosen one, `onRefused` for the engine's own words
+  when it turns a frame down, and the `device` to draw with where the caller already holds one. Left
+  out, and where the backend is not WebGL 2, the surface asks for a device itself and destroys it on
+  `dispose`.
 - `GpuCanvas` — a canvas named by the parts a renderer reads, its `width`, its `height` and its
   `getContext`, so this package declares no browser library.
-- `GpuSurface` — the `backend` the frames go through, the `canvas` they land on, and `dispose`.
+- `GpuDevice` — a WebGPU device named by the parts this module reads, which a browser's `GPUDevice`
+  satisfies, so this package declares no WebGPU library.
+- `GpuSurface` — the `backend` the frames go through, the `canvas` they land on, the `device` they
+  are drawn with on WebGPU, and `dispose`.
 - `paintGpu(surface, marks, view)` — one list of marks drawn on a card, at the size the surface's
   canvas is now. What comes back is a `GpuPainting` rather than a picture, since the picture is on the
   canvas.
