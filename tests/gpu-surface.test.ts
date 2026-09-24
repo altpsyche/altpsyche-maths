@@ -186,3 +186,53 @@ describe('a lost device', () => {
     expect(reasons).toHaveLength(0);
   });
 });
+
+type Listener = (event: { preventDefault(): void }) => void;
+
+/** A canvas that stores its listeners and dispatches a loss when the test says. */
+function listening(): GpuCanvas & { listeners: Map<string, Set<Listener>>; loseContext: () => boolean } {
+  const listeners = new Map<string, Set<Listener>>();
+  return {
+    ...canvas(),
+    listeners,
+    addEventListener: (type: string, listener: Listener) => {
+      if (!listeners.has(type)) listeners.set(type, new Set());
+      listeners.get(type)!.add(listener);
+    },
+    removeEventListener: (type: string, listener: Listener) => {
+      listeners.get(type)?.delete(listener);
+    },
+    loseContext: () => {
+      let prevented = false;
+      const event = { preventDefault: () => (prevented = true) };
+      for (const listener of listeners.get('webglcontextlost') ?? []) listener(event);
+      return prevented;
+    },
+  };
+}
+
+describe('a lost context', () => {
+  it('listens on a WebGL 2 surface and stops listening on dispose', async () => {
+    const target = listening();
+    const surface = await gpuSurface(target, { backend: 'webgl2' });
+    expect(target.listeners.get('webglcontextlost')?.size).toBe(1);
+    surface?.dispose();
+    expect(target.listeners.get('webglcontextlost')?.size).toBe(0);
+  });
+
+  it('calls onLost once with context and prevents the default so the browser may restore it', async () => {
+    const target = listening();
+    const reasons: string[] = [];
+    const surface = (await gpuSurface(target, { backend: 'webgl2', onLost: (reason) => reasons.push(reason) }))!;
+    expect(target.loseContext()).toBe(true);
+    target.loseContext();
+    expect(reasons).toEqual(['context']);
+    expect(paintGpu(surface, [square], straight)).toEqual({ refused: ['square'], triangles: 0 });
+    expect(engine.draws).toBe(0);
+  });
+
+  it('opens on a canvas with no addEventListener as it does without onLost', async () => {
+    const surface = await gpuSurface(canvas(), { backend: 'webgl2', onLost: () => {} });
+    expect(surface?.backend).toBe('webgl2');
+  });
+});

@@ -42,6 +42,9 @@ export interface GpuCanvas {
   width: number;
   height: number;
   getContext(kind: string, attributes?: unknown): unknown;
+  /** Where a lost WebGL 2 context is heard, on a canvas that dispatches events. */
+  addEventListener?(type: string, listener: (event: { preventDefault(): void }) => void): void;
+  removeEventListener?(type: string, listener: (event: { preventDefault(): void }) => void): void;
 }
 
 /**
@@ -188,6 +191,14 @@ export async function gpuSurface(
     options.onLost?.(reason);
   };
   void drawnWith?.lost.then((info) => lose(info.reason));
+  // Context lost: preventing the default is what lets the browser restore the
+  // context later, and a WebGL 2 context gives no reason of its own.
+  const contextLost = (event: { preventDefault(): void }) => {
+    event.preventDefault();
+    lose('context');
+  };
+  const listens = opened.renderer.backend === 'webgl2' && canvas.addEventListener !== undefined;
+  if (listens) canvas.addEventListener?.('webglcontextlost', contextLost);
 
   const held: Held = {
     backend: opened.renderer.backend,
@@ -202,6 +213,7 @@ export async function gpuSurface(
     // the surface asked for is destroyed here and a caller's is left to the caller.
     dispose: () => {
       state.disposed = true;
+      if (listens) canvas.removeEventListener?.('webglcontextlost', contextLost);
       opened.renderer.dispose();
       if (drawnWith === asked) asked?.destroy();
     },

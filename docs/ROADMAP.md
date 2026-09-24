@@ -1690,11 +1690,12 @@ this is the first.
       triangles for the two marks it was given. `pixelsGpu` returns 256 zero bytes for an 8 by 8
       canvas. A surface disposed before its `lost` settles calls `onLost` 0 times, and so does a
       device the surface asked for and destroyed on `dispose`.
-- [ ] **3. A lost context is reported.** The `webglcontextlost` listener, its `preventDefault`, and
-      its removal on `dispose`. **Measurement:** with the mock, 1 listener after opening a WebGL 2
-      surface and 0 after `dispose`; a dispatched loss calls `onLost` 1 time with `context` and
-      marks the event's default prevented; a canvas with no `addEventListener` opens as it does
-      today.
+- [x] **3. A lost context is reported.** Landed. With the mock, a WebGL 2 surface adds 1
+      `webglcontextlost` listener where it added 0, and `dispose` leaves 0. A loss dispatched twice
+      calls `onLost` 1 time with `context` and marks the event's default prevented, and `paintGpu`
+      afterwards makes 0 draws and refuses the 1 mark it was given. A canvas with no
+      `addEventListener` opens on WebGL 2 as before. An `HTMLCanvasElement` and an `OffscreenCanvas`
+      still type-check as a `GpuCanvas` under `lib: dom`.
 - [ ] **4. The gate takes a card away and draws the figure again.** `gates/gpu.mjs` gains a pass per
       backend over one committed figure. WebGL 2 loses its context through `WEBGL_lose_context`'s
       `loseContext`, is restored with `restoreContext`, and a new surface is opened on the same

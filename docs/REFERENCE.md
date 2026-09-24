@@ -1518,7 +1518,10 @@ picture in a recording and a picture on a card are the same picture.
   out, and where the backend is not WebGL 2, the surface asks for a device itself and destroys it on
   `dispose`. `onLost` is called once when the card goes, with a `GpuLoss`, and never after `dispose`.
 - `GpuCanvas` — a canvas named by the parts a renderer reads, its `width`, its `height` and its
-  `getContext`, so this package declares no browser library.
+  `getContext`, so this package declares no browser library. Its optional `addEventListener` and
+  `removeEventListener` are where a WebGL 2 surface hears `webglcontextlost`, whose default it
+  prevents so the browser may restore the context. A canvas without them opens all the same and
+  reports no lost context.
 - `GpuDevice` — a WebGPU device named by the parts this module reads, which a browser's `GPUDevice`
   satisfies, so this package declares no WebGPU library.
 - `GpuLoss` — why a surface's card went: `destroyed` or `unknown`, which are the WebGPU device's own
