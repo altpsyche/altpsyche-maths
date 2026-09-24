@@ -1639,9 +1639,13 @@ SPECIFICATION.md at 2 and 21, FIGURE-FORMAT.md at 18 and 16, and REFERENCE.md at
 and a sweep has no reason to touch it. The commonest words are `item` 34 times, `decides` 31,
 `hands back` 30 and `wants` 29, counted over the five files in `docs/`.
 
-**ROADMAP.md reads 51 and 32 and is Siva's call.** The item names four files and leaves the roadmap
-out. Taking it in means every handover is held to the check, and a banned word the roadmap names
-in order to discuss it then has to be written in backticks.
+**Siva's answer of 2026-09-24 is that the vocabulary is right everywhere**, so the item widens past
+`docs/`. Read on that date with the check's own rule, ROADMAP.md is at 55 banned nouns and 32 banned
+voice patterns, `.claude/skills/next/SKILL.md` at 10 and 2, and the comments of `demos/`, `tests/`
+and `gates/` at 26 and 21 over 22 files. 4 of those nouns are in `gates/vocab.mjs` itself, in the
+lists that name the banned words, so that file is exempt the way CLAUDE.md's Vocabulary section is.
+The roadmap names a banned word in order to discuss it only in backticks from step 5 on, and the
+word the roadmap and the skill use for one queued piece of work is `entry`.
 
 **No demo gains from this item.** It changes prose only, so what it is checked against is the
 check's count and a suite that is unchanged.
@@ -1665,11 +1669,19 @@ file's two counts before and after, the check's file total, and `npm test` over 
       1,511 of 1,511 over 98 files.
 - [ ] **4. REFERENCE.md.** 18 and 53 to 0 and 0. `tests/reference.test.ts` holds every name at the
       door against this file, so it passes unchanged.
+- [ ] **5. ROADMAP.md.** 55 and 32 to 0 and 0. The heading "The items" becomes "The entries". Every
+      later handover is held to the check from this commit on.
+- [ ] **6. `.claude/skills/next/SKILL.md`.** 10 and 2 to 0 and 0, with "Pick one item" and the other
+      uses naming a roadmap entry. CLAUDE.md's `/next` sentence is read again in the same commit.
+- [ ] **7. The comments of `demos/`, `tests/` and `gates/`.** 26 and 21 to 0 and 0. `SOURCES` gains
+      the three directories, `gates/vocab.mjs` blanks its own ban lists, and a test name in a string is
+      code rather than a comment, so the check leaves it as it stands.
 
 **Done-criteria.**
 
-1. `PROSE` in `gates/vocab.mjs` lists the four files, the comment at its top names `docs/`, and
-   `check:vocab` reads 0 banned nouns and 0 banned voice patterns.
+1. `PROSE` in `gates/vocab.mjs` lists the five files in `docs/` and the skill, `SOURCES` takes
+   `demos/`, `tests/` and `gates/`, the comment at its top names what it reads, and `check:vocab`
+   reads 0 banned nouns and 0 banned voice patterns.
 2. The backticked spans of each file, sorted, are the same list before and after its step, so no
    name was edited as prose.
 3. SPECIFICATION.md line 1 reads version 1 and its `scene3` row names `items` and `camera`.
