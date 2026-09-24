@@ -15,7 +15,7 @@ no quantity in a figure is expressed in pixels.
 **Graph units** are the numbers an axis counts through. A scale maps an interval of graph units onto
 an interval of figure units.
 
-A **mark** is one drawn item: an outline with a fill, a stroke, or both, or a piece of text. A
+A **mark** is one unit of what a painter draws: an outline with a fill, a stroke, or both, or a piece of text. A
 **node** is one element of the tree a figure is written as, and flattening the tree yields the
 marks.
 
@@ -79,7 +79,7 @@ the value never turns back. `overshoot` passes 1 before settling on it and `ther
 - `easeOut` — quadratic, flat at the end, so the value leaves at speed and settles rather than
   stopping dead.
 - `smoothstep` — the cubic that is flat at both ends, Ken Perlin.
-- `overshoot` — the back ease out, Robert Penner: the value passes its destination and comes back to
+- `overshoot` — the back ease out, Robert Penner: the value passes its destination and returns to
   it, peaking at 1.100004 of the change 0.580103 of the way through.
 - `thereAndBack` — a smoothstep over each half, so the value reaches its destination halfway through
   and is 0 at 1 rather than 1.
@@ -105,7 +105,7 @@ the value never turns back. `overshoot` passes 1 before settling on it and `ther
     the parallelogram and says which side of `a` the vector `b` falls.
   - `vec2.magnitude(v)`, `vec2.distance(a, b)` — how long a vector is, and how far apart two points
     are.
-  - `vec2.normalize(v)` — the same direction at length one. A zero-length vector comes back as zero
+  - `vec2.normalize(v)` — the same direction at length one. A zero-length vector is returned as zero
     rather than as not-a-number.
   - `vec2.perpendicular(v)` — turned a quarter turn anticlockwise, which is the direction an arrow
     head and a line's thickness are both measured along.
@@ -135,7 +135,7 @@ An interval is the numbers from one bound to another. Either bound may be the la
     the fraction is outside 0 to 1.
   - `interval.clampTo(interval, value)` — the value held inside the two bounds.
   - `interval.remap(value, source, target)` — the place a value holds in one interval, read at the
-    same place in another. A source of no width hands back the target's first bound.
+    same place in another. A source of no width returns the target's first bound.
 
 ## Matrices
 
@@ -152,7 +152,7 @@ An interval is the numbers from one bound to another. Either bound may be the la
     about the origin.
   - `mat3.transformPoint(m, v)` — the matrix applied to a point, taking the translation with it.
   - `mat3.transformDirection(m, v)` — the rotation and scale applied and the translation left out,
-    which is what a direction wants: moving the picture must not move where an arrow points.
+    which is what a direction needs: moving the picture must not move where an arrow points.
   - `mat3.scaleFactor(m)` — how much longer a length becomes under the transform. A transform
     scaling differently along each axis has no single answer, so this takes the mean of the two.
 - `Mat4` — sixteen numbers, column-major, which is how a camera turns a place in the world into a
@@ -240,7 +240,7 @@ numbers and a pointwise map of a shape.
   that read geometry, and `pointAlong` given a path with no points in it is refused rather than read.
   `project(camera, x, y, z)` is the place in space put on the page, which is what a wash whose axis
   follows the eye is written with. It gives the place whether or not the eye can see it, the way the
-  camera's own `project` hands back a point beside the depth it was at. The thirty-seven, in the order
+  camera's own `project` returns a point beside the depth it was at. The thirty-seven, in the order
   the set sorts them and with the arguments each takes:
   - Over one number: `abs`, `sign`, `floor`, `round`, `sqrt`, `exp`, `log`, `sin`, `cos`, `tan`,
     `asin`, `acos`, `atan`.
@@ -262,7 +262,7 @@ numbers and a pointwise map of a shape.
 
 - `Path` — a list of subpaths.
 - `Subpath` — `start`, a run of `curves`, and `closed`. A closed subpath joins its end back to its
-  start, which decides whether a fill has a straight edge there and whether the stroke has ends.
+  start, which sets whether a fill has a straight edge there and whether the stroke has ends.
 - `Cubic` — one piece: `control1`, `control2` and `to`. A piece carries where it ends and not where
   it began, which is why several calls here take the point it starts from as well.
 - `straight(from, to)` — a straight segment written as a cubic, with the controls at a third and two
@@ -283,7 +283,7 @@ numbers and a pointwise map of a shape.
 - `transformPath(path, m)` — every point of a path moved by a transform, which is how a group's
   transform reaches the geometry rather than being carried alongside it.
 - `transformFill(fill, m)` — a fill through a transform, which is its gradient's axis and nothing
-  else. A fill of one colour is handed back as it stands.
+  else. A fill of one colour is returned as it stands.
 - `transformGradient(gradient, m)` — a gradient's two ends through a transform, its stops untouched,
   since a stop is a share of the axis rather than a place.
 - `pointCount(path)` — how many points a path holds, which is what two paths have to agree on before
@@ -291,7 +291,7 @@ numbers and a pointwise map of a shape.
 - `pathFromData(d)` — the path an SVG `d` attribute describes. Both cases of every command are read,
   so a relative run is resolved against where the last one ended. A command letter followed by more
   numbers than it takes repeats.
-- `TOLERANCE` — how close two things come before this package reads them as the same place, as a
+- `TOLERANCE` — how close two points come before this package reads them as the same place, as a
   distance in figure units. Every call that takes a tolerance defaults to this one, so a crossing, a
   cut, a flattening and a stitch agree about what counts as one place.
 
@@ -299,13 +299,13 @@ numbers and a pointwise map of a shape.
 
 - `areaOf(path)` — how much a path encloses, positive where it is wound anticlockwise. An open
   subpath is closed by the straight run back to its start. Every subpath is added, so a ring written
-  as two loops wound opposite ways comes back as the difference between the two discs.
+  as two loops wound opposite ways is returned as the difference between the two discs.
 - `unionOf(first, second, options)` — everything either path covers.
 - `intersectionOf(first, second, options)` — only what both paths cover.
 - `differenceOf(first, second, options)` — the first path with the second taken out of it.
 - `BooleanOptions` — what the three combining calls take.
-  - `tolerance` — how close two things come before they count as the same place, in figure units. It
-    decides where two paths are read as crossing and which ends are read as meeting.
+  - `tolerance` — how close two points come before they count as the same place, in figure units. It
+    sets where two paths are read as crossing and which ends are read as meeting.
 
 ## Containment and intersection
 
@@ -319,7 +319,7 @@ numbers and a pointwise map of a shape.
   winding count cannot answer.
 - `FlatEdge` — `gap`, how far the point is from that edge, and `heading`, which way the edge runs.
 - `containsPoint(path, point, options)` — whether a path holds a point, under the nonzero rule. The
-  path is flattened again on every call, so asking about many points wants one flattening and
+  path is flattened again on every call, so asking about many points needs one flattening and
   `windingAt` taken against it.
 - `curveCrossings(fromFirst, first, fromSecond, second, options)` — every place two cubics cross, as
   a parameter along each and the point. Two curves covering the same stretch answer with the two
@@ -327,7 +327,7 @@ numbers and a pointwise map of a shape.
 - `Crossing` — `alongFirst`, `alongSecond` and the `point` where they meet.
 - `CrossingOptions` — what a crossing search takes.
   - `tolerance` — how close two pieces come before they count as meeting, in figure units. It
-    decides which meetings are told apart rather than how sharp one is, since Newton's method
+    sets which meetings are told apart rather than how sharp one is, since Newton's method
     supplies the sharpness afterwards.
 - `cutPath(path, cuts, options)` — a path with every cut put in, drawing what it drew and holding
   one more piece per cut. A cut naming a piece the path does not have is ignored.
@@ -344,7 +344,7 @@ numbers and a pointwise map of a shape.
   sums of chords leaves.
 - `pointAlong(path, fraction)` — the point a fraction of the way along a path, measured by length
   rather than by piece. A fraction outside 0 to 1 is held at the nearer end, and a path with
-  no points hands back nothing.
+  no points returns nothing.
 - `pathWindow(path, from, to)` — the piece of a path between two fractions of its own length, cut at
   both ends. A window covering the whole is the path itself, untouched, and a far end at or behind
   the near one is no path at all.
@@ -372,7 +372,7 @@ numbers and a pointwise map of a shape.
   reads. A tick standing on an axis is measured against the line it stands on.
 - `outlinedMarks(marks)` — the marks a painter draws, with every tapered stroke turned into the
   filled outline it is drawn as. `marksAt` runs it after the timeline, so the outline is in the marks
-  a gate reads rather than only in what a painter writes. A mark whose stroke is one width is handed back as it stands, so a
+  a gate reads rather than only in what a painter writes. A mark whose stroke is one width is returned as it stands, so a
   list with no taper comes out unchanged and running it twice changes nothing. A shape carrying a
   fill as well leaves two marks, the fill under its own id and the outline under that id with
   `/stroke` on the end. Both painters run this over the marks they are given.
@@ -385,7 +385,7 @@ numbers and a pointwise map of a shape.
   clip with the pieces split at their crossings first; a stroked path is cut at its centreline, and a
   dashed one leaves one mark per run carrying the length before it as its own offset. A piece carries
   its mark's id with the number of the piece on the end. A label is never cut and takes its place from
-  the depth at its own anchor. A list holding no depth is handed back as it stands. Both flat painters
+  the depth at its own anchor. A list holding no depth is returned as it stands. Both flat painters
   run this over the marks they are given, after `outlinedMarks`.
 - `OutlineOptions` — what outlining takes. The caps, the joins and the miter limit are the SVG
   specification's, and so are the defaults.
@@ -421,7 +421,7 @@ are still no filters and no blend modes, and a clip is a rectangle and no other 
     contrast reading included.
   - `gradient` — the stops this fill is painted with, where it is painted with more than one colour.
     A fill carrying one is drawn as the gradient rather than as the colour beside it.
-  - `rule` — `nonzero` or `evenodd`, how a shape that crosses itself decides what is inside.
+  - `rule` — `nonzero` or `evenodd`, which points count as inside a shape that crosses itself.
 - `Gradient` — a run of colours along a straight axis. The axis is a pair of points rather than an
   angle and a length, because both painters take it that way, and it is in the mark's own units, which
   is what lets a group's transform carry it with the shape it fills.
@@ -543,7 +543,7 @@ never drawn works.
 
 - `Tick` — `value`, in graph units and rounded to the decimals its own label shows, and `label`,
   what is written there.
-- `tickStep(bounds, about)` — the gap between one tick and the next for an interval that wants about
+- `tickStep(bounds, about)` — the gap between one tick and the next for an interval meant to carry about
   this many. An axis here keeps the bounds it was given, so the span is divided as it stands rather
   than rounded outward first.
 - `ticksOn(bounds, about)` — every tick inside the interval, with the number each one shows.
@@ -608,7 +608,7 @@ functions, which is what lets the same tree survive being written to a file and 
   number.
 - `CalloutRecordOptions` — a `stroke`, a `fill`, a `size`, and an optional `marker`, `align`,
   `baseline`, `family` and `weight`. A marker of nothing leaves the disc out, which is what a callout
-  pointing at a moving thing wants.
+  pointing at a moving point needs.
 - `NumberLineRecord` — a `kind` of `numberLine`, a `name`, a `scale` and its `options`.
 - `AxesRecord` — a `kind` of `axes`, a `name`, its `coords` and its `options`.
 - `NumberPlaneRecord` — a `kind` of `numberPlane`, a `name`, its `coords` and its `options`.
@@ -628,11 +628,11 @@ functions, which is what lets the same tree survive being written to a file and 
   giving the vector there.
 - `FieldRecordOptions` — what `vectorField` takes, with `lengthOf` as an expression of the bound
   variable `magnitude` and `colourFor` as a `ColourChoice`. The expression form already spells the
-  three lengths a field wants: a constant is a literal, a saturating length is arithmetic, and a
+  three lengths a field needs: a constant is a literal, a saturating length is arithmetic, and a
   threshold is a choice on a comparison.
-- `ColourChoice` — what colour a thing read off a magnitude takes. A bare colour is a constant. A
+- `ColourChoice` — what colour a mark read off a magnitude takes. A bare colour is a constant. A
   `bands` choice is a `first` colour and a list of `then` entries, each an `above` threshold and the
-  `colour` that holds above it, read in order so the last threshold a magnitude clears decides. It is
+  `colour` that holds above it, read in order so the last threshold a magnitude clears sets the colour. It is
   a form of its own rather than an expression because the expression vocabulary has no colour.
 - `Polyline3Record` — a `kind` of `polyline3`, a `name`, its `points` as `Point3Record`s, its `camera`
   and its `options`.
@@ -706,7 +706,7 @@ functions, which is what lets the same tree survive being written to a file and 
   `run0` upwards, one per run of the curve.
 - `StreamlineRecord` — a run through a flat field: its `of` field as an expression of the bound
   variable `at`, its `from` seed, and the `options` `streamlineOf` takes. The step and the cap are
-  plain numbers, since a step that followed a track would hand back a different number of points at
+  plain numbers, since a step that followed a track would return a different number of points at
   every time and a morph pairs two runs up by their points.
 - `Streamline3Record` — a `kind` of `streamline3`, a `name`, its `runs`, the surface they stand `on`
   read from `u` and `v`, its `camera`, the `options` each run is drawn with and its `style`. A run
@@ -716,7 +716,7 @@ functions, which is what lets the same tree survive being written to a file and 
   `CurvePieces3Record`. A producer carries a kind and a written-out piece carries none, so a scene
   written before the producers existed still reads.
 - `resolveSection(record, bindings)` — the runs of points where a plane cuts a surface, from the
-  record naming both. A run whose two ends meet comes back with its first point repeated at the end.
+  record naming both. A run whose two ends meet is returned with its first point repeated at the end.
 - `resolveStreamline(record, bindings)` — the points a run through a flat field passes, from the
   record naming the field and the seed.
 - `NodeRecord` — a `ShapeRecord`, a `TextRecord`, a `GroupRecord`, a `DotRecord`, an `ArrowRecord`, a
@@ -802,7 +802,7 @@ functions, which is what lets the same tree survive being written to a file and 
 - `MorphGroupRecord` — a `kind` of `morphGroup` and the two targets `from` and `to`. It names no
   geometry, since both groups are already in the scene and their marks are paired at play time.
 - `CountToRecord` — a `kind` of `countTo`, the `target`, the `from` and `to` values and the
-  `precision` the number is written to. The call keeps its writer, since a count of a population wants
+  `precision` the number is written to. The call keeps its writer, since a count of a population needs
   a form no precision spells, and a figure that needs one writes the count as a text hole following a
   track instead.
 - `IndicateRecord` — a `kind` of `indicate`, the `target` and its `options`.
@@ -829,7 +829,7 @@ functions, which is what lets the same tree survive being written to a file and 
   figure chooses between the two per path rather than by a rule: a named form is shorter and says what
   the shape is, and cubics carry a shape no named form describes. Every parameter is an `Expression`,
   so a shape a track drives is the same form as a shape that stands still, and a bare number and a
-  bare point are literals. `straight` has no form here, since it hands back one `Cubic` rather than a
+  bare point are literals. `straight` has no form here, since it returns one `Cubic` rather than a
   path.
   - `line` — `from` and `to`.
   - `polyline` — `points`, as an open run of straight segments.
@@ -851,7 +851,7 @@ functions, which is what lets the same tree survive being written to a file and 
   - `union`, `intersection` and `difference` — `first` and `second` as records, and a `tolerance`. The
     operation is a form here rather than geometry a figure carries, because the answer's cubics are
     none of the operands' and a disc walking through another changes the answer every frame. The
-    tolerance is a plain number, since nothing a figure animates changes how close two things come
+    tolerance is a plain number, since nothing a figure animates changes how close two points come
     before they count as one place.
 - `IntervalRecord` — a run of numbers whose `from` and `to` may follow a track. A plain `Interval` is
   one already, since a bare number is a literal.
@@ -916,7 +916,7 @@ functions, which is what lets the same tree survive being written to a file and 
   edge.
 - `BarsOptions` — what the bars take.
   - `fill`, `stroke` — how they are painted. The style sits on the group, which is what lets the
-    whole run fade as one thing.
+    whole run fade as one group.
   - `bars` — how many the run is cut into.
   - `over` — the run of x they cover, the whole width of the graph where it is left out.
   - `height` — `left`, `right` or `middle`, where in each bar its height is read.
@@ -948,23 +948,23 @@ functions, which is what lets the same tree survive being written to a file and 
   - `tip` — how long the head at each end is. Nothing is drawn where this is zero.
   - `spread` — how wide a head is across its base, against its length.
   - `family`, `weight` — the font the labels are asked for.
-  - `skipZero` — leaves the label at zero out, which a second axis crossing here wants.
+  - `skipZero` — leaves the label at zero out, which a second axis crossing here needs.
   - `crossedAt` — the number on this line another line crosses it at. The label there is written
     below and to the left of the crossing, since under it is where the other line already is.
 - `axes(name, coords, options)` — two number lines under one group, named `x` and `y`, each crossing
   the other at that other's zero. Where zero is outside an interval the line sits at the near edge.
 - `AxesOptions` — the number line's own options without `at`, `direction` and `skipZero`, which a
-  pair of axes decides for itself.
+  pair of axes sets for itself.
 - `numberPlane(name, coords, options)` — the grid behind a graph: a line standing on each tick of
   both axes, and fainter lines dividing the gaps between them.
 - `NumberPlaneOptions` — what the grid takes.
   - `stroke` — the lines standing on the ticks, handed down from the group so the whole grid fades
-    as one thing.
+    as one group.
   - `minors` — how many gaps each step is divided into.
   - `minorOpacity` — how much of the stroke a minor line is drawn with. A grid a reader notices is a
     grid competing with the curve on top of it.
   - `minorWidth` — how wide a minor line is against a major one.
-  - `ticks` — about how many ticks each axis wants.
+  - `ticks` — about how many ticks each axis carries.
 
 ## Fields on a graph
 
@@ -998,7 +998,7 @@ functions, which is what lets the same tree survive being written to a file and 
 
 - `Projection` — how a point in front of the eye becomes a place on the page. `near` is the plane in
   front of which nothing is drawn, and `place` does the mapping.
-- `perspective(choice)` — an eye that sees things smaller the further off they are.
+- `perspective(choice)` — an eye that sees objects smaller the further off they are.
 - `PerspectiveChoice` — what that eye takes.
   - `fov` — the angle the frame covers up and down, in radians.
   - `height` — how tall the frame is in figure units, so handing this the extent's own height makes
@@ -1037,7 +1037,7 @@ functions, which is what lets the same tree survive being written to a file and 
 
 ## Drawing in space
 
-Every builder here hands back the flat nodes the rest of the package already draws, so the same
+Every builder here returns the flat nodes the rest of the package already draws, so the same
 animations reach a picture in space and a picture on a graph.
 
 - `SpaceItem` — one piece waiting to be sorted: the `points` it was built from and the `node` that
@@ -1048,7 +1048,7 @@ animations reach a picture in space and a picture on a graph.
   have no one order at all, and the answer for those is smaller pieces.
 - `polyline3(name, points, camera, options)` — a run of straight segments through points in space.
 - `Polyline3Options` — a style, plus:
-  - `close` — whether the last point joins back to the first. A run the near plane cut comes back
+  - `close` — whether the last point joins back to the first. A run the near plane cut is returned
     open however this is set, since closing it would draw an edge that is nowhere in the world.
 - `dot3(name, at, radius, fill, camera)` — a disc marking a point in space. Its radius is in figure
   units and does not shrink with distance, because a dot marks where something is rather than how
@@ -1146,7 +1146,7 @@ animations reach a picture in space and a picture on a graph.
 - `resolveSpaceCurve(record, bindings)` — the places a curve in space passes through, from the record
   naming the curve and the run of its parameter.
 - `sectionOf(of, plane, options)` — the runs of points where a plane cuts a surface, in space. A run
-  whose two ends meet comes back with its first point repeated at the end, so drawing the points as
+  whose two ends meet is returned with its first point repeated at the end, so drawing the points as
   they are given draws the loop closed.
 - `Plane` — `point`, somewhere the plane passes through, and `normal`, which way it faces. The
   normal's length does not matter.
@@ -1157,7 +1157,7 @@ animations reach a picture in space and a picture on a graph.
 
 ## Animations
 
-An animation takes the marks and a fraction of its span and hands back the marks as they stand at
+An animation takes the marks and a fraction of its span and returns the marks as they stand at
 that fraction. Every one of them is nothing at the beginning of its span. Every mark it adds is in
 the list at every fraction, at zero opacity where it is not yet visible. A mark arriving part way
 through would turn up in a comparison between two frames as something that changed.
@@ -1169,8 +1169,8 @@ a group of that name.
 - `fadeIn(target)` — from nothing to whatever opacity the mark already had, so a mark that is half
   faded by design does not become solid on the way in.
 - `fadeOut(target)` — to nothing, from whatever opacity the mark had.
-- `fadeTo(target, opacity)` — a mark's own opacity walked to a value, for a figure that wants a
-  thing dimmed rather than gone.
+- `fadeTo(target, opacity)` — a mark's own opacity walked to a value, for a figure that needs a
+  mark dimmed rather than gone.
 - `draw(target)` — drawn on from one end rather than switched on. A text mark has no path to walk
   along, so it fades instead.
 - `moveBy(target, offset)` — moved by an offset in figure units, which reaches the geometry rather
@@ -1187,7 +1187,7 @@ a group of that name.
   entry from the identity. Its pivot is the origin of the figure's units rather than the middle of the
   box round the marks, since a linear map is defined about the origin. The determinant halfway to a
   turn by an angle is `(1 + cos angle) / 2`, so a quarter turn halves the area on the way and a half
-  turn flattens every point onto one line. A figure that wants the turn itself asks `rotate`.
+  turn flattens every point onto one line. A figure that needs the turn itself uses `rotate`.
 - `growFrom(target, from)` — grown from nothing at a point. Left out, the point is the middle of the
   box round the marks. At the end of the span it is the marks themselves rather than the marks
   rebuilt through a transform, so a finished growth leaves the geometry the author wrote.
@@ -1215,7 +1215,7 @@ a group of that name.
   - `factor` — how big it gets at the middle of the span.
   - `colour` — the colour it is walked towards, reached at the middle of the span. A mark part of
     the way there carries no name, so it paints the mixed channels rather than following a theme.
-- `flash(target, options)` — rays out from a point and gone, for a moment a figure wants a reader to
+- `flash(target, options)` — rays out from a point and gone, for a moment a reader is meant to
   look at.
 - `FlashOptions` — what a flash takes.
   - `stroke` — how the rays are drawn.
@@ -1223,7 +1223,7 @@ a group of that name.
   - `rays` — how many there are.
   - `reach` — how far the far end of a ray reaches at the widest, in figure units. Twice the
     distance from the middle of the box to its corner unless named, so the rays sit outside the
-    thing they point at.
+    marks they point at.
   - `inner` — where the near end of a ray sits, as a share of the reach.
 - `write(target, options)` — written on: a path drawn from its start and a string uncovered from its
   near edge, one mark under the target after another. A typeset rule therefore writes glyph by glyph
@@ -1234,8 +1234,8 @@ a group of that name.
     fades instead.
   - `covers` — how much of the span each mark's own drawing takes, as a share of it. An even share
     unless named, so the marks abut rather than overlap.
-- `wiggle(target, options)` — a swell and a rock about a point, for a figure that wants something
-  noticed without moving it. Both are at nothing at both ends of the span, so the marks come back
+- `wiggle(target, options)` — a swell and a rock about a point, for a figure that needs a mark
+  noticed without moving it. Both are at nothing at both ends of the span, so the marks are returned as
   the geometry they went in as.
 - `WiggleOptions` — `AboutOptions`, plus:
   - `factor` — how big it gets at the widest of the swell.
@@ -1263,7 +1263,7 @@ a group of that name.
 
 ## The timeline
 
-- `Timeline` — the animations a figure plays and when. Every method hands back a new timeline rather
+- `Timeline` — the animations a figure plays and when. Every method returns a new timeline rather
   than changing this one.
   - `Timeline.empty()` — a timeline with nothing in it.
   - `Timeline.of(spans, duration)` — a timeline from spans already compiled, which is what a figure
@@ -1271,7 +1271,7 @@ a group of that name.
     that waits at the end runs past the end of its last one.
   - `play(entry, seconds, options)` — one change over a span of that length.
   - `together(entries, seconds, options)` — several changes over one span, which is how two
-    things move at once.
+    nodes move at once.
   - `stagger(entries, seconds, options)` — a row of changes, each starting a gap after the one
     before and each running the same length.
   - `wait(seconds)` — a gap before the next entry.
@@ -1280,8 +1280,8 @@ a group of that name.
     this a function of time rather than a record of what has been played. View entries are
     skipped, since they change no mark.
   - `extentAt(extent, seconds)` — the extent as every view entry leaves it at a time, starting from
-    the one given. A timeline with no view entry hands back the extent it was given.
-  - `spans` — the spans it holds. `duration` — how long the whole thing runs.
+    the one given. A timeline with no view entry returns the extent it was given.
+  - `spans` — the spans it holds. `duration` — how long the whole timeline runs.
 - `Entry` — what one entry changes: an `Animation` over the marks, or a `ViewChange` over the view.
 - `Span` — one entry: its `entry`, the seconds it runs `from` and `to`, and the `curve` pacing
   it.
@@ -1335,12 +1335,12 @@ a group of that name.
   number that is not finite, a hole in a list, a null and a function are each refused with the path
   of the field named. What is written is a `FigureRecord` and never a `Figure`, since a figure's
   scene may be a closure and no reading recovers one.
-- `checkFigure(value)` — a value held to the shape of a figure and handed back as one, or refused
+- `checkFigure(value)` — a value held to the shape of a figure and returned as one, or refused
   with the path of the field from the figure down, `scene.children.2.at.x` rather than `x`. A
   required field that is absent, a field of the wrong type, a kind the format has no form for and a
-  field a kind does not carry are each refused. Two things it reads are not shapes: a span whose
-  `to` is before its `from`, and an expression naming a track the figure does not carry. What comes
-  back is the value it was given rather than a copy, so a reader parses once and draws what it
+  field a kind does not carry are each refused. Two rules it checks are not about shape: a span whose
+  `to` is before its `from`, and an expression naming a track the figure does not carry. What it
+  returns is the value it was given rather than a copy, so a reader parses once and draws what it
   parsed.
 - `readFigure(text)` — the figure a file's text describes. The version is read before anything else,
   and a version this package does not read is refused with both numbers in the sentence. Text that
@@ -1409,19 +1409,19 @@ frame round a picture is a shape.
 ## Frames
 
 - `FrameStep` — how far apart the frames are: `fps`, a rate, or `frames`, a count spread over the
-  whole figure. A recorder knows the rate it plays at; a strip knows how many pictures fit across a
+  whole figure. A recorder plays at a fixed rate; a strip fits a fixed number of pictures across a
   page. Its optional `seconds` is how long the walk runs where that is not the figure's own length,
   and a walk past the end reads the figure through `figureTime`.
 - `FramesOptions` — a `FrameStep`, plus the `width` and `height` of the surface the view is built
   for.
 - `frameTimesOf(figure, step)` — the times a walk reads, which a recorder needs before it has drawn
   anything to say how far along it is. A walk stops strictly before the duration, so a figure that
-  loops never hands back its own first frame twice. It is `walkTimesOf` with the figure's duration
+  loops never returns its own first frame twice. It is `walkTimesOf` with the figure's duration
   as the span.
 - `walkTimesOf(step)` — the times a walk over `step.seconds` reads, with no figure behind it. At a
   rate the count is `max(1, round(seconds · fps))`, so 1.999 seconds at 30 is 60 frames where a floor
   would give 59, and the last of them starts before the span ends.
-- `framesOf(figure, options)` — a figure walked at a fixed step, a frame at a time. Frames come back
+- `framesOf(figure, options)` — a figure walked at a fixed step, a frame at a time. Frames are returned
   one at a time, since ten seconds at sixty a second is six hundred frames of every mark a figure
   draws.
 - `Frame` — one moment read whole: its `index` in the walk, the `seconds` it was read at, its
@@ -1531,7 +1531,7 @@ picture in a recording and a picture on a card are the same picture.
 - `GpuSurface` — the `backend` the frames go through, the `canvas` they land on, the `device` they
   are drawn with on WebGPU, and `dispose`.
 - `paintGpu(surface, marks, view)` — one list of marks drawn on a card, at the size the surface's
-  canvas is now. What comes back is a `GpuPainting` rather than a picture, since the picture is on the
+  canvas is now. What it returns is a `GpuPainting` rather than a picture, since the picture is on the
   canvas.
 - `pixelsGpu(surface, marks, view)` — the same frame drawn and read back as `pixels`, four bytes to a
   pixel, which is what lets a claim about what a device draws be checked against what the SVG painter
@@ -1544,13 +1544,13 @@ picture in a recording and a picture on a card are the same picture.
   since the pixels replace what the context held.
 - `svgMarkup(marks, view, width, height, options?)` — a whole `<svg>` as text, for a page that has
   not run any script yet. It carries no width or height of its own and only a view box, so the
-  element around it decides how big it is.
+  element around it sets how big it is.
 - `SvgMarkupOptions` — what else `svgMarkup` and `paintSvg` take: a `theme`, a `ground`, a
   `minTextSize`, a `prefix`, and a `font`. Given a `font`, each label's baseline is placed from the
   font's own metrics and written into the `y`, and the kerning is turned off, so a browser lays the
   label out on the advances the outliner walks on and the sheet and a card put the same letters in
-  the same places. Left out, the baseline is named to the browser as a `dominant-baseline` and the
-  browser decides what it means: Chrome puts a hanging one 4.4 pixels below this font's declared cap
+  the same places. Left out, the baseline is named to the browser as a `dominant-baseline` and what it means is
+  up to the browser: Chrome puts a hanging one 4.4 pixels below this font's declared cap
   height at a 30-pixel em, which is a rule no font states and no other painter can read. Every text size is multiplied by the one factor that brings the
   smallest of them to that size, so the sizes stay in the ratios the figure gave them. The `ground` is
   painted behind the marks as the `background` of the sheet, so the colours land on the ground they
@@ -1573,7 +1573,7 @@ picture in a recording and a picture on a card are the same picture.
   every frame and almost every attribute would be rewritten anyway.
 - `PaintTarget` — what `paintSvg` draws into: anything with `replaceChildren`.
 - `ElementMaker` — what it builds elements with: anything with `createElementNS`.
-- `PaintNode` — what those two hand back and take: anything with `setAttribute`, `textContent` and
+- `PaintNode` — what those two return and take: anything with `setAttribute`, `textContent` and
   `append`. A gradient's stops and a clip's rectangle each go inside the element naming them, and
   `append` is required rather than optional because a clip path holding no rectangle clips away
   everything that references it: a target that could not hold a child would lose every clipped mark
@@ -1587,7 +1587,7 @@ picture in a recording and a picture on a card are the same picture.
   `createLinearGradient` is optional, and a context without one paints every mark in its single
   colour. Its `createImageData` and `putImageData` are optional too, and a frame drawn on a card is
   what needs them.
-- `CanvasGradientLike` — what a canvas hands back for a gradient: anything with `addColorStop`. A
+- `CanvasGradientLike` — what a canvas returns for a gradient: anything with `addColorStop`. A
   canvas takes a gradient as an object built from the context rather than as a value written out.
 - `ImageDataLike` — a rectangle of pixels: its `width`, its `height` and its `data`, four bytes to a
   pixel and the top row first. A real `ImageData` satisfies it.
@@ -1603,8 +1603,8 @@ picture in a recording and a picture on a card are the same picture.
 
 ## Recording
 
-- `recordFigure(figure, sink, options)` — a figure painted frame by frame into a sink, which hands
-  back whatever it was collecting. The walk is `frameTimesOf`, so a recording holds the frames the
+- `recordFigure(figure, sink, options)` — a figure painted frame by frame into a sink, which
+  returns whatever it was collecting. The walk is `frameTimesOf`, so a recording holds the frames the
   rest of this package counts. A frame that fails cancels the sink rather than finishing it. It is
   `recordFrames` with a fill that paints the figure's frame at each `seconds`.
 - `recordFrames(sink, fill, options)` — a walk filled frame by frame into a sink, with no figure
@@ -1634,7 +1634,7 @@ picture in a recording and a picture on a card are the same picture.
   frame and the `SurfaceOptions`. `paintFrame` is one answer and `painterGpu` is another, and it may
   answer a promise, since reading a frame back off a card is asynchronous.
 - `Recording` — what a finished recording is: the `frames` taken, the `seconds` it runs for, and the
-  `output` the sink handed back.
+  `output` the sink returned.
 - `videoSink(canvas, options)` — a sink that encodes each frame it is handed and answers the finished
   file as bytes. It loads `mediabunny` with a dynamic import, so a consumer who never records never
   loads it. Encoding needs WebCodecs, which a browser has and Node does not.
@@ -1674,17 +1674,17 @@ picture in a recording and a picture on a card are the same picture.
   - `padding` — how far beyond the tip the label's anchor sits, in figure units.
 - `callout(name, at, to, content, options)` — a word attached to a place: a disc on the place, a
   line out to where there is room, and the word at the end of it. The words sit away from what they
-  name because a label on top of the picture hides the thing the reader was told to look at.
+  name because a label on top of the picture hides the point the reader was told to look at.
 - `CalloutOptions` — the `stroke`, `fill` and `size` it is drawn with, and its `align`, `baseline`,
   `family` and `weight`.
-  - `marker` — the disc left on the thing being named. Nothing is drawn where this is zero, which is
-    what a callout pointing at a moving thing wants.
+  - `marker` — the disc left on the point being named. Nothing is drawn where this is zero, which is
+    what a callout pointing at a moving point needs.
 
 ## Matrices
 
 A matrix is drawn from the strings its entries are written as, so a matrix of numbers loads no
 typesetter. Each row is a group and each entry is a text node inside it, so `m/rows/1/0` names one
-entry and `m/rows/1` names the row it sits in.
+entry and `m/rows/1` names the row containing it.
 
 - `matrix(name, entries, options)` — a matrix placed in a figure: two brackets round a grid of
   entries, each entry centred in a cell of its own. Rows of different lengths are refused, since a
@@ -1699,7 +1699,7 @@ entry and `m/rows/1` names the row it sits in.
     unless the figure names it.
 
 A table is laid out on column widths the figure gives, for the same reason: nothing here measures a
-string. The rules are drawn before the cells, so a word crossing one is the thing a reader sees.
+string. The rules are drawn before the cells, so a word crossing one is what a reader sees.
 
 - `table(name, cells, options)` — a table placed in a figure: one text node per cell, a rule between
   rows, a rule between columns, and a heavier rule under a header row in place of the row rule that
@@ -1715,7 +1715,7 @@ string. The rules are drawn before the cells, so a word crossing one is the thin
     names it.
   - `padding` — how far a cell sits inside its column, half the size unless the figure names it. A
     middled cell ignores it.
-  - `align` — how a cell sits in its column, one value for the whole table or one for each column,
+  - `align` — how a cell is placed in its column, one value for the whole table or one for each column,
     and `start` unless the figure names it.
 
 ## Equations

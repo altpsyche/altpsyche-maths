@@ -1667,8 +1667,10 @@ file's two counts before and after, the check's file total, and `npm test` over 
       the site are theirs, and this commit touches only this one. **Landed:** 34 matches reworded,
       319 backticked spans the same list before and after, `check:vocab` reads 6 prose files, and
       1,511 of 1,511 over 98 files.
-- [ ] **4. REFERENCE.md.** 18 and 53 to 0 and 0. `tests/reference.test.ts` holds every name at the
-      door against this file, so it passes unchanged.
+- [x] **4. REFERENCE.md.** 18 and 53 to 0 and 0. `tests/reference.test.ts` holds every name at the
+      door against this file, so it passes unchanged. **Landed:** 71 matches reworded, 1,911
+      backticked spans the same list before and after, `check:vocab` reads 7 prose files, and 1,511
+      of 1,511 over 98 files.
 - [ ] **5. ROADMAP.md.** 55 and 32 to 0 and 0. The heading "The items" becomes "The entries". Every
       later handover is held to the check from this commit on.
 - [ ] **6. `.claude/skills/next/SKILL.md`.** 10 and 2 to 0 and 0, with "Pick one item" and the other
