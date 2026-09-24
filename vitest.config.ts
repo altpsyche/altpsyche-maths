@@ -14,7 +14,7 @@ import path from 'node:path';
  * a field is a thousand steps of Runge-Kutta against a flattened path, which is
  * seconds of arithmetic rather than a test hanging. At five seconds the slowest
  * of them failed one run in ten on an unchanged tree, and a painter handed a
- * figure in space cuts every frame of it before drawing, which is twenty
+ * figure in space cuts every frame of it before drawing, which is fifteen
  * milliseconds a frame over eight hundred frames.
  */
 export default defineConfig({

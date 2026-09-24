@@ -55,6 +55,18 @@ interface Reach {
   readonly corners: readonly Vec2[];
   /** How far the ink stands outside them, which is half a stroke's width. */
   readonly pad: number;
+  /** The lines its edges lie along, each with the hull's own shadow on it. */
+  readonly axes: readonly Axis[];
+}
+
+/** A direction the corners are projected onto, and the span the hull's own
+ * corners cover along it, which no other shape changes. */
+interface Axis {
+  readonly x: number;
+  readonly y: number;
+  readonly length: number;
+  readonly least: number;
+  readonly most: number;
 }
 
 /** A piece of a mark, with the one depth it has and the box it covers. */
@@ -107,7 +119,35 @@ function pointsOf(path: Path, into: Vec2[]): Vec2[] {
 function reachOf(mark: Mark): Reach {
   const pad = mark.kind === 'path' && mark.stroke ? widestWidth(mark.stroke.width) / 2 : 0;
   const points = mark.kind === 'text' ? [mark.at] : pointsOf(mark.path, []);
-  return { corners: hullOf(points), pad };
+  const corners = hullOf(points);
+  return { corners, pad, axes: axesOf(corners) };
+}
+
+/** The axes a separating line is tried along: the normal of every edge, and the
+ * edge itself where the hull is a point or a segment and has no area. */
+function axesOf(corners: readonly Vec2[]): Axis[] {
+  const count = corners.length;
+  const sides = count < 3 ? Math.max(1, count - 1) : count;
+  const axes: Axis[] = [];
+  const add = (x: number, y: number) => {
+    const length = Math.hypot(x, y);
+    if (length === 0) return;
+    let least = Infinity;
+    let most = -Infinity;
+    for (const corner of corners) {
+      const along = corner.x * x + corner.y * y;
+      if (along < least) least = along;
+      if (along > most) most = along;
+    }
+    axes.push({ x, y, length, least, most });
+  };
+  for (let at = 0; at < sides && count > 0; at += 1) {
+    const from = corners[at];
+    const to = corners[(at + 1) % count];
+    add(from.y - to.y, to.x - from.x);
+    if (count < 3) add(to.x - from.x, to.y - from.y);
+  }
+  return axes;
 }
 
 function hullOf(points: readonly Vec2[]): readonly Vec2[] {
@@ -147,44 +187,31 @@ function meets(one: Reach, other: Reach): boolean {
 /** Whether any line an edge of the first shape lies along has the two shapes
  * wholly on opposite sides of it. */
 function separated(shape: Reach, against: Reach, gap: number): boolean {
-  const corners = shape.corners;
-  const count = corners.length;
-  const sides = count < 3 ? Math.max(1, count - 1) : count;
-  for (let at = 0; at < sides; at += 1) {
-    const from = corners[at];
-    const to = corners[(at + 1) % count];
-    if (apart(from.y - to.y, to.x - from.x, corners, against.corners, gap)) return true;
-    if (count < 3 && apart(to.x - from.x, to.y - from.y, corners, against.corners, gap)) return true;
-  }
+  for (const axis of shape.axes) if (apart(axis, against.corners, gap)) return true;
   return false;
 }
 
 /**
- * Whether the two sets of corners fall clear of each other along one axis.
+ * Whether the other shape's corners fall clear of the shadow already measured
+ * along one axis.
  *
  * The axis is not made a unit vector. Every shadow on it is that much longer
  * instead, so the room the two are allowed is lengthened to match and the whole
- * comparison holds without a division per corner.
+ * comparison holds without a division per corner. One corner inside the widened
+ * shadow rules out both sides, so the walk stops there.
  */
-function apart(axisX: number, axisY: number, here: readonly Vec2[], there: readonly Vec2[], gap: number): boolean {
-  const length = Math.hypot(axisX, axisY);
-  if (length === 0) return false;
-  let hereLeast = Infinity;
-  let hereMost = -Infinity;
-  for (const corner of here) {
-    const along = corner.x * axisX + corner.y * axisY;
-    if (along < hereLeast) hereLeast = along;
-    if (along > hereMost) hereMost = along;
-  }
-  let thereLeast = Infinity;
-  let thereMost = -Infinity;
+function apart(axis: Axis, there: readonly Vec2[], gap: number): boolean {
+  const room = gap * axis.length;
+  const below = axis.least - room;
+  let clearBelow = true;
+  let clearAbove = true;
   for (const corner of there) {
-    const along = corner.x * axisX + corner.y * axisY;
-    if (along < thereLeast) thereLeast = along;
-    if (along > thereMost) thereMost = along;
+    const along = corner.x * axis.x + corner.y * axis.y;
+    if (along > below) clearBelow = false;
+    if (along - room < axis.most) clearAbove = false;
+    if (!clearBelow && !clearAbove) return false;
   }
-  const room = gap * length;
-  return hereLeast - room >= thereMost || thereLeast - room >= hereMost;
+  return clearBelow || clearAbove;
 }
 
 /** The middle of the points a piece is written from, which lies inside their

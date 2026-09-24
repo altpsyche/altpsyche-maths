@@ -1733,6 +1733,14 @@ entry's steps come first, then 3.4.0 and 4.0.0 in ladder order, then the handove
       the solid demo, ran 53,034ms against its 60,000ms limit in the `gates` job and 61,046ms in
       the `floor` job. The test does the same work on every machine, and the runner is slower than
       this one, so that test's time on a runner is the next finding before the WebGPU half.
+      **The time went to depth ordering, and the separating axis test is cheaper now.** Over the
+      798 frames on this machine the canvas painter took 17,120ms and the marks 5,733ms, and
+      `apart` was 6,882ms of self time. Each frame compares 12,150 pairs of hulls and 623 of them
+      meet, so a hull's shadow on its own edge normals is now measured once per mark rather than
+      once per pair, and the other hull's walk stops at the first corner inside that shadow. The
+      painter reads 11,713ms for the same 561,291 drawing calls, and the test reads 14,955ms against
+      20,505ms. The runner has not read it yet, and that reading is what this step needs
+      next.
 - [ ] **3. A version is published from a tag.** The engine's `publish.yml`: on a release being
       published, the gates, then `npm publish --provenance --access public` with `id-token: write`
       and no npm token anywhere. What it costs is that the trust lives in a registry setting naming
