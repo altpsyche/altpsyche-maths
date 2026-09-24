@@ -1718,6 +1718,16 @@ entry's steps come first, then 3.4.0 and 4.0.0 in ladder order, then the handove
       **Measurement:** which gates a runner can run, taken on the runner. `gate:gpu` draws 8 of 8
       headless on this machine, so a software renderer is enough for it; `gate:record` needs a
       WebCodecs `VideoEncoder` in the runner's Chromium and that is unmeasured.
+      **The first run, 35975835306 of 2026-09-24, read:** `gate:record` 34 of 34 recordings on the
+      runner's Chromium, each an avc file holding every frame walked, so a runner's `VideoEncoder`
+      is enough. `gate:gpu` 8 of 8 figures on WebGL 2 at the same floors, tangent 91.11% equal and
+      worst 228 as on this machine, and the WebGL 2 loss reported `context` after 3.5ms. `npm test`
+      and `gate:floor` read 1,509 of 1,511 because two tests read `dist/`, fixed by a `pretest`
+      build and not yet read on a runner. **What is left of this step** is the WebGPU half of
+      `gate:gpu`, which fails on the runner with `the readback was refused on a device whose canvas
+      drawable has been taken`. The engine documents that sentence as a headless software renderer
+      spending the device at its first drawable. So the runner cannot hold the WebGPU loss, and the
+      workflow has to say so and run that half by hand, which is done-criterion 5's second branch.
 - [ ] **3. A version is published from a tag.** The engine's `publish.yml`: on a release being
       published, the gates, then `npm publish --provenance --access public` with `id-token: write`
       and no npm token anywhere. What it costs is that the trust lives in a registry setting naming
