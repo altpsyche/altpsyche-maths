@@ -346,6 +346,10 @@ numbers and a pointwise map of a shape.
 - `pointAlong(path, fraction)` — the point a fraction of the way along a path, measured by length
   rather than by piece. A fraction outside 0 to 1 is held at the nearer end, and a path with
   no points returns nothing.
+- `fractionNearest(path, place)` — the fraction of a path's length at the point on it nearest a
+  place, which is the fraction `pointAlong` returns that point for. Each piece is sampled at 33
+  parameters and the nearest is refined by golden-section search over the samples either side of
+  it. A path with no length returns 0.
 - `pathWindow(path, from, to)` — the piece of a path between two fractions of its own length, cut at
   both ends. A window covering the whole is the path itself, untouched, and a far end at or behind
   the near one is no path at all.
@@ -1402,6 +1406,14 @@ consumer owns the loop that plays the figure.
   marks overlap the one on top takes the press. A fill covers the inside of its path under the
   nonzero rule. A stroke covers half its width either side of its open path, so the chord that would
   close an open curve takes no press. A text mark takes no press.
+- `Motion` — how a pointer moves the value of a held track, by one of two kinds.
+  - `{ kind: 'along', path }` holds the fraction of the path's length at its point nearest the
+    pointer, which is `fractionNearest`.
+  - `{ kind: 'drag', rate }` holds the value at the press plus `rate` for each figure unit the
+    pointer has travelled across since the press.
+- `Press` — where a press landed, as `place`, and the value its track read there, as `value`.
+- `heldFrom(motion, press, pointer)` — the value a pointer at a place holds its track at, for a
+  press taken at another.
 
 ## Insets
 

@@ -1,6 +1,21 @@
 import { describe, expect, it } from 'vitest';
-import { arc, boundsOf, centreOf, inputAt, mat3, marksAt, placeAt, viewAt, type Input, type Mark } from '../index.js';
-import { TIMES, tangent } from '../demos/tangent.js';
+import {
+  arc,
+  boundsOf,
+  centreOf,
+  heldFrom,
+  inputAt,
+  mat3,
+  marksAt,
+  placeAt,
+  pointAlong,
+  pointOf,
+  viewAt,
+  type Input,
+  type Mark,
+  type Motion,
+} from '../index.js';
+import { TIMES, coords, tangent, walkPath } from '../demos/tangent.js';
 
 const WIDTH = 1280;
 const HEIGHT = 720;
@@ -53,5 +68,36 @@ describe('a pixel read as a place and a press read as an input', () => {
     expect(inputAt(inputs, [half], { x: 0, y: 1.04 })?.track).toBe('turn');
     expect(inputAt(inputs, [half], { x: 0, y: 1.06 })).toBeUndefined();
     expect(inputAt(inputs, [half], { x: 0, y: 0 })).toBeUndefined();
+  });
+
+  const along: Motion = { kind: 'along', path: walkPath };
+  const pressed = { place: { x: 0, y: 0 }, value: 0 };
+
+  it('puts the dot on a pointer that lies on the walked stretch', () => {
+    const pointer = pointOf(coords, 1.5, 1.5 * 1.5);
+    const s = heldFrom(along, pressed, pointer);
+    const marks = marksAt(tangent, TIMES.walkTo, WIDTH / HEIGHT, undefined, { s });
+    const dot = marks.find((mark) => mark.id === 'tangent/point/disc');
+    if (!dot || dot.kind !== 'path') throw new Error('the dot is not drawn');
+    const middle = centreOf(boundsOf(dot.path)!);
+    expect(Math.hypot(middle.x - pointer.x, middle.y - pointer.y)).toBeLessThan(1e-6);
+  });
+
+  it('holds a pointer off the curve at the point of the curve nearest it', () => {
+    const on = pointAlong(walkPath, 0.4)!;
+    const ahead = pointAlong(walkPath, 0.4001)!;
+    const run = Math.hypot(ahead.x - on.x, ahead.y - on.y);
+    const off = { x: on.x - (0.3 * (ahead.y - on.y)) / run, y: on.y + (0.3 * (ahead.x - on.x)) / run };
+    const held = heldFrom(along, pressed, off);
+    expect(held).toBeCloseTo(0.4, 4);
+    const nearest = pointAlong(walkPath, held)!;
+    expect(Math.hypot(nearest.x - off.x, nearest.y - off.y)).toBeLessThanOrEqual(0.3 + 1e-12);
+  });
+
+  it('moves a dragged value by its rate for each unit travelled across', () => {
+    const drag: Motion = { kind: 'drag', rate: 0.125 };
+    const press = { place: { x: 1, y: 2 }, value: 0.25 };
+    expect(heldFrom(drag, press, { x: 3.4, y: -5 })).toBeCloseTo(0.25 + 0.125 * 2.4, 12);
+    expect(heldFrom(drag, press, press.place)).toBe(0.25);
   });
 });

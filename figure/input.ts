@@ -7,7 +7,9 @@ import type { Vec2 } from '../values/vec2.js';
 import { touches } from './animation.js';
 import { viewAt, type Figure, type TrackValues } from './figure.js';
 import { flattenPath, flattenRuns, nearestEdge, windingAt } from './inside.js';
+import { fractionNearest } from './length.js';
 import type { Mark, PathMark } from './mark.js';
+import type { Path } from './path.js';
 
 export interface Input {
   /** The track a reader holds while this input is taken. */
@@ -17,6 +19,28 @@ export interface Input {
   /** How far outside the mark a press may land and still take the input, in
    * figure units. Left out, it is 0. */
   reach?: number;
+}
+
+/**
+ * How a pointer moves the value of a held track.
+ *
+ * `along` holds the fraction of a path's length at its point nearest the
+ * pointer. `drag` holds the value at the press plus `rate` for each figure unit
+ * the pointer has travelled across since the press.
+ */
+export type Motion = { kind: 'along'; path: Path } | { kind: 'drag'; rate: number };
+
+/** Where a press landed and the value the track read there. */
+export interface Press {
+  place: Vec2;
+  value: number;
+}
+
+/** The value a pointer at a place holds its track at, for a press that was
+ * taken at another. */
+export function heldFrom(motion: Motion, press: Press, pointer: Vec2): number {
+  if (motion.kind === 'along') return fractionNearest(motion.path, pointer);
+  return press.value + motion.rate * (pointer.x - press.place.x);
 }
 
 /** The place in figure units that a pixel shows, through the inverse of the

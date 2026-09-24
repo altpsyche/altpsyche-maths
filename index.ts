@@ -235,7 +235,7 @@ export type {
 } from './figure/animation-record.js';
 export { Timeline } from './figure/timeline.js';
 export type { Entry, PlayOptions, Span, StaggerOptions } from './figure/timeline.js';
-export { lengthOf, pointAlong } from './figure/length.js';
+export { fractionNearest, lengthOf, pointAlong } from './figure/length.js';
 export { dashPath } from './figure/dash.js';
 export { pathWindow, trimPath } from './figure/trim.js';
 export { alignPaths, lerpPath } from './figure/morph.js';
@@ -253,8 +253,8 @@ export {
 export { frameTimesOf, framesOf, walkTimesOf } from './figure/frames.js';
 export type { Frame, FrameStep, FramesOptions } from './figure/frames.js';
 export type { Figure, PainterName, TrackValues } from './figure/figure.js';
-export { inputAt, placeAt } from './figure/input.js';
-export type { Input } from './figure/input.js';
+export { heldFrom, inputAt, placeAt } from './figure/input.js';
+export type { Input, Motion, Press } from './figure/input.js';
 export { resolveFigure } from './figure/figure-record.js';
 export type { FigureRecord } from './figure/figure-record.js';
 export { checkFigure } from './figure/figure-check.js';

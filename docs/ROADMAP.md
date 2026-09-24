@@ -1912,12 +1912,18 @@ and a figure asked twice with the same two answers the same picture twice.
       of 0.2 where 0.5 off takes nothing, the chord of an open stroked half circle taking no press,
       the suite at 1,544 of 1,544 over 100 files against 1,540 over 99, and `npm run demos` changing
       0 bytes.
-- [ ] **5. A pointer gives a held value, by one of two kinds.** `along` is the fraction of a path's
+- [x] **5. A pointer gives a held value, by one of two kinds.** `along` is the fraction of a path's
       length at its point nearest the pointer, for the dot on its curve. `drag` is the value at the
       press plus a number per figure unit the pointer has travelled across, for the eye.
       **Measurement:** a pointer on the walked stretch at x = 1.5 held as `s`, and the distance from
       the dot drawn with it to that point; a pointer 0.3 units off the curve against the nearest
       point; and `drag` over a known travel against its expression.
+      **Landed:** `heldFrom`, `Motion` and `Press` at the door, with `fractionNearest` beside
+      `pointAlong`. A pointer on the walked stretch at x = 1.5 is held as `s` at 0.42815 and the dot
+      drawn with it sits 2.4e-14 from the pointer. A pointer 0.3 units off the curve at 0.4 is held at
+      0.3999977, and the point found is 0.2999999996 from it against 0.3 for the best of 200,001
+      samples. `drag` at 0.125 over 2.4 units reads its expression within 1e-12. The suite reads
+      1,547 of 1,547 over 100 files against 1,544, and `npm run demos` changes 0 bytes.
 - [ ] **6. The format carries `inputs`.** SPECIFICATION.md first, in the same commit: the optional
       field, its two kinds and their fields, and the refusal of an input naming no track. Then the
       checker, `FigureRecord` and `resolveFigure`. **Measurement:** a file carrying `inputs` written

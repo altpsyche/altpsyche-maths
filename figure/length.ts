@@ -102,6 +102,65 @@ export function parameterAt(measured: Measured, wanted: number): number {
   return (sample - 1 + within) / SAMPLES;
 }
 
+/** The length into one piece at a parameter, read out of the same table
+ * `parameterAt` reads, so the two are inverses of each other. */
+function lengthAtParameter(measured: Measured, along: number): number {
+  const { upTo } = measured;
+  const at = clamp(along, 0, 1) * SAMPLES;
+  const sample = Math.min(Math.floor(at), SAMPLES - 1);
+  return upTo[sample] + (upTo[sample + 1] - upTo[sample]) * (at - sample);
+}
+
+/** How many parameters one piece is sampled at before the nearest is refined. */
+const SEEDS = 32;
+
+/** The parameter on one piece whose point sits nearest a place. */
+function nearestParameter(from: Vec2, curve: Cubic, place: Vec2): number {
+  const gapAt = (along: number) => vec2.distance(pointOn(from, curve, along), place);
+  let seed = 0;
+  for (let at = 1; at <= SEEDS; at++) if (gapAt(at / SEEDS) < gapAt(seed / SEEDS)) seed = at;
+  // Golden-section search over the two samples either side of the nearest seed.
+  let low = Math.max(0, (seed - 1) / SEEDS);
+  let high = Math.min(1, (seed + 1) / SEEDS);
+  const ratio = (Math.sqrt(5) - 1) / 2;
+  while (high - low > 1e-12) {
+    const left = high - ratio * (high - low);
+    const right = low + ratio * (high - low);
+    if (gapAt(left) < gapAt(right)) high = right;
+    else low = left;
+  }
+  return (low + high) / 2;
+}
+
+/**
+ * The fraction of a path's length at the point on it nearest a place, which is
+ * the fraction `pointAlong` returns that point for.
+ *
+ * A path with no length has one point, which is at the fraction nothing.
+ */
+export function fractionNearest(path: Path, place: Vec2): number {
+  const { per, total } = measurePath(path);
+  if (!(total > 0)) return 0;
+  let gap = Infinity;
+  let reached = 0;
+  let walked = 0;
+  path.forEach((subpath, at) => {
+    let from = subpath.start;
+    subpath.curves.forEach((curve, piece) => {
+      const measured = per[at][piece];
+      const along = nearestParameter(from, curve, place);
+      const distance = vec2.distance(pointOn(from, curve, along), place);
+      if (distance < gap) {
+        gap = distance;
+        reached = walked + lengthAtParameter(measured, along);
+      }
+      walked += measured.total;
+      from = curve.to;
+    });
+  });
+  return clamp(reached / total, 0, 1);
+}
+
 /** How long a path is, in figure units, across every subpath it contains. */
 export function lengthOf(path: Path): number {
   return measurePath(path).total;
