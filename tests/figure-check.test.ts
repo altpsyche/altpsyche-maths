@@ -23,6 +23,18 @@ const FILL = { colour: colourFrom('#101010') };
 const STROKE = { colour: colourFrom('#101010'), width: 0.02 };
 const PLACE = { x: 0, y: 0 };
 const SPOT = { x: 0, y: 0, z: 0 };
+/** The unit square as the cubics a file writes a path out as, each side a straight cubic. */
+const SQUARE = [
+  {
+    start: { x: 0, y: 0 },
+    curves: [
+      { control1: { x: 0, y: 0 }, control2: { x: 1, y: 0 }, to: { x: 1, y: 0 } },
+      { control1: { x: 1, y: 0 }, control2: { x: 1, y: 1 }, to: { x: 1, y: 1 } },
+      { control1: { x: 1, y: 1 }, control2: { x: 0, y: 1 }, to: { x: 0, y: 1 } },
+    ],
+    closed: true,
+  },
+];
 
 /** One node of every kind the vocabulary carries, each with the fields it
  * requires and nothing more, which is what says the table describes all of them
@@ -224,6 +236,17 @@ describe('a figure held to the vocabulary', () => {
     expect(() => checkFigure(withField(turning, ['extent'], []))).toThrow('extent is an extent and is a list');
   });
 
+  it('takes a path clip written out as cubics, and refuses one that is not a path', () => {
+    const clipped = withField(turning, ['scene', 'style', 'clipPath'], SQUARE);
+    expect(() => checkFigure(clipped)).not.toThrow();
+    expect(() => checkFigure(withField(turning, ['scene', 'style', 'clipPath'], { x: { from: 0, to: 1 }, y: { from: 0, to: 1 } }))).toThrow(
+      'scene.style.clipPath is a list and is an object',
+    );
+    expect(() => checkFigure(withField(turning, ['scene', 'style', 'clipPath'], [{ start: PLACE, closed: true }]))).toThrow(
+      'scene.style.clipPath.0.curves is required and is missing',
+    );
+  });
+
   it('refuses a field the kind does not carry', () => {
     expect(() => checkFigure(withField(turning, ['wobble'], 1))).toThrow('wobble is not a field of a figure');
     expect(() => checkFigure(withField(turning, ['extent', 'depth'], 1))).toThrow(
@@ -337,6 +360,7 @@ describe('a figure held to the vocabulary', () => {
           family: 'serif',
           weight: 600,
           clip: { x: { from: 0, to: 1 }, y: { from: 0, to: 1 } },
+          clipPath: SQUARE,
           align: 'middle',
           baseline: 'hanging',
           leading: 1.2,

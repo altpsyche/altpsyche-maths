@@ -138,7 +138,14 @@ child's: `multiply(a, b)` applies `b` to a point and then `a`.
 ### `Style`
 
 What a mark is painted with. Every field is optional: `fill`, `stroke`, `opacity`, `family` for the
-font, `weight` for it, and `clip` as a `Bounds`.
+font, `weight` for it, `clip` as a `Bounds`, and `clipPath` as the cubics of a path written out.
+
+**A `clipPath` is a closed path a mark is drawn inside, with everything of the mark outside it cut
+away.** Inside is read by the nonzero winding rule, and the path is measured in the figure's own units
+as a `clip` is, so no transform above it moves it. It is written as the list of subpaths a mark's own
+`path` is, each a `start`, its `curves` and `closed`, since a clip is fixed for the life of the figure
+and a file carries a fixed path written out. A path clip inside a path clip is the region both of them
+enclose, and a mark carrying a `clip` and a `clipPath` is drawn inside both.
 
 **A `depth` is the seventh and a file never carries one.** A space builder puts it on what it draws,
 so it reaches a mark through the tree the way a fill does, and a figure that wrote one by hand is

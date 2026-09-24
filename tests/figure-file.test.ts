@@ -298,6 +298,26 @@ describe('a figure read back from a file', () => {
     expect(writeFigure(JSON.parse(once).figure)).toBe(once);
   });
 
+  it('writes a path clip it read back to the same bytes', () => {
+    const square = [
+      {
+        start: { x: 0, y: 0 },
+        curves: [
+          { control1: { x: 0, y: 0 }, control2: { x: 1, y: 0 }, to: { x: 1, y: 0 } },
+          { control1: { x: 1, y: 0 }, control2: { x: 1, y: 1 }, to: { x: 1, y: 1 } },
+        ],
+        closed: true,
+      },
+    ];
+    const scene = turning.scene;
+    if (scene.kind !== 'group') throw new Error('the rotate demo is a group');
+    const clipped: FigureRecord = { ...turning, scene: { ...scene, style: { ...scene.style, clipPath: square } } };
+    const once = writeFigure(clipped);
+    expect(once).toContain('"clipPath"');
+    expect(() => readFigure(once)).not.toThrow();
+    expect(writeFigure(JSON.parse(once).figure)).toBe(once);
+  });
+
   it('refuses a version it does not read, naming both numbers', () => {
     const text = writeFigure(turning).replace('"format": 1', '"format": 0');
     expect(() => readFigure(text)).toThrow(

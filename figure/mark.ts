@@ -151,6 +151,11 @@ interface Common {
    * that rode the transform down would be a rectangle only until a group turned.
    */
   clip?: Bounds;
+  /**
+   * The closed path this mark is drawn inside by the nonzero rule, in the
+   * figure's own units like `clip`, and a mark carrying both is drawn inside both.
+   */
+  clipPath?: Path;
 }
 
 export interface PathMark extends Common {

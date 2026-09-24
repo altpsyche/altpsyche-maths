@@ -1840,13 +1840,17 @@ scissor. So nothing outside this package stands between a figure and a path clip
 
 **The steps.** Each is one commit and each names the measurement its commit quotes.
 
-- [ ] **1. The format carries a path clip.** `docs/SPECIFICATION.md` first, since it changes before
+- [x] **1. The format carries a path clip.** `docs/SPECIFICATION.md` first, since it changes before
       the code that reads it: `clipPath` on `Style`, on a shape node, on a text node and on a mark,
       read by the nonzero rule in the figure's own units, and a mark drawn inside both clips when it
       has both. Then the `clipPath?: Path` field on `Style`, `Mark` and the two node types, the
       checker's five places, and the record reader and writer. **Measurement:** a figure file
       carrying a `clipPath` read and written back to identical bytes, the checker's refusal of a
       `clipPath` that is not a path, and the eight committed figure files reading unchanged.
+      **Landed 2026-09-24:** a figure file with a `clipPath` on the scene's style writes back to the
+      same bytes, a rectangle there is refused as `scene.style.clipPath is a list and is an object`,
+      and `npm test` reads 1,513 of 1,513 over 98 files with the eight files untouched. In a file
+      the path clip is the cubics written out, which the specification states.
 - [ ] **2. The scene nests path clips.** `clipped` in `figure/node.ts` takes the handed path clip and
       the node's own, and two path clips become their `intersectionOf`. A shape whose reach misses
       the path clip's bounding box is left out of the list, the same rule the rectangle has.

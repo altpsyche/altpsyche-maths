@@ -32,6 +32,9 @@ export interface Style {
    * units. A clip inside a clip is the box both of them contain, since a group
    * cannot show what the group above it has already cut away. */
   clip?: Bounds;
+  /** The closed path everything under here is drawn inside by the nonzero rule,
+   * in the figure's own units. Nested, it is the region both paths enclose. */
+  clipPath?: Path;
 }
 
 interface Named {
