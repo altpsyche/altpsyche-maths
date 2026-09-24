@@ -1631,6 +1631,44 @@ nothing under `docs/`. The item widens the check to `docs/` and sweeps each file
 commit. SPECIFICATION.md is a second file per step on its own, because its table names the `items`
 key that 4.0.0 renames, and a sweep that edits that table has to leave the key as it stands.
 
+**The reading of 2026-09-24, taken with the check's own rule rather than by line.** The four counts
+above are matching lines and include names in backticks, which the check blanks. `gates/vocab.mjs`
+pointed at the four files reads GUIDE.md at 3 banned nouns and 15 banned voice patterns,
+SPECIFICATION.md at 2 and 21, FIGURE-FORMAT.md at 18 and 16, and REFERENCE.md at 18 and 53, which is
+41 and 105. The `items` key in SPECIFICATION.md's table is in backticks, so the check never reads it
+and a sweep has no reason to touch it. The commonest words are `item` 34 times, `decides` 31,
+`hands back` 30 and `wants` 29, counted over the five files in `docs/`.
+
+**ROADMAP.md reads 51 and 32 and is Siva's call.** The item names four files and leaves the roadmap
+out. Taking it in means every handover is held to the check, and a banned word the roadmap names
+in order to discuss it then has to be written in backticks.
+
+**No demo gains from this item.** It changes prose only, so what it is checked against is the
+check's count and a suite that is unchanged.
+
+**The steps.** Each file is swept to zero and added to `PROSE` in the same commit, so the check
+passes after every step and gains a file only once that file reads zero. Each commit quotes that
+file's two counts before and after, the check's file total, and `npm test` over files.
+
+- [ ] **1. GUIDE.md.** 3 and 15 to 0 and 0, and `check:vocab` reads 4 prose files.
+- [ ] **2. SPECIFICATION.md.** 2 and 21 to 0 and 0. Line 1 still reads version 1 and the `scene3`
+      row still names `items`, since the specification changes before the code that reads it and
+      this commit changes no rule.
+- [ ] **3. FIGURE-FORMAT.md.** 18 and 16 to 0 and 0. The documents of that name in the engine and
+      the site are theirs, and this commit touches only this one.
+- [ ] **4. REFERENCE.md.** 18 and 53 to 0 and 0. `tests/reference.test.ts` holds every name at the
+      door against this file, so it passes unchanged.
+
+**Done-criteria.**
+
+1. `PROSE` in `gates/vocab.mjs` lists the four files, the comment at its top names `docs/`, and
+   `check:vocab` reads 0 banned nouns and 0 banned voice patterns.
+2. The backticked spans of each file, sorted, are the same list before and after its step, so no
+   name was edited as prose.
+3. SPECIFICATION.md line 1 reads version 1 and its `scene3` row names `items` and `camera`.
+4. `npm test` passes the same count over the same files as before step 1, `type-check` and `build`
+   report no error.
+
 ### The three packages in step, and what this repository owes that job
 
 **The chain is `@altpsyche/engine` below this package and `altpsyche.dev` above it, and holding it
