@@ -46,7 +46,7 @@ const NAMED = Object.values(TIMES);
  * from its figure.
  *
  * The figure outlines a tapered stroke after its timeline has run, so the
- * tangent a figure hands back is the polygon round the line rather than the line.
+ * tangent a figure returns is the polygon round the line rather than the line.
  * What a path producer answers for is the geometry it makes, so the reading is
  * taken where the tree is flattened.
  */

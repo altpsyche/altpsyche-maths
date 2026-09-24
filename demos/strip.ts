@@ -34,7 +34,7 @@ export interface Strip {
  * travelled.
  *
  * A clip stays where the figure declared it while a mark moves through it, which
- * is the rule an animation wants and the wrong one here: a slot is a second frame
+ * is the rule an animation needs and the wrong one here: a slot is a second frame
  * rather than a place inside one, so an inset's window travels with the marks it
  * holds or it would cut every frame but the middle away.
  */

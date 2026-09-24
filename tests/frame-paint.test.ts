@@ -6,7 +6,7 @@ import { solid } from '../demos/surface.js';
 
 /**
  * Every frame of both demos, painted through both painters. This is the claim
- * frames out makes, and it needs no browser: a walk hands over marks and a view
+ * frames out makes, and it needs no browser: a walk returns marks and a view
  * together, and each painter turns that pair into what it draws.
  */
 
@@ -15,7 +15,7 @@ const HEIGHT = 600;
 
 /** A context that counts what it was asked to draw rather than drawing it. It
  * counts rather than writing every call down, since a walk of a demo is ninety
- * thousand marks and a list of every call to each is not a thing to hold. */
+ * thousand marks and a list of every call to each is not worth keeping. */
 class Counter implements CanvasLike {
   fills = 0;
   strokes = 0;
@@ -68,7 +68,7 @@ function drawn(
     fills: target.fills,
     strokes: target.strokes,
     texts: target.texts,
-    // One save wraps each thing the canvas painter draws, so this is what that
+    // One save wraps each mark the canvas painter draws, so this is what that
     // painter saw against what the other one wrote.
     painted: target.saves,
     elements: countOf(markup, 'path') + countOf(markup, 'text'),

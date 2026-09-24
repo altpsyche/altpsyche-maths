@@ -192,7 +192,7 @@ const WALK = 6;
 const WALK_FROM = ENTRANCE + 0.4;
 const WALK_TO = WALK_FROM + WALK;
 
-/** How long the walker takes to come back to the middle of the still disc, and
+/** How long the walker takes to return to the middle of the still disc, and
  * how long it stands there before the panels start moving. The morphs happen
  * with the walker wholly inside, which is the one distance at which all three
  * answers are shapes: clear of each other the intersection is empty, and a shape

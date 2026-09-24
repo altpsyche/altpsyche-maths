@@ -39,7 +39,7 @@ export const ROWS = 12;
 
 /**
  * How wide a glyph is against its size, which no measurement without a font can
- * know exactly.
+ * give exactly.
  *
  * A text mark contributes a box this wide per character, so a word covers cells
  * rather than a point. Eleven twentieths is the average advance of the sans

@@ -1221,7 +1221,7 @@ describe('the boolean demo', () => {
       expect(pointAlong(landed.path, share)!.y).toBeCloseTo(pointAlong(standing.path, share)!.y, 9);
     }
 
-    // The second span walks the panel the first handed over to, and what it walks
+    // The second span walks the panel the first passed on to, and what it walks
     // onto is a ring, so the shape carries the two loops a ring is made of.
     const second = resultOf(BOOLEAN_TIMES.morphed, 'intersection');
     expect(second.path).toHaveLength(2);
@@ -1438,7 +1438,7 @@ describe('the rotation demo', () => {
   it('keeps the word it carries clear of the edge it rides on, at every time in the turn', () => {
     // The word stays upright while the shape turns under it, so its box is square
     // to the figure and the edge is not. The box round an L is mostly the empty
-    // corner the word sits in, so the box is no reading and the edge is the one
+    // corner the word is drawn in, so the box is no reading and the edge is the one
     // that says whether the two touch.
     const end = durationOf(turns);
     let closest = Infinity;
@@ -2113,8 +2113,8 @@ describe('the solids demo', () => {
       const marks = marksAt(solids, seconds);
       const of = (part: string) => marks.find((mark) => mark.id === `solids/box/${part}`);
       const rim = of('rim/run');
-      // A face with a corner behind the eye comes back as an open run, and one
-      // with a corner off the side comes back as more than one.
+      // A face with a corner behind the eye is returned as an open run, and one
+      // with a corner off the side is returned as more than one.
       expect(rim?.kind === 'path' && rim.path).toHaveLength(1);
       expect(rim?.kind === 'path' && rim.path[0].curves).toHaveLength(4);
       expect(of('middle/disc')).toBeDefined();

@@ -5,9 +5,9 @@
  * Everything here that is not the camera is something the flat demo already uses.
  * The axes read the same tick list, the equation is typeset the same way, the
  * plane arrives with `fadeIn` and the curve is drawn on with `draw`, and neither
- * animation knows that the marks it moves came from points in space. That is the
- * claim this figure is here to hold: a builder that works in space hands back the
- * flat nodes the rest of the package already draws.
+ * animation has any record that the marks it moves came from points in space.
+ * That is the claim this figure is here to hold: a builder that works in space
+ * returns the flat nodes the rest of the package already draws.
  *
  * The camera is driven by a track rather than by an animation, which is the same
  * call the flat demo's walk made. A span's eased fraction and a track's value are
@@ -16,8 +16,8 @@
  *
  * The surface and the plane are sorted together rather than one after the other.
  * Two grids sorted apart are two groups, and the second is painted over the first
- * whichever way round they stand, which is the one thing a plane cutting through
- * a surface must not do. The field's arrows go into that same sort, so an arrow
+ * whichever way round they stand, which is the one order a plane cutting through
+ * a surface must not be drawn in. The field's arrows go into that same sort, so an arrow
  * behind the saddle is covered by it.
  *
  * At 0.11.0 three runs of steepest descent are drawn on the saddle. Each is a
@@ -534,7 +534,7 @@ const PUSH = 6.8;
 const pushed: Extent = { width: PUSH, height: (PUSH * extent.height) / extent.width };
 
 /**
- * When the two labels go, when the camera pushes in, and when both come back.
+ * When the two labels go, when the camera pushes in, and when both return.
  *
  * The push starts after the still and after the last frame the strip shows, so a
  * reader shown one frame gets the whole saddle with its equation rather than a
@@ -544,7 +544,7 @@ const pushed: Extent = { width: PUSH, height: (PUSH * extent.height) / extent.wi
  * are what reach nearest its edge, so the push crops them: everything drawn fits
  * inside 7.872 by 6.155 against a declared 8.2 by 6.4, and any push worth seeing
  * is further in than that. They go before the camera moves and return after it
- * has come back, rather than fading while it moves, since a label at half its
+ * has returned, rather than fading while it moves, since a label at half its
  * opacity outside the frame reads as one that slid off the edge.
  */
 const LABELS_OUT = { from: 7.5, to: 7.9 };

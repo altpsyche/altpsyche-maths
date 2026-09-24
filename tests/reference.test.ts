@@ -24,8 +24,8 @@ const exported = [...door.matchAll(/export\s+(?:type\s+)?\{([^}]*)\}/g)].flatMap
     .filter(Boolean),
 );
 
-// An entry opens a list item at the left margin with its name in backticks, and an
-// indented item is a field of the entry above it and names nothing at the door.
+// An entry opens a list line at the left margin with its name in backticks, and an
+// indented line is a field of the entry above it and names nothing at the door.
 const entries = [...reference.matchAll(/^- `([A-Za-z_$][A-Za-z0-9_$]*)/gm)].map((match) => match[1]);
 
 describe('the reference and the door', () => {
@@ -85,7 +85,7 @@ function fieldsOf(body: string): string[] {
 }
 
 // An entry is its own line and the indented lines under it, which end at the
-// first blank line, so a field named in a nested item counts as named.
+// first blank line, so a field named in a nested line counts as named.
 const blocks = new Map<string, string>();
 {
   let holding: string | undefined;

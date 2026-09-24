@@ -1,26 +1,25 @@
-// Vocabulary check: the banned nouns and the voice verbs CLAUDE.md names, counted in the comments
-// of the published sources and in the prose of README.md, DESIGN.md, CLAUDE.md, docs/ and the next skill.
+// Vocabulary check: the banned nouns and voice verbs CLAUDE.md names, counted in the comments of the
+// sources, demos/, tests/ and gates/, and in README.md, DESIGN.md, CLAUDE.md, docs/ and the next skill.
 import { readFileSync, readdirSync } from 'node:fs';
 import ts from 'typescript';
 
 const SOURCES = [
   'index.ts',
-  ...['values', 'timing', 'figure', 'paint'].flatMap((dir) =>
+  ...['values', 'timing', 'figure', 'paint', 'demos', 'tests', 'gates'].flatMap((dir) =>
     readdirSync(dir)
-      .filter((name) => name.endsWith('.ts'))
+      .filter((name) => name.endsWith('.ts') || name.endsWith('.mjs'))
       .sort()
       .map((name) => `${dir}/${name}`),
   ),
 ];
 const PROSE = ['README.md', 'DESIGN.md', 'CLAUDE.md', 'docs/GUIDE.md', 'docs/SPECIFICATION.md', 'docs/FIGURE-FORMAT.md', 'docs/REFERENCE.md', 'docs/ROADMAP.md', '.claude/skills/next/SKILL.md'];
 
-// Alternation order matters: the longer phrase is tried first, so "drawn item" is not also an "item".
 // A phrase may break across a comment's line, so the gap between its words also takes the `*` or
 // `//` that opens the next line.
 const GAP = String.raw`(?:\s|\*|//)+`;
 const phrases = (...list) => new RegExp(String.raw`\b(${list.map((p) => p.replaceAll(' ', GAP)).join('|')})\b`, 'gi');
 
-// Alternation order matters: the longer phrase is tried first, so "drawn item" is not also an "item".
+// Alternation order matters: the longer phrase is tried first, so a phrase is not also counted as its last word.
 const BANNED = [
   ['noun', phrases('drawn items?', 'things?', 'items?')],
   [

@@ -133,7 +133,7 @@ export const ROOM = size.width / 2 - coords.x.units.to - TIP;
  * The panel the inset is drawn into, in the figure's own units, and how much of
  * the picture it shows.
  *
- * It sits in the band above the graph and to the right of the reading and the
+ * It is placed in the band above the graph and to the right of the reading and the
  * rule, which is the one part of this figure nothing else draws in. The band is
  * 1.4 units tall between the top of the graph and the top of the frame, so the
  * panel is 1.26 of that and leaves 0.12 above itself. Its right edge stands at
@@ -280,8 +280,8 @@ const fieldOf: Expression = {
  *
  * Fifty read as scratches rather than as a field over a graph that already
  * carries a grid, a curve, a shaded region, a tangent and a dot. Twenty-one of
- * them, each drawn at a width and a head a reader can see, say the same thing
- * about the same curve. Seven across and three up keeps the cells at 1.053 of
+ * them, each drawn at a width and a head a reader can see, give the same reading
+ * of the same curve. Seven across and three up keeps the cells at 1.053 of
  * square, where seven across and four up comes to 1.267.
  */
 export const FIELD = { x: 7, y: 3 };

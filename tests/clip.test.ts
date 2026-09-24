@@ -5,7 +5,7 @@ import { circle, colourFrom, flatten, group, interval, line, mat3, paintCanvas, 
  * The rectangular clip, in the tree that declares it and in the two painters
  * that write it.
  *
- * The clip is the one thing a mark carries in the figure's own units rather than
+ * The clip is the one value a mark carries in the figure's own units rather than
  * its own, since a transform that turns takes a rectangle to a shape off the
  * axes and only a rectangle is drawable by every painter.
  */

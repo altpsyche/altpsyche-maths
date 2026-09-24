@@ -13,8 +13,8 @@
  * right panel turns the same shape about a point the figure names, a way off to
  * one side, so it swings round instead. A word rides with the shape in both
  * panels and stays upright the whole way. A mark carries no rotation of its own,
- * and a label that stays readable while the thing it names turns is what a
- * figure wants anyway.
+ * and a label that stays readable while the object it names turns is what a
+ * figure needs anyway.
  *
  * The rows under the two turns are what else a span does to a flat list of
  * marks: a swell out and back, a walk into another shape and back, a wave

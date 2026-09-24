@@ -6,7 +6,7 @@ import type { Crossing, Cubic, Path, Subpath, Vec2 } from '@altpsyche/maths';
  * Two curves whose boxes miss cannot cross, and the halving that follows from
  * that is only as sharp as the tolerance, so Newton's method finishes every
  * crossing off. These check the sharpened answers against closed forms, and
- * check that a near tangency comes back as one crossing rather than as the run
+ * check that a near tangency is returned as one crossing rather than as the run
  * of hits the halving actually found.
  */
 

@@ -282,7 +282,7 @@ describe('a view framing named marks', () => {
 
   it('grows by its padding on every side, and the taller side may be what drives it', () => {
     // Padded by one the marks reach seven across and four up, and four up at two
-    // to one wants eight across, so the height is what sets the width here.
+    // to one needs eight across, so the height is what sets the width here.
     const wanted: Extent = { width: 8, height: 4, centre: vec2(0, 0.5) };
     Array.from(viewAt(framed(1), 1, 200, 100)).forEach((value, at) =>
       expect(value).toBeCloseTo(Array.from(viewMatrix(wanted, 'contain', 200, 100))[at], 10)

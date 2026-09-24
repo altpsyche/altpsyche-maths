@@ -63,13 +63,13 @@ export const MIST = painted('mist');
 export const SLATE = painted('slate');
 /** The curve a picture is about, and the cut where two surfaces meet. */
 export const EMBER = painted('ember');
-/** What a thing turns while it is being pointed at. */
+/** What a node turns while it is being pointed at. */
 export const AMBER = painted('amber');
 /** A region under a curve or inside a shape, which sits behind everything. */
 export const PEACH = painted('peach');
 /** The shallow end of that region, where it has fallen away from the curve. */
 export const CREAM = painted('cream');
-/** The moving thing, and the arrows of a field. */
+/** The moving node, and the arrows of a field. */
 export const DEEP = painted('deep');
 /** The edge of a pane of glass in space. */
 export const SKY = painted('sky');

@@ -244,7 +244,7 @@ describe('an equation placed by an edge', () => {
 
   it('keeps the shared glyphs of two expressions still when both are placed by their start', async () => {
     // Centred, the part the two share slides sideways as the difference
-    // arrives, which is the one thing a morph promises not to do.
+    // arrives, which is the one motion a morph promises not to do.
     const shifted = async (align?: 'start' | 'middle' | 'end') => {
       const from = flatten(
         equationNode('a', await equationFromTex('\\frac{dy}{dx} = 0'), {

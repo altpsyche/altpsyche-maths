@@ -278,7 +278,7 @@ describe('recordFigure', () => {
   });
 });
 
-/** A context that keeps the first thing it was asked to fill, so the ground can
+/** A context that keeps the first path it was asked to fill, so the ground can
  * be told from the marks painted over it. */
 class Opening extends Counter {
   first?: { style: unknown; rect?: readonly number[] };

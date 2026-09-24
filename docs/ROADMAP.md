@@ -568,6 +568,20 @@ README that plays a video on load is a README nobody can read.
 
 ## Now
 
+**The vocabulary rule reads every word this tree writes, and its four done-criteria are verified here
+line by line.** Seven steps swept the five files in `docs/`, the next skill and the comments of
+`demos/`, `tests/` and `gates/` to zero, one file or one set of directories a commit.
+
+1. `PROSE` lists the five files in `docs/` and the skill, `SOURCES` takes `demos/`, `tests/` and
+   `gates/` with their `.ts` and `.mjs` files, the comment at the top of `gates/vocab.mjs` names
+   what it reads, and `check:vocab` reads 203 sources and 9 prose files at 0 banned nouns and 0
+   banned voice patterns.
+2. Each step quoted its backticked spans as the same sorted list before and after, and step 7
+   changed no line carrying a backtick.
+3. SPECIFICATION.md line 1 reads version 1, and its `scene3` row names `items` and `camera`.
+4. `npm test` passes 1,511 of 1,511 over 98 files, the count before step 1, and `type-check` and
+   `build` report no error.
+
 **3.3.0 is cut and not published, and its seven done-criteria are verified here line by line.** A
 GPU surface takes the caller's device and returns it, and reports a lost card through one `onLost`
 callback on both backends, after which it draws nothing and refuses every mark it is handed.
@@ -1621,80 +1635,6 @@ tolerance being an absolute distance. Two 400-piece paths unite in 48ms, so the 
 no box test in front of it and the quadratic over piece pairs is not worth removing.
 
 ## The entries
-
-### The vocabulary rule carried into `docs/`
-
-**GUIDE.md, REFERENCE.md, SPECIFICATION.md and FIGURE-FORMAT.md use the words the vocabulary rule in
-CLAUDE.md bans**, in 60, 165, 104 and 89 matching lines, counted on 2026-09-23 before 3.0.3 swept the
-published comments. `check:vocab` reads the 83 sources, README.md, DESIGN.md and CLAUDE.md, and
-nothing under `docs/`. The entry widens the check to `docs/` and sweeps each file to zero, one file a
-commit. SPECIFICATION.md is a second file per step on its own, because its table names the `items`
-key that 4.0.0 renames, and a sweep that edits that table has to leave the key as it stands.
-
-**The reading of 2026-09-24, taken with the check's own rule rather than by line.** The four counts
-above are matching lines and include names in backticks, which the check blanks. `gates/vocab.mjs`
-pointed at the four files reads GUIDE.md at 3 banned nouns and 15 banned voice patterns,
-SPECIFICATION.md at 2 and 21, FIGURE-FORMAT.md at 18 and 16, and REFERENCE.md at 18 and 53, which is
-41 and 105. The `items` key in SPECIFICATION.md's table is in backticks, so the check never reads it
-and a sweep has no reason to touch it. The commonest words are `item` 34 times, `decides` 31,
-`hands back` 30 and `wants` 29, counted over the five files in `docs/`.
-
-**Siva's answer of 2026-09-24 is that the vocabulary is right everywhere**, so the entry widens past
-`docs/`. Read on that date with the check's own rule, ROADMAP.md is at 55 banned nouns and 32 banned
-voice patterns, `.claude/skills/next/SKILL.md` at 10 and 2, and the comments of `demos/`, `tests/`
-and `gates/` at 26 and 21 over 22 files. 4 of those nouns are in `gates/vocab.mjs` itself, in the
-lists that name the banned words, so that file is exempt the way CLAUDE.md's Vocabulary section is.
-The roadmap names a banned word in order to discuss it only in backticks from step 5 on, and the
-word the roadmap and the skill use for one queued piece of work is `entry`.
-
-**No demo gains from this entry.** It changes prose only, so what it is checked against is the
-check's count and a suite that is unchanged.
-
-**The steps.** Each file is swept to zero and added to `PROSE` in the same commit, so the check
-passes after every step and gains a file only once that file reads zero. Each commit quotes that
-file's two counts before and after, the check's file total, and `npm test` over files.
-
-- [x] **1. GUIDE.md.** 3 and 15 to 0 and 0, and `check:vocab` reads 4 prose files. **Landed:** 18
-      matches reworded, 240 backticked spans the same list before and after, and 1,511 of 1,511 over 98
-      files.
-- [x] **2. SPECIFICATION.md.** 2 and 21 to 0 and 0. Line 1 still reads version 1 and the `scene3`
-      row still names `items`, since the specification changes before the code that reads it and
-      this commit changes no rule. **Landed:** 23 matches reworded, 909 backticked spans the same
-      list before and after, `check:vocab` reads 5 prose files, and 1,511 of 1,511 over 98 files. The
-      heading over the seven producers now reads "The seven entry producers", and the test that reads
-      that section by its heading reads the new one.
-- [x] **3. FIGURE-FORMAT.md.** 18 and 16 to 0 and 0. The documents of that name in the engine and
-      the site are theirs, and this commit touches only this one. **Landed:** 34 matches reworded,
-      319 backticked spans the same list before and after, `check:vocab` reads 6 prose files, and
-      1,511 of 1,511 over 98 files.
-- [x] **4. REFERENCE.md.** 18 and 53 to 0 and 0. `tests/reference.test.ts` holds every name at the
-      door against this file, so it passes unchanged. **Landed:** 71 matches reworded, 1,911
-      backticked spans the same list before and after, `check:vocab` reads 7 prose files, and 1,511
-      of 1,511 over 98 files.
-- [x] **5. ROADMAP.md.** 55 and 32 to 0 and 0. The heading over the queued work reads "The entries". Every
-      later handover is held to the check from this commit on. **Landed:** 57 and 32 to 0 and 0,
-      since the entry's own text added 2 nouns after the count, 89 matches reworded, 1,003
-      backticked spans the same list before and after, `check:vocab` reads 8 prose files, and 1,511
-      of 1,511 over 98 files.
-- [x] **6. `.claude/skills/next/SKILL.md`.** 10 and 2 to 0 and 0, with its step headings and every
-      other use naming a roadmap entry. CLAUDE.md's `/next` sentence is read again in the same commit.
-      **Landed:** 12 matches reworded, 15 backticked spans the same list before and after,
-      `check:vocab` reads 9 prose files, and 1,511 of 1,511 over 98 files. CLAUDE.md's `/next`
-      sentence names no banned word and stands as it was.
-- [ ] **7. The comments of `demos/`, `tests/` and `gates/`.** 26 and 21 to 0 and 0. `SOURCES` gains
-      the three directories, `gates/vocab.mjs` blanks its own ban lists, and a test name in a string is
-      code rather than a comment, so the check leaves it as it stands.
-
-**Done-criteria.**
-
-1. `PROSE` in `gates/vocab.mjs` lists the five files in `docs/` and the skill, `SOURCES` takes
-   `demos/`, `tests/` and `gates/`, the comment at its top names what it reads, and `check:vocab`
-   reads 0 banned nouns and 0 banned voice patterns.
-2. The backticked spans of each file, sorted, are the same list before and after its step, so no
-   name was edited as prose.
-3. SPECIFICATION.md line 1 reads version 1 and its `scene3` row names `items` and `camera`.
-4. `npm test` passes the same count over the same files as before step 1, `type-check` and `build`
-   report no error.
 
 ### The three packages in step, and what this repository owes that job
 

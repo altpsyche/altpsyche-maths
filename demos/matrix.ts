@@ -99,7 +99,7 @@ export const ENTRIES = [
   { from: 1, to: MAP[4] },
 ];
 
-/** How long the map takes to go out and come back. */
+/** How long the map takes to go out and return. */
 export const TURN = 6;
 
 /** Where the matrix stands, clear of the panel. */

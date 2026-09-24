@@ -64,7 +64,7 @@ export const HEIGHT = 600;
 export const PAGE_FLOOR = 14;
 
 /** The width each sheet is shown at, the stills in the README and the strips in
- * the guide. A sheet scales from its view box, so this is the only thing that
+ * the guide. A sheet scales from its view box, so this is the only number that
  * turns a written size into a size on the page. */
 export const SHOWN_AT = 720;
 export const SHOWN_AT_STRIP = 820;

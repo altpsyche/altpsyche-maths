@@ -64,7 +64,7 @@ const pathAt = (along: number, id: string): PathMark => {
 describe('a group morphing into a group', () => {
   it('touches nothing at the start of its span', () => {
     // A group waiting to be walked onto is the picture it already is, so a figure
-    // whose morph is the last thing on its timeline reads the same before it as
+    // whose morph is the last animation on its timeline reads the same before it as
     // it did with no morph written at all.
     expect(morph(marks, 0)).toBe(marks);
   });

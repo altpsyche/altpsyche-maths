@@ -5,7 +5,7 @@ import { typesetElement } from '@altpsyche/maths';
 import type { EquationElement } from '@altpsyche/maths';
 
 /**
- * The typesetter, held to two things: that it answers with the tree the walk
+ * The typesetter, held to two claims: that it answers with the tree the walk
  * over it takes, and that a consumer who never asks for one never loads it.
  *
  * The second is read off the source rather than off a running process, because
