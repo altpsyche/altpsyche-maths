@@ -1650,7 +1650,9 @@ check's count and a suite that is unchanged.
 passes after every step and gains a file only once that file reads zero. Each commit quotes that
 file's two counts before and after, the check's file total, and `npm test` over files.
 
-- [ ] **1. GUIDE.md.** 3 and 15 to 0 and 0, and `check:vocab` reads 4 prose files.
+- [x] **1. GUIDE.md.** 3 and 15 to 0 and 0, and `check:vocab` reads 4 prose files. **Landed:** 18
+      matches reworded, 240 backticked spans the same list before and after, and 1,511 of 1,511 over 98
+      files.
 - [ ] **2. SPECIFICATION.md.** 2 and 21 to 0 and 0. Line 1 still reads version 1 and the `scene3`
       row still names `items`, since the specification changes before the code that reads it and
       this commit changes no rule.

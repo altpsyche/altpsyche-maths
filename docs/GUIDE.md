@@ -8,7 +8,7 @@ states why the design is what it is.
 ## Figures, marks and painters
 
 A **figure** is a description of a picture over time. Evaluating a figure at a time yields a flat
-array of **marks**. A mark is one drawn item: an outline with a fill, a stroke, or both, or a piece
+array of **marks**. A mark is what one node becomes at one time: an outline with a fill, a stroke, or both, or a piece
 of text. A **painter** consumes marks and produces something a reader can see.
 
 No part of that requires a browser. A figure at a time is an array, and an array is countable in a
@@ -349,7 +349,7 @@ runs of them over the same interval, at six bars, twelve and twenty-four, read a
 sum to 6.875, 7.90625 and 8.445313 of the 9 the region holds, so halving the width of a bar takes
 very nearly half of what is left over away. `tangentAt` clips the tangent line to the graph analytically, since a straight line
 crosses each edge once. All three readers take the plotted path rather than the function behind it:
-`slopeOf` reads the slope off the cubic covering the x it is asked for, and hands back `NaN` where
+`slopeOf` reads the slope off the cubic covering the x it is asked for, and returns `NaN` where
 the curve does not reach that x.
 
 ## Curves no function of x describes
@@ -397,7 +397,7 @@ the curve crosses the gradient at a right angle there, and that holds a unit cir
 2.3 × 10⁻⁷ of the true radius at 64 cells.
 
 An implicit curve is the one curve here whose count of places the figure does not fix: the count is
-how many cells the curve crosses, which the function decides. So an implicit curve cannot be a morph's
+how many cells the curve crosses, which the function sets. So an implicit curve cannot be a morph's
 source, since a morph pairs the points of one path with the points of another.
 
 ## Timelines and animations
@@ -448,14 +448,14 @@ A rotation does not thicken a line. A stroke width is multiplied by the transfor
 which for a rotation is one.
 
 The five panels under the turns are the rest of what a span does to a flat list of marks. `scale`
-multiplies the marks it is handed about a pivot, so a swell that comes back counts to the reciprocal
+multiplies the marks it is handed about a pivot, so a swell that is undone counts to the reciprocal
 of the swell rather than to one. `morph` walks a path into another path by pairing their points in
 order, so two paths of one count walk corner to corner: the L here walks into the rectangle round it,
 which keeps three of its corners where they are. `wave` pushes every point of a path along a
 direction, by a band that crosses the marks over the span and pushes nothing at either edge of
 itself. `wiggle` swells and rocks about a pivot and is at nothing at both ends of its span. `moveBy`
-translates the marks it is handed by the offset times how far along the span has gone, so a move
-that comes back takes the offset negated rather than the place it started from.
+translates the marks it is handed by the offset times how far along the span has gone, so a move back
+takes the offset negated rather than the place it started from.
 
 <img src="rotate-strip.svg" width="820" alt="Four frames in two rows, each showing all seven panels, at nothing, a quarter, a half and three quarters of the way round.">
 
@@ -584,7 +584,7 @@ of them.
 
 ## A moving view
 
-A view move is a timeline entry. It sits in the same list the animations do, so a camera move can be
+A view move is a timeline entry. It is in the same list as the animations, so a camera move can be
 told to start after an entrance or to overlap one, and `after` and `stagger` read it the way they
 read a fade.
 
@@ -679,7 +679,7 @@ const lens: Inset = {
 
 The border and the ground behind a panel are the figure's own marks, since a frame round a picture is
 a shape and this package already has shapes. `hides` is what keeps the inset from magnifying them: an
-inset over the part of the picture its own border sits in would paint a picture of itself. Each
+inset over the part of the picture its own border lies in would paint a picture of itself. Each
 inset's marks carry the id it is named by in front of the id of the mark they copy, so `fig/lens`
 gives `fig/lens/fig/dot`, and they carry the opacity of the marks they copy, so the picture inside a
 panel fades in as the picture does.
@@ -765,7 +765,7 @@ red, so a typo would otherwise ship inside the picture.
 
 A **matrix** is a grid of entries between two brackets, and every entry is reachable on its own. Each
 row is a group and each entry is a text node inside it, so `map/rows/1/0` names one number and
-`map/rows/1` names the row it sits in.
+`map/rows/1` names the row that contains it.
 
 ```ts
 import { applyMatrix, matrix, table, vec2 } from '@altpsyche/maths';
@@ -809,7 +809,7 @@ round the marks, because a linear map is defined about the origin.
 
 Reaching the entries is not a turn. The determinant halfway to a turn by an angle is
 `(1 + cos angle) / 2`, so a quarter turn halves the area on the way and a half turn puts every point
-on one line. A figure that wants the turn itself asks `rotate`, which interpolates the angle and holds
+on one line. A figure drawing the turn itself uses `rotate`, which interpolates the angle and holds
 the area at 1.
 
 A grid mapped past its panel is cut by a clip. A clip does not ride a transform, so the panel stands
@@ -851,7 +851,7 @@ ring: an outer loop and an inner loop wound in opposite directions.
 
 Four public calls do the work. `curveCrossings` locates the intersections of two cubics, refined by
 Newton's method from a subdivision search. `cutPath` inserts a cut at every crossing, after which
-every piece lies wholly inside the other path or wholly outside it. `containsPoint` decides which,
+every piece lies wholly inside the other path or wholly outside it. `containsPoint` returns which,
 by the nonzero winding number of the other path about the piece's midpoint. `areaOf` returns the
 enclosed area in closed form.
 
@@ -930,8 +930,7 @@ plane and never clips. Depth is measured along the direction the camera looks ra
 distance to the eye, since that is the quantity a depth sort orders by.
 
 Every builder in space returns the same flat nodes everything else draws, so `fadeIn` and `draw`
-reach a mark in space unchanged. Nothing in the marks, the tree or the painters knows that space
-exists.
+reach a mark in space unchanged. No part of the marks, the tree or the painters depends on space.
 
 `scene3` orders pieces near over far, which is the painter's algorithm. Its limits are worth knowing
 before it is used. Two pieces that pass through each other, and three that overlap cyclically, admit
@@ -1012,7 +1011,7 @@ depth is the affine quantity instead, so what the three numbers hold there is th
 reciprocal, which keeps the smaller number the nearer mark under both projections.
 
 The builders in space fit the three numbers themselves. `polyline3`, `dot3`, `text3` and `arrow3` fit
-them through the points in space each was drawn from, and `scene3` fits them for every item it is
+them through the points in space each was drawn from, and `scene3` fits them for every entry it is
 handed, so `curve3`, `section3`, `streamline3` and `axes3` reach them through `polyline3`. Three
 points off a line settle the fit exactly and more are fitted by least squares, which is what a cell
 of a curved surface gets: the cell is flat and the surface it stands for is not, so the fit is as
@@ -1020,7 +1019,7 @@ wrong as the cell already was. A flat figure carries no depth at all, and `Mark.
 every mark of one.
 
 A run drawn on a surface shares that surface's depth, and no comparison of depths separates two
-things at one depth. `lift` moves a run toward the eye before its depth is fitted, and moves only the
+marks at one depth. `lift` moves a run toward the eye before its depth is fitted, and moves only the
 depth: where the run is drawn does not change. The saddle above is twelve cells across and a lift of
 0.00348 figure units clears the flatness of a cell, which is the number that demo uses.
 
@@ -1125,7 +1124,7 @@ spans rather than the calls that built them.
 
 ## A figure as a file
 
-A figure written as a record is text. `writeFigure` hands back the text of a file: the format version
+A figure written as a record is text. `writeFigure` returns the text of a file: the format version
 and the figure, with the keys of every object sorted, ending in a newline. `readFigure` reads that
 text back into a figure, and `checkFigure` holds a parsed value to the vocabulary and refuses with
 the path of the field it read and what it found there.
@@ -1143,7 +1142,7 @@ marksAt(read, 1);
 
 Sorting the keys is what makes two writings of one figure the same bytes, so a file is comparable
 against the last one committed. A version rides in front of the figure because a reader given a file
-from a version it does not know refuses it rather than drawing part of it.
+from a version it cannot read refuses it rather than drawing part of it.
 
 The four demos of this repository are committed as files beside their pictures, and a gate reads each
 file back and compares its marks against what the demo draws.
@@ -1171,9 +1170,9 @@ times. A figure whose view moves would then paint its marks through the matrix o
 Frames are yielded one at a time rather than as an array. Ten seconds at sixty frames a second is
 six hundred frames of every mark a figure draws, and a recorder encodes a frame and discards it.
 
-The step is a rate or a count, and those are different questions. A recorder knows the playback rate
-and needs a step of exactly its reciprocal. A strip knows how many pictures fit across a page and
-wants them distributed over the whole figure.
+The step is a rate or a count, and those are different questions. A recorder is given the playback rate
+and needs a step of exactly its reciprocal. A strip is given how many pictures fit across a page and
+needs them distributed over the whole figure.
 
 A walk stops strictly before the duration. The frame at the duration of a looping figure is its own
 first frame, and a recording would show it twice. `isLoop` reports whether a figure loops, comparing
