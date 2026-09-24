@@ -408,7 +408,7 @@ is left, since 2.1.0 through 2.10.0 are cut.
 
 | version | what lands | what it changes | steps | cut against | depends on | plan |
 | --- | --- | --- | --- | --- | --- | --- |
-| 3.4.0 | a clip that is a path rather than a rectangle | what a `Mark` may ask for | to plan | nothing yet, which is why it is last of the marks | nothing now, since `@altpsyche/engine` 0.5.0 counts a winding | to plan |
+| 3.4.0 | a clip that is a path rather than a rectangle | what a `Mark` may ask for | 8, under The entries | both demos' lenses, which take round corners | nothing outside this package, since the GPU frame cuts geometry rather than asking for a stencil | written 2026-09-24, and Siva said go the same day |
 | 4.0.0 | the five `item` names renamed to `entry`, then a figure a reader can act on | the shape of `Figure`, which gains input | to plan | nothing yet | nothing outside this package | to plan |
 
 **The three calls `altpsyche.dev` was blocked on are 3.1.0, 3.2.0 and 3.3.0, and all three are cut.**
@@ -1754,7 +1754,7 @@ entry's steps come first, then 3.4.0 and 4.0.0 in ladder order, then the handove
 - [ ] **3. A version is published from a tag. Waits on Siva, who deferred it on 2026-09-24.** It
       needs three answers: the trusted publisher set on npmjs.com for `publish.yml`, a yes to
       pushing `v3.0.0`, and which version the workflow publishes first, since 3.3.0 is cut and npm
-      carries 3.0.0. Until then the next pick is 3.4.0, which is to plan.
+      carries 3.0.0. Until then the next pick is 3.4.0, whose steps are below.
       The engine's `publish.yml`: on a release being
       published, the gates, then `npm publish --provenance --access public` with `id-token: write`
       and no npm token anywhere. What it costs is that the trust lives in a registry setting naming
@@ -1795,6 +1795,111 @@ are the site's, and a session there is what lands them. The site depends on both
 and only the peer range is enforced, so its two ranges cross together or its install fails, which is
 the crossing to 3.0.0 measured above. And nothing surfaces a release to anybody, which a watcher in
 the site's own tree answers and no workflow here can.
+
+### 3.4.0, a clip that is a path
+
+**A path clip is a closed path a mark is drawn inside, with everything of the mark outside it cut
+away.** Inside is read by the nonzero winding rule, the rule every fill here already uses. Today a
+`Mark.clip` is a `Bounds`, which is an axis-aligned rectangle, and the header of `figure/mark.ts`
+gives the reason: a rectangle is the scissor test every device has, where a path needed a winding
+counted on a card. `@altpsyche/engine` 0.5.0 counts one, and the GPU painter does not need it
+anyway, since it already cuts a rectangle into a mark's triangles rather than asking the card for a
+scissor. So nothing outside this package stands between a figure and a path clip.
+
+**The reading of 2026-09-24, so a later session takes none of it again.**
+
+- **Thirteen files under `figure/` and three painters read `clip`.** The ones that change are
+  `mark.ts` and `node.ts` (the type, and the nesting in `clipped`), `figure-check.ts` (five `clip`
+  fields, all `ref('bounds')`), `animation.ts` (`walkedClip` walks a rectangle, and the write
+  intersects its sweep band with `mark.clip`), `inset.ts` (a mark's clip is magnified and cut to
+  `into`), `depth-order.ts` (`footprintOf` takes the clip into a mark's box) and `gpu-frame.ts`
+  (`clipTriangles` cuts each triangle against the rectangle by Sutherland and Hodgman's algorithm).
+  In `paint/`, `svg.ts` writes a `<clipPath>` holding a `<rect>` and `canvas.ts` calls `rect` then
+  `clip()` with no fill rule.
+- **The intersection of two path clips already exists.** `intersectionOf` in `figure/boolean.ts` is
+  what `demos/boolean.ts` draws, so a path clip inside a path clip is that function's result and no
+  second clipping algorithm is written.
+- **Both demos already carry a panel that could take the shape.** Each has an inset named a lens:
+  `LENS` in `demos/tangent.ts` is 2.8 by 1.26 figure units at line 147, and `demos/surface.ts`
+  draws `solid/lens` over the saddle. Both panels are rectangles today because a rectangle was the
+  only clip there was.
+
+**The two calls this plan makes, stated so Siva can overturn either before step 1.**
+
+- **The path clip is a second field, `clipPath`, beside `clip`, rather than a union type on `clip`.**
+  A mark is drawn inside both when it has both. A union would change the type of a field every
+  consumer already reads as a `Bounds`, which is a major, where a field added is a minor of this
+  package and keeps the format at version 1 by the rule its version section states. The rectangle
+  also stays exact: every clip in the tree today is a rectangle, and none of their numbers move.
+  **What would change the answer** is a figure that needs its rectangle and its path merged into one
+  shape a renderer reads, which none does.
+- **A path clip is in the figure's own units, like the rectangle.** A path survives any transform,
+  so it could ride the transform down where a rectangle cannot. Two clips measured in two different
+  spaces on one node is the harder rule to state, and nothing asks for a clip that turns with its
+  group.
+
+**The steps.** Each is one commit and each names the measurement its commit quotes.
+
+- [ ] **1. The format carries a path clip.** `docs/SPECIFICATION.md` first, since it changes before
+      the code that reads it: `clipPath` on `Style`, on a shape node, on a text node and on a mark,
+      read by the nonzero rule in the figure's own units, and a mark drawn inside both clips when it
+      has both. Then the `clipPath?: Path` field on `Style`, `Mark` and the two node types, the
+      checker's five places, and the record reader and writer. **Measurement:** a figure file
+      carrying a `clipPath` read and written back to identical bytes, the checker's refusal of a
+      `clipPath` that is not a path, and the eight committed figure files reading unchanged.
+- [ ] **2. The scene nests path clips.** `clipped` in `figure/node.ts` takes the handed path clip and
+      the node's own, and two path clips become their `intersectionOf`. A shape whose reach misses
+      the path clip's bounding box is left out of the list, the same rule the rectangle has.
+      **Measurement:** a disc of radius 1 inside a disc of radius 1 moved 1 across gives a clip whose
+      area is (2π/3 − √3/2), which is 1.2284, within the flattening tolerance, and every demo's marks
+      at its still time unchanged by count.
+- [ ] **3. The SVG painter writes a path clip.** A `<clipPath>` holding a `<path>` with
+      `clip-rule="nonzero"`, named by its path data the way `clipId` names a rectangle by its four
+      numbers, so every mark of one inset shares one element. A mark with both clips is written with
+      the rectangle's clip on a group around it. **Measurement:** the number of `<clipPath>` elements
+      for N marks under one path clip, which has to be 1, and `npm run demos` giving zero changed
+      bytes over the eight committed images.
+- [ ] **4. The canvas painter clips to a path.** `CanvasLike.clip` takes the fill rule the way
+      `fill` already does, and a path clip is built with `moveTo` and `bezierCurveTo` then clipped.
+      **Measurement:** the calls a stand-in context records for one mark under a disc clip, in order.
+- [ ] **5. The GPU frame cuts triangles to a path.** The clip path is triangulated by `trianglesOf`,
+      and each of a mark's triangles is cut against each triangle of the clip by the same Sutherland
+      and Hodgman step `clipTriangles` uses, since a triangle is convex. Pairs whose boxes miss are
+      skipped before any cut. The card's stencil is not used, for the reason `gpu-frame.ts` gives
+      against a scissor: cutting geometry lets the four samples resolve a clipped edge like every
+      other edge. **Measurement:** the area of a unit square cut to a disc of radius 0.5, against
+      π/4 minus the flattening loss, and the triangle count and time of the flat demo's frame at its
+      still time before and after.
+- [ ] **6. Animation, inset and depth order carry a path clip.** A morph whose pair has two
+      different path clips swaps at half, which is what `walkedClip` does for a rectangle only one of
+      the pair has. An inset magnifies a mark's path clip through its matrix, and `footprintOf` takes
+      the path clip's box into a mark's box. **Measurement:** a mark under a path clip seen through an
+      inset at twice its size carries a clip of four times the area, and the depth order of the
+      solid demo's 798 frames unchanged.
+- [ ] **7. Both lenses get round corners.** `Inset` gains a `corner` radius in figure units, and a
+      nonzero one cuts its marks to the rounded rectangle through `clipPath`. The flat demo's lens
+      and the solid demo's lens each take one, and the border each demo draws round its lens takes
+      the same corner so the edge and the cut agree. **This is the step the demos gain from.**
+      **Measurement:** the count of inset marks at each demo's still time, the count of those carrying
+      a `clipPath`, whether a point 0.01 inside each rectangle's corner is outside the drawn lens,
+      and the committed images regenerated.
+- [ ] **8. The version is cut.** The header of `figure/mark.ts`, the guide and the README say a clip
+      may be a path. Then `npm run gate:gpu` and `npm run gate:record` by hand, and the version is
+      3.4.0, a minor since a field is added. **Measurement:** the done-criteria below, line by line.
+
+**Done-criteria.**
+
+1. `docs/SPECIFICATION.md` states `clipPath`, its units, its rule and how it nests, and it changed
+   in a commit no later than the code that reads it.
+2. The format is still version 1, and every committed `.figure.json` reads and draws as before.
+3. A mark with both clips is drawn inside both in all three painters.
+4. Two nested path clips are one path, their `intersectionOf`, and the area test holds it.
+5. Every figure that had no path clip draws the same marks and the same SVG bytes as at 3.3.0.
+6. `gate:gpu` reads 8 of 8 above both floors with the round lenses, and `gate:record` writes every
+   recording.
+7. Both demos' lenses are round at the corner, and the point test says so.
+8. `package.json` reads 3.4.0, and nothing is published, since the 2.x band's rule of publishing at
+   the band's end carries into 3.x until Siva says otherwise.
 
 ## Found while working, not yet queued
 
