@@ -16,7 +16,7 @@ may call.
 
 **These come before the vocabulary, because a reader deciding whether to write a renderer needs the
 bound first.** They are the boundary, and they are rules rather than a name: calling this a language
-was tried and dropped, since a bigger word invites a bigger thing while Lottie and glTF are both
+was tried and dropped, since a bigger word invites a bigger scope while Lottie and glTF are both
 called formats and both have implementers on several platforms.
 
 - **No loops and no recursion.** An expression evaluates in bounded time or it is not one.
@@ -37,7 +37,7 @@ and one author.
 **The discipline does not need the split and it holds here instead: this document changes before the
 code does.** A specification written after the fact is a description of whatever got built.
 
-**It moves out when a second implementation exists**, or when a tool wants the types and the validator
+**It moves out when a second implementation exists**, or when a tool needs the types and the validator
 without the whole figures library. That is also when `@altpsyche/figure-format` becomes a package
 carrying the types, a validator and the conformance fixtures. Nothing needs those today, since the one
 consumer already has them.
@@ -169,7 +169,7 @@ carries the stroke's cap at both of its ends.
 drawn as the gradient rather than as the colour beside it, and the colour is what anything needing
 one colour reads. A gradient is `from` and `to` as places in the mark's own units and `stops` as a
 list, each stop an `offset` from nothing to one and a `colour`. The rule is `nonzero` or `evenodd`,
-which is how a shape crossing itself decides what is inside.
+which is how a shape crossing itself sets what is inside.
 
 ### `Camera3Choice`
 
@@ -325,7 +325,7 @@ respectively.
 
 **`parametric` reads its curve from the bound variable `t`, `polar` from `angle`, and `implicit` from
 `x` and `y` together.** The names are fixed by this rule for the reason `plot`'s is. `parametric`
-hands back a place and `polar` a radius, each over the run `over` names, which is nothing to one for a
+returns a place and `polar` a radius, each over the run `over` names, which is nothing to one for a
 parameter and a whole turn for an angle. `closed` says the last place joins back to the first, which
 is also what makes the direction at the seam read across the join. A negative radius places the point
 opposite the angle rather than being refused.
@@ -338,7 +338,7 @@ cuts at its own end is one stretch rather than two.
 **`implicit` is the one form whose count of places the figure does not fix.** `resolution` is how many
 cells the grid has each way, one number or one per axis, and `over` is the region sampled as two plain
 `Interval`s. The curve's places are the crossings the function's own level set makes with that grid,
-which the function decides, so a renderer may hand back a different count as a track moves the level.
+which the function sets, so a renderer may return a different count as a track moves the level.
 Every other form here holds its count fixed so that one path can be walked into another by pairing
 their places, and a morph over an implicit curve pairs places that need not correspond.
 
@@ -365,7 +365,7 @@ left to read.
 
 ## The point producers
 
-**A point producer hands back places rather than a path, and a node draws them.** There are three, and
+**A point producer returns places rather than a path, and a node draws them.** There are three, and
 each is a field of the node that draws it rather than a kind of its own.
 
 ### The section of a surface
@@ -375,7 +375,7 @@ read from the bound variables `u` and `v`, `plane` is a `point` and a `normal` a
 and `options` carries `over` as the runs of the two parameters, `resolution` as one number or one per
 parameter, and `tolerance` as how close two ends come before they are read as the same place.
 
-**The runs come back as several rather than one**, since a plane cutting a saddle meets it in two
+**The runs are returned as several rather than one**, since a plane cutting a saddle meets it in two
 branches, and a renderer draws each run as its own subpath.
 
 ### The curve in space
@@ -384,8 +384,8 @@ branches, and a renderer draws each run as its own subpath.
 read from the bound variable `t`, `resolution` is how many steps the run is cut into, and `over` is the
 run of the parameter as a pair of expressions, nothing to one where it is left out.
 
-**It hands back one step more places than the resolution**, since both ends of the run are included. A
-curve that closes hands back its first place again at the end, because the function it reads is what
+**It returns one step more places than the resolution**, since both ends of the run are included. A
+curve that closes returns its first place again at the end, because the function it reads is what
 says so.
 
 **`over` is expressions where a section's and a streamline's parameters are plain.** The count of places
@@ -401,7 +401,7 @@ region the run is held inside, `direction` as `forward`, `backward` or `both`, a
 magnitude below which the field is taken to have vanished.
 
 **`step` and `steps` are plain numbers rather than expressions.** A step that followed a track would
-hand back a different number of points at every time, and a morph pairs two runs up by their points.
+return a different number of points at every time, and a morph pairs two runs up by their points.
 
 **`both` puts the backward half first**, so the points read from one end of the curve to the other.
 
@@ -480,7 +480,7 @@ it. `direction` is `across` or `up`, `at` is where the line sits on the other ax
 step between them in graph units, `crossedAt` is where the other axis crosses so a label there is
 moved clear, and `skipZero` leaves the label at the crossing off.
 
-**Axes take the same options without `at`, `direction` and `skipZero`**, since a pair of axes decides
+**Axes take the same options without `at`, `direction` and `skipZero`**, since a pair of axes sets
 those for each of its two lines.
 
 **A number plane's `options` carries a required `stroke`**, with `minors` as how many minor lines
@@ -499,7 +499,7 @@ equation itself is geometry, since a renderer in another language has no typeset
 `lengthOf` and `colourFor`. `lengthOf` is an expression of the bound variable `magnitude`, which
 spells a constant, a scaling and a clamped curve alike. `colourFor` is a `ColourChoice`: a colour, or
 a `bands` form carrying `first` and `then`, where each entry is an `above` threshold and the `colour`
-holding above it, read in order so the last threshold a magnitude clears decides.
+holding above it, read in order so the colour is that of the last threshold a magnitude clears.
 
 ### The space builders
 
@@ -524,8 +524,8 @@ holding above it, read in order so the last threshold a magnitude clears decides
 | `section3` | `curve`, `camera`, `options`, `style` |
 | `streamline3` | `runs`, `on`, `camera`, `options`, `style` |
 
-**A run of points cut by the near plane comes back as several runs**, and `options` for a run is a
-`Style` with `close` and `lift` beside it. A run the near plane cut comes back open however `close` is
+**A run of points cut by the near plane is returned as several runs**, and `options` for a run is a
+`Style` with `close` and `lift` beside it. A run the near plane cut is returned open however `close` is
 set, since closing it would draw an edge that is nowhere in the world.
 
 **`lift` is how far toward the eye a run is moved before its depth is fitted, in the units the figure
@@ -597,9 +597,9 @@ every bend.
 through a flat field and lifted onto the surface named by `on`. Both take their points from a
 producer above rather than from a path.
 
-### The seven item producers
+### The seven entry producers
 
-**These are entries of a `scene3` rather than nodes**, since what each hands back is many pieces the
+**These are entries of a `scene3` rather than nodes**, since what each returns is many pieces the
 scene then sorts by depth.
 
 | kind | fields beyond the name | what it is |
@@ -774,19 +774,19 @@ drawn changed when this field arrived.
 
 **The rule, which is the whole of what a depth is for.** Where two marks carrying a depth overlap on
 the page, the nearer of the two at a point is drawn over the further at that point. Where a mark
-carrying a depth overlaps a mark carrying none, the order of the list decides. Where two marks
-carrying a depth are at the same depth at a point, the order of the list decides there too, so a
+carrying a depth overlaps a mark carrying none, the order of the list sets which is drawn over. Where two marks
+carrying a depth are at the same depth at a point, the order of the list sets it there too, so a
 curve drawn on a surface wins by standing later in the list.
 
 **A mark carrying no depth clears what the depths before it decided.** It is painted over everything
-earlier in the list, so nothing earlier can come back over it, and a mark carrying a depth that comes
+earlier in the list, so nothing earlier can be drawn over it, and a mark carrying a depth that comes
 after it is compared only against the marks carrying a depth that also come after it. Without that
 rule the two ways of meeting the rule below would draw different pictures: a depth buffer would let a
-mark from before the flat one come back through a mark after it, and a renderer painting in order
+mark from before the flat one show through a mark after it, and a renderer painting in order
 would not. On a card the rule is a clear of the depth attachment.
 
 **So the list is a run of stretches.** A stretch is a run of marks carrying a depth with no mark
-carrying none among them, and the depth decides inside a stretch and nowhere else. A flat figure is
+carrying none among them, and the depth sets the order inside a stretch and nowhere else. A flat figure is
 one stretch of nothing and is painted in the order it is given.
 
 **A renderer may meet the rule two ways and both draw the same picture.** One is a depth buffer: the
@@ -807,7 +807,7 @@ camera, so two cameras give two scales. A figure drawing two spaces keeps them a
 a figure whose two spaces overlap is asking a question the format does not answer.
 
 **A scene in space still sorts what it holds.** The sort settles the order of the list, which is what
-decides where two marks are at one depth and what a renderer with neither a depth buffer nor a cut
+sets the order where two marks are at one depth and what a renderer with neither a depth buffer nor a cut
 falls back to. What the depth adds is the answer where the sort has none: a curve lying on the
 surface it was cut from, and two surfaces passing through each other.
 

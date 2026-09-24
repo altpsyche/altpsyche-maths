@@ -219,7 +219,7 @@ describe('the specification and the nodes', () => {
   });
 
   it('names every item producer, which are entries of a scene rather than nodes', () => {
-    const inside = quoted(written.get('The seven item producers') ?? '');
+    const inside = quoted(written.get('The seven entry producers') ?? '');
     const producers = membersOf('figure/node-record.ts', 'SceneItemRecord').filter((name) => name !== 'SpaceItemRecord');
     expect(producers).toHaveLength(7);
     for (const name of ['surfaceCells', 'fieldArrows3', 'sphereCells', 'cubeCells', 'cylinderCells', 'torusCells', 'curvePieces3']) {

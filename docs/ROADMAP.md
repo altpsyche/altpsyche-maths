@@ -1653,9 +1653,12 @@ file's two counts before and after, the check's file total, and `npm test` over 
 - [x] **1. GUIDE.md.** 3 and 15 to 0 and 0, and `check:vocab` reads 4 prose files. **Landed:** 18
       matches reworded, 240 backticked spans the same list before and after, and 1,511 of 1,511 over 98
       files.
-- [ ] **2. SPECIFICATION.md.** 2 and 21 to 0 and 0. Line 1 still reads version 1 and the `scene3`
+- [x] **2. SPECIFICATION.md.** 2 and 21 to 0 and 0. Line 1 still reads version 1 and the `scene3`
       row still names `items`, since the specification changes before the code that reads it and
-      this commit changes no rule.
+      this commit changes no rule. **Landed:** 23 matches reworded, 909 backticked spans the same
+      list before and after, `check:vocab` reads 5 prose files, and 1,511 of 1,511 over 98 files. The
+      heading "The seven item producers" is now "The seven entry producers", and the test that reads
+      that section by its heading reads the new one.
 - [ ] **3. FIGURE-FORMAT.md.** 18 and 16 to 0 and 0. The documents of that name in the engine and
       the site are theirs, and this commit touches only this one.
 - [ ] **4. REFERENCE.md.** 18 and 53 to 0 and 0. `tests/reference.test.ts` holds every name at the
@@ -1793,6 +1796,13 @@ the crossing to 3.0.0 measured above. And nothing surfaces a release to anybody,
 the site's own tree answers and no workflow here can.
 
 ## Found while working, not yet queued
+
+- **The specification test reads the nodes' prose from a heading that does not exist.**
+  `nodeProse` in `tests/specification.test.ts` joins five sections by heading, and the fifth, "The
+  two item producers", names no heading in SPECIFICATION.md, so it adds nothing and the node tests
+  never read the seven entry producers' section. They pass because every field they look for is named
+  in the other four. The fix is to name "The seven entry producers" there and see whether the counts
+  it checks still hold.
 
 - **Nothing has ever asked an install of this package what it hands a consumer.** The three gates
   read this tree, and `npm pack` is run only to put a tarball in the site's hands.
