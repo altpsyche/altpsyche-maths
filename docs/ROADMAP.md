@@ -1751,7 +1751,11 @@ entry's steps come first, then 3.4.0 and 4.0.0 in ladder order, then the handove
       before and a limit of 60,000ms. `npm test` read 1,511 of 1,511 over 98 files in both jobs.
       `gate:gpu` read 8 of 8 on WebGL 2 with the loss reported as `context` after 4.2ms, and printed
       the WebGPU loss as unmeasured. `gate:record` wrote 34 of 34 recordings.
-- [ ] **3. A version is published from a tag.** The engine's `publish.yml`: on a release being
+- [ ] **3. A version is published from a tag. Waits on Siva, who deferred it on 2026-09-24.** It
+      needs three answers: the trusted publisher set on npmjs.com for `publish.yml`, a yes to
+      pushing `v3.0.0`, and which version the workflow publishes first, since 3.3.0 is cut and npm
+      carries 3.0.0. Until then the next pick is 3.4.0, which is to plan.
+      The engine's `publish.yml`: on a release being
       published, the gates, then `npm publish --provenance --access public` with `id-token: write`
       and no npm token anywhere. What it costs is that the trust lives in a registry setting naming
       the repository and the workflow file, so a renamed file stops publishing until the setting is

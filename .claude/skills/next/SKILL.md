@@ -24,7 +24,8 @@ Re-check after every landed commit, not at the end.
 
 ## 1. Read the state, do not trust memory
 
-- **[`docs/ROADMAP.md`](../../../docs/ROADMAP.md)** in full. It is short.
+- **[`docs/ROADMAP.md`](../../../docs/ROADMAP.md)** by heading. It runs past 2,000 lines, so read
+  The version ladder, the head of Now and The entries, and the rest when a step names it.
 - `git log --oneline -10`, and `git log -S'<symbol>'` for the reason a line is the way it
   is.
 - **`git status --short` before anything else.** Output means a previous session left work
@@ -35,8 +36,9 @@ only when the whole file is the subject.
 
 ## 2. Pick one entry
 
-**The ladder's own order wins.** Each version in it is an entry, and the lowest unreleased version is
-the pick. If that entry carries a step list, the pick is **its first unticked step**, not the entry.
+**The roadmap's own order wins.** Entries under The entries come first, in the order the file writes
+them, and then each version of the ladder, lowest first. If the pick carries a step list, the pick is
+**its first unticked step** that is not marked as waiting on Siva, not the entry.
 
 The two decisions at the top of the roadmap are answered and are not to be reopened by a session. A
 call the roadmap leaves open goes to Siva by name.
