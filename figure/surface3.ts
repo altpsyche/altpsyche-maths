@@ -10,7 +10,7 @@ import { vec3, type Vec3 } from '../values/vec3.js';
 import type { Fill, Stroke } from './mark.js';
 import type { Camera3 } from './camera.js';
 import { cornersOf, stepsOf } from './grid.js';
-import { polyline3, scene3, type SpaceItem } from './space.js';
+import { polyline3, scene3, type SpaceEntry } from './space.js';
 import type { GroupNode } from './node.js';
 
 export type Surface3Options = {
@@ -77,14 +77,14 @@ function newellNormal(corners: readonly Vec3[]): Vec3 {
  * animation can still name a whole surface once its cells are mixed with
  * another's.
  */
-export function surfaceCells(name: string, of: (u: number, v: number) => Vec3, camera: Camera3, options: Surface3Options): SpaceItem[] {
+export function surfaceCells(name: string, of: (u: number, v: number) => Vec3, camera: Camera3, options: Surface3Options): SpaceEntry[] {
   const { over = {}, resolution = 24, shade, light = vec3(0, 0, 1), cull = false, stroke } = options;
   const u = over.u ?? interval(0, 1);
   const v = over.v ?? interval(0, 1);
   const steps = stepsOf(resolution, 'u', 'v');
   const grid = cornersOf(of, u, v, steps);
   const toLight = vec3.normalize(light);
-  const cells: SpaceItem[] = [];
+  const cells: SpaceEntry[] = [];
 
   for (let i = 0; i < steps.u; i += 1) {
     for (let j = 0; j < steps.v; j += 1) {

@@ -1881,11 +1881,11 @@ and a figure asked twice with the same two answers the same picture twice.
 
 **The steps.** Each is one commit and each names the measurement its commit quotes.
 
-- [ ] **1. The four names in code are renamed.** `SpaceItem` becomes `SpaceEntry`, `SpaceItemRecord`
+- [x] **1. The four names in code are renamed.** `SpaceItem` becomes `SpaceEntry`, `SpaceItemRecord`
       becomes `SpaceEntryRecord`, `SceneItemRecord` becomes `SceneEntryRecord`, and the parameter
       `items` of `scene3` becomes `entries`. The `items` key of a record stays until step 2.
       **Measurement:** 29, 9 and 14 uses to 0, the suite at 1,536 of 1,536 before and after, and
-      `npm run demos` changing 0 bytes.
+      `npm run demos` changing 0 bytes. **Landed:** 29, 9 and 14 to 0 over 14 files, 1,536 of 1,536 before and after, 0 bytes.
 - [ ] **2. The format is version 2 and a `scene3` record carries `entries`.** SPECIFICATION.md
       changes first in the same commit: line 1, the version section saying what version 2 changed,
       and the `scene3` row. Then `FIGURE_FORMAT_VERSION`, the checker, the record type, the reader

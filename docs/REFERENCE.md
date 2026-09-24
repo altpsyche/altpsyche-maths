@@ -642,9 +642,9 @@ functions, which is what lets the same tree survive being written to a file and 
   `options`.
 - `Arrow3Record` — a `kind` of `arrow3`, a `name`, a `from`, a `to`, its `camera` and its `options`,
   which are an arrow's.
-- `Scene3Record` — a `kind` of `scene3`, a `name`, its `items` as `SceneItemRecord`s and its
+- `Scene3Record` — a `kind` of `scene3`, a `name`, its `items` as `SceneEntryRecord`s and its
   `camera`.
-- `SpaceItemRecord` — one piece of a scene in space: the `points` its depth is measured from, and the
+- `SpaceEntryRecord` — one piece of a scene in space: the `points` its depth is measured from, and the
   `node` drawn for it. A scene sorts its pieces by the mean of their own depths, so the points are
   what order a piece rather than anything the node carries.
 - `Axes3Record` — a `kind` of `axes3`, a `name`, its `camera` and its `options`.
@@ -712,7 +712,7 @@ functions, which is what lets the same tree survive being written to a file and 
 - `Streamline3Record` — a `kind` of `streamline3`, a `name`, its `runs`, the surface they stand `on`
   read from `u` and `v`, its `camera`, the `options` each run is drawn with and its `style`. A run
   drawn in a plane is that plane written as a surface, so there is no second form for one.
-- `SceneItemRecord` — one entry of a scene: a `SpaceItemRecord` written out, or one of the seven
+- `SceneEntryRecord` — one entry of a scene: a `SpaceEntryRecord` written out, or one of the seven
   producers, which are `SurfaceCellsRecord`, `FieldArrows3Record`, the four solids' cells and
   `CurvePieces3Record`. A producer carries a kind and a written-out piece carries none, so a scene
   written before the producers existed still reads.
@@ -1041,10 +1041,10 @@ functions, which is what lets the same tree survive being written to a file and 
 Every builder here returns the flat nodes the rest of the package already draws, so the same
 animations reach a picture in space and a picture on a graph.
 
-- `SpaceItem` — one piece waiting to be sorted: the `points` it was built from and the `node` that
+- `SpaceEntry` — one piece waiting to be sorted: the `points` it was built from and the `node` that
   draws it. A figure holding two surfaces that pass through each other sorts all of their pieces
   together.
-- `scene3(name, items, camera)` — a group whose children are ordered back to front, which is the
+- `scene3(name, entries, camera)` — a group whose children are ordered back to front, which is the
   painter's algorithm. Two pieces that pass through each other, and three that overlap in a ring,
   have no one order at all, and the answer for those is smaller pieces.
 - `polyline3(name, points, camera, options)` — a run of straight segments through points in space.

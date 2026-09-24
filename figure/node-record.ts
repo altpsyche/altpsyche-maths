@@ -40,7 +40,7 @@ import { equationNode, type Equation, type EquationOptions } from './equation.js
 import { matrix, type MatrixOptions } from './matrix.js';
 import { table, type TableOptions } from './table.js';
 import { vectorField, type VectorFieldOptions } from './field.js';
-import { arrow3, dot3, polyline3, scene3, text3, type Arrow3Options, type Polyline3Options, type SpaceItem, type Text3Options } from './space.js';
+import { arrow3, dot3, polyline3, scene3, text3, type Arrow3Options, type Polyline3Options, type SpaceEntry, type Text3Options } from './space.js';
 import { axes3, type Axes3Options } from './axis3.js';
 import { surface3, surfaceCells, type Surface3Options } from './surface3.js';
 import { cubeCells, cylinderCells, sphereCells, torusCells, type Solid3Options } from './solid3.js';
@@ -321,7 +321,7 @@ export interface VectorFieldRecord {
  * A scene sorts its pieces by the mean of their own depths, so the points are
  * what order the piece rather than anything the node contains.
  */
-export interface SpaceItemRecord {
+export interface SpaceEntryRecord {
   readonly points: readonly Point3Record[];
   readonly node: NodeRecord;
 }
@@ -365,7 +365,7 @@ export interface Arrow3Record {
 export interface Scene3Record {
   readonly kind: 'scene3';
   readonly name: string;
-  readonly items: readonly SceneItemRecord[];
+  readonly items: readonly SceneEntryRecord[];
   readonly camera: Camera3Record;
 }
 
@@ -662,8 +662,8 @@ export interface Streamline3Record {
  * A producer stores a kind and a written-out piece stores none, so a scene
  * written before the producers existed still reads.
  */
-export type SceneItemRecord =
-  | SpaceItemRecord
+export type SceneEntryRecord =
+  | SpaceEntryRecord
   | SurfaceCellsRecord
   | FieldArrows3Record
   | SphereCellsRecord
@@ -844,7 +844,7 @@ function solidCells(
   record: SphereCellsRecord | CubeCellsRecord | CylinderCellsRecord | TorusCellsRecord | Sphere3Record | Cube3Record | Cylinder3Record | Torus3Record,
   camera: Camera3,
   bindings: Bindings
-): SpaceItem[] {
+): SpaceEntry[] {
   const { centre, options } = solidStands(record, bindings);
   const measure = (expression: Expression, what: string) => numberOf(expression, bindings, what);
   switch (record.kind) {
@@ -922,7 +922,7 @@ export function resolveStreamline(record: StreamlineRecord, bindings: Bindings =
  * A producer takes the scene's own camera, so a surface and a field sorted
  * together are seen from one place and neither stores a pose of its own.
  */
-function resolveEntries(entry: SceneItemRecord, camera: Camera3, bindings: Bindings): SpaceItem[] {
+function resolveEntries(entry: SceneEntryRecord, camera: Camera3, bindings: Bindings): SpaceEntry[] {
   if (!('kind' in entry)) {
     return [
       {

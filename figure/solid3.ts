@@ -20,7 +20,7 @@
 import { interval } from '../values/interval.js';
 import { vec3, type Vec3 } from '../values/vec3.js';
 import type { Camera3 } from './camera.js';
-import { scene3, type SpaceItem } from './space.js';
+import { scene3, type SpaceEntry } from './space.js';
 import { surfaceCells, type Surface3Options } from './surface3.js';
 import type { GroupNode } from './node.js';
 
@@ -40,7 +40,7 @@ function patches(
   camera: Camera3,
   options: Solid3Options,
   each: readonly { readonly name: string; readonly of: (u: number, v: number) => Vec3 }[]
-): SpaceItem[] {
+): SpaceEntry[] {
   return each.flatMap((patch) => surfaceCells(`${name}/${patch.name}`, patch.of, camera, options));
 }
 
@@ -51,7 +51,7 @@ function patches(
  * below the centre to the pole above it, which is the order that leaves every
  * cell facing away from the centre.
  */
-export function sphereCells(name: string, centre: Vec3, radius: number, camera: Camera3, options: Solid3Options): SpaceItem[] {
+export function sphereCells(name: string, centre: Vec3, radius: number, camera: Camera3, options: Solid3Options): SpaceEntry[] {
   const at = (u: number, v: number) => {
     const round = TURN * u;
     const down = Math.PI * v;
@@ -86,7 +86,7 @@ const FACES: readonly { readonly name: string; readonly at: (u: number, v: numbe
  * Each face runs its two parameters from one edge of the cube to the other, and
  * which of the two runs which way is what puts the face's cells facing out.
  */
-export function cubeCells(name: string, centre: Vec3, size: number, camera: Camera3, options: Solid3Options): SpaceItem[] {
+export function cubeCells(name: string, centre: Vec3, size: number, camera: Camera3, options: Solid3Options): SpaceEntry[] {
   const half = size / 2;
   return patches(
     name,
@@ -122,7 +122,7 @@ export function cylinderCells(
   height: number,
   camera: Camera3,
   options: Solid3Options
-): SpaceItem[] {
+): SpaceEntry[] {
   const half = height / 2;
   const round = (u: number, reach: number, z: number) =>
     vec3(centre.x + reach * Math.cos(TURN * u), centre.y + reach * Math.sin(TURN * u), centre.z + z);
@@ -160,7 +160,7 @@ export function torusCells(
   tube: number,
   camera: Camera3,
   options: Solid3Options
-): SpaceItem[] {
+): SpaceEntry[] {
   const at = (u: number, v: number) => {
     const round = TURN * u;
     const about = TURN * v;

@@ -14,8 +14,8 @@ import {
   type Expression,
   type Mark,
   type NodeRecord,
-  type SceneItemRecord,
-  type SpaceItemRecord,
+  type SceneEntryRecord,
+  type SpaceEntryRecord,
 } from '../index.js';
 import { EMBER, INK, MOSS } from '../demos/palette.js';
 import {
@@ -190,7 +190,7 @@ describe('the space nodes read back against their own calls', () => {
  * than against geometry written again here, since a second writing of a saddle
  * or a cylinder drifts from the demo's own without either side being wrong.
  */
-type Named = NodeRecord | Exclude<SceneItemRecord, SpaceItemRecord>;
+type Named = NodeRecord | Exclude<SceneEntryRecord, SpaceEntryRecord>;
 
 function nodeAt(node: Named, path: readonly string[]): Named {
   if (path.length === 0) return node;
@@ -219,7 +219,7 @@ describe('a solid, a surface, a field and a curve written the short way', () => 
     return { marks: one.length, same: sameMarks(one, two, 0) };
   };
 
-  const sceneOver = (item: SceneItemRecord, seen: Camera3Record): NodeRecord => ({
+  const sceneOver = (item: SceneEntryRecord, seen: Camera3Record): NodeRecord => ({
     kind: 'scene3',
     name: 'one',
     camera: seen,

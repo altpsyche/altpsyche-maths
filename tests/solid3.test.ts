@@ -18,7 +18,7 @@ import {
   vec3,
   type NodeRecord,
   type ShadeRecord,
-  type SpaceItem,
+  type SpaceEntry,
   type Vec3,
 } from '../index.js';
 
@@ -44,12 +44,12 @@ function facing(corners: readonly Vec3[]): Vec3 {
   return vec3.normalize(vec3(x, y, z));
 }
 
-const middleOf = (cell: SpaceItem): Vec3 =>
+const middleOf = (cell: SpaceEntry): Vec3 =>
   cell.points.reduce((sum, point) => vec3.add(sum, vec3.scale(point, 1 / cell.points.length)), vec3.ZERO);
 
 /** How many cells of a run face the way the solid's outside lies, which is every
  * one of them or the solid is lit from inside. */
-function outward(cells: readonly SpaceItem[], out: (middle: Vec3) => Vec3): number {
+function outward(cells: readonly SpaceEntry[], out: (middle: Vec3) => Vec3): number {
   return cells.filter((cell) => vec3.dot(facing(cell.points), vec3.normalize(out(middleOf(cell)))) > 0).length;
 }
 
@@ -61,7 +61,7 @@ function outward(cells: readonly SpaceItem[], out: (middle: Vec3) => Vec3): numb
  * the parameter sits where the sine of a whole half turn is, which is 1.2e-16
  * rather than nothing.
  */
-function collapsed(cells: readonly SpaceItem[], grain = 1e-9): number {
+function collapsed(cells: readonly SpaceEntry[], grain = 1e-9): number {
   return cells.filter((cell) =>
     cell.points.some((point, at) => vec3.magnitude(vec3.sub(point, cell.points[(at + 1) % cell.points.length])) < grain)
   ).length;
@@ -197,7 +197,7 @@ describe('a solid drawn on its own', () => {
       [torus3('ring', CENTRE, 2, 0.5, camera, OPTIONS), torusCells('face', CENTRE, 2, 0.5, camera, OPTIONS)],
     ] as const;
     for (const [node, cells] of drawn) {
-      expect(flatten(node as never)).toHaveLength((cells as SpaceItem[]).length);
+      expect(flatten(node as never)).toHaveLength((cells as SpaceEntry[]).length);
     }
   });
 });

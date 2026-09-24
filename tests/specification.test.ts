@@ -204,7 +204,7 @@ describe('the specification and the nodes', () => {
       { name: 'Field3RecordOptions', file: 'figure/node-record.ts' },
       { name: 'Surface3RecordOptions', file: 'figure/node-record.ts' },
       { name: 'ShadeRecord', file: 'figure/node-record.ts' },
-      { name: 'SpaceItemRecord', file: 'figure/node-record.ts' },
+      { name: 'SpaceEntryRecord', file: 'figure/node-record.ts' },
       { name: 'TextTemplate', file: 'figure/node-record.ts' },
       { name: 'TextHole', file: 'figure/node-record.ts' },
       { name: 'Point3Record', file: 'figure/camera-record.ts' },
@@ -220,7 +220,7 @@ describe('the specification and the nodes', () => {
 
   it('names every item producer, which are entries of a scene rather than nodes', () => {
     const inside = quoted(written.get('The seven entry producers') ?? '');
-    const producers = membersOf('figure/node-record.ts', 'SceneItemRecord').filter((name) => name !== 'SpaceItemRecord');
+    const producers = membersOf('figure/node-record.ts', 'SceneEntryRecord').filter((name) => name !== 'SpaceEntryRecord');
     expect(producers).toHaveLength(7);
     for (const name of ['surfaceCells', 'fieldArrows3', 'sphereCells', 'cubeCells', 'cylinderCells', 'torusCells', 'curvePieces3']) {
       expect(inside.has(name), name).toBe(true);

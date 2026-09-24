@@ -135,7 +135,7 @@ export function text3(
 
 /** A drawn piece and the points in space it was drawn from, which are what say
  * how far off it is. */
-export type SpaceItem = {
+export type SpaceEntry = {
   points: readonly Vec3[];
   node: Node;
 };
@@ -172,8 +172,8 @@ function middleDepth(points: readonly Vec3[], camera: Camera3): number {
  * sort is stable, and a picture that changed which of two touching faces was on
  * top between frames would flicker.
  */
-export function scene3(name: string, items: readonly SpaceItem[], camera: Camera3): GroupNode {
-  const measured = items.map((entry) => ({
+export function scene3(name: string, entries: readonly SpaceEntry[], camera: Camera3): GroupNode {
+  const measured = entries.map((entry) => ({
     node: atDepth(entry.node, depthOf(entry.points, camera)),
     depth: middleDepth(entry.points, camera),
   }));

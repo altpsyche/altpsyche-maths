@@ -11,7 +11,7 @@ import type { Colour } from './mark.js';
 import type { ArrowOptions } from './annotate.js';
 import type { Camera3 } from './camera.js';
 import { stepsOf } from './grid.js';
-import { arrow3, scene3, type SpaceItem } from './space.js';
+import { arrow3, scene3, type SpaceEntry } from './space.js';
 import type { GroupNode } from './node.js';
 
 export type VectorField3Options = ArrowOptions & {
@@ -45,7 +45,7 @@ export function fieldArrows3(
   of: (at: Vec3) => Vec3,
   camera: Camera3,
   options: VectorField3Options,
-): SpaceItem[] {
+): SpaceEntry[] {
   const { over = {}, resolution = 6, lengthOf, colourFor, ...rest } = options;
   const box = {
     x: interval.ordered(over.x ?? interval(0, 1)),
@@ -53,7 +53,7 @@ export function fieldArrows3(
     z: interval.ordered(over.z ?? interval(0, 1)),
   };
   const steps = stepsOf(resolution, 'x', 'y', 'z');
-  const arrows: SpaceItem[] = [];
+  const arrows: SpaceEntry[] = [];
 
   for (let i = 0; i < steps.x; i += 1) {
     for (let j = 0; j < steps.y; j += 1) {

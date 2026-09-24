@@ -14,7 +14,7 @@ import {
   scene3,
   vec3,
   type NodeRecord,
-  type SceneItemRecord,
+  type SceneEntryRecord,
   type SpaceCurveRecord,
 } from '../index.js';
 
@@ -178,7 +178,7 @@ describe('a curve in space cut into pieces a scene sorts', () => {
   });
 
   it('draws the marks its own call draws, as a record', () => {
-    const record: SceneItemRecord = { kind: 'curvePieces3', name: 'coil', curve, options: WIRE };
+    const record: SceneEntryRecord = { kind: 'curvePieces3', name: 'coil', curve, options: WIRE };
     const fromRecord = flatten(
       resolveNode({ kind: 'scene3', name: 'both', items: [record], camera: seen })
     );

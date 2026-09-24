@@ -15,7 +15,7 @@ import { interval, type Interval } from '../values/interval.js';
 import type { Vec3 } from '../values/vec3.js';
 import type { Camera3 } from './camera.js';
 import type { Style } from './node.js';
-import { polyline3, type SpaceItem } from './space.js';
+import { polyline3, type SpaceEntry } from './space.js';
 
 export interface Curve3Options {
   /** How many steps the run is cut into, which is one fewer than the count of
@@ -76,11 +76,11 @@ export function curvePieces3(
   of: (t: number) => Vec3,
   camera: Camera3,
   options: CurvePieces3Options = {},
-): SpaceItem[] {
+): SpaceEntry[] {
   const { resolution, over, ...style } = options;
   const places = curveOf3(of, { resolution, over });
   const stroke = style.stroke ? { cap: 'round' as const, ...style.stroke } : style.stroke;
-  const pieces: SpaceItem[] = [];
+  const pieces: SpaceEntry[] = [];
   for (let at = 0; at + 1 < places.length; at += 1) {
     const ends = [places[at], places[at + 1]];
     pieces.push({ points: ends, node: polyline3(`${name}/${at}`, ends, camera, { ...style, stroke }) });

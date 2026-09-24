@@ -246,7 +246,7 @@ that `flatten` already walks.
 
 ### Entry producers, two of them
 
-These return `SpaceItem[]`, the list `scene3` sorts by depth and draws. A figure uses one inside a
+These return `SpaceEntry[]`, the list `scene3` sorts by depth and draws. A figure uses one inside a
 `scene3` beside its other entries, which is what neither of them being a node is for.
 
 | producer | parameters | carries a function |
@@ -393,7 +393,7 @@ and splitting the two steps meant reading each builder's return type instead.
 
 **There are twenty-one node kinds rather than nineteen, and two entry producers nobody counted.**
 `riemannBars` returns a `GroupNode` and was counted as a path producer. `vectorField3` returns one and
-was missed. `surfaceCells` and `fieldArrows3` return `SpaceItem[]`, which is a third part a figure is
+was missed. `surfaceCells` and `fieldArrows3` return `SpaceEntry[]`, which is a third part a figure is
 made of: the list of entries `scene3` sorts and draws, rather than a node or a path.
 
 **Three of the twenty-one are the tree's own kinds and the other eighteen are builders over them.**
