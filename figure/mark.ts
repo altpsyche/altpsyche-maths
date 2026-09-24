@@ -11,10 +11,12 @@
  * rather than drawing it wrongly. There are still no filters and no blend modes
  * here, since no figure has asked for one.
  *
- * A clip is a rectangle and no other shape. An arbitrary path clip is a stencil
- * on a card and needs a winding number counted, where a box is the scissor test
- * every device already has, so a rectangle is the shape all three painters draw
- * and the type is what keeps a figure from asking for the other one.
+ * A clip is a rectangle, a closed path, or both, and a mark with both is drawn
+ * inside both. Inside a path is read by the nonzero winding rule, the rule every
+ * fill here uses. The GPU painter cuts a mark's triangles to either clip rather
+ * than asking the card for a scissor or a stencil, so a clipped edge resolves its
+ * samples like every other edge. Both clips are measured in the figure's own
+ * units, since a transform that turns takes a rectangle off the axes.
  *
  * A gradient is refused for a different reason, since both painters draw one.
  * SVG names a gradient with an element with an id and a canvas names it with

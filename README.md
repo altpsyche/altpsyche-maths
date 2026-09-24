@@ -255,9 +255,10 @@ A mark may request only what every painter that may draw the figure implements: 
 blend modes. Which painters those are is `Figure.painters`, and left out it is all three. A figure using
 an SVG filter would render correctly on a page and lose the effect silently in a recording.
 
-A clip is a rectangle and no other shape, and that exclusion is not the rule above. Both painters
-clip, with `clip-path` and with `clip()`. An arbitrary path clip needs a winding number counted,
-which is a stencil on a card, where a box is the scissor test every device already has.
+A clip is a rectangle, a closed path, or both, and every painter draws all three. `clip` is the
+rectangle and `clipPath` is the path, read by the nonzero winding rule, and a mark carrying both is
+drawn inside both. The SVG painter writes `clip-path`, the canvas painter calls `clip()`, and the GPU
+painter cuts a mark's triangles to the clip, so no painter needs a stencil on the card.
 
 A fill stores one colour and a gradient beside it. SVG names a gradient with an element carrying a
 document-unique identifier and a canvas with an object built from the context, and the one colour

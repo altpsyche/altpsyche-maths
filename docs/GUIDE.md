@@ -258,6 +258,9 @@ A circle is four cubic quarters. No cubic is a circular arc exactly. For a segme
 2.7 × 10⁻⁴ times the radius. The suite holds the drawn edge between 2.6 × 10⁻⁴ and 2.8 × 10⁻⁴.
 `arc` subdivides any sweep into segments of at most a quarter turn and derives the control distance
 per segment, since the error grows with the angle covered.
+`rect` takes a fourth number, `cornerRadius`, and above 0 each corner is a quarter arc of that radius,
+held to the same bound. The radius stops at half the shorter side, where two arcs meet with no
+straight piece between them.
 
 `pathFromData` reads an SVG `d` attribute as a path, including the elliptical arc commands, by the
 conversion the specification itself gives. An unknown command halts the read rather than being
@@ -622,15 +625,17 @@ and the scene would be asking for what is being built.
 
 ## Clips and insets
 
-A clip is the rectangle a mark is drawn inside, with everything of the mark outside that rectangle
-cut away. It is a `Bounds`, which is an `x` interval and a `y` interval, and it is a rectangle and no
-other shape: a path clip needs a winding number counted, which is a stencil on a graphics card, where
-a box is the scissor test every device already has.
+A clip is the region a mark is drawn inside, with everything of the mark outside that region cut
+away. A mark carries two fields for it. `clip` is a `Bounds`, which is an `x` interval and a `y`
+interval, so it is a rectangle. `clipPath` is a closed `Path`, and a point is inside it by the nonzero
+winding rule, which counts how many times the path turns round the point and calls the point inside
+when that count is not zero. A mark carrying both is drawn inside both.
 
-The rectangle is in the figure's own units rather than the mark's, which is the one place a mark
+Both clips are in the figure's own units rather than the mark's, which is the one place a mark
 departs from carrying its geometry through every transform above it. A transform that turns takes a
 rectangle to a shape with corners off the axes, so a clip that rode the transform down would be a
-rectangle only until a group turned.
+rectangle only until a group turned. The path is measured in the same units as the rectangle, so one
+node never carries two clips measured in two spaces.
 
 ```ts
 import { circle, group, interval, shape, vec2 } from '@altpsyche/maths';
@@ -646,7 +651,9 @@ const clipped = group('band', [
 ```
 
 A clip inside a clip is the box both hold, since a group cannot show what the group above it has
-already cut away, and two clips that miss each other leave nothing under them at all.
+already cut away, and two clips that miss each other leave nothing under them at all. A path clip
+inside a path clip is one path, their `intersectionOf`, which is the same function the boolean demo
+draws.
 
 A shape whose whole reach falls outside its clip is left out of the mark list rather than drawn
 invisibly, and the reach counts half a stroke width past the geometry, since a line lying along the
@@ -682,7 +689,10 @@ a shape and this package already has shapes. `hides` is what keeps the inset fro
 inset over the part of the picture its own border lies in would paint a picture of itself. Each
 inset's marks carry the id it is named by in front of the id of the mark they copy, so `fig/lens`
 gives `fig/lens/fig/dot`, and they carry the opacity of the marks they copy, so the picture inside a
-panel fades in as the picture does.
+panel fades in as the picture does. An inset with a `cornerRadius` above 0 cuts every mark it draws
+to its panel with each corner rounded by that radius, in figure units, through `clipPath`. Both demos'
+lenses take 0.12, and the border drawn round each takes the same radius plus half its width so the
+edge and the cut agree.
 
 ## Annotations
 
@@ -1223,10 +1233,9 @@ fps))` frames, the count `walkTimesOf` returns, so 1.999 seconds at 30 frames a 
 figure using an SVG filter would render correctly on a page and lose the effect silently in a
 recording.
 
-**A clip is a rectangle and no other shape, and that exclusion is not the rule above.** Both painters
-clip, with `clip-path` and with `clip()`. A path clip needs a winding number counted, which is a
-stencil on a card, where a box is the scissor test every device already has. So a rectangle is what
-all three painters draw and the type is what keeps a figure from asking for the other one.
+**A clip is a rectangle, a closed path, or both, and all three painters draw each.** The SVG painter
+writes `clip-path` and the canvas painter calls `clip()`. The GPU painter cuts a mark's triangles to
+the clip by Sutherland and Hodgman's algorithm, so a path clip needs no stencil on the card.
 
 **A fill's one colour is a colour and its gradient is a list of stops.** Both painters draw a
 gradient, SVG with an element carrying a document-unique identifier and a canvas with an object built
