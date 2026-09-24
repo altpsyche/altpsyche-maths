@@ -57,7 +57,8 @@ jobs:
       # The Chromium the playwright dependency pins, since installing a browser replaces the build it finds.
       - run: npx playwright install --with-deps chromium
 
-      - run: npm run gate:gpu
+      # A runner's software renderer spends a WebGPU device at its first drawable, so the WebGPU loss is read by hand on a card.
+      - run: npm run gate:gpu -- --without-webgpu
 
   record:
     runs-on: ubuntu-latest

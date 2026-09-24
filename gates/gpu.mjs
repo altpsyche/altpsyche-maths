@@ -380,19 +380,24 @@ if (!kept) failed += 1;
 if (!(await lostAndRedrawn(page, origin, again, redrawn))) failed += 1;
 await browser.close();
 
-// WebGPU is off in Chromium unless asked for, and ANGLE on Vulkan is what gives it
-// the real card rather than SwiftShader, the CPU fallback.
-const webgpu = await chromium.launch({ args: ['--enable-unsafe-webgpu', '--enable-features=Vulkan', '--use-angle=vulkan'] });
-const second = await webgpu.newPage();
-await second.goto(`${origin}/`);
-if ((await openSurface(second, origin, 'webgpu')) !== 'webgpu') {
-  failed += 1;
-  console.error('no WebGPU surface opened, so the WebGPU loss went unmeasured');
+// Without a card: a software renderer spends the WebGPU device at its first drawable and refuses every readback after it.
+if (process.argv.includes('--without-webgpu')) {
+  console.log('the WebGPU loss went unmeasured, since --without-webgpu names a run with no card to hold a WebGPU device');
 } else {
-  const drawn = (await compare(second, origin, again)).whole;
-  if (!(await lostAndRedrawn(second, origin, again, drawn))) failed += 1;
+  // WebGPU is off in Chromium unless asked for, and ANGLE on Vulkan is what gives it
+  // the real card rather than SwiftShader, the CPU fallback.
+  const webgpu = await chromium.launch({ args: ['--enable-unsafe-webgpu', '--enable-features=Vulkan', '--use-angle=vulkan'] });
+  const second = await webgpu.newPage();
+  await second.goto(`${origin}/`);
+  if ((await openSurface(second, origin, 'webgpu')) !== 'webgpu') {
+    failed += 1;
+    console.error('no WebGPU surface opened, so the WebGPU loss went unmeasured');
+  } else {
+    const drawn = (await compare(second, origin, again)).whole;
+    if (!(await lostAndRedrawn(second, origin, again, drawn))) failed += 1;
+  }
+  await webgpu.close();
 }
-await webgpu.close();
 server.close();
 console.log(
   `${figures.length - failed} of ${figures.length} figures agree within ${CHANNEL} of 255 over ` +

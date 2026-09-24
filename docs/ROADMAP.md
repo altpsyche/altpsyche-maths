@@ -1741,6 +1741,12 @@ entry's steps come first, then 3.4.0 and 4.0.0 in ladder order, then the handove
       painter reads 11,713ms for the same 561,291 drawing calls, and the test reads 14,955ms against
       20,505ms. The runner has not read it yet, and that reading is what this step needs
       next.
+      **The WebGPU half is left to a card.** `gates/gpu.mjs` takes `--without-webgpu`, which skips
+      the second browser and prints that the WebGPU loss went unmeasured, and the `gpu` job passes
+      it with a comment giving the reason. On this machine the flagged run reads 8 of 8 with the
+      WebGL 2 loss reported as `context` after 2.6ms, and the unflagged run still reads WebGPU
+      `destroyed` after 0.2ms, 91.89% equal and worst 228. What is left of this step is one runner
+      reading of both changes.
 - [ ] **3. A version is published from a tag.** The engine's `publish.yml`: on a release being
       published, the gates, then `npm publish --provenance --access public` with `id-token: write`
       and no npm token anywhere. What it costs is that the trust lives in a registry setting naming
