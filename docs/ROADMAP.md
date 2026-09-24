@@ -19,16 +19,16 @@ can be expressed at all.
 with `always_redraw` and `add_updater` is a `Track` with a `scene` rebuilt from the clock, and the
 rebuild is the better answer: `marksAt` gives one picture per time whichever direction the clock came
 from, where an updater driven by `dt` cannot be scrubbed backwards. `LaggedStart` is `stagger`,
-`AnimationGroup` is `together`, and `Succession` is one `play` after another. Two things here have no
+`AnimationGroup` is `together`, and `Succession` is one `play` after another. Two features here have no
 Manim counterpart at all: a figure as a file, which is 2.0.0, and boolean operations held to
 1.776e-15.
 
 **What Manim has that is refused rather than queued.** Sound, syntax-highlighted code, network
 graphs, and the glow and shadow that `manimgl` gets from its own shaders.
 
-**What decides the order.** A package is real when it has a consumer that ships, which is the
+**What sets the order.** A package is real when it has a consumer that ships, which is the
 argument [DESIGN.md](../DESIGN.md) makes about timing moving in here before a single figure existed. So
-an item earns its place by a picture something is waiting to draw, and the two demos below are what
+an entry earns its place by a picture something is waiting to draw, and the two demos below are what
 is waiting until the website has a chapter that is.
 
 **The website waits, and it has waited longer than this file meant it to.** The plan was that this
@@ -38,7 +38,7 @@ drawn in a shipping page. Its move is unblocked and is under Now.
 
 ## The two decisions are answered
 
-Both were Siva's and both are made. They are recorded here because they shape every item below, and
+Both were Siva's and both are made. They are recorded here because they shape every entry below, and
 DESIGN.md is corrected to match.
 
 **The typesetter goes behind the one door.** MathJax becomes a runtime dependency of this package
@@ -88,7 +88,7 @@ textured quad all draw a raster, while a figure is one file, so an image is a pa
 which breaks the property, or bytes inlined, which puts a photograph inside an eight-kilobyte record.
 Fit, sampling and colour space each want an answer too, and no demo and no chapter is waiting to draw
 an image to give one. **What refusal costs is one bump of `FIGURE_FORMAT_VERSION` from 0 to 1**
-whenever a picture wants an image, which is the number that exists so a kind can be added: an old file
+whenever a picture needs an image, which is the number that exists so a kind can be added: an old file
 reads under a new reader, and only a new file under an old reader fails. **What would change this
 answer** is a chapter whose picture is a photograph.
 
@@ -118,7 +118,7 @@ drawn on one is shapes or it is nothing, and 2.4.0 refused outlines for exactly 
 answers were on the table and two were refused.
 
 **The typesetter already answers it and that is the answer that lost.** MathJax is a runtime
-dependency already and `\text{slope 1.59}` comes back as ten path marks, one per character, with no
+dependency already and `\text{slope 1.59}` is returned as ten path marks, one per character, with no
 browser and no new dependency. What it costs is the typeface: a label on a card would be set in
 MathJax's font and the same label on the page in the family the mark names, so one figure would carry
 two typefaces for the same words. **Building a glyph atlas from a two-dimensional canvas lost for a
@@ -182,7 +182,7 @@ The band has already taken a name off the door: the flat transform type publishe
 is `Transform2D` now. Nothing imports it, since what a caller reaches for is the `mat3` family and
 that name did not move, but a name that left the door is a break whatever imports it. The versions
 inside the band are bookkeeping while nothing is published, and the ladder's own 3.0.0 is a major of
-the format rather than of the door, so the two are different axes and the release decides which
+the format rather than of the door, so the two are different axes and the release sets which
 number the break takes.
 
 **Landed on 2026-09-10: this package imports the arithmetic and holds no copy of it.**
@@ -206,7 +206,7 @@ behind its one door.
 
 **The second entry point exists and is published: `@altpsyche/engine/maths` at 0.4.0**, which the
 registry answers with both entries in its `exports`. That package worked, cut and released it as its
-own item 3 on 2026-09-10, argued on its own merits, and it settled the standing refusal there in the
+own entry 3 on 2026-09-10, argued on its own merits, and it settled the standing refusal there in the
 same batch: no export moves out from behind a door that package declares, with every name behind a
 second door still exported by the first.
 
@@ -232,9 +232,9 @@ engine rather than a line in this tree.
 
 **The name collision is closed here rather than there, and the flat transform is now
 `Transform2D`.** The engine's `Mat3` is a general three by three with a family of two functions,
-`fromMat4` and `pack`, which is the standard name for the standard thing. The special-purpose type
+`fromMat4` and `pack`, which is the standard name for the standard type. The special-purpose type
 was the one here, a transform of the plane written as nine numbers, so it took the name that says
-what it is. An item filed in that tree would have amounted to this package needing it, which that
+what it is. An entry filed in that tree would have amounted to this package needing it, which that
 package's first rule throws out.
 
 **What is imported is `Vec3` and `Mat4`, and the flat transform stays this package's own.**
@@ -277,7 +277,7 @@ a clip edge where a scissor's whole pixels cannot.
 **The engine answered all six, in its 0.5.0 of 2026-09-12, and taking them out is 2.9.0.**
 `openRenderer` carries a backend selection through to a renderer and translates on the way, so the
 first two go together. `RenderPassSpec.scissor` is a rectangle a pass may write into, measured across
-both backends at 0 of 1,440,000 channels differing. `Surface.read()` hands back the pixels of a live
+both backends at 0 of 1,440,000 channels differing. `Surface.read()` returns the pixels of a live
 surface, measured at 480,000 of 480,000. The WebGL 2 backend applies the blend a pipeline names,
 which it had never done. `dispose()` leaves a canvas alone. **One answer nobody here asked for
 matters as much as those**: `@builtin(position)` counted rows from opposite corners on the two
@@ -295,14 +295,14 @@ work is the eight gaps below**, each with the reading that found it.
 **Four of the eight went to the engine's roadmap as one batch**, argued on that package's own merits,
 which is the only argument it takes: gaps 1, 2, 3 and 7. **Gap 5 is documented behaviour there rather
 than a defect**, and is recorded under the batch there so the next session does not file it. **Gap 6
-was 2.4.0's half of the text problem and gap 8 is 2.0.0.** The counted stencil is that package's item 2
+was 2.4.0's half of the text problem and gap 8 is 2.0.0.** The counted stencil is that package's entry 2
 already and was re-measured rather than re-found.
 
 **What the spike settles about 2.7.0.** 117 of the flat demo's 181 marks at its still time drew, as
 2,915 triangles in one pass and one draw, and the picture is recognisably the demo: the grid, both
 axes with their arrow tips, the vector field, the area, the curve, the tangent, the point and the
 typeset equation. 53 were refused and 11 more have no area at all. **So the painter's shape is settled
-and what stands in front of it is the gaps**, of which the counted winding is the one that decides how
+and what stands in front of it is the gaps**, of which the counted winding is the one that sets how
 much can be built before the engine moves.
 
 **Gap 1: nothing at the door joins a selection to a renderer.** `selectBackend` opens by saying which
@@ -371,7 +371,7 @@ refused.
 
 **Gap 8, and this one is this package's rather than the engine's.** A mark's colour is a CSS colour
 string. All 43 colours the painter read at the flat demo's still time are `var(--name, #rrggbb)`, and
-a shader wants four numbers, so the painter took the hex out of the fallback and a custom property
+a shader needs four numbers, so the painter took the hex out of the fallback and a custom property
 without one would have to be resolved against the document. **This belongs to 2.0.0 rather than to a
 batch for the engine**, since the format is where a colour's written form is decided and a figure
 read by a renderer in another language cannot carry a CSS custom property. **It is answered and it is
@@ -385,16 +385,16 @@ its own comment says what each is: `mark` leaves the reference behind everywhere
 decrement is in the type, so **a frame asking for a counted winding cannot be written down**. That is
 why no refusal arrived for the annulus that measured it: a refusal names a capability a frame asked
 for, and that frame had no way to ask. An outer circle of radius 1 with an inner one of radius 0.5
-wound the other way drew as a solid disc of 349,144 pixels against the 261,799 the rule wants, 33.4
-per cent too much area, and `resolve` answered `{ backend: 'webgpu' }` for it. The engine files this as its item 2 and this reading changes nothing about
+wound the other way drew as a solid disc of 349,144 pixels against the 261,799 the rule requires, 33.4
+per cent too much area, and `resolve` answered `{ backend: 'webgpu' }` for it. The engine files this as its entry 2 and this reading changes nothing about
 it.
 
 ## The version ladder
 
-**Every item gets its own minor version.** Siva's plan, and the release convention this repository
+**Every entry gets its own minor version.** Siva's plan, and the release convention this repository
 already follows makes each one a minor bump. 1.0.0 was the polish of the 0.x band and is published, and
 the 1.x band's own polish is closed and recorded under Now. Neither took a version of its own. A version is cut when its
-demos draw, not when its code compiles. A version that is cut leaves this table and its item goes
+demos draw, not when its code compiles. A version that is cut leaves this table and its entry goes
 with it, because `git log` is what keeps a closed plan.
 
 **The ladder holds the look, then the format, then what Manim has and this does not.** Siva's call
@@ -412,7 +412,7 @@ is left, since 2.1.0 through 2.10.0 are cut.
 | 4.0.0 | the five `item` names renamed to `entry`, then a figure a reader can act on | the shape of `Figure`, which gains input | to plan | nothing yet | nothing outside this package | to plan |
 
 **The three calls `altpsyche.dev` was blocked on are 3.1.0, 3.2.0 and 3.3.0, and all three are cut.**
-They stood in front of the clip because this file orders items by whether anything is waiting to draw
+They stood in front of the clip because this file orders entries by whether anything is waiting to draw
 the feature, and the clip has nothing waiting.
 
 **3.4.0 and 4.0.0 are consequences rather than plans**, written down so they are not rediscovered,
@@ -441,7 +441,7 @@ one, and the consumer drops it in the same release. **What would change the answ
 that has to run with no browser, since a canvas source needs one.
 
 **Outlines for plain text were 2.4.0's other dependency and that version refused them.** The
-typesetter hands back outlines for an equation in its own font, and a plain label is written in a
+typesetter returns outlines for an equation in its own font, and a plain label is written in a
 family the painter hands to the platform, so the two are different shapes. True outlines need font
 bytes inside the figure, which is a value type this band of the ladder is in front of. A write
 sweeps a rectangular clip across the label instead and takes how far it runs as a number. **What
@@ -451,16 +451,16 @@ rather than given.
 **The engine's roadmap carries the other half of this table**, as a record of which version above
 needs what from it, so neither side rediscovers the dependency by reading the other's plan. It is a
 record there rather than a queue, because that package throws out any argument amounting to a
-consumer needing something and its stencil item stands on the WebGPU specification instead.
+consumer needing something and its stencil entry stands on the WebGPU specification instead.
 
 **Continuous integration is on none of these rows and is needed by three of them.** There is no
 `.github/workflows` in this tree, and 2.7.0 through 3.1.0 each carry a claim about what a device
 draws, which needs a browser gate and a card gate. The recorder's own browser gate is written and
 runs by hand, as `npm run gate:record`. `@altpsyche/engine` needed two workflows and seventeen gate
-scripts to have its two, and building the same here is the item under The items, which is four
+scripts to have its two, and building the same here is the entry under The entries, which is four
 commits and waits on Siva's call on whether this package gets continuous integration at all.
 
-**Two things on this plan are not versions and both have a deadline.** Composition and camera is
+**Two commitments on this plan are not versions and both have a deadline.** Composition and camera is
 done-criteria on steps 3.9 and 7 of the format, because a version in front of those would write
 camera moves as closures and then rewrite them. And whether a `Mark` may be a raster image is a
 decision above, answered or refused before 2.0.0 freezes, since a new kind of `Mark` is a change to
@@ -469,7 +469,7 @@ the format's value types.
 **What is cut is not here.** A version that is cut leaves this table, its entry is deleted, and the
 Now section and `git log` are what keep it.
 
-**One thing waits off the ladder and it waits on something named.** Depth left it when the fourth
+**One feature waits off the ladder and it waits on something named.** Depth left it when the fourth
 decision above was answered, and text on a card left it when the sixth was. The GPU painter was the
 fourth and it is cut, and it did not wait for the engine's stencil in the end: the fills are
 triangulated here by ear clipping, which needs no device. **Dashes left this table for 2.8.0 and the
@@ -478,7 +478,7 @@ device either, where a curve drawn as a curve needs a winding the engine cannot 
 
 | off the ladder | what it waits on |
 | --- | --- |
-| a curve drawn as a curve rather than flattened | a picture waiting, and nothing else. The engine's counted stencil landed in its 0.5.0 as `StencilMode`'s `count` and `nonzero`, which is what Loop and Blinn's fill decides an interior with, so the dependency this row was written for is gone and what is left is that no figure here is asking to be drawn this way |
+| a curve drawn as a curve rather than flattened | a picture waiting, and nothing else. The engine's counted stencil landed in its 0.5.0 as `StencilMode`'s `count` and `nonzero`, which is what Loop and Blinn's fill determines an interior with, so the dependency this row was written for is gone and what is left is that no figure here is asking to be drawn this way |
 
 **The reading behind it is below and in `git log`**, so none of them is rediscovered
 from nothing when it returns.
@@ -685,7 +685,7 @@ needs one painter over another.
 depth attachment beside a colour attachment at four samples, in two wordings on two paths, and
 dropping the four samples to buy the depth test was measured at 3 of 8 figures above both floors
 against 7 of 8, most of the loss falling on flat figures the test does nothing for. The engine closed
-it as its item 21 in 0.6.0 and both carets here moved with it.
+it as its entry 21 in 0.6.0 and both carets here moved with it.
 
 **Both gates and the suite.** `npm run gate:gpu` draws 8 of 8 figures above both floors, from 7 of 8.
 `npm run gate:record` writes 32 of 32 recordings, each file holding exactly the frames the walk
@@ -745,7 +745,7 @@ the triangulation already spends: all 202 glyphs with an outline reach the four 
 `glyf` entry declares, worst difference 0 units.
 
 **Two painters drawing one typeface is what turns kerning off.** The reader takes an advance from
-`hmtx` and knows nothing of `GPOS`, so the subset drops `GPOS` and `svgMarkup` writes
+`hmtx` and reads nothing of `GPOS`, so the subset drops `GPOS` and `svgMarkup` writes
 `font-kerning: none` and places each baseline from the font's own metrics. The letters land in the
 same places either way, within 0.62 of a pixel across and 1.62 down for all three baselines. The
 labels cost between 0.73 and 2.63 points of agreement, since a glyph stem at these sizes is two or
@@ -820,10 +820,10 @@ had quoted 261.88 parts per million against a browser, which mixed the table's e
 140.29 the cubic circle is longer than a true one, and a browser dashes the cubics.
 
 **The quadratics came off this version and back to the off-ladder table.** A curve drawn as a curve
-is Loop and Blinn's technique and it decides an interior by counting a winding, which
+is Loop and Blinn's technique and it determines an interior by counting a winding, which
 `@altpsyche/engine` 0.4.0 cannot express: `StencilMode` is `'mark' | 'inside'` with no increment and
 no decrement, and the route round it needs a blend a pipeline drawing the frame the reader sees may
-not name. Both are that package's item 2.
+not name. Both are that package's entry 2.
 
 **The 2.x band publishes once, at its end**, which is Siva's call of 2026-09-11 and is now a rule in
 `CLAUDE.md`. 2.0.0 is what `npm view @altpsyche/maths version` answers, six versions are cut behind
@@ -839,12 +839,12 @@ types.
 
 **The fills are triangulated here rather than counted on the card, and that is what took the version
 off the engine's roadmap.** A winding number counted by front and back faces cancelling is Loop and
-Blinn's technique and it is what that package's item 2 exists for, unstarted there. Ear clipping over
+Blinn's technique and it is what that package's entry 2 exists for, unstarted there. Ear clipping over
 a path flattened to a tolerance needs no device at all, so a whole frame of fills takes 1.31
 milliseconds for the flat demo against the 33 a frame has at 30 frames a second, and the cost the
 plan named as what would change the answer came in under it.
 
-**The gate found three things in the engine and the third shaped the version.** Its WebGL 2 backend
+**The gate found three facts about the engine and the third shaped the version.** Its WebGL 2 backend
 refuses a WGSL frame that `resolve` says it can draw, so the painter translates through the engine's
 own `glslFrameOf`. Disposing a renderer loses a canvas for good, so the gate makes a fresh one per
 figure. And that backend applies no blend at all, which nothing here can work around, so the painter
@@ -889,7 +889,7 @@ on and lights both branches of the crossing over the first quarter of the turn.
 **Outlines for plain text are refused rather than queued, and that was the call this version turned
 on.** The package holds no font, so a write sweeps a rectangular clip across a label and takes how
 far it runs as a number the figure gives. A letter arrives whole from its left edge and the SVG
-painter keeps writing the label as text. What still wants outlines is a plain label drawn on a card,
+painter keeps writing the label as text. What still needs outlines is a plain label drawn on a card,
 which is 2.10.0.
 
 **2.3.0 is cut and unpublished, and its eight done-criteria are verified line by line in the cut's own
@@ -942,7 +942,7 @@ and their two figures written as files against it. Of the colour readers the cro
 
 **1.6.0 is published, the GPU spike is done, and 2.0.0 was what ran next.** Siva's call of 2026-09-09
 put the spike in front of the format work, on the argument that a gap found in the engine costs an
-item, a commit and a release there before a painter here can use it, and that the slack for that lead
+entry, a commit and a release there before a painter here can use it, and that the slack for that lead
 time was 2.0.0's twenty-nine commits. The spike spent one session and found eight gaps, so the
 argument held.
 
@@ -958,9 +958,9 @@ is the question the spike existed to settle.
 found each. Four went to the engine's roadmap as one batch. One is documented behaviour there. **Two
 are this package's own and are on the ladder already**: a plain `TextMark` cannot be drawn at all,
 which waits on a source of glyph outlines, and a mark's colour is a CSS colour string rather than four numbers, which is 2.0.0.
-**And one gap decides how much of 2.7.0 can be built at all**, which is the counted winding number: an
+**And one gap sets how much of 2.7.0 can be built at all**, which is the counted winding number: an
 annulus, a letter with a counter and every glyph of an equation all want it, and it is the engine's
-item 2.
+entry 2.
 
 **Two numbers this file carried are corrected by the spike.** The flat demo holds 181 marks at its
 still time and not 146, and the still time is 7.86.
@@ -984,7 +984,7 @@ its brace both draw from records. Step 3.6 added `numberLine`, `axes`, `numberPl
 Step 3.7 added `equationNode`, and an `Equation` stays resolved geometry rather than TeX a renderer
 typesets, so the flat demo's two rules draw glyph for glyph from records at 32,936 and 42,224 bytes
 written out. Step 3.8 added `vectorField`, whose field is an expression of a place and whose arrow
-length is an expression of a magnitude, with `ColourChoice` for the one thing the expression
+length is an expression of a magnitude, with `ColourChoice` for the one value the expression
 vocabulary has no form for. Step 3.9 added `Camera3Record`, `ProjectionChoice` and the two resolvers,
 so the solid demo's orbit is a cosine and a sine of one track and its camera places every point where
 the built one does. The door is 309 names and the suite is 884 tests over 57 files.
@@ -1062,7 +1062,7 @@ serialise.
 
 **Step 11 is the cut and it is landed.** The version is 2.0.0 with `npm install --package-lock-only`
 beside it, the README's migration section moves a caller from 1.6.0, the ladder's 2.0.0 row and its
-item are deleted, [`FIGURE-FORMAT.md`](FIGURE-FORMAT.md) keeps its name and loses its plan, and
+entry are deleted, [`FIGURE-FORMAT.md`](FIGURE-FORMAT.md) keeps its name and loses its plan, and
 publishing is Siva's.
 
 **Two calls inside the cut are answered.** Siva's, on 2026-09-09. A `Mark` may not be a raster image,
@@ -1071,21 +1071,21 @@ a textured quad all draw a raster, and what is unanswered is how a figure carrie
 is one file, so an image is a path out of that file, which breaks the property, or bytes inlined,
 which puts a photograph inside an eight-kilobyte record, and fit, sampling and colour space each want
 an answer no picture is waiting to give. Refusal costs one bump of `FIGURE_FORMAT_VERSION` from 0 to 1
-whenever a picture wants one, which is the number that exists so a kind can be added. And
+whenever a picture needs one, which is the number that exists so a kind can be added. And
 [`FIGURE-FORMAT.md`](FIGURE-FORMAT.md) keeps its name and loses its plan at the cut, since a document
-of that name sits in each of the three repositories the change crosses.
+of that name is in each of the three repositories the change crosses.
 
 **Step 10.6 was landed in five commits.** [`SPECIFICATION.md`](SPECIFICATION.md) said of
 itself that three sections were written and the vocabulary was not, with its "What has to be
 specified" pointing at the plan for the inventory, so dropping the plan first would have taken the
 only written vocabulary with it. The document goes from 112 lines to 605: the eleven value types, the
 expression form and the thirty-seven callable names, the thirteen forms of path with both point
-producers, the twenty-three node kinds with both item producers, the fifteen animation kinds with the
+producers, the twenty-three node kinds with both entry producers, the fifteen animation kinds with the
 timeline and the extent, and conformance against the four committed figure files as its fixtures. It
 reaches the plan twice in one paragraph, as the reasoning rather than as the inventory.
 
 **`tests/specification.test.ts` holds the document to the source, and writing it before the prose was
-checked found three things.** An `Inset` carries `name` and `hides`, which neither the document nor
+checked found three gaps.** An `Inset` carries `name` and `hides`, which neither the document nor
 the plan's list of value types mentioned. The extent section had to say that a choice carries a `kind`
 and a bare extent carries none. And the section keying had to read a whole heading rather than its
 first word, since five headings begin with the same one. The suite goes from 1,046 tests over 66 files
@@ -1093,7 +1093,7 @@ to 1,065 over 67.
 
 **The polish pass ran before the cut**, which is Siva's call of 2026-09-09 on the argument that 2.x
 is a major release. The 1.x band was cut the same way: an audit read the whole band against the tree
-and seven commits closed what it found. The reading of 2026-09-09 found seven things, ordered by the
+and seven commits closed what it found. The reading of 2026-09-09 found seven defects, ordered by the
 damage each does if it ships, and all seven are closed.
 
 | found | state |
@@ -1139,14 +1139,14 @@ README to that host and to a sheet the tree carries.
 becomes of [`FIGURE-FORMAT.md`](FIGURE-FORMAT.md), a document `CLAUDE.md` calls the change in flight
 and which a cut version leaves as a specification rather than a plan.
 
-**Three things fell due before the format freezes and all three are answered.** A `Mark` may not be a
+**Three questions fell due before the format freezes and all three are answered.** A `Mark` may not be a
 raster image, which is the decision above. The consumer's move from 0.6.0 is read in step 10.5a and
 lands in that tree as one commit after the release. And a colour's written form, which the spike
 found, is four channels and a name as of step 12, since a figure read by a renderer in another
 language cannot carry a CSS custom property.
 
 **The 1.x band is closed and 1.6.0 is published.** An audit on 2026-09-08 read the
-whole band against the tree and found nine things, and seven commits closed them. Nothing since
+whole band against the tree and found nine defects, and seven commits closed them. Nothing since
 1.0.0 is published: `npm view @altpsyche/maths version` answers 1.0.0 while this tree reads 1.6.0,
 with thirty-seven commits unpushed and no tags, and the consumer holds 0.6.0. **Siva publishes**, and
 the polish took no version of its own because eight of the nine were documentation and the ninth
@@ -1194,7 +1194,7 @@ reduction. docs/surface.svg went from 97200 bytes and 245 marks to 126906 and 24
 to 77, and docs/surface-strip.svg from 391635 to 522338.
 
 **The suite went from 782 tests over 47 files to 785, and the door is unchanged at 266 names.** Every
-done-criterion was verified line by line in the commit that closed the item.
+done-criterion was verified line by line in the commit that closed the entry.
 
 **1.6.0 publishes as a minor and four published types broke since 1.0.0, which is Siva's call taken
 on 2026-09-09 rather than a reading of the convention.** The door itself is additive: 230 names at
@@ -1243,7 +1243,7 @@ The reach counts half a stroke width past the geometry: a line at 4.4 across, 0.
 ending at 4, stays at a width of 1 and is dropped at a width of 0.5. A text mark reaches only as far
 as its own anchor here, since how wide some text is depends on which fonts the machine has, so
 dropping one on an anchor outside the clip would cut a line whose letters run back inside on the
-machine that has the font. That is the one done-criterion the item met differently from the way it
+machine that has the font. That is the one done-criterion the entry met differently from the way it
 was written, and the cost is an invisible copy of each text mark inside an inset.
 
 **An inset is a second view of the same figure, magnified into a rectangle of its own frame**, which
@@ -1260,7 +1260,7 @@ copy carries an id ending in the mark's own, so `touches` matched both and a `fo
 the box round the mark and its magnified copy together. `ownMarks` is the list before the insets.
 
 **The flat demo's panel is 2.8 by 1.26 at (1.9, 1.62) and shows 1.4 by 0.63, so it magnifies by
-exactly 2.** It sits in the band above the graph and right of the reading and the rule, which is the
+exactly 2.** It is in the band above the graph and right of the reading and the rule, which is the
 one part of that figure nothing else draws in, and its right edge stands at 4.7 because the view
 follows the dot and the frame's own right edge comes in to 4.78 at the start of the walk. The panel
 arrives with the grid, since an inset's marks carry the opacity of the marks they copy and a panel
@@ -1285,7 +1285,7 @@ everything else is written in and could not be told to start after an entrance o
 `ViewAnimation` is the extent the entries before it left and how far along, to the extent at that
 point, and a `ViewChange` is one as a timeline entry.
 
-**One span list carries both kinds, which is the whole of the item.** `after` and `stagger` read that
+**One span list carries both kinds, which is the whole of the entry.** `after` and `stagger` read that
 list, so a second timeline for the view could not sequence a camera move against an entrance at all.
 An animation is a function and a view change is an object holding one, which is what tells two
 functions of two arguments apart. `Span.animation` is `Span.entry`, `at` skips the view entries and
@@ -1328,8 +1328,8 @@ was `(_aspect, seconds) => frameAt(pointAt(seconds))` and is now the plain exten
 span is nothing wide, so it is applied in full from the first frame: the duration is 10.25 seconds as
 it was and the matrices read 602 across at the entrance and the beat and 478 at the walk and the end.
 
-**The solid demo's camera pushes in on the crossing to 6.8 across, a magnification of 1.21, and comes
-back.** The crossing reaches 3.1105 across and 1.4744 up from the middle at its widest over the
+**The solid demo's camera pushes in on the crossing to 6.8 across, a magnification of 1.21, and returns
+to its start.** The crossing reaches 3.1105 across and 1.4744 up from the middle at its widest over the
 orbit, so 6.8 holds both branches with 0.2896 to spare at every place in the turn. Its matrix reads
 93.75 at the entrance, the still, a quarter turn and the end and 113.051471 at the half turn, and the
 figure ends where it began to 1e-12.
@@ -1374,7 +1374,7 @@ share of the axis rather than a place.
 in front of its marks holding a `<linearGradient>` of `<stop>`s for each, written in the units
 painted into, which is what `userSpaceOnUse` means, and the mark's `fill` is `url(#id)`. A canvas
 takes an object built from the context, so `CanvasLike` gained an optional `createLinearGradient` and
-`CanvasGradientLike` is what it hands back. Given one three-stop wash both produce (0, `#012`),
+`CanvasGradientLike` is what it returns. Given one three-stop wash both produce (0, `#012`),
 (0.5, `#345`) and (1, `#678`) in that order. A context with no `createLinearGradient` paints the
 single colour and builds nothing, which is what keeps a stand-in written before gradients a stand-in.
 
@@ -1469,7 +1469,7 @@ because a curve says how a value leaves a key rather than how it arrives.
 
 **The demos name a curve at seven of their twenty-three entries, from one.** Three reasons cover the
 six that gained one. A row a `stagger` built is paced by its gap, so each fade is `easeOut` and the
-flat demo's first x label reads 0.441 a tenth of a second in where a smoothstep reads 0.156. A thing
+flat demo's first x label reads 0.441 a tenth of a second in where a smoothstep reads 0.156. A node
 arriving at its own size passes it and settles back, so the flat demo's dot reaches 0.176001 units
 across against the 0.16 it settles at. A gesture carrying its own out-and-back gets a clock that does
 not ease, so the swell at the beat is at 1.500000 of the settled width a quarter of the way through
@@ -1577,9 +1577,9 @@ between frames wider than the gap inside one.
 **0.12.0 is cut, and a figure walks out of this package as frames.** `frameTimes` and `framesOf` are
 the two calls it added. A frame is its index, its time, its marks and the view they are painted
 through, read together at one moment, which is what stops a consumer painting a figure whose view
-moves through the matrix of some other moment. Frames come back one at a time, since ten seconds at
+moves through the matrix of some other moment. Frames are returned one at a time, since ten seconds at
 sixty frames a second is six hundred frames of every mark a figure draws. The step is a rate or a
-count, and a walk stops strictly before the duration, so a loop never hands back its own first frame
+count, and a walk stops strictly before the duration, so a loop never returns its own first frame
 twice. The rotation strip is a walk now and draws the same bytes it drew when its four times were
 written out by hand. Every frame of both demos is painted through both painters in the suite, which
 went from 575 tests to 590.
@@ -1596,7 +1596,7 @@ went from 540 tests to 574.
 
 **0.10.0 is cut, and this package draws in space.** `mat4` is below the line, and `camera3`,
 `polyline3`, `dot3`, `text3`, `space`, `surface3`, `surfaceCells`, `axes3`, `sectionOf` and `viewAt`
-are above it. A camera is a value the caller holds, a builder that works in space hands back the flat
+are above it. A camera is a value the caller holds, a builder that works in space returns the flat
 nodes the rest of the package already draws, and nothing in the marks, the tree, the flattening or
 either painter was touched to make that work. `demos/surface.ts` is the solid demo Siva asked for: a
 saddle, a plane cutting through it, the curve of the crossing, three axes, a typeset equation and an
@@ -1620,14 +1620,14 @@ and `difference = A less the overlap` to 1.776e-15. Two circles crossed at every
 tolerance being an absolute distance. Two 400-piece paths unite in 48ms, so the crossing search needs
 no box test in front of it and the quadratic over piece pairs is not worth removing.
 
-## The items
+## The entries
 
 ### The vocabulary rule carried into `docs/`
 
 **GUIDE.md, REFERENCE.md, SPECIFICATION.md and FIGURE-FORMAT.md use the words the vocabulary rule in
 CLAUDE.md bans**, in 60, 165, 104 and 89 matching lines, counted on 2026-09-23 before 3.0.3 swept the
 published comments. `check:vocab` reads the 83 sources, README.md, DESIGN.md and CLAUDE.md, and
-nothing under `docs/`. The item widens the check to `docs/` and sweeps each file to zero, one file a
+nothing under `docs/`. The entry widens the check to `docs/` and sweeps each file to zero, one file a
 commit. SPECIFICATION.md is a second file per step on its own, because its table names the `items`
 key that 4.0.0 renames, and a sweep that edits that table has to leave the key as it stands.
 
@@ -1639,7 +1639,7 @@ SPECIFICATION.md at 2 and 21, FIGURE-FORMAT.md at 18 and 16, and REFERENCE.md at
 and a sweep has no reason to touch it. The commonest words are `item` 34 times, `decides` 31,
 `hands back` 30 and `wants` 29, counted over the five files in `docs/`.
 
-**Siva's answer of 2026-09-24 is that the vocabulary is right everywhere**, so the item widens past
+**Siva's answer of 2026-09-24 is that the vocabulary is right everywhere**, so the entry widens past
 `docs/`. Read on that date with the check's own rule, ROADMAP.md is at 55 banned nouns and 32 banned
 voice patterns, `.claude/skills/next/SKILL.md` at 10 and 2, and the comments of `demos/`, `tests/`
 and `gates/` at 26 and 21 over 22 files. 4 of those nouns are in `gates/vocab.mjs` itself, in the
@@ -1647,7 +1647,7 @@ lists that name the banned words, so that file is exempt the way CLAUDE.md's Voc
 The roadmap names a banned word in order to discuss it only in backticks from step 5 on, and the
 word the roadmap and the skill use for one queued piece of work is `entry`.
 
-**No demo gains from this item.** It changes prose only, so what it is checked against is the
+**No demo gains from this entry.** It changes prose only, so what it is checked against is the
 check's count and a suite that is unchanged.
 
 **The steps.** Each file is swept to zero and added to `PROSE` in the same commit, so the check
@@ -1661,7 +1661,7 @@ file's two counts before and after, the check's file total, and `npm test` over 
       row still names `items`, since the specification changes before the code that reads it and
       this commit changes no rule. **Landed:** 23 matches reworded, 909 backticked spans the same
       list before and after, `check:vocab` reads 5 prose files, and 1,511 of 1,511 over 98 files. The
-      heading "The seven item producers" is now "The seven entry producers", and the test that reads
+      heading over the seven producers now reads "The seven entry producers", and the test that reads
       that section by its heading reads the new one.
 - [x] **3. FIGURE-FORMAT.md.** 18 and 16 to 0 and 0. The documents of that name in the engine and
       the site are theirs, and this commit touches only this one. **Landed:** 34 matches reworded,
@@ -1671,10 +1671,13 @@ file's two counts before and after, the check's file total, and `npm test` over 
       door against this file, so it passes unchanged. **Landed:** 71 matches reworded, 1,911
       backticked spans the same list before and after, `check:vocab` reads 7 prose files, and 1,511
       of 1,511 over 98 files.
-- [ ] **5. ROADMAP.md.** 55 and 32 to 0 and 0. The heading "The items" becomes "The entries". Every
-      later handover is held to the check from this commit on.
-- [ ] **6. `.claude/skills/next/SKILL.md`.** 10 and 2 to 0 and 0, with "Pick one item" and the other
-      uses naming a roadmap entry. CLAUDE.md's `/next` sentence is read again in the same commit.
+- [x] **5. ROADMAP.md.** 55 and 32 to 0 and 0. The heading over the queued work reads "The entries". Every
+      later handover is held to the check from this commit on. **Landed:** 57 and 32 to 0 and 0,
+      since the entry's own text added 2 nouns after the count, 89 matches reworded, 1,003
+      backticked spans the same list before and after, `check:vocab` reads 8 prose files, and 1,511
+      of 1,511 over 98 files.
+- [ ] **6. `.claude/skills/next/SKILL.md`.** 10 and 2 to 0 and 0, with its step headings and every
+      other use naming a roadmap entry. CLAUDE.md's `/next` sentence is read again in the same commit.
 - [ ] **7. The comments of `demos/`, `tests/` and `gates/`.** 26 and 21 to 0 and 0. `SOURCES` gains
       the three directories, `gates/vocab.mjs` blanks its own ban lists, and a test name in a string is
       code rather than a comment, so the check leaves it as it stands.
@@ -1695,7 +1698,7 @@ file's two counts before and after, the check's file total, and `npm test` over 
 **The chain is `@altpsyche/engine` below this package and `altpsyche.dev` above it, and holding it
 in step is nobody's job today.** The engine is 0.6.1 on npm, this package is 3.0.0, and the site
 installs the engine at `^0.3.0` and this package at `^2.0.0`, which is where it has stood since
-2026-09-09. Both libraries are finished, gated and two majors ahead of the only thing that draws
+2026-09-09. Both libraries are finished, gated and two majors ahead of the only consumer that draws
 with them, and nothing said so.
 
 **The reading of 2026-09-19, so a later session takes none of it again.**
@@ -1734,12 +1737,12 @@ with them, and nothing said so.
   against `docs/REFERENCE.md`, which is a promise about names. What a consumer's install is held to
   is a separate promise and no test in this tree reads it.
 
-**What this repository owes is two things.** The range it declares is its own claim, so running
+**What this repository owes is two jobs.** The range it declares is its own claim, so running
 against the bottom of that range belongs here. And the three gates are run by hand, so nothing holds
 a commit to them, which is the second. The steps below are those two and what follows from them.
 
 **What waits on this work, which is what orders the queue.** No picture waits. What waits is the
-site's crossing to 3.0.0, and that crossing is the first thing that exercises the declared range
+site's crossing to 3.0.0, and that crossing is the first install that exercises the declared range
 outside this tree.
 
 **Two decisions are Siva's and a session must not answer either.**
@@ -1814,8 +1817,8 @@ the site's own tree answers and no workflow here can.
 ## Found while working, not yet queued
 
 - **The specification test reads the nodes' prose from a heading that does not exist.**
-  `nodeProse` in `tests/specification.test.ts` joins five sections by heading, and the fifth, "The
-  two item producers", names no heading in SPECIFICATION.md, so it adds nothing and the node tests
+  `nodeProse` in `tests/specification.test.ts` joins five sections by heading, and the fifth
+  names a heading on two producers that SPECIFICATION.md does not have, so it adds nothing and the node tests
   never read the seven entry producers' section. They pass because every field they look for is named
   in the other four. The fix is to name "The seven entry producers" there and see whether the counts
   it checks still hold.
@@ -1837,7 +1840,7 @@ the site's own tree answers and no workflow here can.
   `http://127.0.0.1` it is there. **What actually opens an adapter** is
   `--enable-unsafe-webgpu --enable-features=Vulkan --disable-gpu-sandbox --ignore-gpu-blocklist`.
   Headless gives a SwiftShader adapter and headed on a display gives the NVIDIA card, so a gate
-  wanting a real card wants a headed browser. The second reading, that a card gate here could only
+  wanting a real card needs a headed browser. The second reading, that a card gate here could only
   ever be WebGL 2, is wrong with it.
 
 - **The gate draws on WebGPU and every figure passes, which is the first WebGPU reading this package
@@ -1856,17 +1859,17 @@ the site's own tree answers and no workflow here can.
   wherever there is a display; all 648,000 pixels came back black and the comparison read that as the
   card's fault. **What made both hard to see is that they are opposite ways round**: headless the
   sheet is right and the card cannot be read, headed the card is right and the sheet could not be, so
-  neither mode alone showed a working pair until the sheet was fixed. **Item 21 is cleared twice
+  neither mode alone showed a working pair until the sheet was fixed. **Entry 21 is cleared twice
   over**: the abort reproduces identically on 0.5.0 and 0.6.0, it has nothing to do with depth since
-  a figure carrying none fails alike, and WebGPU drew a four-sample depth attachment before that item
+  a figure carrying none fails alike, and WebGPU drew a four-sample depth attachment before that entry
   landed at all, which is what the engine's own validator said it would.
 
 - **The card gate runs one backend and could run two.** It launches headless and takes whatever
   `resolve` picks, which is WebGL 2 on this machine; the WebGPU reading above was taken by hand with
   a headed launch and three flags. A gate naming its backend would make that reading repeatable
-  rather than a thing a session did once, and would say which of the two a number came from. **What
+  rather than a step a session did once, and would say which of the two a number came from. **What
   stands in the way** is that a headed run needs a display, which continuous integration has not, so
-  the two are not one gate run twice and the item has to say what each is for.
+  the two are not one gate run twice and the entry has to say what each is for.
 
 - **What the reader sees wrong in the solid demo is now the mesh rather than the order.** After step
   5 of 3.0.0, 1,118 of 10,583 sampled places at the still show the further of the saddle and the
@@ -1929,9 +1932,9 @@ the site's own tree answers and no workflow here can.
 - **A tapered stroke's dash is dropped and nothing says so.** `outlinedMarks` turns a stroke whose
   width is a `Taper` into a fill, carrying the colour, the opacity and the clip across and leaving
   `dash` and `dashOffset` behind with the stroke it replaced. So a figure naming both draws solid in
-  every painter, and `strokeTrianglesOf` now says the same thing in a comment rather than by
+  every painter, and `strokeTrianglesOf` now states the same rule in a comment rather than by
   accident. Whether a taper and a dash together should draw the runs at their own widths is the call
-  a fix has to make, and the answer decides whether a taper is measured along the whole path or along
+  a fix has to make, and the answer sets whether a taper is measured along the whole path or along
   each run.
 - **Cutting a dash re-measures the subpath once per run.** `dashPath` calls `pathWindow` for each
   run, and `pathWindow` calls `measurePath` on the subpath it is handed, so a subpath of P pieces cut
@@ -1989,7 +1992,7 @@ the site's own tree answers and no workflow here can.
   a number plane. `tickStep(bounds, about)` divides the span by one less than that number and rounds
   the result to a round number, so it is about how many ticks are wanted, which is what `axis.ts` and
   `REFERENCE.md` both say. A renderer written from the specification would draw a grid at a step of 20
-  where a figure asking for `ticks` of 1 over a span of 16 wants a step of 1, which is what the matrix
+  where a figure asking for `ticks` of 1 over a span of 16 needs a step of 1, which is what the matrix
   demo hit while it was being written. Two sentences of the specification are wrong and nothing in the
   code is.
 
@@ -2003,7 +2006,7 @@ the site's own tree answers and no workflow here can.
   an `over` wider than its graph, which is why it has never shown.
 
 - **The clamp at the end of a plotted curve's crossing is dead and its comment describes what it would
-  do.** `crossing` bisects until `near` is the last parameter still drawable, then hands back
+  do.** `crossing` bisects until `near` is the last parameter still drawable, then returns
   `interval.clampTo(bounds, of(near))`. A drawable y is inside `bounds` by the same test, so the clamp
   is the identity on every call and the cut end sits inside the edge rather than on it. The comment says
   the y "is held on the edge rather than taken from the function", which is the line that does not
@@ -2023,7 +2026,7 @@ the site's own tree answers and no workflow here can.
 
 - **A tapered stroke's outline is unstable in the last bits of its centreline, and the drawn width is
   what pays.** `outlinePath` splits a run until the width along it is straight enough, halving the
-  chord and testing the width a third and two thirds of the way along. Where the split lands decides
+  chord and testing the width a third and two thirds of the way along. Where the split lands sets
   how much of a swelling taper is drawn: the flat demo's tangent carries
   `{ from: 0, to: 0.035, curve: 'thereAndBack' }`, whose width peaks in the middle, and the outline's
   points land on eighths of the centreline in the good case. Over 201 tangents to the demo's parabola
@@ -2037,7 +2040,7 @@ the site's own tree answers and no workflow here can.
   gate holding a tapered outline's area to the integral of its own width, which is a claim no test
   makes today.
 
-- **All four of the things that look worse than 3Blue1Brown are queued now**, which is Siva's call of
+- **All four of the areas that look worse than 3Blue1Brown are queued now**, which is Siva's call of
   2026-09-08 and the reason the ladder above is no longer empty. Motion and pacing was 1.2.0 and is
   cut, typography and labels was 1.1.0 and is cut, composition and camera is done-criteria on the format's
   steps 3.9 and 7, and line quality is 1.3.0 and 1.4.0 between them. **The reading that put them there is that
@@ -2047,8 +2050,8 @@ the site's own tree answers and no workflow here can.
 - **The engine cannot count a winding number, and a GPU fill needs one.** `StencilMode` there is a
   boolean mask: `mark` replaces every bit where it draws, `inside` keeps what compares equal, and
   both set the front and back faces to one state. A winding number is counted by front and back faces
-  cancelling, which is the whole of how Loop and Blinn's fill decides an interior. **It is filed in
-  that repository as its item 2**, argued on its own merits, and the painter waits on it whenever it
+  cancelling, which is the whole of how Loop and Blinn's fill determines an interior. **It is filed in
+  that repository as its entry 2**, argued on its own merits, and the painter waits on it whenever it
   returns.
 
 - **A decision falls due at 2.7.0 and it is Siva's.** Pin an exact version of `@altpsyche/engine` and
@@ -2064,7 +2067,7 @@ the site's own tree answers and no workflow here can.
   one. Both named `^0.3.0` when this was written and a caret on a `0.x` tracks the last number
   alone, so the two split the moment either side moved a minor, which 3.0.0 did: the peer here reads
   `^0.6.0` against the site's `^0.3.0` and the pair refuses to install. The reading is under The
-  items.
+  entries.
 
   **What two copies cost, read from that package rather than assumed.** It holds three pieces of
   module-level state: a `Set` that dedupes deprecation warnings, and two `WeakMap`s in `trace/trace.ts`
@@ -2083,7 +2086,7 @@ the site's own tree answers and no workflow here can.
 
 - **An engine sitting idle costs its baseline.** That repository's numbers expire rather than hold: a
   pair of them read 514 tests over 34 files until they were re-taken at 864 over 73. Months with no
-  session there means the baseline any item is measured against is re-taken before the first item can
+  session there means the baseline any entry is measured against is re-taken before the first entry can
   be worked, and that is a session too.
 
 - **A 1.0.0 package depends on a 0.3.0 one.** This package has promised its door does not change
@@ -2098,12 +2101,12 @@ the site's own tree answers and no workflow here can.
   that it has. What a published package can hold is the browser gate; what the card gate can hold is
   a reading that is dated rather than a gate.
 
-- **The renderer may be the wrong thing to build for the goal.** Manim's value is a decade of
+- **The renderer may be the wrong part to build for the goal.** Manim's value is a decade of
   builders, number lines through matrices and tables and arbitrary shape morphing, and this file
   already says that its videos are substantially the writing and the pacing. Four versions of
   renderer work buy pictures that are sharper and can hold a depth buffer. The same effort spent on
   builders over the SVG painter that exists moves closer to a reader being able to make the video.
-  **Siva's call, and it is the one that decides whether the ladder above is the right ladder.**
+  **Siva's call, and it is the one that settles whether the ladder above is the right ladder.**
 
 - **A run of descent shows a short hook where it meets the region's edge.** The run seeded at
   `(-1.3, 0.3)` draws a bracket a few points long at its start on both solid sheets, which reads as a
@@ -2114,7 +2117,7 @@ the site's own tree answers and no workflow here can.
   engine it is the upper-left three by three of a `Mat4`. Both are `readonly [number, number, number,
   number, number, number, number, number, number]` behind two doors, so either is accepted where the
   other is wanted with nothing reported. The consumer already holds one file importing both packages.
-  **What closes it** is a brand on one of the two, which is a change to a published type and wants the
+  **What closes it** is a brand on one of the two, which is a change to a published type and needs the
   engine's agreement rather than a session's.
 
 - **The recorder's seam is written already, in the consumer, and 2.6.0 should take it rather than
@@ -2131,7 +2134,7 @@ the site's own tree answers and no workflow here can.
   and wraps with a remainder when it does, and clamps a frame's delta to 0.1 seconds so a tab restored
   after a minute away does not jump a lap. Both rules are about `duration` and `loop`, which are
   fields of the format, and this package ships `durationOf` and `isLoop` and nothing that maps one
-  time to the other. 2.6.0's recorder needs the same rule, so writing it twice more is the thing to
+  time to the other. 2.6.0's recorder needs the same rule, so writing it twice more is the duplication to
   avoid. **What closes it** is one function at this door, with the clamp named rather than inlined.
 
 
@@ -2139,6 +2142,6 @@ the site's own tree answers and no workflow here can.
 
 **Nothing is here.** Gradients and the variable-width stroke were the two entries and both are on
 the ladder now, as 1.4.0 and 1.3.0, because Siva asked for the look rather than for another feature.
-The reasons they were refused are unchanged and are written into those two items as the work each has
-to do: a gradient wants a shape of value the marks do not have and an id unique across a page, and a
-variable width wants the stroke to become geometry, since neither painter can taper one.
+The reasons they were refused are unchanged and are written into those two entries as the work each has
+to do: a gradient needs a shape of value the marks do not have and an id unique across a page, and a
+variable width needs the stroke to become geometry, since neither painter can taper one.
