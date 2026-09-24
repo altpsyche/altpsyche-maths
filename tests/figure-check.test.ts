@@ -82,7 +82,7 @@ const EVERY_KIND: readonly Record<string, unknown>[] = [
   { kind: 'dot3', name: 'spot', at: SPOT, radius: 0.1, fill: FILL, camera: CAMERA },
   { kind: 'text3', name: 'label', at: SPOT, content: 'z', size: 0.2, camera: CAMERA },
   { kind: 'arrow3', name: 'vector', from: SPOT, to: { x: 1, y: 0, z: 0 }, camera: CAMERA, options: { stroke: STROKE } },
-  { kind: 'scene3', name: 'scene', items: [], camera: CAMERA },
+  { kind: 'scene3', name: 'scene', entries: [], camera: CAMERA },
   { kind: 'axes3', name: 'frame', camera: CAMERA, options: { stroke: STROKE } },
   {
     kind: 'surface3',
@@ -463,7 +463,7 @@ describe('a figure held to the vocabulary', () => {
         kind: 'scene3',
         name: 'pieces',
         camera: CAMERA,
-        items: [
+        entries: [
           { points: [SPOT], node: { kind: 'dot', name: 'spot', at: PLACE, radius: 0.1, fill: FILL } },
           { kind: 'surfaceCells', name: 'cells', of: SPOT, options: { shade: { ramp: [FILL] }, resolution: 6 } },
           { kind: 'sphereCells', name: 'ball', centre: SPOT, radius: 1, options: { shade: { ramp: [FILL] } } },

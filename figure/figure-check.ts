@@ -677,7 +677,7 @@ const SHAPES: Readonly<Record<string, Shape>> = {
         camera: need(ref('camera')),
         options: need(ref('arrowOptions')),
       },
-      scene3: { name: need(text), items: need(list(ref('sceneEntry'))), camera: need(ref('camera')) },
+      scene3: { name: need(text), entries: need(list(ref('sceneEntry'))), camera: need(ref('camera')) },
       axes3: { name: need(text), camera: need(ref('camera')), options: need(ref('axes3Options')) },
       surface3: {
         name: need(text),

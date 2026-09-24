@@ -2074,11 +2074,11 @@ describe('the solids demo', () => {
       if (node.kind === 'group') return { ...node, children: node.children.map(longhand) };
       if (node.kind === 'sphere3') {
         const { kind, name, camera, ...rest } = node;
-        return { kind: 'scene3', name, camera, items: [{ ...rest, kind: 'sphereCells', name: 'face' }] };
+        return { kind: 'scene3', name, camera, entries: [{ ...rest, kind: 'sphereCells', name: 'face' }] };
       }
       if (node.kind === 'cube3') {
         const { kind, name, camera, ...rest } = node;
-        return { kind: 'scene3', name, camera, items: [{ ...rest, kind: 'cubeCells', name: 'face' }] };
+        return { kind: 'scene3', name, camera, entries: [{ ...rest, kind: 'cubeCells', name: 'face' }] };
       }
       return node;
     };

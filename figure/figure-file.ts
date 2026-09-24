@@ -18,7 +18,7 @@ import type { Figure } from './figure.js';
 
 /** The version of the format this package writes and reads. A figure declares
  * its own and a reader refuses one it does not implement. */
-export const FIGURE_FORMAT_VERSION = 1;
+export const FIGURE_FORMAT_VERSION = 2;
 
 /** What a file contains: the version of the format, and one figure. */
 export interface FigureFile {

@@ -1,5 +1,5 @@
 {
-  "format": 1,
+  "format": 2,
   "figure": {
     "duration": 6,
     "extent": {
@@ -918,7 +918,7 @@
                   "z": 1
                 }
               },
-              "items": [
+              "entries": [
                 {
                   "centre": {
                     "x": 0,
@@ -1244,7 +1244,7 @@
                   "z": 1
                 }
               },
-              "items": [
+              "entries": [
                 {
                   "centre": {
                     "x": 0,

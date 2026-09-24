@@ -365,7 +365,7 @@ export interface Arrow3Record {
 export interface Scene3Record {
   readonly kind: 'scene3';
   readonly name: string;
-  readonly items: readonly SceneEntryRecord[];
+  readonly entries: readonly SceneEntryRecord[];
   readonly camera: Camera3Record;
 }
 
@@ -1095,7 +1095,7 @@ export function resolveNode(record: NodeRecord, bindings: Bindings = {}): Node {
       const camera = resolveCamera(record.camera, bindings);
       return scene3(
         record.name,
-        record.items.flatMap((entry) => resolveEntries(entry, camera, bindings)),
+        record.entries.flatMap((entry) => resolveEntries(entry, camera, bindings)),
         camera
       );
     }

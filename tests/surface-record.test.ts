@@ -191,7 +191,7 @@ describe('the surface and the field in space no demo names directly', () => {
       kind: 'scene3',
       name: 's',
       camera,
-      items: [{ kind: 'surfaceGrid', name: 'g', of: saddle, options: { shade: { ramp } } }],
+      entries: [{ kind: 'surfaceGrid', name: 'g', of: saddle, options: { shade: { ramp } } }],
     } as unknown as NodeRecord;
     expect(() => resolveNode(record, bindings)).toThrow('a scene has no piece called surfaceGrid');
   });

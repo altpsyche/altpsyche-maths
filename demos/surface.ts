@@ -348,7 +348,7 @@ export const scene: NodeRecord = {
       kind: 'scene3',
       name: 'body',
       camera,
-      items: [
+      entries: [
         { kind: 'surfaceCells', name: 'hill', of: saddle, options: { ...spread, resolution: CELLS, shade, light: LIGHT } },
         {
           kind: 'surfaceCells',

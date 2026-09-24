@@ -642,7 +642,7 @@ functions, which is what lets the same tree survive being written to a file and 
   `options`.
 - `Arrow3Record` — a `kind` of `arrow3`, a `name`, a `from`, a `to`, its `camera` and its `options`,
   which are an arrow's.
-- `Scene3Record` — a `kind` of `scene3`, a `name`, its `items` as `SceneEntryRecord`s and its
+- `Scene3Record` — a `kind` of `scene3`, a `name`, its `entries` as `SceneEntryRecord`s and its
   `camera`.
 - `SpaceEntryRecord` — one piece of a scene in space: the `points` its depth is measured from, and the
   `node` drawn for it. A scene sorts its pieces by the mean of their own depths, so the points are
@@ -1329,7 +1329,7 @@ a group of that name.
   time reads that same one.
 - `FigureFile` — what a file holds: the `format` version the figure is written in, and the `figure`
   itself. Nothing else is in the envelope.
-- `FIGURE_FORMAT_VERSION` — the version of the format this package writes and reads, which is 0.
+- `FIGURE_FORMAT_VERSION` — the version of the format this package writes and reads, which is 2.
 - `writeFigure(record)` — a figure as the text of a file, ending in a newline. The keys of every
   object are written in sorted order, so the bytes are a function of the figure rather than of the
   order its fields were built in. A field that is absent is left out rather than written as null. A

@@ -245,7 +245,7 @@ describe('the four solids as records', () => {
       kind: 'scene3',
       name: 'both',
       camera: seen,
-      items: [
+      entries: [
         { kind: 'sphereCells', name: 'ball', centre, radius: 1, options },
         { kind: 'torusCells', name: 'ring', centre, ring: 2, tube: 0.4, options },
       ],

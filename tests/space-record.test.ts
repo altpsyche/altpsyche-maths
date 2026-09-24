@@ -152,7 +152,7 @@ describe('the space nodes read back against their own calls', () => {
       points: [place[name]],
       node: { kind: 'dot3' as const, name, at: place[name], radius: 0.1, fill: ink, camera },
     });
-    const record: NodeRecord = { kind: 'scene3', name: 's', items: [piece('minusX'), piece('plusX')], camera };
+    const record: NodeRecord = { kind: 'scene3', name: 's', entries: [piece('minusX'), piece('plusX')], camera };
     const drawn = flatten(resolveNode(record, at));
     // The eye stands on the negative x side of this orbit, so the piece at
     // positive x is the further of the two and is drawn first.
@@ -198,7 +198,7 @@ function nodeAt(node: Named, path: readonly string[]): Named {
     node.kind === 'group'
       ? node.children
       : node.kind === 'scene3'
-        ? node.items.map((item) => ('node' in item ? item.node : item))
+        ? node.entries.map((entry) => ('node' in entry ? entry.node : entry))
         : [];
   const next = inside.find((child) => child.name === path[0]);
   if (!next) throw new Error(`nothing named ${path[0]} under this node`);
@@ -223,7 +223,7 @@ describe('a solid, a surface, a field and a curve written the short way', () => 
     kind: 'scene3',
     name: 'one',
     camera: seen,
-    items: [item],
+    entries: [item],
   });
 
   it('draws a cylinder where a scene over a cylinder`s own cells draws one', () => {

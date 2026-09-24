@@ -219,7 +219,7 @@ const FACE: readonly NodeRecord[] = [
 
 /** The body of a panel whose curve is wound on its solid: one scene holding both,
  * so the curve's pieces and the solid's cells are ordered against each other. */
-const sorted = (items: readonly SceneEntryRecord[]): NodeRecord => ({ kind: 'scene3', name: 'body', camera, items });
+const sorted = (entries: readonly SceneEntryRecord[]): NodeRecord => ({ kind: 'scene3', name: 'body', camera, entries });
 
 /** One panel: a body sorted against nothing outside itself, moved to its quarter
  * of the figure, with its name under it. */

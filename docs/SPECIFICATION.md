@@ -1,4 +1,4 @@
-# The AltPsyche figure format, version 1
+# The AltPsyche figure format, version 2
 
 **A figure format is a declarative description of a picture over time.** It carries nodes, a timeline,
 value types and expressions, and a program reads one rather than running it.
@@ -47,7 +47,7 @@ consumer already has them.
 A figure declares which version of the format it is written in. A renderer declares which versions it
 reads. Neither number is this package's.
 
-**The version is one whole number and it is 1 today.** A renderer refuses a version it does not read
+**The version is one whole number and it is 2 today.** A renderer refuses a version it does not read
 and names both numbers, its own and the file's. A field added to a kind that leaves what every
 existing figure means alone keeps the version. A change to what a field means, a field removed and a
 kind removed are each a new version.
@@ -58,6 +58,11 @@ order its own scene sorted. A mark may now carry a depth, and where two marks ca
 the nearer is drawn over the further whatever order the list gives. That is a change to what an
 existing field means rather than a field added, so it is a version. A figure written under version 0
 draws the same picture under a version 1 renderer, since no mark of it carries a depth.
+
+**Version 2 is the name of a scene's list, and what it changed is one field of `scene3`.** Its list
+of entries was `items` and is `entries`, which is a field renamed, so it is a version. A version 2
+renderer refuses a version 1 file rather than reading both names for one field. A version 1 figure
+becomes a version 2 figure by writing `entries` where it wrote `items` and 2 where it wrote 1.
 
 ## The file
 
@@ -525,7 +530,7 @@ holding above it, read in order so the colour is that of the last threshold a ma
 | `dot3` | `at`, `radius`, `fill`, `camera` |
 | `text3` | `at`, `content`, `size`, `camera`, `options` |
 | `arrow3` | `from`, `to`, `camera`, `options` |
-| `scene3` | `items`, `camera` |
+| `scene3` | `entries`, `camera` |
 | `axes3` | `camera`, `options` |
 | `surface3` | `of`, `camera`, `options` |
 | `curve3` | `curve`, `camera`, `options`, `style` |
@@ -561,7 +566,7 @@ marks where something is rather than how big it is. A label in space keeps its s
 upright for the same reason, and its `options` is a text node's with `offset` beside it, which is how
 far the label stands off the point it names.
 
-**`scene3` is what puts pieces in the right order.** Its `items` are entries sorted by depth and
+**`scene3` is what puts pieces in the right order.** Its `entries` are sorted by depth and
 drawn back to front, which is the painter's algorithm. An entry written out is a `points` list and
 the `node` drawn for it; an entry that produces many carries a `kind` and is one of the seven producers
 below.
@@ -878,14 +883,14 @@ renderer is conformant inside that band and wrong outside it in either direction
 | file | bytes | what it exercises |
 | --- | --- | --- |
 | `demos/tangent.figure.json` | 410,756 | the graph domain, a moving view, an inset with round corners, two typeset rules, a brace, a field, three runs of bars, an arrow and a callout |
-| `demos/surface.figure.json` | 275,400 | a surface, a plane, a section, streamlines, axes in space and an orbiting camera |
+| `demos/surface.figure.json` | 275,402 | a surface, a plane, a section, streamlines, axes in space and an orbiting camera |
 | `demos/boolean.figure.json` | 14,444 | the three boolean operations through no crossing, one, two and containment |
 | `demos/rotate.figure.json` | 26,211 | a rotation about a box's middle and about a named place, a swell, a walk into another shape, a wave, a rock, a straight move, and a loop |
 | `demos/frame.figure.json` | 176,495 | a mark placed against the frame beside one placed in the figure's own units, and a rule fitted inside a share of the frame |
 | `demos/portrait.figure.json` | 25,603 | a parametric closed orbit with a dot carried round it, two polar spirals and two implicit nullclines over a field |
-| `demos/solids.figure.json` | 92,012 | two solids drawn alone, two handed to a scene with a curve in space cut into pieces it sorts, and a face marked with its rim, its middle, the way it faces and a name |
+| `demos/solids.figure.json` | 92,016 | two solids drawn alone, two handed to a scene with a curve in space cut into pieces it sorts, and a face marked with its rim, its middle, the way it faces and a name |
 
-**Each carries `format` 1 and reads with no renderer at all.** A reader in another language that draws
+**Each carries `format` 2 and reads with no renderer at all.** A reader in another language that draws
 the same marks at these figures' named times, inside the tolerances above, is conformant.
 
 ## The design behind it

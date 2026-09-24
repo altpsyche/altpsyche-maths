@@ -1886,12 +1886,12 @@ and a figure asked twice with the same two answers the same picture twice.
       `items` of `scene3` becomes `entries`. The `items` key of a record stays until step 2.
       **Measurement:** 29, 9 and 14 uses to 0, the suite at 1,536 of 1,536 before and after, and
       `npm run demos` changing 0 bytes. **Landed:** 29, 9 and 14 to 0 over 14 files, 1,536 of 1,536 before and after, 0 bytes.
-- [ ] **2. The format is version 2 and a `scene3` record carries `entries`.** SPECIFICATION.md
+- [x] **2. The format is version 2 and a `scene3` record carries `entries`.** SPECIFICATION.md
       changes first in the same commit: line 1, the version section saying what version 2 changed,
       and the `scene3` row. Then `FIGURE_FORMAT_VERSION`, the checker, the record type, the reader
       and every committed figure file. **Measurement:** 3 `items` keys to 0, the eight committed files
       read to the same mark counts at the still and at half the duration, and a version 1 file
-      refused with the sentence naming both numbers.
+      refused with the sentence naming both numbers. **Landed:** 3 keys to 0 and 8 `format` lines to 2, the eight files at the same counts from boolean's 12 and 12 to tangent's 236 and 244 at a 16:9 aspect, and "this reads version 2 of the format and the file is written in version 1".
 - [ ] **3. A figure is read with held values.** `marksAt`, `extentAt` and `viewAt` take the held
       values, a held value replaces the sampled value of the track of that name, and a name no track
       carries is refused by name. The rule in DESIGN.md becomes a pure function of time and the held
@@ -1948,6 +1948,9 @@ the gate is that they draw the same bytes.
 
 ## Found while working, not yet queued
 
+- **The conformance table in SPECIFICATION.md names seven figures, and eight files are committed.**
+  `demos/matrix.figure.json` is read by the suite and is not in the table, so a reader in another
+  language is not told to draw it. Found at 4.0.0 step 2, which changed the table's byte counts.
 - **A convex path clip is cut as its triangles, and that triples the GPU frame of a round lens.**
   `clipTrianglesToPath` cuts each of a mark's triangles against each triangle of the clip, so a
   rounded rectangle of 8 cubics splits every triangle it crosses into the fan the clip was

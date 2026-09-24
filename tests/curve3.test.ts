@@ -180,7 +180,7 @@ describe('a curve in space cut into pieces a scene sorts', () => {
   it('draws the marks its own call draws, as a record', () => {
     const record: SceneEntryRecord = { kind: 'curvePieces3', name: 'coil', curve, options: WIRE };
     const fromRecord = flatten(
-      resolveNode({ kind: 'scene3', name: 'both', items: [record], camera: seen })
+      resolveNode({ kind: 'scene3', name: 'both', entries: [record], camera: seen })
     );
     const fromCall = flatten(scene3('both', curvePieces3('coil', helix, camera, { resolution: 48, ...WIRE }), camera));
     expect(fromRecord).toHaveLength(48);
