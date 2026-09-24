@@ -43,6 +43,7 @@
     "check:vocab": "node gates/vocab.mjs",
     "prepack": "npm run build",
     "gate:gpu": "npm run build && node gates/gpu.mjs",
+    "gate:floor": "node gates/floor.mjs",
     "font": "node font/build.mjs"
   },
   "devDependencies": {

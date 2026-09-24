@@ -227,6 +227,7 @@ nothing else.
 ```
 npm run gate:record   every committed figure recorded to a video file, in Chromium
 npm run gate:gpu      every committed figure drawn on a card and compared with the SVG painter
+npm run gate:floor    the three gates that need no device, against the lowest engine the peer range admits
 ```
 
 **The recording gate needs a browser and writes into `recordings/`**, which is not committed.
@@ -239,6 +240,10 @@ figure is one reading and the figure with the marks the painter named as refused
 other, which is what measures this painter rather than the backend under it. An SVG rasteriser
 computes an edge pixel's coverage exactly where a card resolves four samples to five levels, so an
 edge differs by construction and a thin diagonal stroke is nearly all edge.
+
+**The floor gate reads its version out of `peerDependencies` and needs the registry.** A caret range
+admits nothing below the version it names, so that version is the floor, and a floor the registry
+does not carry fails the run. The dev version is installed again whichever way the three gates went.
 
 **The comparison between two lists of marks is by tolerance and never by hash.** `Math.sin`,
 `Math.cos` and `Math.pow` are not specified to the last bit in JavaScript and differ between engines,

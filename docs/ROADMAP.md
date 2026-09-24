@@ -1696,12 +1696,15 @@ outside this tree.
 **The steps.** Each is one commit and each names the measurement its commit quotes. Steps 2 and 3
 wait on Siva's second decision above; steps 1 and 4 do not.
 
-- [ ] **1. The floor of the peer range is run rather than declared.** A script reads
+- [x] **1. The floor of the peer range is run rather than declared.** A script reads
       `peerDependencies` out of `package.json`, takes the lowest version that range admits, installs
       it in place of the dev dependency, runs `npm test`, `npm run type-check` and `npm run build`
       against it, and puts the tree back whichever way the run went. The floor is read rather than
       written into the script, so raising the range moves the check with it. **Measurement:** tests
-      over files at the floor, against 1,477 over 97 at the dev version.
+      over files at the floor, against 1,477 over 97 at the dev version. **Landed as `npm run
+      gate:floor`:** 1,511 of 1,511 over 98 files at 0.6.0 against 1,511 over 98 at 0.6.1, with
+      `type-check` and `build` clean, 0.6.1 back afterwards and 0 lines from `git status --short`. A
+      range of `^0.6.9` fails with `the registry does not carry it` before anything is installed.
 - [ ] **2. The gates run on a push.** `.github/workflows/gates.yml`, the shape `@altpsyche/engine`
       already uses: `npm ci`, the gates that need nothing, then the browser its own dependency pins
       rather than whatever the runner carries, and step 1's floor run as a job beside them.
