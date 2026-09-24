@@ -1728,6 +1728,11 @@ entry's steps come first, then 3.4.0 and 4.0.0 in ladder order, then the handove
       drawable has been taken`. The engine documents that sentence as a headless software renderer
       spending the device at its first drawable. So the runner cannot hold the WebGPU loss, and the
       workflow has to say so and run that half by hand, which is done-criterion 5's second branch.
+      **The second run, 35978115525, read** the `gates` job passing with the `pretest` build, and
+      `gate:floor` failing on one test. `tests/record.test.ts` line 113, which takes 798 frames of
+      the solid demo, ran 53,034ms against its 60,000ms limit in the `gates` job and 61,046ms in
+      the `floor` job. The test does the same work on every machine, and the runner is slower than
+      this one, so that test's time on a runner is the next finding before the WebGPU half.
 - [ ] **3. A version is published from a tag.** The engine's `publish.yml`: on a release being
       published, the gates, then `npm publish --provenance --access public` with `id-token: write`
       and no npm token anywhere. What it costs is that the trust lives in a registry setting naming
