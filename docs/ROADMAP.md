@@ -458,7 +458,7 @@ consumer needing something and its stencil entry stands on the WebGPU specificat
 draws, which needs a browser gate and a card gate. The recorder's own browser gate is written and
 runs by hand, as `npm run gate:record`. `@altpsyche/engine` needed two workflows and seventeen gate
 scripts to have its two, and building the same here is the entry under The entries, which is four
-commits and waits on Siva's call on whether this package gets continuous integration at all.
+commits, and Siva said yes to it on 2026-09-24.
 
 **Two commitments on this plan are not versions and both have a deadline.** Composition and camera is
 done-criteria on steps 3.9 and 7 of the format, because a version in front of those would write
@@ -1688,18 +1688,20 @@ a commit to them, which is the second. The steps below are those two and what fo
 site's crossing to 3.0.0, and that crossing is the first install that exercises the declared range
 outside this tree.
 
-**Two decisions are Siva's and a session must not answer either.**
+**Siva answered both decisions on 2026-09-24.**
 
-- **Who bumps whom.** Does the site take a release as it lands, or do the libraries hold at a
-  version until the site is ready to cross? The present answer is an accident, and it is why the
-  site is two majors behind.
-- **Whether this package gets continuous integration at all**, and if it does, whether it mirrors
-  the engine's pattern: the gates on every push, and a publish from a tag with provenance and no npm
-  token anywhere. That pattern is `@altpsyche/engine`'s `.github/workflows`, one directory away.
-  Steps 2 and 3 wait on this answer; steps 1 and 4 do not.
+- **Who bumps whom waits until the roadmap is finished.** The site crosses once, after every entry
+  here has landed, and a session in the site's own tree does the crossing from a handover written
+  here. No release moves the site before then.
+- **This package gets continuous integration, and it mirrors the engine's pattern.** The gates run
+  on every push and every pull request, and a version is published from a tag with provenance and
+  no npm token anywhere. That pattern is `@altpsyche/engine`'s `.github/workflows`, one directory
+  away. Steps 2 and 3 are unblocked.
 
-**The steps.** Each is one commit and each names the measurement its commit quotes. Steps 2 and 3
-wait on Siva's second decision above; steps 1 and 4 do not.
+**Every entry is worked in the order this file writes it.** Siva's call on 2026-09-24. This
+entry's steps come first, then 3.4.0 and 4.0.0 in ladder order, then the handover to the site.
+
+**The steps.** Each is one commit and each names the measurement its commit quotes.
 
 - [x] **1. The floor of the peer range is run rather than declared.** A script reads
       `peerDependencies` out of `package.json`, takes the lowest version that range admits, installs
