@@ -1381,6 +1381,28 @@ a group of that name.
 - `sameMarks(one, two, tolerance)` — two lists holding the same marks in the same order, to a
   tolerance.
 
+## Inputs
+
+An input is a track a reader may hold, taken by a press on one named mark. The functions here are
+pure. The listeners, and the record of what is held between frames, are the consumer's, since the
+consumer owns the loop that plays the figure.
+
+- `Input` — one track a press may take.
+  - `track` — the track a reader holds while the input is taken.
+  - `mark` — the mark a press takes the input on, by id or the front of one, the rule an animation
+    target follows.
+  - `reach` — how far outside the mark a press may land and still take the input, in figure units.
+    Left out, it is 0.
+- `placeAt(figure, seconds, width, height, pixel, held)` — the place in the figure's own units that
+  a pixel of the surface shows. It inverts the matrix `viewAt` returns for the same arguments, so a
+  view that follows a mark is undone where it had moved to. A matrix that collapses the plane has no
+  inverse, and nothing is returned for it.
+- `inputAt(inputs, marks, place)` — the input a press at a place takes, or nothing. The marks are
+  searched from the last drawn to the first, the painter's algorithm read backwards, so where two
+  marks overlap the one on top takes the press. A fill covers the inside of its path under the
+  nonzero rule. A stroke covers half its width either side of its open path, so the chord that would
+  close an open curve takes no press. A text mark takes no press.
+
 ## Insets
 
 An inset is a second view of the same figure, magnified and drawn into a rectangle of the frame,

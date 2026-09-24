@@ -1902,11 +1902,16 @@ and a figure asked twice with the same two answers the same picture twice.
       held and unheld within 1e-9, the dot at `s` 0.25 sits within 1e-9 of `pointAlong`, a held `s`
       moves the view that follows the dot, `turn` held on the flat demo is refused by name, the suite
       reads 1,540 of 1,540 over 99 files against 1,536 over 98, and `npm run demos` changes 0 bytes.
-- [ ] **4. A pixel becomes a place and a press takes an input.** The inverse of the matrix `viewAt`
+- [x] **4. A pixel becomes a place and a press takes an input.** The inverse of the matrix `viewAt`
       returns turns a pixel into figure units, and a press takes the input whose named mark contains
       the place or lies within that input's reach of it. **Measurement:** the round trip error of the
       four corners and the middle of a 1280 by 720 frame, and a press on the flat demo's dot taking
       `s` where a press 0.5 units away takes nothing.
+      **Landed:** `placeAt` and `inputAt` at the door, the round trip at 0 on the four corners and
+      5.7e-14 pixels at the middle, a press on the dot and 0.25 units off it taking `s` with a reach
+      of 0.2 where 0.5 off takes nothing, the chord of an open stroked half circle taking no press,
+      the suite at 1,544 of 1,544 over 100 files against 1,540 over 99, and `npm run demos` changing
+      0 bytes.
 - [ ] **5. A pointer gives a held value, by one of two kinds.** `along` is the fraction of a path's
       length at its point nearest the pointer, for the dot on its curve. `drag` is the value at the
       press plus a number per figure unit the pointer has travelled across, for the eye.

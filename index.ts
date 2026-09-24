@@ -253,6 +253,8 @@ export {
 export { frameTimesOf, framesOf, walkTimesOf } from './figure/frames.js';
 export type { Frame, FrameStep, FramesOptions } from './figure/frames.js';
 export type { Figure, PainterName, TrackValues } from './figure/figure.js';
+export { inputAt, placeAt } from './figure/input.js';
+export type { Input } from './figure/input.js';
 export { resolveFigure } from './figure/figure-record.js';
 export type { FigureRecord } from './figure/figure-record.js';
 export { checkFigure } from './figure/figure-check.js';
