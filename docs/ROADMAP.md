@@ -1705,11 +1705,13 @@ this is the first.
       91.89% and 228 against 91.89% and 228. Chromium answers `restoreContext` only once the lost
       event's dispatch has returned, so a restore asked for in a microtask of it waits forever and a
       surface opened on the still-lost context throws on its sample count.
-- [ ] **5. The consumer's surface read against a release.** `npm pack` here and `npm install
-      --no-save` in `altpsyche.dev`, with a scratch change to `FigureSurface.tsx` there that drops the
-      element listener for `onLost`, never committed. The commit here is the reading written into
-      this entry. **Measurement:** `tsc --noEmit` in the site reads 0 errors with the change, and
-      the site's own figure tests pass in the count they pass today.
+- [x] **5. The consumer's surface read against a release.** Landed, against the packed 3.2.0
+      tree installed with `--no-save` over the site's 3.0.2. Unchanged, the site read 0 errors from
+      `tsc --noEmit` and 43 of 43 figure tests in 6 files, the same as on 3.0.2. With `onLost` passed
+      through `openCard` in `components/figure/card.ts` and the `webglcontextlost` listener taken out
+      of `FigureSurface.tsx`, which leaves 0 mentions of that event in the file, it read 0 errors, 0
+      from `type-check:renderer` and 43 of 43. The change was reverted and 3.0.2 reinstalled, and the
+      site's tree reads 0 lines from `git status --short`.
 
 **Done-criteria**, each checked against a number at the cut:
 
