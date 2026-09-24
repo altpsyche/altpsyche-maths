@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { arc, circle, line, mat3, pointCount, pointOn, polygon, polyline, rect, straight, transformPath, vec2 } from '@altpsyche/maths';
+import { arc, areaOf, circle, containsPoint, line, mat3, pointCount, pointOn, polygon, polyline, rect, straight, transformPath, vec2 } from '@altpsyche/maths';
 import type { Path } from '@altpsyche/maths';
 
 /**
@@ -65,6 +65,24 @@ describe('builders', () => {
     expect(path[0].curves).toHaveLength(4);
     expect(path[0].closed).toBe(true);
     expect(path[0].curves[1].to).toEqual({ x: 4, y: 2 });
+  });
+
+  it('rounds each corner by a quarter arc, taking (4 − π)·r² from the area', () => {
+    const path = rect(vec2(0, 0), 4, 2, 0.5);
+    expect(path[0].curves).toHaveLength(8);
+    expect(path[0].closed).toBe(true);
+    // The cubic quarter leaves the true radius by at most 2.8 parts in ten thousand, which moves the area by far less than this.
+    expect(areaOf(path)).toBeCloseTo(8 - (4 - Math.PI) * 0.25, 3);
+    expect(containsPoint(path, vec2(0.01, 0.01))).toBe(false);
+    expect(containsPoint(path, vec2(0.5, 0.01))).toBe(true);
+  });
+
+  it('holds a corner radius to half the shorter side, where the arcs meet with no side between them', () => {
+    const path = rect(vec2(0, 0), 4, 2, 5);
+    expect(path[0].curves).toHaveLength(6);
+    // Four cubic quarters enclose about 2.8 parts in ten thousand more than the disc of radius 1 they stand for.
+    expect(Math.abs(areaOf(path) - (8 - (4 - Math.PI)))).toBeLessThan(Math.PI * 3e-4);
+    expect(rect(vec2(0, 0), 4, 2, 0)).toEqual(rect(vec2(0, 0), 4, 2));
   });
 });
 

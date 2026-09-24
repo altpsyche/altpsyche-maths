@@ -511,6 +511,7 @@ const SHAPES: Readonly<Record<string, Shape>> = {
         corner: need(ref('expression')),
         width: need(ref('expression')),
         height: need(ref('expression')),
+        cornerRadius: may(ref('expression')),
       },
       circle: { centre: need(ref('expression')), radius: need(ref('expression')) },
       arc: {
@@ -821,6 +822,7 @@ const SHAPES: Readonly<Record<string, Shape>> = {
     view: may(ref('viewChange')),
     name: may(text),
     hides: may(list(text)),
+    cornerRadius: may(number),
   }),
   figure: fields('a figure', {
     extent: need(ref('extentChoice')),

@@ -54,6 +54,7 @@ class Counter implements CanvasLike {
 }
 
 const countOf = (markup: string, tag: string) => markup.split(`<${tag}`).length - 1;
+const drawnPart = (markup: string) => markup.replace(/<clipPath[\s\S]*?<\/clipPath>/g, '');
 
 /** What one frame drew, on the canvas and in the markup, so the two can be held
  * to the same mark count. */
@@ -71,7 +72,8 @@ function drawn(
     // One save wraps each mark the canvas painter draws, so this is what that
     // painter saw against what the other one wrote.
     painted: target.saves,
-    elements: countOf(markup, 'path') + countOf(markup, 'text'),
+    // A path clip is written as a `<path>` inside its `<clipPath>`, which draws nothing of its own.
+    elements: countOf(drawnPart(markup), 'path') + countOf(markup, 'text'),
   };
 }
 

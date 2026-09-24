@@ -62,14 +62,49 @@ export function polygon(points: readonly Vec2[]): Path {
   return through(points, true);
 }
 
-/** An axis-aligned rectangle from its corner and its size. */
-export function rect(corner: Vec2, width: number, height: number): Path {
-  return polygon([
-    corner,
-    vec2(corner.x + width, corner.y),
-    vec2(corner.x + width, corner.y + height),
-    vec2(corner.x, corner.y + height),
-  ]);
+/**
+ * An axis-aligned rectangle from its corner and its size, with each corner
+ * rounded by a quarter arc of `cornerRadius` where that is above 0.
+ *
+ * The radius is held to half the shorter side, where two arcs meet with no
+ * straight piece between them, and each arc is the cubic quarter `circle` uses.
+ */
+export function rect(corner: Vec2, width: number, height: number, cornerRadius = 0): Path {
+  const r = Math.min(cornerRadius, Math.abs(width) / 2, Math.abs(height) / 2);
+  if (!(r > 0)) {
+    return polygon([
+      corner,
+      vec2(corner.x + width, corner.y),
+      vec2(corner.x + width, corner.y + height),
+      vec2(corner.x, corner.y + height),
+    ]);
+  }
+  const left = Math.min(corner.x, corner.x + width);
+  const right = Math.max(corner.x, corner.x + width);
+  const bottom = Math.min(corner.y, corner.y + height);
+  const top = Math.max(corner.y, corner.y + height);
+  const k = r * KAPPA;
+  const start = vec2(left + r, bottom);
+  const curves: Cubic[] = [];
+  let at = start;
+  const edge = (to: Vec2) => {
+    if (to.x !== at.x || to.y !== at.y) curves.push(straight(at, to));
+    at = to;
+  };
+  // Turn: a quarter arc whose controls lie along the two edges it joins, KAPPA of the radius from each end.
+  const turn = (control1: Vec2, control2: Vec2, to: Vec2) => {
+    curves.push({ control1, control2, to });
+    at = to;
+  };
+  edge(vec2(right - r, bottom));
+  turn(vec2(right - r + k, bottom), vec2(right, bottom + r - k), vec2(right, bottom + r));
+  edge(vec2(right, top - r));
+  turn(vec2(right, top - r + k), vec2(right - r + k, top), vec2(right - r, top));
+  edge(vec2(left + r, top));
+  turn(vec2(left + r - k, top), vec2(left, top - r + k), vec2(left, top - r));
+  edge(vec2(left, bottom + r));
+  turn(vec2(left, bottom + r - k), vec2(left + r - k, bottom), start);
+  return [{ start, curves, closed: true }];
 }
 
 /**

@@ -270,7 +270,8 @@ numbers and a pointwise map of a shape.
 - `line(from, to)` — an open path of one straight segment.
 - `polyline(points)` — an open run of straight segments.
 - `polygon(points)` — a closed run of straight segments.
-- `rect(corner, width, height)` — an axis-aligned rectangle from its corner and its size.
+- `rect(corner, width, height, cornerRadius)` — an axis-aligned rectangle from its corner and its
+  size. A `cornerRadius` above 0 rounds each corner by a quarter arc, held to half the shorter side.
 - `circle(centre, radius)` — a circle as four cubic quarters, anticlockwise from the positive x
   axis.
 - `arc(centre, radius, fromAngle, toAngle)` — an arc as a run of cubics, each covering at most a
@@ -767,8 +768,8 @@ functions, which is what lets the same tree survive being written to a file and 
   function that picks one from the shape of the surface. `resolveExtent` is what then reads a choice
   at an aspect.
 - `InsetRecord` — an inset written as data: what it `shows`, the rectangle it draws `into`, its
-  `fit`, the `view` move it puts its own extent through as a `ViewChangeRecord`, its `name` and what
-  it `hides`. Every field is a value the records above already carry, so it adds no vocabulary.
+  `fit`, the `view` move it puts its own extent through as a `ViewChangeRecord`, its `name`, what
+  it `hides` and the `cornerRadius` it rounds its rectangle by. Every field is a value the records above already carry, so it adds no vocabulary.
 - `resolveInset(record)` — the inset a record describes, with its view move built.
 - `resolveViewChange(record)` — the view move a record describes, as the timeline entry it is played
   as. A kind outside the set is refused with a sentence naming it.
@@ -834,7 +835,7 @@ functions, which is what lets the same tree survive being written to a file and 
   - `line` — `from` and `to`.
   - `polyline` — `points`, as an open run of straight segments.
   - `polygon` — `points`, closed.
-  - `rect` — a `corner`, a `width` and a `height`.
+  - `rect` — a `corner`, a `width`, a `height` and a `cornerRadius`, which may be left out.
   - `circle` — a `centre` and a `radius`.
   - `arc` — a `centre`, a `radius`, and `from` and `to` in radians, anticlockwise.
   - `data` — `d`, the path data of an SVG `d` attribute.
@@ -1401,7 +1402,9 @@ frame round a picture is a shape.
     ground sit in would magnify them and paint a picture of itself.
 - `insetMarks(marks, inset)` — the marks of one inset, given the marks a figure draws. Each one is
   magnified and clipped to the inset's rectangle, and one whose whole reach falls outside it is left
-  out. A mark already carrying a clip keeps it, magnified and then cut down to the rectangle.
+  out. A mark already carrying a clip keeps it, magnified and then cut down to the rectangle. An
+  inset with a `cornerRadius` gives each mark the rounded rectangle as its path clip, intersected with
+  any path clip the mark already carried.
 - `insetMatrix(shows, into, fit)` — the matrix taking what an inset shows onto the rectangle it draws
   into. There is no flip here, unlike `viewMatrix`: both rectangles are in the figure's own units and
   count upward the same way.

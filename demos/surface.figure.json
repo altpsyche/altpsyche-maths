@@ -8,6 +8,7 @@
     },
     "insets": [
       {
+        "cornerRadius": 0.12,
         "hides": [
           "solid/window"
         ],
@@ -2320,6 +2321,7 @@
                   "x": -3.3,
                   "y": -2.55
                 },
+                "cornerRadius": 0.12,
                 "height": 1.9499999999999997,
                 "kind": "rect",
                 "width": 2.5999999999999996
@@ -2344,6 +2346,7 @@
                   "x": -3.307,
                   "y": -2.557
                 },
+                "cornerRadius": 0.127,
                 "height": 1.9639999999999997,
                 "kind": "rect",
                 "width": 2.6139999999999994

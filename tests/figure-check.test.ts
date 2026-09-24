@@ -307,6 +307,10 @@ describe('a figure held to the vocabulary', () => {
     expect(() => checkFigure({ ...turning, insets: [{ ...inset, hides: 'turns/own/pivot' }] })).toThrow(
       'insets.0.hides is a list and is the text "turns/own/pivot"',
     );
+    expect(checkFigure({ ...turning, insets: [{ ...inset, cornerRadius: 0.2 }] })).toBeTruthy();
+    expect(() => checkFigure({ ...turning, insets: [{ ...inset, cornerRadius: '0.2' }] })).toThrow(
+      'insets.0.cornerRadius is a number and is the text "0.2"',
+    );
   });
 
   it('holds the scene to being a node', () => {

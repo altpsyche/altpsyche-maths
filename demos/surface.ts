@@ -114,6 +114,10 @@ const LENS_EDGE = 0.014;
 const LENS_ACROSS = interval.span(LENS.x);
 const LENS_UP = interval.span(LENS.y);
 
+/** The radius each corner of the panel is rounded by. The border's corners are
+ * rounded by this plus half its width, so they stay concentric with the cut. */
+const LENS_ROUND = 0.12;
+
 /** The stretch of each parameter the surface is drawn over. */
 export const OVER = interval(-1.5, 1.5);
 
@@ -415,7 +419,13 @@ export const scene: NodeRecord = {
         {
           kind: 'shape',
           name: 'ground',
-          path: { kind: 'rect', corner: vec2(LENS.x.from, LENS.y.from), width: LENS_ACROSS, height: LENS_UP },
+          path: {
+            kind: 'rect',
+            corner: vec2(LENS.x.from, LENS.y.from),
+            width: LENS_ACROSS,
+            height: LENS_UP,
+            cornerRadius: LENS_ROUND,
+          },
           style: { fill: { colour: PANEL } },
         },
         {
@@ -426,6 +436,7 @@ export const scene: NodeRecord = {
             corner: vec2(LENS.x.from - LENS_EDGE / 2, LENS.y.from - LENS_EDGE / 2),
             width: LENS_ACROSS + LENS_EDGE,
             height: LENS_UP + LENS_EDGE,
+            cornerRadius: LENS_ROUND + LENS_EDGE / 2,
           },
           style: { stroke: { colour: INK, width: LENS_EDGE } },
         },
@@ -595,7 +606,7 @@ export const written: FigureRecord = {
   // Named under the figure's own root, so the strip's move carries its marks into
   // their slot with everything else, and hiding the panel because an inset that
   // magnified its own ground and border would paint a picture of itself.
-  insets: [{ shows: LENS_SHOWS, into: LENS, name: 'solid/lens', hides: ['solid/window'] }],
+  insets: [{ shows: LENS_SHOWS, into: LENS, name: 'solid/lens', hides: ['solid/window'], cornerRadius: LENS_ROUND }],
 };
 
 export const solid: Figure = resolveFigure(written);

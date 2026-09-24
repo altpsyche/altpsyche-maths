@@ -436,10 +436,10 @@ describe('a figure that carries depth', () => {
 describe('the demos as a frame description', () => {
   it('resolves the flat demo to a backend and costs one pass and one draw', () => {
     const built = frameOf(tangent, 5);
-    expect(built.triangles).toBe(1596);
+    expect(built.triangles).toBe(5117);
     // Two coordinates, four channels and one depth to a vertex, four bytes each.
     expect(built.bytes).toBe(built.triangles * 3 * 28);
-    expect(built.bytes).toBe(134064);
+    expect(built.bytes).toBe(5117 * 84);
     // Every text mark of the flat demo at 5 seconds, and nothing else.
     expect(built.refused).toHaveLength(24);
 
@@ -460,8 +460,8 @@ describe('the demos as a frame description', () => {
 
   it('resolves the solid demo to a backend and costs a pass for each of its stretches', () => {
     const built = frameOf(solid, 6);
-    expect(built.triangles).toBe(2140);
-    expect(built.bytes).toBe(179760);
+    expect(built.triangles).toBe(5560);
+    expect(built.bytes).toBe(5560 * 84);
     expect(built.refused).toHaveLength(21);
 
     const spent = cost(built.frame, { width: WIDTH, height: HEIGHT });

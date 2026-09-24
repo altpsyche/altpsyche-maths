@@ -1908,13 +1908,23 @@ scissor. So nothing outside this package stands between a figure and a path clip
       square cut to a disc its partner never covers keeps its place in the list, where before the
       pair was ordered by depth. The solid demo's 798 frames at 60 per second give 262,237 marks in
       the same order before and after, and `npm test` reads 1,532 of 1,532 over 98 files.
-- [ ] **7. Both lenses get round corners.** `Inset` gains a `corner` radius in figure units, and a
+- [x] **7. Both lenses get round corners.** `Inset` gains a `corner` radius in figure units, and a
       nonzero one cuts its marks to the rounded rectangle through `clipPath`. The flat demo's lens
       and the solid demo's lens each take one, and the border each demo draws round its lens takes
       the same corner so the edge and the cut agree. **This is the step the demos gain from.**
       **Measurement:** the count of inset marks at each demo's still time, the count of those carrying
       a `clipPath`, whether a point 0.01 inside each rectangle's corner is outside the drawn lens,
       and the committed images regenerated.
+      **Landed 2026-09-24 as `cornerRadius`,** on the inset and on `rect` alike, since `corner` is
+      already the point a `rect` starts from. Both lenses take 0.12 and each border takes 0.12 plus
+      half its width. At the still time the flat demo draws 40 inset marks and the solid demo 75,
+      the same counts as before, and every one of them carries a `clipPath` against 0 before. The
+      point 0.01 in from each lens's lower left corner is outside the drawn lens in both demos,
+      where before it was inside. `npm run demos` changed the tangent and surface images and their
+      strips and no other file. The GPU frame of the flat demo at 5 seconds is 5,117 triangles in
+      9.11ms at the best of 20 against 1,596 in 6.28ms, and the solid demo's at 6 seconds is 5,560
+      in 16.54ms against 2,140 in 13.69ms, which is the entry under Found while working. `npm test`
+      reads 1,536 of 1,536 over 98 files.
 - [ ] **8. The version is cut.** The header of `figure/mark.ts`, the guide and the README say a clip
       may be a path. Then `npm run gate:gpu` and `npm run gate:record` by hand, and the version is
       3.4.0, a minor since a field is added. **Measurement:** the done-criteria below, line by line.
@@ -1934,6 +1944,14 @@ scissor. So nothing outside this package stands between a figure and a path clip
    the band's end carries into 3.x until Siva says otherwise.
 
 ## Found while working, not yet queued
+
+- **A convex path clip is cut as its triangles, and that triples the GPU frame of a round lens.**
+  `clipTrianglesToPath` cuts each of a mark's triangles against each triangle of the clip, so a
+  rounded rectangle of 8 cubics splits every triangle it crosses into the fan the clip was
+  triangulated into. The flat demo's frame at 5 seconds went from 1,596 triangles to 5,117 when its
+  lens took round corners, and the solid demo's at 6 seconds from 2,140 to 5,560. A convex clip can
+  be cut as one polygon by the Sutherland and Hodgman step the rectangle already takes, which leaves
+  each triangle at most a small fan of its own. The measurement is those two counts after the change.
 
 - **The specification test reads the nodes' prose from a heading that does not exist.**
   `nodeProse` in `tests/specification.test.ts` joins five sections by heading, and the fifth

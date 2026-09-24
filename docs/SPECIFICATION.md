@@ -227,6 +227,12 @@ inset leaves out**, named the way an animation names its target: the border and 
 inset are the figure's own marks, so an inset over the part of the picture they sit in would magnify
 them and paint a picture of itself.
 
+**`cornerRadius` rounds the rectangle an inset is drawn into**, as a plain number in the figure's own
+units. Above 0, every mark of the inset carries as its `clipPath` that rectangle with each corner
+replaced by a quarter arc of this radius, or the intersection of that shape with the path clip the
+mark already carried. A radius larger than half the shorter side is read as half the shorter side, in
+an inset and in a `rect` alike, so the two rounded rectangles one radius names are the same shape.
+
 ## The expression form
 
 **An expression is a tree, and a figure's every driven number is one.** It evaluates against the
@@ -305,7 +311,7 @@ path a track moves is named and a path fixed for the life of the figure is eithe
 | `line` | `from`, `to` | one straight piece between two places |
 | `polyline` | `points` | an open run through the places, in order |
 | `polygon` | `points` | the same run closed back to its first place |
-| `rect` | `corner`, `width`, `height` | a rectangle from the corner at the low end of both axes |
+| `rect` | `corner`, `width`, `height`, `cornerRadius` | a rectangle from the corner at the low end of both axes, its corners rounded by quarter arcs where `cornerRadius` is above 0 |
 | `circle` | `centre`, `radius` | a closed circle as four cubic quarters |
 | `arc` | `centre`, `radius`, `from`, `to` | part of a circle, the angles in radians anticlockwise |
 | `plot` | `coords`, `of`, `resolution`, `over` | a curve sampled in the graph domain |
@@ -871,8 +877,8 @@ renderer is conformant inside that band and wrong outside it in either direction
 
 | file | bytes | what it exercises |
 | --- | --- | --- |
-| `demos/tangent.figure.json` | 410,650 | the graph domain, a moving view, an inset, two typeset rules, a brace, a field, three runs of bars, an arrow and a callout |
-| `demos/surface.figure.json` | 275,293 | a surface, a plane, a section, streamlines, axes in space and an orbiting camera |
+| `demos/tangent.figure.json` | 410,756 | the graph domain, a moving view, an inset with round corners, two typeset rules, a brace, a field, three runs of bars, an arrow and a callout |
+| `demos/surface.figure.json` | 275,400 | a surface, a plane, a section, streamlines, axes in space and an orbiting camera |
 | `demos/boolean.figure.json` | 14,444 | the three boolean operations through no crossing, one, two and containment |
 | `demos/rotate.figure.json` | 26,211 | a rotation about a box's middle and about a named place, a swell, a walk into another shape, a wave, a rock, a straight move, and a loop |
 | `demos/frame.figure.json` | 176,495 | a mark placed against the frame beside one placed in the figure's own units, and a rule fitted inside a share of the frame |

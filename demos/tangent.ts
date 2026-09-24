@@ -156,6 +156,10 @@ const LENS_EDGE = 0.02;
 const LENS_ACROSS = interval.span(LENS.x);
 const LENS_UP = interval.span(LENS.y);
 
+/** The radius each corner of the panel is rounded by. The border's corners are
+ * rounded by this plus half its width, so they stay concentric with the cut. */
+const LENS_ROUND = 0.12;
+
 /**
  * Where the middle of the frame sits when the dot is at this point.
  *
@@ -552,7 +556,13 @@ export const scene: NodeRecord = {
         {
           kind: 'shape',
           name: 'ground',
-          path: { kind: 'rect', corner: vec2(LENS.x.from, LENS.y.from), width: LENS_ACROSS, height: LENS_UP },
+          path: {
+            kind: 'rect',
+            corner: vec2(LENS.x.from, LENS.y.from),
+            width: LENS_ACROSS,
+            height: LENS_UP,
+            cornerRadius: LENS_ROUND,
+          },
           style: { fill: { colour: PANEL } },
         },
         {
@@ -563,6 +573,7 @@ export const scene: NodeRecord = {
             corner: vec2(LENS.x.from - LENS_EDGE / 2, LENS.y.from - LENS_EDGE / 2),
             width: LENS_ACROSS + LENS_EDGE,
             height: LENS_UP + LENS_EDGE,
+            cornerRadius: LENS_ROUND + LENS_EDGE / 2,
           },
           style: { stroke: { colour: INK, width: LENS_EDGE } },
         },
@@ -748,6 +759,7 @@ export const written: FigureRecord = {
       into: LENS,
       view: { kind: 'followView', target: 'tangent/point' },
       name: 'tangent/lens',
+      cornerRadius: LENS_ROUND,
       // The annotations are written at the picture's own scale, so magnifying
       // one puts a leader across the panel with neither end of it in view.
       hides: ['tangent/window', 'tangent/aim', 'tangent/shortfall'],

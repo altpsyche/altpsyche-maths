@@ -71,6 +71,7 @@ export type PathRecord =
       readonly corner: Expression;
       readonly width: Expression;
       readonly height: Expression;
+      readonly cornerRadius?: Expression;
     }
   | { readonly kind: 'circle'; readonly centre: Expression; readonly radius: Expression }
   | {
@@ -220,7 +221,8 @@ export function resolvePath(record: PathRecord, bindings: Bindings = {}): Path {
       return rect(
         pointOf(record.corner, bindings, "a rectangle's corner"),
         numberOf(record.width, bindings, "a rectangle's width"),
-        numberOf(record.height, bindings, "a rectangle's height")
+        numberOf(record.height, bindings, "a rectangle's height"),
+        record.cornerRadius === undefined ? 0 : numberOf(record.cornerRadius, bindings, "a rectangle's corner radius")
       );
     case 'circle':
       return circle(

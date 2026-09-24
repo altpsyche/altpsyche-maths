@@ -14,7 +14,8 @@
  */
 import { mat3, type Transform2D } from '../values/mat3.js';
 import { vec2 } from '../values/vec2.js';
-import { transformPath } from './path.js';
+import { rect, transformPath, type Path } from './path.js';
+import { intersectionOf } from './boolean.js';
 import { carried, touches } from './animation.js';
 import { boundsOf, centreOf, grownBy, overlapOf, type Bounds } from './bounds.js';
 import { widestWidth } from './width.js';
@@ -54,6 +55,10 @@ export interface Inset {
    * picture they sit in magnifies them and paints a picture of itself.
    */
   hides?: readonly string[];
+  /** The radius each corner of `into` is rounded by, in the figure's own units.
+   * Above 0, every mark of the inset is cut to that rounded rectangle as well as
+   * to `into`. */
+  cornerRadius?: number;
 }
 
 /**
@@ -104,12 +109,19 @@ function reachOf(mark: Mark): Bounds | null {
  * whole reach falls outside that rectangle is left out, as is one the inset
  * hides. A mark that already has a clip keeps it: its clip is magnified with it
  * and then cut down to the inset's rectangle, and its path clip is magnified with
- * it, so a mark clipped in the figure is clipped the same way in the inset.
+ * it, so a mark clipped in the figure is clipped the same way in the inset. A
+ * rounded inset gives every mark the rounded rectangle as its path clip, or its
+ * intersection with the magnified one, and a mark left with no area is left out.
  */
 export function insetMarks(marks: readonly Mark[], inset: Inset): readonly Mark[] {
   const shows = inset.view ? inset.view.view(inset.shows, 1, () => marks) : inset.shows;
   const through = insetMatrix(shows, inset.into, inset.fit);
   const name = inset.name ?? 'inset';
+  const into = inset.into;
+  const rounded =
+    inset.cornerRadius && inset.cornerRadius > 0
+      ? rect(vec2(into.x.from, into.y.from), into.x.to - into.x.from, into.y.to - into.y.from, inset.cornerRadius)
+      : undefined;
   const drawn: Mark[] = [];
   for (const mark of marks) {
     if (inset.hides?.some((hidden) => touches(mark.id, hidden))) continue;
@@ -118,8 +130,10 @@ export function insetMarks(marks: readonly Mark[], inset: Inset): readonly Mark[
     const moved = carried(mark, through);
     const reach = reachOf(moved);
     if (reach && !overlapOf(reach, clip)) continue;
-    const clipPath = mark.clipPath ? { clipPath: transformPath(mark.clipPath, through) } : {};
-    drawn.push({ ...moved, id: `${name}/${mark.id}`, clip, ...clipPath });
+    const own = mark.clipPath ? transformPath(mark.clipPath, through) : undefined;
+    const path: Path | undefined = own && rounded ? intersectionOf(own, rounded) : (own ?? rounded);
+    if (path && path.length === 0) continue;
+    drawn.push({ ...moved, id: `${name}/${mark.id}`, clip, ...(path ? { clipPath: path } : {}) });
   }
   return drawn;
 }

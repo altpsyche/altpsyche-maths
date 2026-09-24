@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { areaOf, boundsOfMarks, circle, colourFrom, flatten, followView, group, insetMarks, insetMatrix, interval, line, marksAt, mat3, moveView, sameMarks, shape, text, vec2, type Figure, type Mark } from '@altpsyche/maths';
+import { areaOf, boundsOfMarks, circle, colourFrom, containsPoint, flatten, followView, group, insetMarks, insetMatrix, interval, line, marksAt, mat3, moveView, sameMarks, shape, text, vec2, type Figure, type Mark } from '@altpsyche/maths';
 
 /**
  * The inset, which is a second view of the same figure drawn into a rectangle of
@@ -80,6 +80,25 @@ describe('the marks of an inset', () => {
     const [seen] = insetMarks([{ ...found(marks, 'fig/disc'), clipPath: lens }], { shows, into });
     expect(areaOf(seen.clipPath!) / areaOf(lens)).toBeCloseTo(4, 12);
     expect(seen.clip).toEqual(into);
+  });
+
+  it('carry the rounded rectangle as their path clip where the inset rounds its corners', () => {
+    const round = insetMarks(marks, { shows, into, cornerRadius: 0.5 });
+    expect(idOf(round)).toEqual(['inset/fig/disc', 'inset/fig/rule']);
+    for (const mark of round) {
+      expect(mark.clip).toEqual(into);
+      expect(areaOf(mark.clipPath!)).toBeCloseTo(16 - (4 - Math.PI) * 0.25, 3);
+      expect(containsPoint(mark.clipPath!, vec2(6.01, 1.01))).toBe(false);
+    }
+  });
+
+  it('cut a path clip a mark already carried to the rounded rectangle', () => {
+    // A disc of radius 1 about (0, -0.5) magnifies to radius 2 about (6, 1), the inset's own corner, so a quarter of it lies inside and the rounding cuts that quarter's corner.
+    const disc = circle(vec2(0, -0.5), 1);
+    const [seen] = insetMarks([{ ...found(marks, 'fig/disc'), clipPath: disc }], { shows, into, cornerRadius: 0.5 });
+    const quarter = Math.PI;
+    const corner = (1 - Math.PI / 4) * 0.25;
+    expect(areaOf(seen.clipPath!)).toBeCloseTo(quarter - corner, 2);
   });
 
   it('carry the rectangle as their clip, so nothing spills out of it', () => {
