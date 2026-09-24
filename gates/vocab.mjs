@@ -1,5 +1,5 @@
 // Vocabulary check: the banned nouns and the voice verbs CLAUDE.md names, counted in the comments
-// of the published sources and in the prose of README.md, DESIGN.md, CLAUDE.md and the pages in docs/.
+// of the published sources and in the prose of README.md, DESIGN.md, CLAUDE.md, docs/ and the next skill.
 import { readFileSync, readdirSync } from 'node:fs';
 import ts from 'typescript';
 
@@ -12,7 +12,7 @@ const SOURCES = [
       .map((name) => `${dir}/${name}`),
   ),
 ];
-const PROSE = ['README.md', 'DESIGN.md', 'CLAUDE.md', 'docs/GUIDE.md', 'docs/SPECIFICATION.md', 'docs/FIGURE-FORMAT.md', 'docs/REFERENCE.md', 'docs/ROADMAP.md'];
+const PROSE = ['README.md', 'DESIGN.md', 'CLAUDE.md', 'docs/GUIDE.md', 'docs/SPECIFICATION.md', 'docs/FIGURE-FORMAT.md', 'docs/REFERENCE.md', 'docs/ROADMAP.md', '.claude/skills/next/SKILL.md'];
 
 // Alternation order matters: the longer phrase is tried first, so "drawn item" is not also an "item".
 // A phrase may break across a comment's line, so the gap between its words also takes the `*` or

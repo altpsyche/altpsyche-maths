@@ -1676,8 +1676,11 @@ file's two counts before and after, the check's file total, and `npm test` over 
       since the entry's own text added 2 nouns after the count, 89 matches reworded, 1,003
       backticked spans the same list before and after, `check:vocab` reads 8 prose files, and 1,511
       of 1,511 over 98 files.
-- [ ] **6. `.claude/skills/next/SKILL.md`.** 10 and 2 to 0 and 0, with its step headings and every
+- [x] **6. `.claude/skills/next/SKILL.md`.** 10 and 2 to 0 and 0, with its step headings and every
       other use naming a roadmap entry. CLAUDE.md's `/next` sentence is read again in the same commit.
+      **Landed:** 12 matches reworded, 15 backticked spans the same list before and after,
+      `check:vocab` reads 9 prose files, and 1,511 of 1,511 over 98 files. CLAUDE.md's `/next`
+      sentence names no banned word and stands as it was.
 - [ ] **7. The comments of `demos/`, `tests/` and `gates/`.** 26 and 21 to 0 and 0. `SOURCES` gains
       the three directories, `gates/vocab.mjs` blanks its own ban lists, and a test name in a string is
       code rather than a comment, so the check leaves it as it stands.

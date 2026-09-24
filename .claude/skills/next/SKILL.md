@@ -1,8 +1,8 @@
 ---
 name: next
 description: >
-  Pick up work where the last session left it and land the next item of this package.
-  Reads docs/ROADMAP.md for state, plans an item before working it, and cuts a version
+  Pick up work where the last session left it and land the next roadmap entry of this package.
+  Reads docs/ROADMAP.md for state, plans an entry before working it, and cuts a version
   only when its demos draw. Use at the start of a session, after a /clear, or whenever
   the user says "next", "continue", "carry on", "what's next", or invokes /next.
 ---
@@ -19,24 +19,24 @@ the sequence only, so nothing here repeats it. **Where the two disagree, `CLAUDE
 node .claude/context-used.mjs
 ```
 
-**CONTINUE** picks an item. **FINISH** lands what is in hand and stops. **HAND OVER** starts nothing.
+**CONTINUE** picks an entry. **FINISH** lands what is in hand and stops. **HAND OVER** starts nothing.
 Re-check after every landed commit, not at the end.
 
 ## 1. Read the state, do not trust memory
 
 - **[`docs/ROADMAP.md`](../../../docs/ROADMAP.md)** in full. It is short.
-- `git log --oneline -10`, and `git log -S'<symbol>'` when you need to know why a line is the way it
+- `git log --oneline -10`, and `git log -S'<symbol>'` for the reason a line is the way it
   is.
 - **`git status --short` before anything else.** Output means a previous session left work
-  uncommitted, and that is the first thing to resolve rather than build on.
+  uncommitted, and that is the first work to resolve rather than build on.
 
 Read as little as answers the question. Grep for the symbol, read the function, open a whole file
 only when the whole file is the subject.
 
-## 2. Pick one item
+## 2. Pick one entry
 
-**The ladder's own order wins.** Each version in it is an item, and the lowest unreleased version is
-the pick. If that item carries a step list, the pick is **its first unticked step**, not the item.
+**The ladder's own order wins.** Each version in it is an entry, and the lowest unreleased version is
+the pick. If that entry carries a step list, the pick is **its first unticked step**, not the entry.
 
 The two decisions at the top of the roadmap are answered and are not to be reopened by a session. A
 call the roadmap leaves open goes to Siva by name.
@@ -86,12 +86,12 @@ When the last step of a version ticks:
 
 ## 7. Boundary
 
-Re-run the budget script and decide out loud. **FINISH or HAND OVER** hands over whatever is left and
-never starts what it cannot land and record in the same session, because a half-landed finding stops
-the roadmap describing the tree.
+Re-run the budget script and decide out loud. **FINISH or HAND OVER** leaves the rest to the next
+session and never starts what it cannot land and record in the same session, because a half-landed
+finding stops the roadmap describing the tree.
 
-Handing over is three lines: what landed with its numbers, what the next item is, and `/clear` then
+Handing over is three lines: what landed with its numbers, what the next entry is, and `/clear` then
 `/next`.
 
 **Never invent work to keep the loop alive.** An empty roadmap is a real answer, and so is "the next
-thing is Siva's call".
+entry is Siva's call".
