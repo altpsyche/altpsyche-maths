@@ -1684,11 +1684,12 @@ this is the first.
       asked for is destroyed once on `dispose` and a caller's 0 times, and a request that returns
       none narrows the door to WebGL 2 in 1 request rather than 2. The engine's WebGPU `dispose`
       unconfigures the context and leaves the device alive.
-- [ ] **2. A lost device is reported.** `onLost` from `device.lost`, the lost flag, and both
-      painting calls drawing nothing after it. **Measurement:** with the mock, a `lost` promise
-      resolved with `destroyed` calls `onLost` 1 time with `destroyed`; `paintGpu` after it makes 0
-      draws where before it made 1, and returns all of the marks it was given in `refused`; a
-      surface disposed before its `lost` resolves calls `onLost` 0 times.
+- [x] **2. A lost device is reported.** Landed. With the mock, a `lost` promise settled with
+      `destroyed` and then `unknown` calls `onLost` 1 time, with `destroyed`. `paintGpu` makes 1
+      draw before the loss and 0 after it, and returns `refused: ['square', 'other']` and 0
+      triangles for the two marks it was given. `pixelsGpu` returns 256 zero bytes for an 8 by 8
+      canvas. A surface disposed before its `lost` settles calls `onLost` 0 times, and so does a
+      device the surface asked for and destroyed on `dispose`.
 - [ ] **3. A lost context is reported.** The `webglcontextlost` listener, its `preventDefault`, and
       its removal on `dispose`. **Measurement:** with the mock, 1 listener after opening a WebGL 2
       surface and 0 after `dispose`; a dispatched loss calls `onLost` 1 time with `context` and

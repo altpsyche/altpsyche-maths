@@ -50,8 +50,14 @@ export interface GpuCanvas {
  * a browser returns satisfies it.
  */
 export interface GpuDevice {
+  /** Settles once, when the card is gone, with the device's own reason. */
+  readonly lost: Promise<{ readonly reason: 'destroyed' | 'unknown' }>;
   destroy(): void;
 }
+
+/** Why a surface's card went: the WebGPU device's own reason, or `context` for a
+ * WebGL 2 context, which gives none. */
+export type GpuLoss = 'destroyed' | 'unknown' | 'context';
 
 export interface GpuSurfaceOptions {
   /** What each frame opens on, four channels from nothing to one. Left out, a
@@ -71,6 +77,9 @@ export interface GpuSurfaceOptions {
    * where the backend is not WebGL 2, the surface asks for one itself and
    * destroys it on `dispose`. */
   readonly device?: GpuDevice;
+  /** What to call, once, when the card goes. A lost surface draws nothing and
+   * both painting calls return every mark's id as refused. */
+  readonly onLost?: (reason: GpuLoss) => void;
 }
 
 /** A card with a renderer on it, ready to draw a figure's marks. */
@@ -104,6 +113,8 @@ interface Held extends GpuSurface {
   /** The frame as the chosen backend takes it, which is the WGSL as written for
    * WebGPU and the baked GLSL for WebGL 2. */
   readonly asDrawn: (frame: FrameGraph) => FrameGraph;
+  /** Set once the card is gone, after which nothing reaches the renderer. */
+  readonly state: { lost: boolean };
 }
 
 /** Frame options for a canvas at the size it is now, since a canvas resized
@@ -170,6 +181,14 @@ export async function gpuSurface(
         }
       : (frame: FrameGraph) => frame;
 
+  const state = { lost: false, disposed: false };
+  const lose = (reason: GpuLoss) => {
+    if (state.lost || state.disposed) return;
+    state.lost = true;
+    options.onLost?.(reason);
+  };
+  void drawnWith?.lost.then((info) => lose(info.reason));
+
   const held: Held = {
     backend: opened.renderer.backend,
     canvas,
@@ -178,9 +197,11 @@ export async function gpuSurface(
     options,
     font,
     asDrawn,
+    state,
     // The engine's WebGPU backend leaves its device alive on dispose, so a device
     // the surface asked for is destroyed here and a caller's is left to the caller.
     dispose: () => {
+      state.disposed = true;
       opened.renderer.dispose();
       if (drawnWith === asked) asked?.destroy();
     },
@@ -196,6 +217,11 @@ function heldBy(surface: GpuSurface): Held {
   return held;
 }
 
+/** What a lost surface reports for a frame: every mark left out and nothing drawn. */
+function nothingDrawn(marks: readonly Mark[]): GpuPainting {
+  return { refused: marks.map((mark) => mark.id), triangles: 0 };
+}
+
 /**
  * One list of marks drawn on a card, at the size the surface's canvas is now.
  *
@@ -205,6 +231,7 @@ function heldBy(surface: GpuSurface): Held {
  */
 export function paintGpu(surface: GpuSurface, marks: readonly Mark[], view: Transform2D): GpuPainting {
   const held = heldBy(surface);
+  if (held.state.lost) return nothingDrawn(marks);
   const built = gpuFrame(textOutlines(marks, held.font), view, sizedFor(held.canvas, held.options));
   held.renderer.resize(held.canvas.width, held.canvas.height);
   held.renderer.draw(held.asDrawn(built.frame), {});
@@ -225,6 +252,10 @@ export async function pixelsGpu(
   view: Transform2D
 ): Promise<{ pixels: Uint8Array; painting: GpuPainting }> {
   const held = heldBy(surface);
+  if (held.state.lost) {
+    const pixels = new Uint8Array(held.canvas.width * held.canvas.height * 4);
+    return { pixels, painting: nothingDrawn(marks) };
+  }
   const built = gpuFrame(textOutlines(marks, held.font), view, sizedFor(held.canvas, held.options));
   held.renderer.resize(held.canvas.width, held.canvas.height);
   const pixels = await held.renderer.frame(held.asDrawn(built.frame), {});

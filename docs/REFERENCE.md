@@ -1516,11 +1516,15 @@ picture in a recording and a picture on a card are the same picture.
   to, a `backend` where the caller has already chosen one, `onRefused` for the engine's own words
   when it turns a frame down, and the `device` to draw with where the caller already holds one. Left
   out, and where the backend is not WebGL 2, the surface asks for a device itself and destroys it on
-  `dispose`.
+  `dispose`. `onLost` is called once when the card goes, with a `GpuLoss`, and never after `dispose`.
 - `GpuCanvas` — a canvas named by the parts a renderer reads, its `width`, its `height` and its
   `getContext`, so this package declares no browser library.
 - `GpuDevice` — a WebGPU device named by the parts this module reads, which a browser's `GPUDevice`
   satisfies, so this package declares no WebGPU library.
+- `GpuLoss` — why a surface's card went: `destroyed` or `unknown`, which are the WebGPU device's own
+  reasons, or `context` for a lost WebGL 2 context, which gives none. A lost surface draws nothing,
+  `paintGpu` and `pixelsGpu` return every mark's id in `refused`, and `pixelsGpu` returns a cleared
+  picture of the canvas's size. Neither throws.
 - `GpuSurface` — the `backend` the frames go through, the `canvas` they land on, the `device` they
   are drawn with on WebGPU, and `dispose`.
 - `paintGpu(surface, marks, view)` — one list of marks drawn on a card, at the size the surface's
