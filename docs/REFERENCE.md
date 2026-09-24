@@ -620,8 +620,9 @@ functions, which is what lets the same tree survive being written to a file and 
   equation is resolved geometry, one path per glyph with the box round them, rather than the TeX it
   was typeset from, so a renderer draws the expression without MathJax and two machines draw the same
   glyphs.
-- `EquationRecordOptions` — what `equationNode` takes, with `at` as an expression, since a figure may
-  hang an expression off a frame that moves. The box it is fitted inside is layout.
+- `EquationRecordOptions` — what `equationNode` takes, with `at`, `width` and `height` as
+  expressions, since a figure may hang an expression off a frame that moves and fit it inside a share
+  of the frame it is drawn in.
 - `VectorFieldRecord` — a `kind` of `vectorField`, a `name`, its `coords`, the field as `of`, and its
   `options`. The field is an expression of the bound variable `at`, which is the place being sampled,
   giving the vector there.

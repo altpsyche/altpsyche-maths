@@ -1,12 +1,18 @@
 import { describe, expect, it } from 'vitest';
 import {
+  checkFigure,
   equationFromTex,
+  equationNode,
   flatten,
+  marksAt,
+  resolveFigure,
   fractionOf,
   resolveNode,
   sameMarks,
   sampleTrack,
   vec2,
+  type Expression,
+  type FigureRecord,
   type Mark,
   type NodeRecord,
 } from '../index.js';
@@ -97,5 +103,51 @@ describe('the equation node as a record', () => {
         options: { at: 3, width: RULE_WIDTH, height: RULE_HEIGHT, fill: ink },
       })
     ).toThrow("an equation's place is a point and was given a number");
+  });
+});
+
+/** A share of one measure of the frame, as an expression. */
+const shareOf = (name: 'width' | 'height', of: number): Expression => ({
+  kind: 'arithmetic',
+  operator: '*',
+  left: of,
+  right: { kind: 'frame', name },
+});
+
+/** The largest gap between two numbers at the same place in two written values. */
+function worstGap(one: unknown, two: unknown): number {
+  const numbers = (value: unknown) => (JSON.stringify(value).match(/-?\d+(\.\d+)?(e-?\d+)?/g) ?? []).map(Number);
+  const [a, b] = [numbers(one), numbers(two)];
+  expect(a).toHaveLength(b.length);
+  return a.reduce((worst, value, at) => Math.max(worst, Math.abs(value - b[at])), 0);
+}
+
+describe('the equation box as an expression', () => {
+  const fitted: FigureRecord = {
+    extent: { kind: 'matchingAspect', height: 100 },
+    fit: 'contain',
+    still: 0,
+    scene: {
+      kind: 'equationNode',
+      name: 'rule',
+      equation: moving,
+      options: { at: { kind: 'frame', name: 'centre' }, width: shareOf('width', 0.84), height: shareOf('height', 0.46), fill: ink },
+    },
+  };
+
+  it('fits the glyphs inside a share of the frame at each of three aspects', () => {
+    const built = resolveFigure(checkFigure(JSON.parse(JSON.stringify(fitted))));
+    for (const aspect of [16 / 9, 1, 9 / 16]) {
+      const byHand = flatten(equationNode('rule', moving, { at: vec2(0, 0), width: 84 * aspect, height: 46, fill: ink }));
+      const read = marksAt(built, 0, aspect);
+      expect(read).toHaveLength(8);
+      expect(worstGap(read, byHand)).toBeLessThan(1e-9);
+    }
+  });
+
+  it('refuses a box written as a string, naming the field', () => {
+    const written = JSON.parse(JSON.stringify(fitted));
+    written.scene.options.width = '84';
+    expect(() => checkFigure(written)).toThrow('scene.options.width is an expression and is the text "84"');
   });
 });

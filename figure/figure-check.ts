@@ -331,8 +331,8 @@ const SHAPES: Readonly<Record<string, Shape>> = {
   equationOptions: fields('what a typeset expression takes', {
     at: need(ref('expression')),
     align: may(named('an alignment', ['start', 'middle', 'end'])),
-    width: need(number),
-    height: need(number),
+    width: need(ref('expression')),
+    height: need(ref('expression')),
     fill: need(ref('fill')),
   }),
   colourChoice: {

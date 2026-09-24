@@ -490,8 +490,10 @@ the major step.
 **`riemannBars` reads its curve from the bound variable `x`**, the way `plot` does, and its
 `options` carries `over` as the `Interval` of graph x the bars cover.
 
-**An equation node's `options` carries `at`, an expression, so a typeset rule hangs off a frame that
-moves.** The equation itself is geometry, since a renderer in another language has no typesetter.
+**An equation node's `options` carries `at`, `width` and `height`, each an expression, so a typeset
+rule hangs off a frame that moves and is fitted inside a share of the frame it is drawn in.** `at` is
+a place and `width` and `height` are numbers, the box the glyphs are scaled to fit inside. The
+equation itself is geometry, since a renderer in another language has no typesetter.
 
 **A vector field's `of` is the field, read from the bound variable `at`**, and its `options` carries
 `lengthOf` and `colourFor`. `lengthOf` is an expression of the bound variable `magnitude`, which

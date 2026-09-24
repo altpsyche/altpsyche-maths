@@ -408,7 +408,7 @@ is left, since 2.1.0 through 2.10.0 are cut.
 
 | version | what lands | what it changes | steps | cut against | depends on | plan |
 | --- | --- | --- | --- | --- | --- | --- |
-| 3.2.0 | an equation record whose fitting box is an expression | what `EquationRecordOptions` may carry | 3, none ticked | an equation written as a file and drawn at three aspects | nothing outside this package | under The items |
+| 3.2.0 | an equation record whose fitting box is an expression | what `EquationRecordOptions` may carry | 3, 1 ticked | an equation written as a file and drawn at three aspects | nothing outside this package | under The items |
 | 3.3.0 | a surface that hands over its device, or says the card is gone | what `GpuSurface` reports | to plan | a figure redrawn after a card is taken away | nothing, since `RendererOptions` already takes a caller's device | to plan |
 | 3.4.0 | a clip that is a path rather than a rectangle | what a `Mark` may ask for | to plan | nothing yet, which is why it is last of the marks | nothing now, since `@altpsyche/engine` 0.5.0 counts a winding | to plan |
 | 4.0.0 | the five `item` names renamed to `entry`, then a figure a reader can act on | the shape of `Figure`, which gains input | to plan | nothing yet | nothing outside this package | to plan |
@@ -1632,13 +1632,16 @@ carries, since a track is an expression too.
 frame, and the frame demo is already drawn at sixteen by nine, at square and at nine by sixteen, which
 is the three aspects the version is cut against.
 
-- [ ] **1. The box is an expression.** SPECIFICATION.md first, where the equation node's paragraph
+- [x] **1. The box is an expression.** SPECIFICATION.md first, where the equation node's paragraph
       names `at`, `width` and `height` as expressions, then `EquationRecordOptions`, the checker's
       `equationOptions` and the resolve in `node-record.ts`, and REFERENCE.md's line for the type.
       **Measurement:** a record fitted to `shareOf('width', 0.84)` by `shareOf('height', 0.46)` at
       `matchingAspect` 100, read at 16/9, 1 and 9/16, against `equationNode` called with the numbers
       worked out by hand, worst difference in any glyph's path; `npm run demos` leaves all 8
       committed `.figure.json` files byte for byte as they were.
+      **Read:** worst difference 0 at all three aspects, over 8 glyphs each; all 8 files unchanged.
+      Before, the checker refused the record with `scene.options.width is a number and is an
+      object`; a string is now refused with `is an expression and is the text "84"`.
 - [ ] **2. The frame demo carries an equation fitted to the frame.** A typeset rule in
       `demos/frame.ts` whose box is a share of the frame's width and height, `demos/frame.figure.json`,
       `docs/frame.svg` and `docs/frame-strip.svg` written again, and `tests/frame-demo.test.ts` reading it. **Measurement:**

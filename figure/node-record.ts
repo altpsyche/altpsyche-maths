@@ -249,10 +249,13 @@ export interface RiemannBarsRecord {
  * What a typeset expression takes beyond its geometry.
  *
  * The place it is hung from is an expression, since the flat demo hangs its two
- * rules off a frame that follows the dot. The box it is fitted inside is layout.
+ * rules off a frame that follows the dot. The box it is fitted inside is two
+ * expressions, so an expression takes a share of whatever frame it is drawn in.
  */
-export interface EquationRecordOptions extends Omit<EquationOptions, 'at'> {
+export interface EquationRecordOptions extends Omit<EquationOptions, 'at' | 'width' | 'height'> {
   readonly at: Expression;
+  readonly width: Expression;
+  readonly height: Expression;
 }
 
 /**
@@ -1048,6 +1051,8 @@ export function resolveNode(record: NodeRecord, bindings: Bindings = {}): Node {
       return equationNode(record.name, record.equation, {
         ...record.options,
         at: pointOf(record.options.at, bindings, "an equation's place"),
+        width: numberOf(record.options.width, bindings, "an equation's width"),
+        height: numberOf(record.options.height, bindings, "an equation's height"),
       });
     case 'polyline3':
       return polyline3(
