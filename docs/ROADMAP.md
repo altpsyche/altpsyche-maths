@@ -408,7 +408,7 @@ is left, since 2.1.0 through 2.10.0 are cut.
 
 | version | what lands | what it changes | steps | cut against | depends on | plan |
 | --- | --- | --- | --- | --- | --- | --- |
-| 4.0.0 | the five `item` names renamed to `entry`, then a figure a reader can act on | the shape of `Figure`, which gains input | to plan | nothing yet | nothing outside this package | to plan |
+| 4.0.0 | the five `item` names renamed to `entry`, then a figure a reader can act on | the shape of `Figure`, which gains input, and the format, which is version 2 | 9, under The entries | the flat demo's dot dragged along its curve and the solid demo's eye turned | nothing outside this package | written 2026-09-24, go given 2026-09-24 |
 
 **The three calls `altpsyche.dev` was blocked on are 3.1.0, 3.2.0 and 3.3.0, and all three are cut.**
 They stood in front of the clip because this file orders entries by whether anything is waiting to draw
@@ -1785,7 +1785,7 @@ entry's steps come first, then 3.4.0 and 4.0.0 in ladder order, then the handove
 - [ ] **3. A version is published from a tag. Waits on Siva, who deferred it on 2026-09-24.** It
       needs three answers: the trusted publisher set on npmjs.com for `publish.yml`, a yes to
       pushing `v3.0.0`, and which version the workflow publishes first, since 3.3.0 is cut and npm
-      carries 3.0.0. 3.4.0 is cut, so the next pick while this step waits is 4.0.0, which has no steps yet.
+      carries 3.0.0. 3.4.0 is cut, so the next pick while this step waits is 4.0.0, whose steps are below.
       **Siva answered two of the three on 2026-09-24.** No tag is pushed for 3.0.0, so the first
       tag is the version the workflow publishes. That version is 3.4.0, published once after 3.4.0
       step 8 cuts it, with 3.1.0 through 3.3.0 never reaching npm. The trusted publisher is not set
@@ -1832,6 +1832,119 @@ are the site's, and a session there is what lands them. The site depends on both
 and only the peer range is enforced, so its two ranges cross together or its install fails, which is
 the crossing to 3.0.0 measured above. And nothing surfaces a release to anybody, which a watcher in
 the site's own tree answers and no workflow here can.
+
+### 4.0.0, the five `item` names renamed to `entry`, then a figure a reader can act on
+
+**An input is a track a reader may hold.** While the reader holds it, the value the reader gives
+replaces the value the track's keys give at that time, and while nothing holds it the track reads as
+it always has. A held value is that value, and the consumer keeps it between frames rather than the
+figure. So a figure stays a pure function: its marks are a function of the time and the held values,
+and a figure asked twice with the same two answers the same picture twice.
+
+**The reading of 2026-09-24, so a later session takes none of it again.**
+
+- **Both demos already move by one track each.** The flat demo's dot, tangent and reading all follow
+  the track `s`, the fraction of the walked stretch of the parabola, in `demos/tangent.ts` line 323.
+  The solid demo's eye follows the track `turn`, one turn round the middle, in `demos/surface.ts`
+  line 183. A reader dragging the dot and a reader turning the eye each move that one number, so the
+  scene needs no second clock, which is the reason the tracks were chosen at 0.4.0 and 0.10.0.
+- **The file needs no new expression kind.** A `track` expression reads the value at the time being
+  drawn, and a held value is that value. What the file gains is one optional field on the figure
+  naming which tracks a reader may hold and how a pointer moves each.
+- **The old names are counted without the roadmap.** `SpaceItem` is 29 uses over 10 files,
+  `SpaceItemRecord` 9 over 5 and `SceneItemRecord` 14 over 7. The `items` key of a `scene3` record is
+  3 keys in the committed files, 2 in `demos/solids.figure.json` and 1 in `demos/surface.figure.json`,
+  where the ladder above counts the solids file alone.
+- **Nothing here listens for a pointer, and nothing in the site does either.** The site's
+  `components/figure/FigureSurface.tsx` draws an `<svg role="img">` with no handlers and plays every
+  figure from one shared `requestAnimationFrame` loop in `components/figure/clock.ts`. Its roadmap
+  carries "A reader can drag a point in a figure" at lines 183 and 184 as a decision rather than a
+  mechanism, and records that its chapter 1 has nothing to drag. So no picture on the site waits for
+  this version, which the ladder already says.
+- **What the hit test needs exists.** `containsPoint`, `windingAt` and `nearestEdge` are at the door,
+  every mark carries a name, and `values/mat3.ts` carries `invert`, which a pixel needs to become a
+  place in the figure's own units.
+
+**Four calls are made here, and each names what would change it.**
+
+1. **An input is a held track rather than a new value kind**, for the two reasons in the reading. An
+   input with no track behind it, such as a switch between two pictures, would change it.
+2. **The package stops at pure functions.** It turns a pixel into a place, a press into the input it
+   takes, and a pointer into a value. The listeners, and the record of what is held, are the site's,
+   since the site owns the loop that plays the figure. A second consumer with no loop of its own
+   would change it.
+3. **A version 2 reader refuses a version 1 file**, which is the rule SPECIFICATION.md already states
+   for a version it does not read. The cost is that the site writes `format: 2` into each of its
+   figure files at the crossing. A reason to keep two versions readable would change it.
+4. **A recording and the still read nothing held.** A video file and a reader who asked for less
+   motion are each shown the figure the tracks describe, so neither depends on what a reader did.
+
+**The steps.** Each is one commit and each names the measurement its commit quotes.
+
+- [ ] **1. The four names in code are renamed.** `SpaceItem` becomes `SpaceEntry`, `SpaceItemRecord`
+      becomes `SpaceEntryRecord`, `SceneItemRecord` becomes `SceneEntryRecord`, and the parameter
+      `items` of `scene3` becomes `entries`. The `items` key of a record stays until step 2.
+      **Measurement:** 29, 9 and 14 uses to 0, the suite at 1,536 of 1,536 before and after, and
+      `npm run demos` changing 0 bytes.
+- [ ] **2. The format is version 2 and a `scene3` record carries `entries`.** SPECIFICATION.md
+      changes first in the same commit: line 1, the version section saying what version 2 changed,
+      and the `scene3` row. Then `FIGURE_FORMAT_VERSION`, the checker, the record type, the reader
+      and every committed figure file. **Measurement:** 3 `items` keys to 0, the eight committed files
+      read to the same mark counts at the still and at half the duration, and a version 1 file
+      refused with the sentence naming both numbers.
+- [ ] **3. A figure is read with held values.** `marksAt`, `extentAt` and `viewAt` take the held
+      values, a held value replaces the sampled value of the track of that name, and a name no track
+      carries is refused by name. The rule in DESIGN.md becomes a pure function of time and the held
+      values. **Measurement:** the flat demo at named times with `s` held at what its track reads
+      there, against the same times with nothing held, by tolerance; the dot with `s` held at 0.25
+      against `pointAlong` of the walked stretch at 0.25; and `npm run demos` changing 0 bytes.
+- [ ] **4. A pixel becomes a place and a press takes an input.** The inverse of the matrix `viewAt`
+      returns turns a pixel into figure units, and a press takes the input whose named mark contains
+      the place or lies within that input's reach of it. **Measurement:** the round trip error of the
+      four corners and the middle of a 1280 by 720 frame, and a press on the flat demo's dot taking
+      `s` where a press 0.5 units away takes nothing.
+- [ ] **5. A pointer gives a held value, by one of two kinds.** `along` is the fraction of a path's
+      length at its point nearest the pointer, for the dot on its curve. `drag` is the value at the
+      press plus a number per figure unit the pointer has travelled across, for the eye.
+      **Measurement:** a pointer on the walked stretch at x = 1.5 held as `s`, and the distance from
+      the dot drawn with it to that point; a pointer 0.3 units off the curve against the nearest
+      point; and `drag` over a known travel against its expression.
+- [ ] **6. The format carries `inputs`.** SPECIFICATION.md first, in the same commit: the optional
+      field, its two kinds and their fields, and the refusal of an input naming no track. Then the
+      checker, `FigureRecord` and `resolveFigure`. **Measurement:** a file carrying `inputs` written
+      back to the same bytes, and the refusal sentence with its path.
+- [ ] **7. The flat demo's dot can be dragged.** The tangent figure declares `s` as `along` the walked
+      stretch, taken by a press on the mark `point`. **Measurement:** `npm run demos` changing 0
+      bytes, since nothing is held; and with `s` held at 0 and at 1, how far the dot sits from the
+      middle of the frame the follow leaves, against 2.14 with the track.
+- [ ] **8. The solid demo's eye can be turned.** The surface figure declares `turn` as `drag`, one
+      turn for the width of the frame. **Measurement:** `npm run demos` changing 0 bytes, and the
+      marks with `turn` held at 0.5 against the marks at the time the track reads 0.5.
+- [ ] **9. The version is cut.** The README, the guide and REFERENCE.md state inputs, `package.json`
+      reads 4.0.0, and the handover to the site names what it owes: the listeners in
+      `FigureSurface.tsx`, what is held in `clock.ts`, and `format: 2` in its files and in its two
+      pins. **Measurement:** the done-criteria below, line by line.
+
+**Steps 7 and 8 are where the demos gain.** Steps 1 and 2 change what the demos are written in, and
+the gate is that they draw the same bytes.
+
+**Done-criteria.**
+
+1. No file outside `docs/ROADMAP.md` names `SpaceItem`, `SpaceItemRecord`, `SceneItemRecord`, or an
+   `items` parameter or key of `scene3`.
+2. SPECIFICATION.md line 1 reads version 2, its version section states what version 2 changed, and
+   it states `inputs` with both kinds. Each changed in the commit with the checker that reads it.
+3. A version 1 file is refused and the sentence names 1 and 2.
+4. The eight committed figure files read at version 2 to the mark counts they read at version 1, at
+   the still and at half the duration.
+5. With nothing held, every figure draws the marks it drew before step 3, and `npm run demos` changes
+   0 bytes across steps 1 to 8.
+6. A value held at what the track reads gives the marks the track gives, by tolerance, on both demos.
+7. A press on the flat demo's dot takes `s`, and a pointer on the curve puts the dot on the pointer's
+   place within a stated distance. A drag across the solid demo turns the eye by the stated rate.
+8. A recording and the still take no held values, and `gate:record` writes 34 of 34 recordings.
+9. `package.json` reads 4.0.0 and nothing is published. `npm test`, `type-check` and `build` report no
+   error, and `check:vocab` reads 0 and 0.
 
 ## Found while working, not yet queued
 
