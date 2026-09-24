@@ -124,9 +124,9 @@ function serve() {
  * keeps the first graphics context it is given for as long as it lives, so the
  * same one serving every figure is what a disposed renderer leaving it alone
  * buys. */
-async function openSurface(page, origin) {
+async function openSurface(page, origin, backend) {
   return page.evaluate(
-    async ({ origin, width, height }) => {
+    async ({ origin, width, height, backend }) => {
       const { gpuSurface, shippedFont } = await import(`${origin}/dist/index.js`);
       // The sheet is rasterised inside an `<img>`, which is an isolated document
       // that fetches nothing and never sees the page's own fonts. So the typeface
@@ -146,8 +146,13 @@ async function openSurface(page, origin) {
         window.card.height = height;
         document.getElementById('canvases').replaceChildren(window.card);
       }
+      window.loss = new Promise((settle) => {
+        window.settleLoss = settle;
+      });
       window.surface = await gpuSurface(window.card, {
         clear: [1, 1, 1, 1],
+        ...(backend ? { backend } : {}),
+        onLost: (reason) => window.settleLoss({ reason, at: performance.now() }),
         onRefused: (message) => {
           throw new Error(message);
         },
@@ -155,8 +160,59 @@ async function openSurface(page, origin) {
       if (!window.surface) throw new Error('no backend drew the figure');
       return window.surface.backend;
     },
-    { origin, width: WIDTH, height: HEIGHT }
+    { origin, width: WIDTH, height: HEIGHT, backend }
   );
+}
+
+/** Takes the card away from the open surface, the way each backend loses it, and
+ * paints one figure's marks through the lost surface. WebGL 2 is restored before
+ * returning, since a canvas whose context is lost gives a new surface nothing. */
+async function takeAway(page, origin, name) {
+  return page.evaluate(
+    async ({ origin, name, width, height }) => {
+      const { readFigure, marksAt, viewAt, paintGpu } = await import(`${origin}/dist/index.js`);
+      const figure = readFigure(await (await fetch(`${origin}/demos/${name}.figure.json`)).text());
+      const marks = marksAt(figure, figure.still, width / height, 'gpu');
+      const view = viewAt(figure, figure.still, width, height);
+      const surface = window.surface;
+      const lose = surface.backend === 'webgl2' ? window.card.getContext('webgl2').getExtension('WEBGL_lose_context') : null;
+      const started = performance.now();
+      if (lose) lose.loseContext();
+      else surface.device.destroy();
+      const loss = await window.loss;
+      const refused = paintGpu(surface, marks, view).refused.length;
+      if (lose) {
+        // Chromium permits a restore only once the lost event's dispatch has returned,
+        // so a restore asked for in a microtask of that dispatch is never answered.
+        await new Promise((done) => setTimeout(done, 0));
+        const restored = new Promise((done) => window.card.addEventListener('webglcontextrestored', done, { once: true }));
+        lose.restoreContext();
+        await restored;
+      }
+      surface.dispose();
+      window.surface = null;
+      return { backend: surface.backend, reason: loss.reason, took: loss.at - started, refused, marks: marks.length };
+    },
+    { origin, name, width: WIDTH, height: HEIGHT }
+  );
+}
+
+/** A card taken away from one figure and the figure drawn again through a new
+ * surface on the same canvas, which must give the picture its first reading gave. */
+async function lostAndRedrawn(page, origin, name, before) {
+  const lost = await takeAway(page, origin, name);
+  await openSurface(page, origin, lost.backend);
+  const redrawn = (await compare(page, origin, name)).whole;
+  const kept = redrawn.same === before.same && redrawn.worst === before.worst;
+  const reported = lost.reason === (lost.backend === 'webgl2' ? 'context' : 'destroyed');
+  console.log(
+    `${name} on ${lost.backend} with its card taken away: onLost said ${lost.reason} after ` +
+      `${lost.took.toFixed(1)}ms, a paint through the lost surface refused ${lost.refused} of ${lost.marks} marks | ` +
+      `redrawn ${(redrawn.same * 100).toFixed(2)}% equal against ${(before.same * 100).toFixed(2)}%, ` +
+      `worst ${redrawn.worst} against ${before.worst} | ` +
+      `${kept && reported && lost.refused === lost.marks ? 'the loss was reported and the redraw kept the picture' : 'THE LOSS WAS NOT ANSWERED'}`
+  );
+  return kept && reported && lost.refused === lost.marks;
 }
 
 /** Gives up the card resources the surface holds, leaving the canvas where it is. */
@@ -321,8 +377,22 @@ console.log(
     `${kept ? 'the canvas survived the dispose' : 'THE CANVAS DID NOT SURVIVE THE DISPOSE'}`
 );
 if (!kept) failed += 1;
-
+if (!(await lostAndRedrawn(page, origin, again, redrawn))) failed += 1;
 await browser.close();
+
+// WebGPU is off in Chromium unless asked for, and ANGLE on Vulkan is what gives it
+// the real card rather than SwiftShader, the CPU fallback.
+const webgpu = await chromium.launch({ args: ['--enable-unsafe-webgpu', '--enable-features=Vulkan', '--use-angle=vulkan'] });
+const second = await webgpu.newPage();
+await second.goto(`${origin}/`);
+if ((await openSurface(second, origin, 'webgpu')) !== 'webgpu') {
+  failed += 1;
+  console.error('no WebGPU surface opened, so the WebGPU loss went unmeasured');
+} else {
+  const drawn = (await compare(second, origin, again)).whole;
+  if (!(await lostAndRedrawn(second, origin, again, drawn))) failed += 1;
+}
+await webgpu.close();
 server.close();
 console.log(
   `${figures.length - failed} of ${figures.length} figures agree within ${CHANNEL} of 255 over ` +

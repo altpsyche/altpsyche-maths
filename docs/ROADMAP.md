@@ -1696,16 +1696,15 @@ this is the first.
       afterwards makes 0 draws and refuses the 1 mark it was given. A canvas with no
       `addEventListener` opens on WebGL 2 as before. An `HTMLCanvasElement` and an `OffscreenCanvas`
       still type-check as a `GpuCanvas` under `lib: dom`.
-- [ ] **4. The gate takes a card away and draws the figure again.** `gates/gpu.mjs` gains a pass per
-      backend over one committed figure. WebGL 2 loses its context through `WEBGL_lose_context`'s
-      `loseContext`, is restored with `restoreContext`, and a new surface is opened on the same
-      canvas. WebGPU destroys the device and opens a new surface on the same canvas with a new
-      device. **Measurement:** the reason each backend reports, the milliseconds from the loss to
-      `onLost`, the refused count of a paint through the lost surface against the figure's mark
-      count, and the redrawn picture's equal share and worst channel against its first reading,
-      which must be the same. **The step stops and goes to Siva** if Playwright's Chromium gives
-      no WebGPU adapter under `--enable-unsafe-webgpu`, since the WebGPU half would then be a claim
-      nothing measured.
+- [x] **4. The gate takes a card away and draws the figure again.** Landed, over `tangent`, the
+      last committed figure. WebGL 2: `onLost` said `context` 2.6ms after `loseContext`, a paint
+      through the lost surface refused 236 of 236 marks, and the redraw read 91.11% equal and worst
+      228 against 91.11% and 228. WebGPU, in a second Chromium launched with
+      `--enable-unsafe-webgpu --enable-features=Vulkan --use-angle=vulkan`, which gives the real
+      card where the flag alone gives SwiftShader: `destroyed` after 0.2ms, 236 of 236 refused,
+      91.89% and 228 against 91.89% and 228. Chromium answers `restoreContext` only once the lost
+      event's dispatch has returned, so a restore asked for in a microtask of it waits forever and a
+      surface opened on the still-lost context throws on its sample count.
 - [ ] **5. The consumer's surface read against a release.** `npm pack` here and `npm install
       --no-save` in `altpsyche.dev`, with a scratch change to `FigureSurface.tsx` there that drops the
       element listener for `onLost`, never committed. The commit here is the reading written into
