@@ -29,11 +29,11 @@ import { short } from './number.js';
 /** One element, described rather than built, so the same description can be
  * written as text or made in a document and the two cannot drift. */
 export interface SvgElement {
-  tag: 'path' | 'text' | 'defs' | 'linearGradient' | 'stop' | 'clipPath' | 'rect';
+  tag: 'path' | 'text' | 'g' | 'defs' | 'linearGradient' | 'stop' | 'clipPath' | 'rect';
   attributes: Record<string, string>;
   text?: string;
   /** The elements inside this one, which is how a gradient contains its stops and
-   * a clip contains its rectangle. */
+   * a clip contains its rectangle or its path. */
   children?: readonly SvgElement[];
 }
 
@@ -194,6 +194,29 @@ function clipId(prefix: string, rect: Record<string, string>): string {
   return `${prefix}clip-${rect.x}-${rect.y}-${rect.width}-${rect.height}`;
 }
 
+/** The id of the element naming one path clip, which is its path data with each space written as an
+ * underscore: path data contains no underscore, so two different paths cannot arrive at one id. */
+function pathClipId(prefix: string, data: string): string {
+  return `${prefix}clip-path-${data.replace(/ /g, '_')}`;
+}
+
+/**
+ * The element a mark is written as, cut to whichever of its two clips it carries.
+ *
+ * An element takes one `clip-path`, so a mark with both has the path clip on itself and the rectangle
+ * on a group around it, and what is drawn is inside both.
+ */
+function clippedElement(element: SvgElement, mark: Mark, view: Transform2D, prefix: string): SvgElement {
+  if (mark.clipPath) element.attributes['clip-path'] = `url(#${pathClipId(prefix, pathToData(mark.clipPath, view))})`;
+  if (!mark.clip) return element;
+  const rect = `url(#${clipId(prefix, clipRect(mark.clip, view))})`;
+  if (!mark.clipPath) {
+    element.attributes['clip-path'] = rect;
+    return element;
+  }
+  return { tag: 'g', attributes: { 'clip-path': rect }, children: [element] };
+}
+
 /**
  * Every gradient and every clip named once, inside the one `<defs>` the sheet
  * contains.
@@ -215,6 +238,18 @@ function defsElement(marks: readonly Mark[], view: Transform2D, prefix: string):
           tag: 'clipPath',
           attributes: { id, clipPathUnits: 'userSpaceOnUse' },
           children: [{ tag: 'rect', attributes: rect }],
+        });
+      }
+    }
+    if (mark.clipPath) {
+      const d = pathToData(mark.clipPath, view);
+      const id = pathClipId(prefix, d);
+      if (!clips.has(id)) {
+        clips.add(id);
+        named.push({
+          tag: 'clipPath',
+          attributes: { id, clipPathUnits: 'userSpaceOnUse' },
+          children: [{ tag: 'path', attributes: { d, 'clip-rule': 'nonzero' } }],
         });
       }
     }
@@ -257,8 +292,7 @@ function pathElement(mark: PathMark, view: Transform2D, scale: number, prefix: s
     if (mark.stroke.dashOffset !== undefined) attributes['stroke-dashoffset'] = short(mark.stroke.dashOffset * scale);
   }
   if (mark.opacity !== undefined && mark.opacity !== 1) attributes.opacity = short(mark.opacity);
-  if (mark.clip) attributes['clip-path'] = `url(#${clipId(prefix, clipRect(mark.clip, view))})`;
-  return { tag: 'path', attributes };
+  return clippedElement({ tag: 'path', attributes }, mark, view, prefix);
 }
 
 function textElement(
@@ -291,8 +325,7 @@ function textElement(
   if (mark.align) attributes['text-anchor'] = mark.align;
   if (mark.baseline && !font) attributes['dominant-baseline'] = mark.baseline;
   if (mark.opacity !== undefined && mark.opacity !== 1) attributes.opacity = short(mark.opacity);
-  if (mark.clip) attributes['clip-path'] = `url(#${clipId(prefix, clipRect(mark.clip, view))})`;
-  return { tag: 'text', attributes, text: mark.text };
+  return clippedElement({ tag: 'text', attributes, text: mark.text }, mark, view, prefix);
 }
 
 /**
@@ -433,7 +466,7 @@ export interface PaintNode {
   setAttribute(name: string, value: string): void;
   textContent: string | null;
   /**
-   * What a gradient's stops and a clip's rectangle are put inside.
+   * What a gradient's stops, a clip's rectangle or path, and a clipped mark's element are put inside.
    *
    * It is required rather than optional: a `<clipPath>` containing no `<rect>`
    * clips away everything that references it, so a target that could not contain a

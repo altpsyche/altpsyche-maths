@@ -1862,12 +1862,17 @@ scissor. So nothing outside this package stands between a figure and a path clip
       eight figure files give the same mark counts at the still and at half the duration, from 12 on
       the boolean demo to 1,070 on the solids, and `npm test` reads 1,519 of 1,519 over 98 files. A
       mark under no path clip carries no `clipPath` field at all.
-- [ ] **3. The SVG painter writes a path clip.** A `<clipPath>` holding a `<path>` with
+- [x] **3. The SVG painter writes a path clip.** A `<clipPath>` holding a `<path>` with
       `clip-rule="nonzero"`, named by its path data the way `clipId` names a rectangle by its four
       numbers, so every mark of one inset shares one element. A mark with both clips is written with
       the rectangle's clip on a group around it. **Measurement:** the number of `<clipPath>` elements
       for N marks under one path clip, which has to be 1, and `npm run demos` giving zero changed
       bytes over the eight committed images.
+      **Landed 2026-09-24:** three marks under one disc clip give 1 `<clipPath>` holding one
+      `<path>` with `clip-rule="nonzero"`, against 0 before, when a `clipPath` reached no element at
+      all. With a rectangle as well the sheet holds 2 and each mark sits in a `<g>` carrying the
+      rectangle. `npm run demos` changed 0 bytes of the committed images, and `npm test` reads
+      1,523 of 1,523 over 98 files.
 - [ ] **4. The canvas painter clips to a path.** `CanvasLike.clip` takes the fill rule the way
       `fill` already does, and a path clip is built with `moveTo` and `bezierCurveTo` then clipped.
       **Measurement:** the calls a stand-in context records for one mark under a disc clip, in order.

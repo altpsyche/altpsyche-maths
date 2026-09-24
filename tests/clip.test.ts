@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { areaOf, circle, colourFrom, flatten, group, interval, line, mat3, paintCanvas, paintSvg, shape, svgElements, text, vec2, viewMatrix, type CanvasLike, type Mark, type PaintNode, type SvgElement } from '@altpsyche/maths';
+import { areaOf, circle, colourFrom, flatten, group, interval, line, mat3, paintCanvas, paintSvg, shape, svgElements, svgMarkup, text, vec2, viewMatrix, type CanvasLike, type Mark, type PaintNode, type SvgElement } from '@altpsyche/maths';
 
 /**
  * The rectangular clip, in the tree that declares it and in the two painters
@@ -281,6 +281,67 @@ describe('a path clip a group hands down', () => {
   it('adds no field to a mark under no path clip', () => {
     const marks = flatten(group('fig', [shape('near', circle(vec2(1, 0), 0.5), { fill: ink })], { style: { clip: box } }));
     expect('clipPath' in marks[0]).toBe(false);
+  });
+});
+
+describe('a path clip written as SVG', () => {
+  /** A disc of radius 1 at the origin, which is 100 across and 50 down the surface with a radius of 10. */
+  const lens = circle(vec2(0, 0), 1);
+  const under = (clip?: typeof box) =>
+    flatten(
+      group('fig', [
+        shape('one', circle(vec2(0.5, 0), 1), { fill: ink }),
+        shape('two', circle(vec2(-0.5, 0), 1), { fill: ink }),
+        text('word', vec2(0, 0), 'a', 1, { fill: ink }),
+      ]),
+      undefined,
+      { clipPath: lens, ...(clip ? { clip } : {}) }
+    );
+
+  it('is one element holding one path for every mark under it', () => {
+    const elements = svgElements(under(), view);
+    const clips = defsOf(elements)!.children!.filter((child) => child.tag === 'clipPath');
+    expect(clips).toHaveLength(1);
+    const [held] = clips[0].children!;
+    expect(held.tag).toBe('path');
+    expect(held.attributes['clip-rule']).toBe('nonzero');
+    expect(numbersIn(held.attributes.d).slice(0, 2)).toEqual([110, 50]);
+    const id = clips[0].attributes.id;
+    expect(id).toMatch(/^clip-path-M[A-Za-z0-9._-]+$/);
+    const drawn = elements.filter((element) => element.tag !== 'defs');
+    expect(drawn.map((element) => element.attributes['clip-path'])).toEqual([`url(#${id})`, `url(#${id})`, `url(#${id})`]);
+  });
+
+  it('is a second element where a second path is asked for', () => {
+    const marks = flatten(
+      group('fig', [
+        shape('one', circle(vec2(0, 0), 0.5), { fill: ink, clipPath: lens }),
+        shape('two', circle(vec2(0, 0), 0.5), { fill: ink, clipPath: circle(vec2(0.25, 0), 1) }),
+      ])
+    );
+    expect(defsOf(svgElements(marks, view))!.children).toHaveLength(2);
+  });
+
+  it('puts a mark with both clips inside a group carrying the rectangle', () => {
+    const elements = svgElements(under(box), view);
+    const clips = defsOf(elements)!.children!;
+    expect(clips.map((clip) => clip.children![0].tag)).toEqual(['rect', 'path']);
+    const [rect, path] = clips.map((clip) => `url(#${clip.attributes.id})`);
+    const drawn = elements.filter((element) => element.tag !== 'defs');
+    expect(drawn.map((element) => element.tag)).toEqual(['g', 'g', 'g']);
+    for (const wrapper of drawn) {
+      expect(wrapper.attributes).toEqual({ 'clip-path': rect });
+      expect(wrapper.children).toHaveLength(1);
+      expect(wrapper.children![0].attributes['clip-path']).toBe(path);
+    }
+    expect(drawn.map((wrapper) => wrapper.children![0].tag)).toEqual(['path', 'path', 'text']);
+  });
+
+  it('is written out as markup with the path inside its element', () => {
+    const markup = svgMarkup(under(box), view, 200, 100);
+    expect(markup.match(/<clipPath /g)).toHaveLength(2);
+    expect(markup).toMatch(/<clipPath id="clip-path-[^"]+" clipPathUnits="userSpaceOnUse"><path d="M110 50C[^"]+" clip-rule="nonzero"\/><\/clipPath>/);
+    expect(markup.match(/<g clip-path="url\(#clip-100-30-40-40\)"><path data-mark=/g)).toHaveLength(2);
   });
 });
 
