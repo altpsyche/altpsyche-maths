@@ -197,6 +197,25 @@ describe('gpuFrame', () => {
     expect(built.frame.passes[0]).not.toHaveProperty('scissor');
   });
 
+  it('cuts a path clip into the geometry, inside the rectangle as well', () => {
+    const clipped: Mark = {
+      kind: 'path',
+      id: 'clipped',
+      path: rect(vec2(0, 0), 2, 2),
+      fill: { colour: colourFrom('#000') },
+      clip: { x: interval(0, 1), y: interval(0, 2) },
+      clipPath: circle(vec2(1, 1), 0.5),
+    };
+    // The disc's centre is the middle of the frame, which is clip space's origin.
+    const corners = vertices(gpuFrame([clipped], straight, TINY));
+    expect(corners.length).toBeGreaterThan(0);
+    for (let at = 0; at * 7 < corners.length; at += 1) {
+      const [x, y] = [corners[at * 7], corners[at * 7 + 1]];
+      expect(x).toBeLessThanOrEqual(1e-6);
+      expect(Math.hypot(x, y)).toBeLessThanOrEqual(0.5 + 1e-6);
+    }
+  });
+
   it('holds every mark in the order it was painted, which is what carries depth', () => {
     const under: Mark = { kind: 'path', id: 'under', path: rect(vec2(0, 0), 2, 2), fill: { colour: colourFrom('#ff0000') } };
     const over: Mark = { kind: 'path', id: 'over', path: rect(vec2(0, 0), 2, 2), fill: { colour: colourFrom('#00ff00') } };

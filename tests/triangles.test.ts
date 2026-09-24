@@ -3,6 +3,7 @@ import {
   areaOf,
   circle,
   clipTriangles,
+  clipTrianglesToPath,
   colourFrom,
   dashPath,
   flattenPath,
@@ -474,6 +475,31 @@ describe('clipTriangles', () => {
   it('keeps a corner sitting on the boundary without adding one', () => {
     const touching = [vec2(0, 0), vec2(1, 0), vec2(0, 1)];
     expect(clipTriangles(touching, unitBox)).toHaveLength(3);
+  });
+});
+
+describe('clipTrianglesToPath', () => {
+  const unitSquare = trianglesOf(rect(vec2(0, 0), 1, 1));
+
+  it('cuts a unit square to a disc of radius a half', () => {
+    const cut = clipTrianglesToPath(unitSquare, circle(vec2(0.5, 0.5), 0.5), { tolerance: TOLERANCE });
+    // Flattening puts chords inside the arc, each at most the tolerance from it,
+    // so at most the perimeter times the tolerance is lost.
+    const disc = Math.PI / 4;
+    expect(triangleArea(cut)).toBeLessThan(disc);
+    expect(triangleArea(cut)).toBeGreaterThan(disc - Math.PI * TOLERANCE);
+  });
+
+  it('reads a clip wound either way as the same clip', () => {
+    const forwards = polygon([vec2(0, 0), vec2(1, 0), vec2(0, 1)]);
+    const backwards = polygon([vec2(0, 0), vec2(0, 1), vec2(1, 0)]);
+    expect(triangleArea(clipTrianglesToPath(unitSquare, forwards))).toBeCloseTo(0.5, 14);
+    expect(triangleArea(clipTrianglesToPath(unitSquare, backwards))).toBeCloseTo(0.5, 14);
+  });
+
+  it('drops triangles outside the clip and leaves a square inside it whole', () => {
+    expect(clipTrianglesToPath(unitSquare, circle(vec2(5, 5), 1))).toHaveLength(0);
+    expect(triangleArea(clipTrianglesToPath(unitSquare, rect(vec2(-1, -1), 3, 3)))).toBeCloseTo(1, 14);
   });
 });
 

@@ -39,7 +39,7 @@ export { transformFill, transformGradient } from './figure/gradient.js';
 export { differenceOf, intersectionOf, unionOf } from './figure/boolean.js';
 export type { BooleanOptions } from './figure/boolean.js';
 export { containsPoint, flattenPath, nearestEdge, windingAt } from './figure/inside.js';
-export { clipTriangles, strokeTrianglesOf, triangleArea, trianglesOf } from './figure/triangles.js';
+export { clipTriangles, clipTrianglesToPath, strokeTrianglesOf, triangleArea, trianglesOf } from './figure/triangles.js';
 export type { TriangleOptions } from './figure/triangles.js';
 export { readFont, shippedFont } from './figure/font.js';
 export { glyphPath } from './figure/glyph.js';

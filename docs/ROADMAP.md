@@ -1881,7 +1881,7 @@ scissor. So nothing outside this package stands between a figure and a path clip
       `nonzero`, then the mark's own `beginPath`. Before, the same mark recorded the rectangle's four
       calls and nothing for the path clip. `npm run demos` changed 0 bytes and `npm test` reads
       1,525 of 1,525 over 98 files.
-- [ ] **5. The GPU frame cuts triangles to a path.** The clip path is triangulated by `trianglesOf`,
+- [x] **5. The GPU frame cuts triangles to a path.** The clip path is triangulated by `trianglesOf`,
       and each of a mark's triangles is cut against each triangle of the clip by the same Sutherland
       and Hodgman step `clipTriangles` uses, since a triangle is convex. Pairs whose boxes miss are
       skipped before any cut. The card's stencil is not used, for the reason `gpu-frame.ts` gives
@@ -1889,6 +1889,12 @@ scissor. So nothing outside this package stands between a figure and a path clip
       other edge. **Measurement:** the area of a unit square cut to a disc of radius 0.5, against
       π/4 minus the flattening loss, and the triangle count and time of the flat demo's frame at its
       still time before and after.
+      **Landed 2026-09-24 as `clipTrianglesToPath`:** the unit square's two triangles cut to a disc
+      of radius 0.5 at the tolerance 0.002 give 129 triangles against the disc's own 62, covering
+      0.784355 against π/4 = 0.785398, which is 1.04 × 10⁻³ lost inside the bound π · 0.002 =
+      6.28 × 10⁻³ that chords of the flattening leave. Before, the same mark kept both triangles and
+      covered 1. The flat demo's frame at its still time is 1,538 triangles before and after, in
+      2.54ms and 2.43ms at the best of 20, and `npm test` reads 1,529 of 1,529 over 98 files.
 - [ ] **6. Animation, inset and depth order carry a path clip.** A morph whose pair has two
       different path clips swaps at half, which is what `walkedClip` does for a rectangle only one of
       the pair has. An inset magnifies a mark's path clip through its matrix, and `footprintOf` takes

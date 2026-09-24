@@ -39,7 +39,7 @@ import { vec2, type Vec2 } from '../values/vec2.js';
 import type { Colour } from '../values/colour.js';
 import { depthAt } from './depth.js';
 import type { Fill, Mark } from './mark.js';
-import { clipTriangles, strokeTrianglesOf, trianglesOf, type TriangleOptions } from './triangles.js';
+import { clipTriangles, clipTrianglesToPath, strokeTrianglesOf, trianglesOf, type TriangleOptions } from './triangles.js';
 
 export interface GpuFrameOptions extends TriangleOptions {
   /** How many pixels across the picture is drawn, which is what clip space is
@@ -200,8 +200,12 @@ function trianglesFor(mark: Mark, options: TriangleOptions): Piece[] {
     });
   }
   const box = mark.clip;
-  if (!box) return pieces;
-  return pieces.map((piece) => ({ ...piece, corners: clipTriangles(piece.corners, box) }));
+  const around = mark.clipPath;
+  return pieces.map((piece) => {
+    let corners = box ? clipTriangles(piece.corners, box) : piece.corners;
+    if (around) corners = clipTrianglesToPath(corners, around, options);
+    return { ...piece, corners };
+  });
 }
 
 /** One mark ready to be written out: the triangles it came to, and the depth

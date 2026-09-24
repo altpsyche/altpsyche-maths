@@ -429,13 +429,70 @@ export function clipTriangles(corners: readonly Vec2[], box: Bounds): Vec2[] {
 
   const clipped: Vec2[] = [];
   for (let at = 0; at + 2 < corners.length; at += 3) {
-    let polygon: Vec2[] = [corners[at], corners[at + 1], corners[at + 2]];
-    for (const inside of sides) {
-      polygon = halfPlane(polygon, inside);
-      if (polygon.length < 3) break;
-    }
-    for (let corner = 1; corner + 1 < polygon.length; corner += 1) {
-      clipped.push(polygon[0], polygon[corner], polygon[corner + 1]);
+    cutInto(clipped, [corners[at], corners[at + 1], corners[at + 2]], sides);
+  }
+  return clipped;
+}
+
+/** One triangle cut against half planes in turn, with what is left pushed as a
+ * fan of triangles. */
+function cutInto(clipped: Vec2[], triangle: Vec2[], sides: readonly ((point: Vec2) => number)[]): void {
+  let polygon = triangle;
+  for (const inside of sides) {
+    polygon = halfPlane(polygon, inside);
+    if (polygon.length < 3) return;
+  }
+  for (let corner = 1; corner + 1 < polygon.length; corner += 1) {
+    clipped.push(polygon[0], polygon[corner], polygon[corner + 1]);
+  }
+}
+
+/** The three half planes a triangle is the meeting of, each positive on the
+ * triangle's side of its edge whichever way the triangle winds. */
+function sidesOf(a: Vec2, b: Vec2, c: Vec2): ((point: Vec2) => number)[] {
+  const turn = Math.sign(leftOf(a, b, c));
+  return [
+    (point) => turn * leftOf(a, b, point),
+    (point) => turn * leftOf(b, c, point),
+    (point) => turn * leftOf(c, a, point),
+  ];
+}
+
+/** The box around one triangle's corners. */
+function boxOf(a: Vec2, b: Vec2, c: Vec2): Bounds {
+  return {
+    x: interval(Math.min(a.x, b.x, c.x), Math.max(a.x, b.x, c.x)),
+    y: interval(Math.min(a.y, b.y, c.y), Math.max(a.y, b.y, c.y)),
+  };
+}
+
+function boxesMeet(one: Bounds, other: Bounds): boolean {
+  return one.x.from <= other.x.to && other.x.from <= one.x.to && one.y.from <= other.y.to && other.y.from <= one.y.to;
+}
+
+/**
+ * A list of triangles cut back to a closed path, three corners to a triangle.
+ *
+ * The path is filled by the nonzero rule and cut into triangles that cover its
+ * inside once, and a triangle is convex, so each triangle of the list is cut
+ * against each triangle of the path by the same Sutherland and Hodgman step a
+ * rectangle takes. The pieces do not overlap, since the path's triangles do not.
+ * A pair whose boxes miss is skipped before any cut.
+ */
+export function clipTrianglesToPath(corners: readonly Vec2[], clip: Path, options: TriangleOptions = {}): Vec2[] {
+  const inside = trianglesOf(clip, { tolerance: options.tolerance, rule: 'nonzero' });
+  const cutters: { box: Bounds; sides: ((point: Vec2) => number)[] }[] = [];
+  for (let at = 0; at + 2 < inside.length; at += 3) {
+    const [a, b, c] = [inside[at], inside[at + 1], inside[at + 2]];
+    cutters.push({ box: boxOf(a, b, c), sides: sidesOf(a, b, c) });
+  }
+
+  const clipped: Vec2[] = [];
+  for (let at = 0; at + 2 < corners.length; at += 3) {
+    const [a, b, c] = [corners[at], corners[at + 1], corners[at + 2]];
+    const box = boxOf(a, b, c);
+    for (const cutter of cutters) {
+      if (boxesMeet(box, cutter.box)) cutInto(clipped, [a, b, c], cutter.sides);
     }
   }
   return clipped;

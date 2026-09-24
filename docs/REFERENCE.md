@@ -1446,6 +1446,10 @@ frame round a picture is a shape.
   Sutherland and Hodgman's algorithm, which clips a convex polygon against four half planes in turn.
   A triangle cut against them leaves a convex polygon of up to seven corners, which is a fan of
   triangles. A rectangle given either way round on either axis names the same box.
+- `clipTrianglesToPath(corners, clip, options)` — a list of triangles cut back to a closed path. The
+  path is cut into triangles under the nonzero rule at `options.tolerance`, and each triangle of the
+  list is cut against each of those by the same Sutherland and Hodgman step, since a triangle is
+  convex. A pair whose boxes miss is skipped before any cut.
 - `triangleArea(corners)` — how much area a list of triangles covers, which is what a triangulation
   is held to.
 - `readFont(bytes)` — a TrueType file read into the `Font` a label is drawn from. The tables read are
