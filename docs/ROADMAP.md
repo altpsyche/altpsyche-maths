@@ -1712,7 +1712,7 @@ entry's steps come first, then 3.4.0 and 4.0.0 in ladder order, then the handove
       gate:floor`:** 1,511 of 1,511 over 98 files at 0.6.0 against 1,511 over 98 at 0.6.1, with
       `type-check` and `build` clean, 0.6.1 back afterwards and 0 lines from `git status --short`. A
       range of `^0.6.9` fails with `the registry does not carry it` before anything is installed.
-- [ ] **2. The gates run on a push.** `.github/workflows/gates.yml`, the shape `@altpsyche/engine`
+- [x] **2. The gates run on a push.** `.github/workflows/gates.yml`, the shape `@altpsyche/engine`
       already uses: `npm ci`, the gates that need nothing, then the browser its own dependency pins
       rather than whatever the runner carries, and step 1's floor run as a job beside them.
       **Measurement:** which gates a runner can run, taken on the runner. `gate:gpu` draws 8 of 8
@@ -1745,8 +1745,12 @@ entry's steps come first, then 3.4.0 and 4.0.0 in ladder order, then the handove
       the second browser and prints that the WebGPU loss went unmeasured, and the `gpu` job passes
       it with a comment giving the reason. On this machine the flagged run reads 8 of 8 with the
       WebGL 2 loss reported as `context` after 2.6ms, and the unflagged run still reads WebGPU
-      `destroyed` after 0.2ms, 91.89% equal and worst 228. What is left of this step is one runner
-      reading of both changes.
+      `destroyed` after 0.2ms, 91.89% equal and worst 228.
+      **The third run, 35982196564, passed all four jobs.** The 798 frames of the solid demo took
+      42,050ms in the `gates` job and 30,155ms in the `floor` job, against 53,034ms and 61,046ms
+      before and a limit of 60,000ms. `npm test` read 1,511 of 1,511 over 98 files in both jobs.
+      `gate:gpu` read 8 of 8 on WebGL 2 with the loss reported as `context` after 4.2ms, and printed
+      the WebGPU loss as unmeasured. `gate:record` wrote 34 of 34 recordings.
 - [ ] **3. A version is published from a tag.** The engine's `publish.yml`: on a release being
       published, the gates, then `npm publish --provenance --access public` with `id-token: write`
       and no npm token anywhere. What it costs is that the trust lives in a registry setting naming
