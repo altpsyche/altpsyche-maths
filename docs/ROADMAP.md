@@ -1924,8 +1924,16 @@ and a figure asked twice with the same two answers the same picture twice.
       0.3999977, and the point found is 0.2999999996 from it against 0.3 for the best of 200,001
       samples. `drag` at 0.125 over 2.4 units reads its expression within 1e-12. The suite reads
       1,547 of 1,547 over 100 files against 1,544, and `npm run demos` changes 0 bytes.
+- [ ] **5a. A drag names its direction, and a third kind turns about a centre.** Siva's call on
+      2026-09-26: the richer motion, matching what the site draws. `drag` gains `across`, a direction
+      in figure units that defaults to x, and the travel is the dot product of the pointer's movement
+      with it, so a vertical or diagonal drag is one field. `around` holds the value at the press plus
+      `rate` for each turn the pointer has swept about `centre`, which is the site's `clock-set`
+      minute hand, dragged by its angle from the dial. **Measurement:** `drag` with `across` at x, at
+      y and at a diagonal over a known travel against its expression; `around` over a quarter turn
+      and over a sweep crossing the negative x axis, where `atan2` jumps by a whole turn.
 - [ ] **6. The format carries `inputs`.** SPECIFICATION.md first, in the same commit: the optional
-      field, its two kinds and their fields, and the refusal of an input naming no track. Then the
+      field, its three kinds and their fields, and the refusal of an input naming no track. Then the
       checker, `FigureRecord` and `resolveFigure`. **Measurement:** a file carrying `inputs` written
       back to the same bytes, and the refusal sentence with its path.
 - [ ] **7. The flat demo's dot can be dragged.** The tangent figure declares `s` as `along` the walked
@@ -1948,7 +1956,7 @@ the gate is that they draw the same bytes.
 1. No file outside `docs/ROADMAP.md` names `SpaceItem`, `SpaceItemRecord`, `SceneItemRecord`, or an
    `items` parameter or key of `scene3`.
 2. SPECIFICATION.md line 1 reads version 2, its version section states what version 2 changed, and
-   it states `inputs` with both kinds. Each changed in the commit with the checker that reads it.
+   it states `inputs` with all three kinds. Each changed in the commit with the checker that reads it.
 3. A version 1 file is refused and the sentence names 1 and 2.
 4. The eight committed figure files read at version 2 to the mark counts they read at version 1, at
    the still and at half the duration.
