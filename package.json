@@ -1,6 +1,6 @@
 {
   "name": "@altpsyche/maths",
-  "version": "3.4.0",
+  "version": "3.4.1",
   "description": "The mathematics AltPsyche's figures are drawn from: vectors, matrices, curves, and a value walked over time.",
   "license": "MIT",
   "author": "Siva",
@@ -48,7 +48,7 @@
     "font": "node font/build.mjs"
   },
   "devDependencies": {
-    "@altpsyche/engine": "^0.6.1",
+    "@altpsyche/engine": "^0.7.0",
     "@types/node": "^20.19.43",
     "playwright": "^1.63.0",
     "typescript": "^5.9.3",
@@ -62,6 +62,6 @@
     "mediabunny": "^1.56.1"
   },
   "peerDependencies": {
-    "@altpsyche/engine": "^0.6.0"
+    "@altpsyche/engine": "^0.6.0 || ^0.7.0"
   }
 }
