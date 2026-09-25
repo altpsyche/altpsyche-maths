@@ -1316,6 +1316,7 @@ a group of that name.
     what holds that rather than trust.
   - `insets` — the second views of the figure drawn into rectangles of its own frame.
   - `painters` — the painters that may draw it. Left out, every painter may.
+  - `inputs` — the tracks a reader may hold, each an `Input` taken by a press on one mark.
 - `PainterName` — `svg`, `canvas` or `gpu`, which is the name a figure turns a painter away with. The
   three differ in what they can meet rather than in what they draw: only a card resolves a depth per
   pixel, and the other two meet the same rule by cutting the geometry.
@@ -1325,8 +1326,15 @@ a group of that name.
 - `TrackValues` — every sampled value by name, which is what a scene function is handed.
 - `FigureRecord` — a whole figure written as data: the `extent` as an `ExtentRecord`, the `fit`, the
   `scene` as a `NodeRecord`, its `tracks`, the `timeline` as a `TimelineRecord`, the `duration`, the
-  `still` time, the `loop` flag, its `insets` as `InsetRecord`s, and its `painters`. `extent`, `scene`
-  and `still` are required and the other seven are optional, which is what `Figure` itself holds.
+  `still` time, the `loop` flag, its `insets` as `InsetRecord`s, its `painters`, and its `inputs` as
+  `InputRecord`s. `extent`, `scene` and `still` are required and the other eight are optional, which
+  is what `Figure` itself holds.
+- `InputRecord` — an input written as data: its `track`, its `mark`, its `motion` as a
+  `MotionRecord`, and its `reach`. `checkFigure` refuses an input naming a track the figure does not
+  carry, with the path of its `track`.
+- `MotionRecord` — a motion written as data, which is `Motion` with the path of `along` written as a
+  `PathRecord`. That path is read once with no track values, so a track read inside an input is
+  refused by `checkFigure`, and a `drag` whose `across` has no length is refused with it.
 - `resolveFigure(record)` — the figure a record describes. The scene is read again at each time with
   the sampled track values as its bindings, so a scene a track drives stays a record rather than a
   closure. An animation's parameters are read once, since a figure carries one timeline and every
@@ -1395,6 +1403,7 @@ consumer owns the loop that plays the figure.
   - `track` — the track a reader holds while the input is taken.
   - `mark` — the mark a press takes the input on, by id or the front of one, the rule an animation
     target follows.
+  - `motion` — how a pointer moves the value while the input is taken, as a `Motion`.
   - `reach` — how far outside the mark a press may land and still take the input, in figure units.
     Left out, it is 0.
 - `placeAt(figure, seconds, width, height, pixel, held)` — the place in the figure's own units that

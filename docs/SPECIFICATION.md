@@ -69,13 +69,14 @@ becomes a version 2 figure by writing `entries` where it wrote `items` and 2 whe
 **A file is a JSON document carrying two fields.** `format` is the version of this specification the
 figure is written in, and `figure` is the figure.
 
-**A figure carries ten fields and three of them are required.** `extent` is how much of the world
+**A figure carries eleven fields and three of them are required.** `extent` is how much of the world
 the figure shows in its own units, `scene` is the tree of nodes, and `still` is the one time a reader
-who asked for reduced motion is shown. The other seven are optional: `fit` is how the extent meets a
+who asked for reduced motion is shown. The other eight are optional: `fit` is how the extent meets a
 frame of a different shape, `tracks` is every value over time by name, `timeline` is the spans,
 `duration` is how long the figure runs where that is past the end of its last span, `loop` says the
 figure ends where it began, `insets` is the second views drawn into rectangles of the figure's own
-frame, and `painters` is which painters may draw the figure.
+frame, `painters` is which painters may draw the figure, and `inputs` is the tracks a reader may
+hold.
 
 **A reader takes the fields of an object in any order.** The writer in this package sorts them, so
 the bytes of a file are a function of the figure rather than of the order its fields were built in,
@@ -831,9 +832,9 @@ surface it was cut from, and two surfaces passing through each other.
 
 ## The figure
 
-**A figure carries ten fields and three of them are required**, which the file section above states.
-`extent`, `scene` and `still` are required; `fit`, `tracks`, `timeline`, `duration`, `loop`, `insets`
-and `painters` are not.
+**A figure carries eleven fields and three of them are required**, which the file section above
+states. `extent`, `scene` and `still` are required; `fit`, `tracks`, `timeline`, `duration`, `loop`,
+`insets`, `painters` and `inputs` are not.
 
 **`painters` is the painters that may draw the figure**, as a list of the names `svg`, `canvas` and
 `gpu`. Left out, every painter may. A painter not named refuses the figure and says which painter it
@@ -847,6 +848,40 @@ expression in that node, which is what keeps a figure a file.
 **`still` is the one time a reader who asked for reduced motion is shown**, and `loop` says the
 figure ends where it began. A renderer holding a figure to its `loop` compares the marks at nothing
 and at the duration by tolerance.
+
+**`inputs` is the tracks a reader may hold, as a list of inputs.** An input is a track a reader
+takes by pressing one mark and then moves with a pointer. While the reader holds it, the value the
+pointer gives replaces the value the track's keys give at the time drawn, and while nothing holds it
+the track reads as its keys say. A renderer that draws no pointer draws the figure as though nothing
+were held, which is what a recording and the still are always drawn as.
+
+An input carries four fields and three of them are required. `track` is the name of the track it
+holds. `mark` is the mark a press takes it on, named the way an animation names its target. `motion`
+is how a pointer moves the value, as one of the three kinds below. `reach` is how far outside what
+the mark paints a press may land and still take the input, as a plain number in the figure's own
+units, and 0 unless named.
+
+| kind | fields | the value a pointer gives |
+| --- | --- | --- |
+| `along` | `path` | the fraction of the path's length at the point of it nearest the pointer |
+| `drag` | `rate`, `across` | the value at the press plus `rate` for each figure unit the pointer has travelled in the direction `across` |
+| `around` | `rate`, `centre` | the value at the press plus `rate` for each turn the pointer has swept anticlockwise about `centre` |
+
+**Every field of a motion is plain.** `path` is a path record, `rate` is a number, and `across` and
+`centre` are places written as an `x` and a `y`. `across` is the direction x unless named, and only
+its direction counts, so (3, 3) and (1, 1) are one direction, and an `across` of no length is refused. `across` is the one optional field
+of the three kinds.
+
+**The path of `along` is read once with no track values**, since the fraction a pointer gives is the
+value of a track and a path that moved with that track would move under the pointer. An expression
+inside an input reading a track is refused.
+
+**The sweep of `around` is the signed angle between the press and the pointer about the centre**, so
+it lies within half a turn either way. Subtracting two angles read with `atan2` would jump by a whole
+turn where the pointer crosses the negative x axis, and the signed angle does not. A renderer adds up
+a longer sweep by taking each reading as the next press.
+
+**An input naming a track the figure does not carry is refused**, with the path of its `track`.
 
 **A moment past the duration is read at the figure's own time.** A figure that declares itself a
 loop is read at the remainder of that moment over the duration, so a recording twice its length

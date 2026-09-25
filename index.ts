@@ -256,7 +256,7 @@ export type { Figure, PainterName, TrackValues } from './figure/figure.js';
 export { heldFrom, inputAt, placeAt } from './figure/input.js';
 export type { Input, Motion, Press } from './figure/input.js';
 export { resolveFigure } from './figure/figure-record.js';
-export type { FigureRecord } from './figure/figure-record.js';
+export type { FigureRecord, InputRecord, MotionRecord } from './figure/figure-record.js';
 export { checkFigure } from './figure/figure-check.js';
 export { FIGURE_FORMAT_VERSION, readFigure, writeFigure } from './figure/figure-file.js';
 export type { FigureFile } from './figure/figure-file.js';

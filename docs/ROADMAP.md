@@ -1939,10 +1939,17 @@ and a figure asked twice with the same two answers the same picture twice.
       half a turn, and a consumer adds up a longer one by moving the press to the pointer after each
       reading, as the site's `clock-set` already does. The suite reads 1,549 of 1,549 over 100 files
       against 1,547, and `npm run demos` changes 0 bytes.
-- [ ] **6. The format carries `inputs`.** SPECIFICATION.md first, in the same commit: the optional
+- [x] **6. The format carries `inputs`.** SPECIFICATION.md first, in the same commit: the optional
       field, its three kinds and their fields, and the refusal of an input naming no track. Then the
       checker, `FigureRecord` and `resolveFigure`. **Measurement:** a file carrying `inputs` written
       back to the same bytes, and the refusal sentence with its path.
+      **Landed:** `InputRecord` and `MotionRecord` at the door, `Input` carrying its `motion` and
+      `Figure` its `inputs`. The tangent record with one input of each kind writes back to the same
+      bytes, and its `along` read from the file holds a pointer at 0.42815 to 0.42815 within 1e-9. An
+      input on `turn` is refused as "inputs.1.track names the track turn, which the figure does not
+      carry". A drag across (0, 0) and a track read inside an `along` path are refused by path, since
+      the path is read once with no track values. The suite reads 1,553 of 1,553 over 100 files
+      against 1,549, and `npm run demos` changes 0 bytes.
 - [ ] **7. The flat demo's dot can be dragged.** The tangent figure declares `s` as `along` the walked
       stretch, taken by a press on the mark `point`. **Measurement:** `npm run demos` changing 0
       bytes, since nothing is held; and with `s` held at 0 and at 1, how far the dot sits from the

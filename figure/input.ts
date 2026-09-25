@@ -16,6 +16,8 @@ export interface Input {
   track: string;
   /** The mark a press takes this input on, by id or the front of one. */
   mark: string;
+  /** How a pointer moves the value while the input is taken. */
+  motion: Motion;
   /** How far outside the mark a press may land and still take the input, in
    * figure units. Left out, it is 0. */
   reach?: number;

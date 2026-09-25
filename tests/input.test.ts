@@ -3,6 +3,7 @@ import {
   arc,
   boundsOf,
   centreOf,
+  checkFigure,
   heldFrom,
   inputAt,
   mat3,
@@ -10,16 +11,21 @@ import {
   placeAt,
   pointAlong,
   pointOf,
+  readFigure,
   viewAt,
+  writeFigure,
+  type FigureRecord,
   type Input,
+  type InputRecord,
+  type PathRecord,
   type Mark,
   type Motion,
 } from '../index.js';
-import { TIMES, coords, tangent, walkPath } from '../demos/tangent.js';
+import { TIMES, coords, tangent, walkPath, written } from '../demos/tangent.js';
 
 const WIDTH = 1280;
 const HEIGHT = 720;
-const INPUTS: readonly Input[] = [{ track: 's', mark: 'tangent/point', reach: 0.2 }];
+const INPUTS: readonly Input[] = [{ track: 's', mark: 'tangent/point', motion: { kind: 'along', path: walkPath }, reach: 0.2 }];
 
 describe('a pixel read as a place and a press read as an input', () => {
   it('returns every pixel it was given from the place it names', () => {
@@ -64,7 +70,7 @@ describe('a pixel read as a place and a press read as an input', () => {
       path: arc({ x: 0, y: 0 }, 1, 0, Math.PI),
       stroke: { colour: { r: 0, g: 0, b: 0, a: 1 }, width: 0.1 },
     };
-    const inputs: readonly Input[] = [{ track: 'turn', mark: 'half' }];
+    const inputs: readonly Input[] = [{ track: 'turn', mark: 'half', motion: { kind: 'drag', rate: 1 } }];
     expect(inputAt(inputs, [half], { x: 0, y: 1.04 })?.track).toBe('turn');
     expect(inputAt(inputs, [half], { x: 0, y: 1.06 })).toBeUndefined();
     expect(inputAt(inputs, [half], { x: 0, y: 0 })).toBeUndefined();
@@ -119,5 +125,72 @@ describe('a pixel read as a place and a press read as an input', () => {
     // A sweep from 170 degrees to 190 crosses the negative x axis, where atan2 jumps from π to -π.
     expect(heldFrom(around, { place: at(170 / 360), value: 5 }, at(190 / 360))).toBeCloseTo(5 + 60 * (20 / 360), 12);
     expect(heldFrom(around, { place: at(0.1), value: 5 }, centre)).toBe(5);
+  });
+});
+
+/** The first value inside a record carrying the kind named, found depth first. */
+function firstOfKind(value: unknown, kind: string): unknown {
+  if (typeof value !== 'object' || value === null) return undefined;
+  if ((value as { kind?: unknown }).kind === kind) return value;
+  for (const inside of Object.values(value)) {
+    const found = firstOfKind(inside, kind);
+    if (found) return found;
+  }
+  return undefined;
+}
+
+describe('an input written in a file', () => {
+  const walked = (firstOfKind(written.scene, 'tangentAt') as { curve: PathRecord }).curve;
+  const inputs: readonly InputRecord[] = [
+    { track: 's', mark: 'tangent/point', reach: 0.2, motion: { kind: 'along', path: walked } },
+    { track: 's', mark: 'tangent/curve', motion: { kind: 'drag', rate: 0.25, across: { x: 3, y: 3 } } },
+    { track: 's', mark: 'tangent/axes', motion: { kind: 'around', rate: 60, centre: { x: 1, y: -1 } } },
+  ];
+  const record: FigureRecord = { ...written, inputs };
+  const text = writeFigure(record);
+  const refusal = (edit: (inputs: InputRecord[]) => void) => {
+    const figure = JSON.parse(text).figure as { inputs: InputRecord[] };
+    edit(figure.inputs);
+    return () => checkFigure(figure);
+  };
+
+  it('writes back to the bytes it was read from', () => {
+    expect(writeFigure(checkFigure(JSON.parse(text).figure))).toBe(text);
+    expect(text).toContain('"inputs": [');
+  });
+
+  it('reads the path of along to the path the demo walks', () => {
+    const [along, drag, around] = readFigure(text).inputs!;
+    const pointer = pointAlong(walkPath, 0.42815)!;
+    expect(heldFrom(along.motion, { place: pointer, value: 0 }, pointer)).toBeCloseTo(0.42815, 9);
+    expect(drag.motion).toEqual(inputs[1].motion);
+    expect(around.motion).toEqual(inputs[2].motion);
+    expect(along.reach).toBe(0.2);
+  });
+
+  it('refuses an input naming a track the figure does not carry, by the path of its track', () => {
+    expect(
+      refusal((inputs) => {
+        inputs[1] = { ...inputs[1], track: 'turn' };
+      }),
+    ).toThrow('inputs.1.track names the track turn, which the figure does not carry');
+  });
+
+  it('refuses a drag across no direction, a track read inside a motion and a motion of no kind it has', () => {
+    expect(
+      refusal((inputs) => {
+        inputs[1] = { ...inputs[1], motion: { kind: 'drag', rate: 1, across: { x: 0, y: 0 } } };
+      }),
+    ).toThrow('inputs.1.motion.across is a direction and has no length');
+    expect(
+      refusal((inputs) => {
+        inputs[0] = { ...inputs[0], motion: { kind: 'along', path: { kind: 'circle', centre: { x: 0, y: 0 }, radius: { kind: 'track', name: 's' } } as never } };
+      }),
+    ).toThrow('inputs.0.motion.path.radius reads the track s, and an input is read with no track values');
+    expect(
+      refusal((inputs) => {
+        inputs[2] = { ...inputs[2], motion: { kind: 'spin', rate: 1 } as never };
+      }),
+    ).toThrow('inputs.2.motion is a motion and has no kind called the text "spin"');
   });
 });

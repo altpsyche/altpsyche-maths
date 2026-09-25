@@ -17,6 +17,7 @@ import { insetMarks, type Inset } from './inset.js';
 import { resolveExtent, viewMatrix, type Extent, type ExtentChoice, type Fit } from './extent.js';
 import type { Transform2D } from '../values/mat3.js';
 import type { Mark } from './mark.js';
+import type { Input } from './input.js';
 
 /** The values a scene is rebuilt from, sampled out of the figure's tracks. This
  * is what lets geometry follow a number rather than only be moved about: a
@@ -65,6 +66,8 @@ export interface Figure {
    * painter not named is turned away by name, which is what keeps a figure
    * asking for something one painter has from being drawn wrongly by another. */
   painters?: readonly PainterName[];
+  /** The tracks a reader may hold, each taken by a press on one mark. */
+  inputs?: readonly Input[];
 }
 
 /**

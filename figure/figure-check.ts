@@ -824,6 +824,21 @@ const SHAPES: Readonly<Record<string, Shape>> = {
     hides: may(list(text)),
     cornerRadius: may(number),
   }),
+  motion: {
+    form: 'kinds',
+    what: 'a motion',
+    kinds: {
+      along: { path: need(ref('carriedPath')) },
+      drag: { rate: need(number), across: may(ref('point')) },
+      around: { rate: need(number), centre: need(ref('point')) },
+    },
+  },
+  input: fields('an input', {
+    track: need(text),
+    mark: need(text),
+    motion: need(ref('motion')),
+    reach: may(number),
+  }),
   figure: fields('a figure', {
     extent: need(ref('extentChoice')),
     fit: may(named('a fit', ['contain', 'cover'])),
@@ -835,6 +850,7 @@ const SHAPES: Readonly<Record<string, Shape>> = {
     loop: may(flag),
     insets: may(list(ref('inset'))),
     painters: may(list(named('a painter', [...PAINTER_NAMES]))),
+    inputs: may(list(ref('input'))),
   }),
 };
 
@@ -981,9 +997,9 @@ function tracksRead(value: unknown, path: string, found: Map<string, string>): v
 /**
  * A value checked against the shape of a figure, and returned as one.
  *
- * Two faults are checked after the shapes and neither is a fault of shape: a
- * span that runs backwards, and an expression naming a track the figure does not
- * have. A renderer needs both answers before it draws, where a track missing
+ * Four faults are checked after the shapes and none is a fault of shape: a
+ * span that runs backwards, an expression or an input naming a track the figure
+ * does not have, a drag across no direction, and a track read inside an input. A renderer needs both answers before it draws, where a track missing
  * from a figure otherwise refuses at the first time the expression is reached,
  * which is however far into the timeline that span begins.
  *
@@ -1003,5 +1019,19 @@ export function checkFigure(value: unknown): FigureRecord {
       refuse(path, `reads the track ${name}, which the figure does not carry`);
     }
   }
+  record.inputs?.forEach((input, at) => {
+    const path = `inputs.${at}`;
+    if (!record.tracks || !(input.track in record.tracks)) {
+      refuse(`${path}.track`, `names the track ${input.track}, which the figure does not carry`);
+    }
+    const { motion } = input;
+    if (motion.kind === 'drag' && motion.across && motion.across.x === 0 && motion.across.y === 0) {
+      refuse(`${path}.motion.across`, 'is a direction and has no length');
+    }
+    // Along: the path is read once with no track values, so a track read inside it has nothing to read.
+    const read = new Map<string, string>();
+    tracksRead(motion, `${path}.motion`, read);
+    for (const [name, where] of read) refuse(where, `reads the track ${name}, and an input is read with no track values`);
+  });
   return record;
 }
