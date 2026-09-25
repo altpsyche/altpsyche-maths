@@ -1950,10 +1950,16 @@ and a figure asked twice with the same two answers the same picture twice.
       carry". A drag across (0, 0) and a track read inside an `along` path are refused by path, since
       the path is read once with no track values. The suite reads 1,553 of 1,553 over 100 files
       against 1,549, and `npm run demos` changes 0 bytes.
-- [ ] **7. The flat demo's dot can be dragged.** The tangent figure declares `s` as `along` the walked
+- [x] **7. The flat demo's dot can be dragged.** The tangent figure declares `s` as `along` the walked
       stretch, taken by a press on the mark `point`. **Measurement:** `npm run demos` changing 0
       bytes, since nothing is held; and with `s` held at 0 and at 1, how far the dot sits from the
       middle of the frame the follow leaves, against 2.14 with the track.
+      **Landed:** `tangent.inputs` carries `s` along the walked stretch with a reach of 0.2, and the
+      press tests of step 4 now read it from the demo. At the end of the walk, with a 16:9 aspect,
+      the dot sits 2.14 right of the middle with `s` held at 1 and with the track, and 2.14 left with
+      `s` held at 0, within 1e-9. `npm run demos` changes 0 bytes of the images, and
+      `demos/tangent.figure.json` grows from 410,756 bytes to 411,913 by its `inputs`. The suite
+      reads 1,554 of 1,554 over 100 files against 1,553.
 - [ ] **8. The solid demo's eye can be turned.** The surface figure declares `turn` as `drag`, one
       turn for the width of the frame. **Measurement:** `npm run demos` changing 0 bytes, and the
       marks with `turn` held at 0.5 against the marks at the time the track reads 0.5.

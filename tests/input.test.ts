@@ -4,6 +4,7 @@ import {
   boundsOf,
   centreOf,
   checkFigure,
+  extentAt,
   heldFrom,
   inputAt,
   mat3,
@@ -25,7 +26,7 @@ import { TIMES, coords, tangent, walkPath, written } from '../demos/tangent.js';
 
 const WIDTH = 1280;
 const HEIGHT = 720;
-const INPUTS: readonly Input[] = [{ track: 's', mark: 'tangent/point', motion: { kind: 'along', path: walkPath }, reach: 0.2 }];
+const INPUTS: readonly Input[] = tangent.inputs!;
 
 describe('a pixel read as a place and a press read as an input', () => {
   it('returns every pixel it was given from the place it names', () => {
@@ -61,6 +62,17 @@ describe('a pixel read as a place and a press read as an input', () => {
     const pixel = mat3.transformPoint(viewAt(tangent, TIMES.walkTo, WIDTH, HEIGHT), centreOf(boundsOf(dot.path)!));
     const place = placeAt(tangent, TIMES.walkTo, WIDTH, HEIGHT, pixel)!;
     expect(inputAt(INPUTS, marks, place)?.track).toBe('s');
+  });
+
+  it('puts the dot where the track would, from either end of the walk', () => {
+    const across = (held?: { s: number }) => {
+      const dot = marksAt(tangent, TIMES.walkTo, WIDTH / HEIGHT, undefined, held).find((mark) => mark.id === 'tangent/point/disc');
+      if (!dot || dot.kind !== 'path') throw new Error('the dot is not drawn');
+      return centreOf(boundsOf(dot.path)!).x - extentAt(tangent, TIMES.walkTo, WIDTH / HEIGHT, held).centre!.x;
+    };
+    expect(across({ s: 1 })).toBeCloseTo(across(), 9);
+    expect(across({ s: 1 })).toBeCloseTo(2.14, 9);
+    expect(across({ s: 0 })).toBeCloseTo(-2.14, 9);
   });
 
   it('measures a stroke by half its width either side of its open path', () => {

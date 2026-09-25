@@ -765,6 +765,9 @@ export const written: FigureRecord = {
       hides: ['tangent/window', 'tangent/aim', 'tangent/shortfall'],
     },
   ],
+  // The dot is held by the same fraction its track gives, measured along the
+  // same stretch, so a dragged dot and a walked one stand on one curve.
+  inputs: [{ track: 's', mark: 'tangent/point', reach: 0.2, motion: { kind: 'along', path: walked } }],
 };
 
 export const tangent: Figure = resolveFigure(written);

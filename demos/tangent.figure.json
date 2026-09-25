@@ -6,6 +6,57 @@
       "height": 6,
       "width": 10.8
     },
+    "inputs": [
+      {
+        "mark": "tangent/point",
+        "motion": {
+          "kind": "along",
+          "path": {
+            "coords": {
+              "x": {
+                "graph": {
+                  "from": -1,
+                  "to": 4
+                },
+                "units": {
+                  "from": -4.6,
+                  "to": 4.6
+                }
+              },
+              "y": {
+                "graph": {
+                  "from": -1,
+                  "to": 9
+                },
+                "units": {
+                  "from": -2.55,
+                  "to": 1.6
+                }
+              }
+            },
+            "kind": "plot",
+            "of": {
+              "kind": "arithmetic",
+              "left": {
+                "kind": "variable",
+                "name": "x"
+              },
+              "operator": "*",
+              "right": {
+                "kind": "variable",
+                "name": "x"
+              }
+            },
+            "over": {
+              "from": 0,
+              "to": 3
+            }
+          }
+        },
+        "reach": 0.2,
+        "track": "s"
+      }
+    ],
     "insets": [
       {
         "cornerRadius": 0.12,
