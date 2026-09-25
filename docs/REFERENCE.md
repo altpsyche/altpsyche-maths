@@ -1406,11 +1406,16 @@ consumer owns the loop that plays the figure.
   marks overlap the one on top takes the press. A fill covers the inside of its path under the
   nonzero rule. A stroke covers half its width either side of its open path, so the chord that would
   close an open curve takes no press. A text mark takes no press.
-- `Motion` — how a pointer moves the value of a held track, by one of two kinds.
+- `Motion` — how a pointer moves the value of a held track, by one of three kinds.
   - `{ kind: 'along', path }` holds the fraction of the path's length at its point nearest the
     pointer, which is `fractionNearest`.
-  - `{ kind: 'drag', rate }` holds the value at the press plus `rate` for each figure unit the
-    pointer has travelled across since the press.
+  - `{ kind: 'drag', rate, across }` holds the value at the press plus `rate` for each figure unit
+    the pointer has travelled in the direction `across` since the press. The travel is the dot
+    product of the pointer's movement with `across` scaled to length 1. Left out, `across` is x.
+  - `{ kind: 'around', rate, centre }` holds the value at the press plus `rate` for each turn the
+    pointer has swept anticlockwise about `centre`. The angle swept is the signed angle between the
+    press and the pointer as seen from the centre, which lies between minus and plus half a turn. A
+    consumer that moves the press to the pointer after each reading adds up a sweep of any length.
 - `Press` — where a press landed, as `place`, and the value its track read there, as `value`.
 - `heldFrom(motion, press, pointer)` — the value a pointer at a place holds its track at, for a
   press taken at another.

@@ -3,7 +3,7 @@
  * Every function here is pure, and what is held between frames is the consumer's.
  */
 import { mat3 } from '../values/mat3.js';
-import type { Vec2 } from '../values/vec2.js';
+import { vec2, type Vec2 } from '../values/vec2.js';
 import { touches } from './animation.js';
 import { viewAt, type Figure, type TrackValues } from './figure.js';
 import { flattenPath, flattenRuns, nearestEdge, windingAt } from './inside.js';
@@ -26,9 +26,14 @@ export interface Input {
  *
  * `along` holds the fraction of a path's length at its point nearest the
  * pointer. `drag` holds the value at the press plus `rate` for each figure unit
- * the pointer has travelled across since the press.
+ * the pointer has travelled in the direction `across`, which is x when left
+ * out. `around` holds the value at the press plus `rate` for each turn the
+ * pointer has swept anticlockwise about `centre`.
  */
-export type Motion = { kind: 'along'; path: Path } | { kind: 'drag'; rate: number };
+export type Motion =
+  | { kind: 'along'; path: Path }
+  | { kind: 'drag'; rate: number; across?: Vec2 }
+  | { kind: 'around'; rate: number; centre: Vec2 };
 
 /** Where a press landed and the value the track read there. */
 export interface Press {
@@ -40,7 +45,15 @@ export interface Press {
  * taken at another. */
 export function heldFrom(motion: Motion, press: Press, pointer: Vec2): number {
   if (motion.kind === 'along') return fractionNearest(motion.path, pointer);
-  return press.value + motion.rate * (pointer.x - press.place.x);
+  if (motion.kind === 'drag') {
+    const travel = vec2.dot(vec2.sub(pointer, press.place), vec2.normalize(motion.across ?? { x: 1, y: 0 }));
+    return press.value + motion.rate * travel;
+  }
+  const from = vec2.sub(press.place, motion.centre);
+  const to = vec2.sub(pointer, motion.centre);
+  // Sweep: atan2 of the cross and dot products is the signed angle between the two in (-π, π], so crossing the negative x axis adds no whole turn.
+  const swept = Math.atan2(vec2.cross(from, to), vec2.dot(from, to));
+  return press.value + (motion.rate * swept) / (2 * Math.PI);
 }
 
 /** The place in figure units that a pixel shows, through the inverse of the

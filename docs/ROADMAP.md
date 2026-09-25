@@ -1924,7 +1924,7 @@ and a figure asked twice with the same two answers the same picture twice.
       0.3999977, and the point found is 0.2999999996 from it against 0.3 for the best of 200,001
       samples. `drag` at 0.125 over 2.4 units reads its expression within 1e-12. The suite reads
       1,547 of 1,547 over 100 files against 1,544, and `npm run demos` changes 0 bytes.
-- [ ] **5a. A drag names its direction, and a third kind turns about a centre.** Siva's call on
+- [x] **5a. A drag names its direction, and a third kind turns about a centre.** Siva's call on
       2026-09-26: the richer motion, matching what the site draws. `drag` gains `across`, a direction
       in figure units that defaults to x, and the travel is the dot product of the pointer's movement
       with it, so a vertical or diagonal drag is one field. `around` holds the value at the press plus
@@ -1932,6 +1932,13 @@ and a figure asked twice with the same two answers the same picture twice.
       minute hand, dragged by its angle from the dial. **Measurement:** `drag` with `across` at x, at
       y and at a diagonal over a known travel against its expression; `around` over a quarter turn
       and over a sweep crossing the negative x axis, where `atan2` jumps by a whole turn.
+      **Landed:** `drag` with `across` at x, at y and at (3, 3) over the travel (2.4, -7) reads its
+      expression within 5.6e-17. `around` at 60 per turn reads 20 over a quarter turn, and the sweep
+      from 170 to 190 degrees reads 8.3333 against 8.3333, where subtracting two `atan2` angles reads
+      -0.944 of a turn. The sweep is the signed angle between press and pointer, so it lies within
+      half a turn, and a consumer adds up a longer one by moving the press to the pointer after each
+      reading, as the site's `clock-set` already does. The suite reads 1,549 of 1,549 over 100 files
+      against 1,547, and `npm run demos` changes 0 bytes.
 - [ ] **6. The format carries `inputs`.** SPECIFICATION.md first, in the same commit: the optional
       field, its three kinds and their fields, and the refusal of an input naming no track. Then the
       checker, `FigureRecord` and `resolveFigure`. **Measurement:** a file carrying `inputs` written

@@ -100,4 +100,24 @@ describe('a pixel read as a place and a press read as an input', () => {
     expect(heldFrom(drag, press, { x: 3.4, y: -5 })).toBeCloseTo(0.25 + 0.125 * 2.4, 12);
     expect(heldFrom(drag, press, press.place)).toBe(0.25);
   });
+
+  it('measures a drag along the direction it names', () => {
+    const press = { place: { x: 1, y: 2 }, value: 0.25 };
+    const pointer = { x: 3.4, y: -5 };
+    const along = (across: { x: number; y: number }) => heldFrom({ kind: 'drag', rate: 0.125, across }, press, pointer);
+    expect(along({ x: 1, y: 0 })).toBeCloseTo(0.25 + 0.125 * 2.4, 12);
+    expect(along({ x: 0, y: 1 })).toBeCloseTo(0.25 + 0.125 * -7, 12);
+    expect(along({ x: 3, y: 3 })).toBeCloseTo(0.25 + (0.125 * (2.4 - 7)) / Math.SQRT2, 12);
+  });
+
+  it('turns a value by its rate for each turn swept about the centre', () => {
+    const centre = { x: 1, y: -1 };
+    const around: Motion = { kind: 'around', rate: 60, centre };
+    const at = (turns: number) => ({ x: 1 + 2 * Math.cos(turns * 2 * Math.PI), y: -1 + 2 * Math.sin(turns * 2 * Math.PI) });
+    expect(heldFrom(around, { place: at(0), value: 5 }, at(0.25))).toBeCloseTo(5 + 15, 12);
+    expect(heldFrom(around, { place: at(0.25), value: 5 }, at(0))).toBeCloseTo(5 - 15, 12);
+    // A sweep from 170 degrees to 190 crosses the negative x axis, where atan2 jumps from π to -π.
+    expect(heldFrom(around, { place: at(170 / 360), value: 5 }, at(190 / 360))).toBeCloseTo(5 + 60 * (20 / 360), 12);
+    expect(heldFrom(around, { place: at(0.1), value: 5 }, centre)).toBe(5);
+  });
 });
