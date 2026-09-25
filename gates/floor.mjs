@@ -9,9 +9,17 @@ const range = manifest.peerDependencies?.[ENGINE];
 if (!range) throw new Error(`package.json declares no ${ENGINE} peer range`);
 
 // A caret, tilde or lower-bounded range admits nothing below the version it names, so that version is the floor.
-const match = /^(?:\^|~|>=)?\s*(\d+\.\d+\.\d+)$/.exec(range.trim());
-if (!match) throw new Error(`peer range ${range} is not one this gate reads a floor out of`);
-const floor = match[1];
+// Union: each alternative of an `||` range has its own floor, and the range admits nothing below the lowest.
+const floors = range.split('||').map((part) => {
+  const match = /^(?:\^|~|>=)?\s*(\d+\.\d+\.\d+)$/.exec(part.trim());
+  if (!match) throw new Error(`peer range ${range} is not one this gate reads a floor out of`);
+  return match[1];
+});
+const byVersion = (a, b) => {
+  const [x, y] = [a, b].map((v) => v.split('.').map(Number));
+  return x[0] - y[0] || x[1] - y[1] || x[2] - y[2];
+};
+const floor = floors.sort(byVersion)[0];
 
 const installed = () => JSON.parse(readFileSync(`node_modules/${ENGINE}/package.json`, 'utf8')).version;
 const npm = (...args) => spawnSync('npm', args, { stdio: 'inherit' }).status === 0;
