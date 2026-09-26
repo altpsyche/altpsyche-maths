@@ -590,10 +590,6 @@ five renames and the format change. REFERENCE.md stated inputs from step 4 on.
   `heldFrom` of the press and the pointer. A release lets the track go.
 - `components/figure/clock.ts` keeps what is held between frames and passes it to `marksAt` and
   `viewAt` as the last argument. A recording and the still pass nothing.
-- Every figure file of the site writes `"format": 2`, and the two pins on format version 1, in
-  `tests/figure-file.test.ts` and `scripts/validate-content.ts`, read 2.
-- The site on `^3.0.0` already resolves 3.4.1, which is format version 2, so the crossing is due
-  whichever version the site next installs. That is the first entry under Found while working.
 
 **3.4.0 is cut and not published, and its eight done-criteria are verified here line by line.** A
 mark may carry `clipPath`, a closed path read by the nonzero winding rule in the figure's own units,
@@ -1862,12 +1858,12 @@ the site's own tree answers and no workflow here can.
 
 ## Found while working, not yet queued
 
-- **3.4.1 on npm carries 4.0.0's breaking half under a patch number, and it is `latest`.** It was cut
-  from 0a8811e, which sits after 4.0.0 steps 1 to 5, so the tarball exports `SpaceEntry` rather than
-  `SpaceItem`, carries `FIGURE_FORMAT_VERSION = 2`, and exports `placeAt`, `inputAt` and `heldFrom`.
-  A consumer on `^3.0.0` resolves it, and its reader refuses every version 1 file that consumer has.
-  Whether to run `npm deprecate` on 3.4.1 is Siva's call, since the answer is public. Found at the
-  4.0.0 cut, by `npm pack @altpsyche/maths@3.4.1`.
+- **3.4.1 on npm carries 4.0.0 steps 1 to 5 under a patch number.** It was cut for the engine peer
+  range from 0a8811e, which sits after those steps, so it exports `SpaceEntry`, `placeAt`, `inputAt`
+  and `heldFrom` and reads format version 2 only. The site is its one consumer, installs it, commits
+  no figure file and compares against the package's own `FIGURE_FORMAT_VERSION`, so nothing it draws
+  is refused. No 3.4.2 and no deprecation follow, and a later cut is taken from a tree whose steps
+  are all in one version.
 - **The conformance table in SPECIFICATION.md names seven figures, and eight files are committed.**
   `demos/matrix.figure.json` is read by the suite and is not in the table, so a reader in another
   language is not told to draw it. Found at 4.0.0 step 2, which changed the table's byte counts.
