@@ -6,6 +6,16 @@
       "height": 6.4,
       "width": 8.2
     },
+    "inputs": [
+      {
+        "mark": "solid/body",
+        "motion": {
+          "kind": "drag",
+          "rate": 0.12195121951219513
+        },
+        "track": "turn"
+      }
+    ],
     "insets": [
       {
         "cornerRadius": 0.12,

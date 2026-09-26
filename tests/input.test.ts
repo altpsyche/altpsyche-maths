@@ -13,6 +13,7 @@ import {
   pointAlong,
   pointOf,
   readFigure,
+  sameMarks,
   viewAt,
   writeFigure,
   type FigureRecord,
@@ -23,6 +24,7 @@ import {
   type Motion,
 } from '../index.js';
 import { TIMES, coords, tangent, walkPath, written } from '../demos/tangent.js';
+import { TIMES as SOLID_TIMES, solid, timeAt } from '../demos/surface.js';
 
 const WIDTH = 1280;
 const HEIGHT = 720;
@@ -137,6 +139,22 @@ describe('a pixel read as a place and a press read as an input', () => {
     // A sweep from 170 degrees to 190 crosses the negative x axis, where atan2 jumps from π to -π.
     expect(heldFrom(around, { place: at(170 / 360), value: 5 }, at(190 / 360))).toBeCloseTo(5 + 60 * (20 / 360), 12);
     expect(heldFrom(around, { place: at(0.1), value: 5 }, centre)).toBe(5);
+  });
+
+  it('turns the solid demo\'s eye once round for a drag across the declared width', () => {
+    const marks = marksAt(solid, SOLID_TIMES.quarter, WIDTH / HEIGHT);
+    const cell = marks.find((mark) => mark.id.startsWith('solid/body/hill'));
+    if (!cell || cell.kind !== 'path') throw new Error('the saddle is not drawn');
+    const place = centreOf(boundsOf(cell.path)!);
+    const input = inputAt(solid.inputs!, marks, place)!;
+    expect(input.track).toBe('turn');
+    expect(heldFrom(input.motion, { place, value: 0.25 }, { x: place.x + 8.2, y: place.y })).toBeCloseTo(1.25, 12);
+  });
+
+  it('draws the solid demo with turn held at a half the marks its track draws at a half', () => {
+    const held = marksAt(solid, timeAt(0.65), WIDTH / HEIGHT, undefined, { turn: 0.5 });
+    expect(sameMarks(held, marksAt(solid, SOLID_TIMES.half, WIDTH / HEIGHT), 1e-9)).toBe(true);
+    expect(sameMarks(marksAt(solid, timeAt(0.65), WIDTH / HEIGHT), marksAt(solid, SOLID_TIMES.half, WIDTH / HEIGHT), 1e-9)).toBe(false);
   });
 });
 

@@ -1960,9 +1960,15 @@ and a figure asked twice with the same two answers the same picture twice.
       `s` held at 0, within 1e-9. `npm run demos` changes 0 bytes of the images, and
       `demos/tangent.figure.json` grows from 410,756 bytes to 411,913 by its `inputs`. The suite
       reads 1,554 of 1,554 over 100 files against 1,553.
-- [ ] **8. The solid demo's eye can be turned.** The surface figure declares `turn` as `drag`, one
+- [x] **8. The solid demo's eye can be turned.** The surface figure declares `turn` as `drag`, one
       turn for the width of the frame. **Measurement:** `npm run demos` changing 0 bytes, and the
       marks with `turn` held at 0.5 against the marks at the time the track reads 0.5.
+      **Landed:** `solid.inputs` carries `turn` as a `drag` at 1/8.2 per unit, taken by a press on
+      `solid/body`. A press on a cell of the saddle takes `turn`, and a drag of 8.2 units from a
+      press at 0.25 holds 1.25 within 1e-12. At 10.5 seconds, where the track reads 0.65, `turn` held
+      at 0.5 draws the marks of 9.3 seconds, where the track reads 0.5, within 1e-9, and unheld it
+      does not. `npm run demos` changes 0 bytes of the images, and `demos/surface.figure.json` grows
+      from 275,402 bytes to 275,590. The suite reads 1,556 of 1,556 over 100 files against 1,554.
 - [ ] **9. The version is cut.** The README, the guide and REFERENCE.md state inputs, `package.json`
       reads 4.0.0, and the handover to the site names what it owes: the listeners in
       `FigureSurface.tsx`, what is held in `clock.ts`, and `format: 2` in its files and in its two

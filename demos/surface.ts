@@ -607,6 +607,8 @@ export const written: FigureRecord = {
   // their slot with everything else, and hiding the panel because an inset that
   // magnified its own ground and border would paint a picture of itself.
   insets: [{ shows: LENS_SHOWS, into: LENS, name: 'solid/lens', hides: ['solid/window'], cornerRadius: LENS_ROUND }],
+  // A drag across the declared width turns the eye once round, the orbit the track walks.
+  inputs: [{ track: 'turn', mark: 'solid/body', motion: { kind: 'drag', rate: 1 / extent.width } }],
 };
 
 export const solid: Figure = resolveFigure(written);
