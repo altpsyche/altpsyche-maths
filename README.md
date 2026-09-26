@@ -15,10 +15,11 @@ in figure units with every transform already applied, and its style is resolved 
 inherited. A mark stores no reference to an output device.
 
 ```ts
-marksAt(figure, t): readonly Mark[]
+marksAt(figure, t, aspect?, painter?, held?): readonly Mark[]
 ```
 
-`marksAt` is a pure function of t. Two evaluations at one time produce identical arrays. A page
+`marksAt` is a pure function of t and of the held values, which are the tracks a reader is holding
+at that time. Two evaluations at one time with the same held values produce identical arrays. A page
 playing forward, a reader dragging a scrub bar backward and a recorder stepping at a fixed rate
 therefore read one figure.
 
@@ -193,6 +194,23 @@ range.
 its index, its time, its marks and the view matrix built at that same time. The walk stops strictly
 before the duration, so a looping figure never emits its first frame twice.
 
+## Inputs
+
+An **input** is a track a reader may hold, taken by a press on one named mark. While the reader
+holds it, the value the reader gives replaces the value the track's keys give. `Figure.inputs` lists
+a figure's inputs, and each carries a `Motion`: `along` holds the fraction of a path's length nearest
+the pointer, `drag` holds a value that grows by `rate` per figure unit travelled in a direction, and
+`around` holds one that grows by `rate` per turn swept about a centre.
+
+`placeAt` turns a pixel into a place in figure units by inverting the matrix `viewAt` returns.
+`inputAt` returns the input a press at that place takes, searching the marks from the last drawn to
+the first. `heldFrom` returns the value a pointer holds the track at. On the flat demo, a pointer on
+the curve at x = 1.5 holds `s` at 0.42815, and the dot drawn with it sits 2.4 × 10⁻¹⁴ units from
+the pointer.
+
+The package stops at those pure functions. The listeners, and the record of what is held between
+frames, are the consumer's. A recording and the still read nothing held.
+
 ## Painters
 
 `svgMarkup` returns a document as a string and `svgElements` returns the elements as data.
@@ -274,14 +292,35 @@ form rather than guessing. Nothing reads the page, and `getComputedStyle` appear
 tree.
 
 No screenshot gates this package. Every assertion reads a mark list or a number, so the suite of
-1,310 tests over 87 files runs in Node without a browser. Comparisons are by tolerance rather than by
+1,556 tests over 100 files runs in Node without a browser. Comparisons are by tolerance rather than by
 hash, because `Math.sin`, `Math.cos` and `Math.pow` are not specified to the last bit and differ
 between engines. The one claim a browser is needed for is that a recording plays, and that is
 `npm run gate:record` rather than part of the suite.
 
+## Moving from 3.x
+
+4.0.0 changes the figure format to version 2 and renames the five `item` names to `entry`. A
+version 2 reader refuses a version 1 file, and the refusal names both numbers, so a file written at
+3.x is moved by writing `"format": 2` at its top and renaming the `items` key of each `scene3`
+record to `entries`.
+
+| at 3.x | at 4.0.0 |
+| --- | --- |
+| `SpaceItem` | `SpaceEntry` |
+| `SpaceItemRecord` | `SpaceEntryRecord` |
+| `SceneItemRecord` | `SceneEntryRecord` |
+| the parameter `items` of `scene3` | `entries` |
+| the key `items` of a `scene3` record | `entries` |
+
+**Everything else is added.** `marksAt`, `extentAt` and `viewAt` take the held values last, so a
+call written at 3.x reads the figure as it did. `Figure.inputs`, `Input`, `Motion`, `Press`,
+`InputRecord`, `MotionRecord`, `placeAt`, `inputAt`, `heldFrom` and `fractionNearest` are new, and a
+file may carry `inputs`. 3.4.1 on npm already carries all of this under a patch number, so a
+consumer on 3.4.1 has moved already.
+
 ## Moving from 1.6.0
 
-1.6.0 was the version before this one on npm, and 2.0.0 is the figure format: a figure is a JSON
+1.6.0 was the last version on npm before 2.0.0, and 2.0.0 is the figure format: a figure is a JSON
 document a program reads, `readFigure` and `writeFigure` are the two calls that carry it either way,
 and [docs/SPECIFICATION.md](docs/SPECIFICATION.md) states the whole of it for a renderer written in
 another language.
@@ -329,7 +368,7 @@ that stores geometry stores what the function produced.
 ## Further reading
 
 [docs/GUIDE.md](docs/GUIDE.md) teaches the package in order. [docs/REFERENCE.md](docs/REFERENCE.md)
-contains one entry for each of the 375 names at the door. [DESIGN.md](DESIGN.md) states why the
+contains one entry for each of the 498 names at the door. [DESIGN.md](DESIGN.md) states why the
 design is what it is and what it will not become.
 
 `index.ts` is the entire public surface, and nothing outside the package reaches a file inside it by

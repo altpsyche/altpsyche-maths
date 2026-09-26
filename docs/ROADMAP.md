@@ -408,29 +408,12 @@ is left, since 2.1.0 through 2.10.0 are cut.
 
 | version | what lands | what it changes | steps | cut against | depends on | plan |
 | --- | --- | --- | --- | --- | --- | --- |
-| 4.0.0 | the five `item` names renamed to `entry`, then a figure a reader can act on | the shape of `Figure`, which gains input, and the format, which is version 2 | 9, under The entries | the flat demo's dot dragged along its curve and the solid demo's eye turned | nothing outside this package | written 2026-09-24, go given 2026-09-24 |
+
+**No version is on the ladder.** 4.0.0 was the last row and it is cut, recorded under Now.
 
 **The three calls `altpsyche.dev` was blocked on are 3.1.0, 3.2.0 and 3.3.0, and all three are cut.**
 They stood in front of the clip because this file orders entries by whether anything is waiting to draw
 the feature, and the clip has nothing waiting.
-
-**4.0.0 is a consequence rather than a plan**, written down so it is not rediscovered, and it has no
-picture waiting, which is what a version needs before it is worked.
-
-**The five renames that open 4.0.0**, listed and put to Siva at 3.0.3 and accepted on 2026-09-24.
-`SpaceItem` becomes `SpaceEntry`, used in 11 files here. `SpaceItemRecord` becomes
-`SpaceEntryRecord`, in 6. `SceneItemRecord` becomes `SceneEntryRecord`, in 8. The parameter `items`
-of `scene3` becomes `entries`. The `items` field of a `scene3` record becomes `entries`, and that
-field is a key in the figure format, so it changes SPECIFICATION.md's table, `demos/solids.figure.json`
-(2 keys) and the checker, and it is a major of the format's own version. `altpsyche.dev` imports none
-of the three types, passes its one `scene3` list by position and has no `scene3` record in a figure
-file, so what it owes is its pin on format version 1 in `tests/figure-file.test.ts` and
-`scripts/validate-content.ts`. The renames ride the same format major as input, so the format
-changes version once.
-
-**What hit testing already gives 4.0.0, so it is not built twice.** `containsPoint`, `windingAt` and
-`nearestEdge` are at the door and a flat list of marks with stable ids is why hit testing is possible
-at all. What is missing is an event reaching a figure, and that is the part that changes `Figure`.
 
 **The recorder's encoder is chosen by precedent and it is `mediabunny`.** The consumer already
 records with it: `lib/video/VideoRecorder.ts` there pulls `Output`, `Mp4OutputFormat`,
@@ -567,6 +550,51 @@ README that plays a video on load is a README nobody can read.
 
 ## Now
 
+**4.0.0 is cut and not published, and its nine done-criteria are verified here line by line.** The
+five `item` names are `entry`, the format is version 2, and a figure is read with held values: an
+input is a track a reader may hold, and a pointer moves it `along` a path, by a `drag` in a
+direction, or `around` a centre. The flat demo's dot is dragged along its curve and the solid demo's
+eye is turned by a drag.
+
+1. No source, test, demo or specification file names `SpaceItem`, `SpaceItemRecord`,
+   `SceneItemRecord`, or an `items` parameter or key of `scene3`. The one file outside this one that
+   names them is the README's Moving from 3.x, whose table lists them as the names 4.0.0 replaced.
+2. SPECIFICATION.md line 1 reads version 2. Its version section and its `scene3` row changed in
+   step 2 with the checker, and `inputs` with its three kinds in step 6 with the checker.
+3. A version 1 file is refused as "this reads version 2 of the format and the file is written in
+   version 1", which is step 2's reading.
+4. The eight committed files read at version 2 to the counts they read at version 1, at the still
+   and at half the duration, from boolean's 12 and 12 to tangent's 236 and 244, which is step 2's
+   reading.
+5. `npm run demos` changed 0 bytes of the images at each of steps 1 to 8 and at the cut. Steps 7
+   and 8 grew the two figure files by their `inputs`, 410,756 to 411,913 and 275,402 to 275,590.
+6. With `s` held at what its track reads, the flat demo at its 7 named times and the solid demo at
+   its 4 draw the marks the track gives within 1e-9. `turn` held at 0.5 at 10.5 seconds draws the
+   marks of 9.3 seconds within 1e-9.
+7. A press on the dot and 0.25 units off it takes `s` with a reach of 0.2, where 0.5 off takes
+   nothing. A pointer on the curve at x = 1.5 holds `s` at 0.42815 and the dot drawn with it sits
+   2.4e-14 from the pointer. A drag of 8.2 units across the solid demo from a press at 0.25 holds
+   `turn` at 1.25 within 1e-12, which is one turn for the width of the frame.
+8. `recordFigure` and `framesOf` take no held values, and `gate:record` writes 34 of 34
+   recordings at the cut.
+9. `package.json` reads 4.0.0 and nothing is published. `npm test` passes 1,556 of 1,556 over 100
+   files, `type-check` and `build` report no error, and `check:vocab` reads 0 and 0.
+
+The README and the guide each gained an Inputs section, and the README's Moving from 3.x lists the
+five renames and the format change. REFERENCE.md stated inputs from step 4 on.
+
+**What the site owes at the crossing**, from `/home/siva/dev/altpsyche-dev`:
+
+- `components/figure/FigureSurface.tsx` gains the listeners. A press turns its pixel into a place by
+  `placeAt` and takes an input by `inputAt` over the marks it drew. A move holds the input's track at
+  `heldFrom` of the press and the pointer. A release lets the track go.
+- `components/figure/clock.ts` keeps what is held between frames and passes it to `marksAt` and
+  `viewAt` as the last argument. A recording and the still pass nothing.
+- Every figure file of the site writes `"format": 2`, and the two pins on format version 1, in
+  `tests/figure-file.test.ts` and `scripts/validate-content.ts`, read 2.
+- The site on `^3.0.0` already resolves 3.4.1, which is format version 2, so the crossing is due
+  whichever version the site next installs. That is the first entry under Found while working.
+
 **3.4.0 is cut and not published, and its eight done-criteria are verified here line by line.** A
 mark may carry `clipPath`, a closed path read by the nonzero winding rule in the figure's own units,
 beside the rectangle `clip`, and every painter draws it. Both demos' lenses are cut to a rectangle
@@ -596,8 +624,7 @@ with corners rounded by 0.12.
    files, `type-check` and `build` report no error, and `check:vocab` reads 0 and 0.
 
 The header of `figure/mark.ts`, the Restrictions of the README and the guide, and the guide's Clips
-and insets say a clip may be a path. 3.4.0 is the version the tag workflow publishes first, once Siva
-sets the trusted publisher, which is step 3 of the first entry under The entries.
+and insets say a clip may be a path.
 
 **The vocabulary rule reads every word this tree writes, and its four done-criteria are verified here
 line by line.** Seven steps swept the five files in `docs/`, the next skill and the comments of
@@ -1785,7 +1812,7 @@ entry's steps come first, then 3.4.0 and 4.0.0 in ladder order, then the handove
 - [ ] **3. A version is published from a tag. Waits on Siva, who deferred it on 2026-09-24.** It
       needs three answers: the trusted publisher set on npmjs.com for `publish.yml`, a yes to
       pushing `v3.0.0`, and which version the workflow publishes first, since 3.3.0 is cut and npm
-      carries 3.0.0. 3.4.0 is cut, so the next pick while this step waits is 4.0.0, whose steps are below.
+      carries 3.0.0. 3.4.0 is cut, and 4.0.0 is cut after it. **npm carries 3.4.1 as `latest` since 2026-09-26**, published by hand, so the first tag is 4.0.0 or later.
       **Siva answered two of the three on 2026-09-24.** No tag is pushed for 3.0.0, so the first
       tag is the version the workflow publishes. That version is 3.4.0, published once after 3.4.0
       step 8 cuts it, with 3.1.0 through 3.3.0 never reaching npm. The trusted publisher is not set
@@ -1833,170 +1860,14 @@ and only the peer range is enforced, so its two ranges cross together or its ins
 the crossing to 3.0.0 measured above. And nothing surfaces a release to anybody, which a watcher in
 the site's own tree answers and no workflow here can.
 
-### 4.0.0, the five `item` names renamed to `entry`, then a figure a reader can act on
-
-**An input is a track a reader may hold.** While the reader holds it, the value the reader gives
-replaces the value the track's keys give at that time, and while nothing holds it the track reads as
-it always has. A held value is that value, and the consumer keeps it between frames rather than the
-figure. So a figure stays a pure function: its marks are a function of the time and the held values,
-and a figure asked twice with the same two answers the same picture twice.
-
-**The reading of 2026-09-24, so a later session takes none of it again.**
-
-- **Both demos already move by one track each.** The flat demo's dot, tangent and reading all follow
-  the track `s`, the fraction of the walked stretch of the parabola, in `demos/tangent.ts` line 323.
-  The solid demo's eye follows the track `turn`, one turn round the middle, in `demos/surface.ts`
-  line 183. A reader dragging the dot and a reader turning the eye each move that one number, so the
-  scene needs no second clock, which is the reason the tracks were chosen at 0.4.0 and 0.10.0.
-- **The file needs no new expression kind.** A `track` expression reads the value at the time being
-  drawn, and a held value is that value. What the file gains is one optional field on the figure
-  naming which tracks a reader may hold and how a pointer moves each.
-- **The old names are counted without the roadmap.** `SpaceItem` is 29 uses over 10 files,
-  `SpaceItemRecord` 9 over 5 and `SceneItemRecord` 14 over 7. The `items` key of a `scene3` record is
-  3 keys in the committed files, 2 in `demos/solids.figure.json` and 1 in `demos/surface.figure.json`,
-  where the ladder above counts the solids file alone.
-- **Nothing here listens for a pointer, and nothing in the site does either.** The site's
-  `components/figure/FigureSurface.tsx` draws an `<svg role="img">` with no handlers and plays every
-  figure from one shared `requestAnimationFrame` loop in `components/figure/clock.ts`. Its roadmap
-  carries "A reader can drag a point in a figure" at lines 183 and 184 as a decision rather than a
-  mechanism, and records that its chapter 1 has nothing to drag. So no picture on the site waits for
-  this version, which the ladder already says.
-- **What the hit test needs exists.** `containsPoint`, `windingAt` and `nearestEdge` are at the door,
-  every mark carries a name, and `values/mat3.ts` carries `invert`, which a pixel needs to become a
-  place in the figure's own units.
-
-**Four calls are made here, and each names what would change it.**
-
-1. **An input is a held track rather than a new value kind**, for the two reasons in the reading. An
-   input with no track behind it, such as a switch between two pictures, would change it.
-2. **The package stops at pure functions.** It turns a pixel into a place, a press into the input it
-   takes, and a pointer into a value. The listeners, and the record of what is held, are the site's,
-   since the site owns the loop that plays the figure. A second consumer with no loop of its own
-   would change it.
-3. **A version 2 reader refuses a version 1 file**, which is the rule SPECIFICATION.md already states
-   for a version it does not read. The cost is that the site writes `format: 2` into each of its
-   figure files at the crossing. A reason to keep two versions readable would change it.
-4. **A recording and the still read nothing held.** A video file and a reader who asked for less
-   motion are each shown the figure the tracks describe, so neither depends on what a reader did.
-
-**The steps.** Each is one commit and each names the measurement its commit quotes.
-
-- [x] **1. The four names in code are renamed.** `SpaceItem` becomes `SpaceEntry`, `SpaceItemRecord`
-      becomes `SpaceEntryRecord`, `SceneItemRecord` becomes `SceneEntryRecord`, and the parameter
-      `items` of `scene3` becomes `entries`. The `items` key of a record stays until step 2.
-      **Measurement:** 29, 9 and 14 uses to 0, the suite at 1,536 of 1,536 before and after, and
-      `npm run demos` changing 0 bytes. **Landed:** 29, 9 and 14 to 0 over 14 files, 1,536 of 1,536 before and after, 0 bytes.
-- [x] **2. The format is version 2 and a `scene3` record carries `entries`.** SPECIFICATION.md
-      changes first in the same commit: line 1, the version section saying what version 2 changed,
-      and the `scene3` row. Then `FIGURE_FORMAT_VERSION`, the checker, the record type, the reader
-      and every committed figure file. **Measurement:** 3 `items` keys to 0, the eight committed files
-      read to the same mark counts at the still and at half the duration, and a version 1 file
-      refused with the sentence naming both numbers. **Landed:** 3 keys to 0 and 8 `format` lines to 2, the eight files at the same counts from boolean's 12 and 12 to tangent's 236 and 244 at a 16:9 aspect, and "this reads version 2 of the format and the file is written in version 1".
-- [x] **3. A figure is read with held values.** `marksAt`, `extentAt` and `viewAt` take the held
-      values, a held value replaces the sampled value of the track of that name, and a name no track
-      carries is refused by name. The rule in DESIGN.md becomes a pure function of time and the held
-      values. **Measurement:** the flat demo at named times with `s` held at what its track reads
-      there, against the same times with nothing held, by tolerance; the dot with `s` held at 0.25
-      against `pointAlong` of the walked stretch at 0.25; and `npm run demos` changing 0 bytes.
-      **Landed:** the flat demo at its 7 named times and the solid demo at its 4 draw the same marks
-      held and unheld within 1e-9, the dot at `s` 0.25 sits within 1e-9 of `pointAlong`, a held `s`
-      moves the view that follows the dot, `turn` held on the flat demo is refused by name, the suite
-      reads 1,540 of 1,540 over 99 files against 1,536 over 98, and `npm run demos` changes 0 bytes.
-- [x] **4. A pixel becomes a place and a press takes an input.** The inverse of the matrix `viewAt`
-      returns turns a pixel into figure units, and a press takes the input whose named mark contains
-      the place or lies within that input's reach of it. **Measurement:** the round trip error of the
-      four corners and the middle of a 1280 by 720 frame, and a press on the flat demo's dot taking
-      `s` where a press 0.5 units away takes nothing.
-      **Landed:** `placeAt` and `inputAt` at the door, the round trip at 0 on the four corners and
-      5.7e-14 pixels at the middle, a press on the dot and 0.25 units off it taking `s` with a reach
-      of 0.2 where 0.5 off takes nothing, the chord of an open stroked half circle taking no press,
-      the suite at 1,544 of 1,544 over 100 files against 1,540 over 99, and `npm run demos` changing
-      0 bytes.
-- [x] **5. A pointer gives a held value, by one of two kinds.** `along` is the fraction of a path's
-      length at its point nearest the pointer, for the dot on its curve. `drag` is the value at the
-      press plus a number per figure unit the pointer has travelled across, for the eye.
-      **Measurement:** a pointer on the walked stretch at x = 1.5 held as `s`, and the distance from
-      the dot drawn with it to that point; a pointer 0.3 units off the curve against the nearest
-      point; and `drag` over a known travel against its expression.
-      **Landed:** `heldFrom`, `Motion` and `Press` at the door, with `fractionNearest` beside
-      `pointAlong`. A pointer on the walked stretch at x = 1.5 is held as `s` at 0.42815 and the dot
-      drawn with it sits 2.4e-14 from the pointer. A pointer 0.3 units off the curve at 0.4 is held at
-      0.3999977, and the point found is 0.2999999996 from it against 0.3 for the best of 200,001
-      samples. `drag` at 0.125 over 2.4 units reads its expression within 1e-12. The suite reads
-      1,547 of 1,547 over 100 files against 1,544, and `npm run demos` changes 0 bytes.
-- [x] **5a. A drag names its direction, and a third kind turns about a centre.** Siva's call on
-      2026-09-26: the richer motion, matching what the site draws. `drag` gains `across`, a direction
-      in figure units that defaults to x, and the travel is the dot product of the pointer's movement
-      with it, so a vertical or diagonal drag is one field. `around` holds the value at the press plus
-      `rate` for each turn the pointer has swept about `centre`, which is the site's `clock-set`
-      minute hand, dragged by its angle from the dial. **Measurement:** `drag` with `across` at x, at
-      y and at a diagonal over a known travel against its expression; `around` over a quarter turn
-      and over a sweep crossing the negative x axis, where `atan2` jumps by a whole turn.
-      **Landed:** `drag` with `across` at x, at y and at (3, 3) over the travel (2.4, -7) reads its
-      expression within 5.6e-17. `around` at 60 per turn reads 20 over a quarter turn, and the sweep
-      from 170 to 190 degrees reads 8.3333 against 8.3333, where subtracting two `atan2` angles reads
-      -0.944 of a turn. The sweep is the signed angle between press and pointer, so it lies within
-      half a turn, and a consumer adds up a longer one by moving the press to the pointer after each
-      reading, as the site's `clock-set` already does. The suite reads 1,549 of 1,549 over 100 files
-      against 1,547, and `npm run demos` changes 0 bytes.
-- [x] **6. The format carries `inputs`.** SPECIFICATION.md first, in the same commit: the optional
-      field, its three kinds and their fields, and the refusal of an input naming no track. Then the
-      checker, `FigureRecord` and `resolveFigure`. **Measurement:** a file carrying `inputs` written
-      back to the same bytes, and the refusal sentence with its path.
-      **Landed:** `InputRecord` and `MotionRecord` at the door, `Input` carrying its `motion` and
-      `Figure` its `inputs`. The tangent record with one input of each kind writes back to the same
-      bytes, and its `along` read from the file holds a pointer at 0.42815 to 0.42815 within 1e-9. An
-      input on `turn` is refused as "inputs.1.track names the track turn, which the figure does not
-      carry". A drag across (0, 0) and a track read inside an `along` path are refused by path, since
-      the path is read once with no track values. The suite reads 1,553 of 1,553 over 100 files
-      against 1,549, and `npm run demos` changes 0 bytes.
-- [x] **7. The flat demo's dot can be dragged.** The tangent figure declares `s` as `along` the walked
-      stretch, taken by a press on the mark `point`. **Measurement:** `npm run demos` changing 0
-      bytes, since nothing is held; and with `s` held at 0 and at 1, how far the dot sits from the
-      middle of the frame the follow leaves, against 2.14 with the track.
-      **Landed:** `tangent.inputs` carries `s` along the walked stretch with a reach of 0.2, and the
-      press tests of step 4 now read it from the demo. At the end of the walk, with a 16:9 aspect,
-      the dot sits 2.14 right of the middle with `s` held at 1 and with the track, and 2.14 left with
-      `s` held at 0, within 1e-9. `npm run demos` changes 0 bytes of the images, and
-      `demos/tangent.figure.json` grows from 410,756 bytes to 411,913 by its `inputs`. The suite
-      reads 1,554 of 1,554 over 100 files against 1,553.
-- [x] **8. The solid demo's eye can be turned.** The surface figure declares `turn` as `drag`, one
-      turn for the width of the frame. **Measurement:** `npm run demos` changing 0 bytes, and the
-      marks with `turn` held at 0.5 against the marks at the time the track reads 0.5.
-      **Landed:** `solid.inputs` carries `turn` as a `drag` at 1/8.2 per unit, taken by a press on
-      `solid/body`. A press on a cell of the saddle takes `turn`, and a drag of 8.2 units from a
-      press at 0.25 holds 1.25 within 1e-12. At 10.5 seconds, where the track reads 0.65, `turn` held
-      at 0.5 draws the marks of 9.3 seconds, where the track reads 0.5, within 1e-9, and unheld it
-      does not. `npm run demos` changes 0 bytes of the images, and `demos/surface.figure.json` grows
-      from 275,402 bytes to 275,590. The suite reads 1,556 of 1,556 over 100 files against 1,554.
-- [ ] **9. The version is cut.** The README, the guide and REFERENCE.md state inputs, `package.json`
-      reads 4.0.0, and the handover to the site names what it owes: the listeners in
-      `FigureSurface.tsx`, what is held in `clock.ts`, and `format: 2` in its files and in its two
-      pins. **Measurement:** the done-criteria below, line by line.
-
-**Steps 7 and 8 are where the demos gain.** Steps 1 and 2 change what the demos are written in, and
-the gate is that they draw the same bytes.
-
-**Done-criteria.**
-
-1. No file outside `docs/ROADMAP.md` names `SpaceItem`, `SpaceItemRecord`, `SceneItemRecord`, or an
-   `items` parameter or key of `scene3`.
-2. SPECIFICATION.md line 1 reads version 2, its version section states what version 2 changed, and
-   it states `inputs` with all three kinds. Each changed in the commit with the checker that reads it.
-3. A version 1 file is refused and the sentence names 1 and 2.
-4. The eight committed figure files read at version 2 to the mark counts they read at version 1, at
-   the still and at half the duration.
-5. With nothing held, every figure draws the marks it drew before step 3, and `npm run demos` changes
-   0 bytes across steps 1 to 8.
-6. A value held at what the track reads gives the marks the track gives, by tolerance, on both demos.
-7. A press on the flat demo's dot takes `s`, and a pointer on the curve puts the dot on the pointer's
-   place within a stated distance. A drag across the solid demo turns the eye by the stated rate.
-8. A recording and the still take no held values, and `gate:record` writes 34 of 34 recordings.
-9. `package.json` reads 4.0.0 and nothing is published. `npm test`, `type-check` and `build` report no
-   error, and `check:vocab` reads 0 and 0.
-
 ## Found while working, not yet queued
 
+- **3.4.1 on npm carries 4.0.0's breaking half under a patch number, and it is `latest`.** It was cut
+  from 0a8811e, which sits after 4.0.0 steps 1 to 5, so the tarball exports `SpaceEntry` rather than
+  `SpaceItem`, carries `FIGURE_FORMAT_VERSION = 2`, and exports `placeAt`, `inputAt` and `heldFrom`.
+  A consumer on `^3.0.0` resolves it, and its reader refuses every version 1 file that consumer has.
+  Whether to run `npm deprecate` on 3.4.1 is Siva's call, since the answer is public. Found at the
+  4.0.0 cut, by `npm pack @altpsyche/maths@3.4.1`.
 - **The conformance table in SPECIFICATION.md names seven figures, and eight files are committed.**
   `demos/matrix.figure.json` is read by the suite and is not in the table, so a reader in another
   language is not told to draw it. Found at 4.0.0 step 2, which changed the table's byte counts.

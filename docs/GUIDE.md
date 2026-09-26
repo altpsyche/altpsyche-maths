@@ -623,6 +623,47 @@ while the picture moves beneath it. A scene placing a mark that way computes the
 view entry does rather than calling `extentAt`, since a view that follows something reads the marks
 and the scene would be asking for what is being built.
 
+## Inputs
+
+An **input** is a track a reader may hold. While the reader holds it, the value the reader gives
+replaces the value the track's keys give at that time. While nothing holds it, the track reads as it
+always has. A figure lists its inputs in `Figure.inputs`, and each names its track, the mark a press
+takes it on, and a `Motion`, which is how a pointer moves the value.
+
+A `Motion` is one of three kinds. `along` holds the fraction of a path's length at the point nearest
+the pointer, which is how the flat demo's dot is dragged along its curve. `drag` holds the value at
+the press plus `rate` for each figure unit the pointer travels in the direction `across`, which is
+how the solid demo's eye is turned. `around` holds the value at the press plus `rate` for each turn
+the pointer sweeps about `centre`.
+
+```ts
+import { heldFrom, inputAt, marksAt, placeAt, vec2 } from '@altpsyche/maths';
+import type { Figure } from '@altpsyche/maths';
+
+declare const pressable: Figure;
+declare const valueAtPress: number;
+
+const at = 4;
+const pressedAt = placeAt(pressable, at, 1280, 720, vec2(640, 360));
+const taken = pressedAt && inputAt(pressable.inputs ?? [], marksAt(pressable, at, 1280 / 720), pressedAt);
+const pointer = placeAt(pressable, at, 1280, 720, vec2(700, 340));
+if (pressedAt && taken && pointer) {
+  const value = heldFrom(taken.motion, { place: pressedAt, value: valueAtPress }, pointer);
+  marksAt(pressable, at, 1280 / 720, undefined, { [taken.track]: value });
+}
+```
+
+`placeAt` inverts the matrix `viewAt` returns, so a pixel becomes a place in the figure's own units
+even while the view follows a mark. `inputAt` searches the marks from the last drawn to the first,
+so where two marks overlap the one on top takes the press. `heldFrom` is the value the pointer holds
+the track at. On the flat demo, a pointer on the curve at x = 1.5 holds `s` at 0.42815, and the dot
+drawn with that value sits 2.4 × 10⁻¹⁴ units from the pointer.
+
+**The package stops at pure functions.** The listeners, and the record of what is held between
+frames, are the consumer's, since the consumer owns the loop that plays the figure. A figure asked
+twice with the same time and the same held values draws the same marks twice. A recording and the
+still read nothing held, so neither depends on what a reader did.
+
 ## Clips and insets
 
 A clip is the region a mark is drawn inside, with everything of the mark outside that region cut
